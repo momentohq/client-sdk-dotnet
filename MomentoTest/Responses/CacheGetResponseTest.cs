@@ -11,11 +11,12 @@ namespace MomentoTest.Responses
         [Fact]
         public void CorrectResultMapping()
         {
-            ByteString body = ByteString.CopyFromUtf8("test body");
+            String cacheBody = "test body";
+            ByteString body = ByteString.CopyFromUtf8(cacheBody);
             GetResponse serverResponseHit = new GetResponse() { CacheBody = body, Result = ECacheResult.Hit };
             CacheGetResponse responseHit = new CacheGetResponse(serverResponseHit);
             Assert.Equal(MomentoCacheResult.Hit, responseHit.result);
-            Assert.Equal(body, responseHit.body);
+            Assert.Equal(cacheBody, responseHit.Text());
 
             GetResponse serverResponseMiss = new GetResponse() { Result = ECacheResult.Miss };
             CacheGetResponse responseMiss = new CacheGetResponse(serverResponseMiss);
