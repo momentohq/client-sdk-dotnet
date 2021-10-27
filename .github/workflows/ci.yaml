@@ -27,6 +27,14 @@ jobs:
         with:
           nuget-version: '5.x'
 
+      - name: Configure Artifactory credentials
+        run: |
+          set -e
+          set -x
+          nuget sources Add -Name Artifactory -Source https://momento.jfrog.io/artifactory/api/nuget/nuget-local -username deploy-user -password ${{ secrets.PUBLIC_ARTIFACTORY_DEPLOY_USER_MAGIC_PASSTOKEN }}
+          nuget setapikey deploy-user:${{ secrets.PUBLIC_ARTIFACTORY_DEPLOY_USER_MAGIC_PASSTOKEN }} -Source Artifactory
+        shell: bash
+
       - name: Build
         run: |
             dotnet build
