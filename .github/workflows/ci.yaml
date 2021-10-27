@@ -40,12 +40,12 @@ jobs:
             dotnet build
         shell: bash
 
-      - name: Build
+      - name: Unit Test
         run: |
             dotnet test MomentoTest
         shell: bash
 
-      - name: Build
+      - name: Integration Test
         run: |
             dotnet test MomentoIntegrationTest
         shell: bash
