@@ -18,7 +18,8 @@ namespace MomentoSdk
         protected MomentoCache(string authToken, string cacheName, string endpoint, uint defaultTtlSeconds)
         {
             GrpcChannel channel = GrpcChannel.ForAddress(endpoint, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
-            CallInvoker invoker = channel.Intercept(new AuthHeaderInterceptor(authToken));
+            Header[] headers = { new Header(name: "Authorization", value: authToken), new Header(name: "cache", value: cacheName) };
+            CallInvoker invoker = channel.Intercept(new HeaderInterceptor(authToken));
             this.client = new ScsClient(invoker);
             this.defaultTtl = defaultTtlSeconds * 1000;
         }

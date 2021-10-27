@@ -4,12 +4,23 @@ using Grpc.Core.Interceptors;
 
 namespace MomentoSdk
 {
-    public class AuthHeaderInterceptor : Grpc.Core.Interceptors.Interceptor
+    public class Header
     {
-        private readonly string authToken;
-        public AuthHeaderInterceptor(string authToken)
+        public string Name;
+        public string Value;
+        public Header(String name, String value)
         {
-            this.authToken = authToken;
+            this.Name = name;
+            this.Value = value;
+        }
+
+    }
+    public class HeaderInterceptor : Grpc.Core.Interceptors.Interceptor
+    {
+        private readonly Header[] headersToAdd;
+        public HeaderInterceptor(Header[] headers)
+        {
+            this.headersToAdd = headers;
         }
 
         public override TResponse BlockingUnaryCall<TRequest, TResponse>(TRequest request, ClientInterceptorContext<TRequest, TResponse> context, BlockingUnaryCallContinuation<TRequest, TResponse> continuation)
@@ -53,8 +64,10 @@ namespace MomentoSdk
                 context = new ClientInterceptorContext<TRequest, TResponse>(context.Method, context.Host, options);
             }
 
-            // Add caller metadata to call headers
-            headers.Add("Authorization", this.authToken);
+            foreach(Header header in this.headersToAdd)
+            {
+                headers.Add(header.Name, header.Value);
+            }
         }
     }
 }
