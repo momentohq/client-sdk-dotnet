@@ -32,13 +32,13 @@ jobs:
             dotnet build
         shell: bash
 
-      - name: Test
-	run: |
-	    dotnet test MomentoTest
-	shell: bash
+      - name: Build
+        run: |
+            dotnet test MomentoTest
+        shell: bash
 
-      - name: Integration Test
-	run: |
-	    dotnet test MomentoIntegrationTest
-	shell: bash
+      - name: Build
+        run: |
+            dotnet test MomentoIntegrationTest
+        shell: bash
 
