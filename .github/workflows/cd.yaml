@@ -31,15 +31,15 @@ jobs:
             dotnet build
         shell: bash
 
-      - name: Test
-	run: |
-	    dotnet test MomentoTest
-	shell: bash
+      - name: Build
+        run: |
+            dotnet test MomentoTest
+        shell: bash
 
-      - name: Integration Test
-	run: |
-	    dotnet test MomentoIntegrationTest
-	shell: bash
+      - name: Build
+        run: |
+            dotnet test MomentoIntegrationTest
+        shell: bash
 
       - name: Set release
         id: semrel
@@ -48,20 +48,23 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           allow-initial-development-versions: true
           force-bump-patch-version: true
-
+	
       - name: Configure Artifactory publish credentials
-	run: |
-	  set -e
-	  set -x
+        run: |
+          set -e
+          set -x
           nuget sources Add -Name Artifactory -Source https://momento.jfrog.io/artifactory/api/nuget/nuget-local -username deploy-user -password ${{ secrets.PUBLIC_ARTIFACTORY_DEPLOY_USER_MAGIC_PASSTOKEN }}
           nuget setapikey deploy-user:${{ secrets.PUBLIC_ARTIFACTORY_DEPLOY_USER_MAGIC_PASSTOKEN }} -Source Artifactory
-	shell: bash
+        shell: bash
 
-      - name: Deploy Release
+      - name: Pack and Publish
         run: |
-          VERSION="${{needs.release.outputs.version}}"
-          echo "version: ${VERSION}"
-          dotnet build --configuration Release
-          nuget pack -Version ${VERSION} -Properties Configuration=Release
-          nuget push Momento.${VERSION}.nupkg -Source Artifactory -Verbosity detailed
-	shell: bash
+          set -x
+          pushd Momento
+            VERSION="${{needs.release.outputs.version}}"
+            echo "version: ${VERSION}"
+            dotnet build --configuration Release
+            nuget pack -Version ${VERSION} -Properties Configuration=Release
+            nuget push MomentoSdk.${VERSION}.nupkg -Source Artifactory -Verbosity detailed
+          popd
+        shell: bash
