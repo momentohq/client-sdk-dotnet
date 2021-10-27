@@ -18,7 +18,8 @@ namespace MomentoSdk
         protected MomentoCache(string authToken, string cacheName, string endpoint, uint defaultTtlSeconds)
         {
             GrpcChannel channel = GrpcChannel.ForAddress(endpoint, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
-            CallInvoker invoker = channel.Intercept(new AuthHeaderInterceptor(authToken));
+            Header[] headers = { new Header(name: "Authorization", value: authToken), new Header(name: "cache", value: cacheName) };
+            CallInvoker invoker = channel.Intercept(new HeaderInterceptor(headers));
             this.client = new ScsClient(invoker);
             this.defaultTtl = defaultTtlSeconds * 1000;
         }
@@ -30,9 +31,9 @@ namespace MomentoSdk
             return cache;
         }
 
-        public async Task<SetResponse> SetAsync(ByteString key, ByteString value, uint ttl)
+        public async Task<SetResponse> SetAsync(ByteString key, ByteString value, uint ttlSeconds)
         {
-            SetRequest request = new SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttl };
+            SetRequest request = new SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSeconds * 1000 };
             return await this.client.SetAsync(request);
         }
 
@@ -42,15 +43,45 @@ namespace MomentoSdk
             return await this.client.GetAsync(request);
         }
 
-        public SetResponse Set(ByteString key, ByteString value, uint ttl)
+        public async Task<SetResponse> SetAsync(String key, String value, uint ttlSeconds)
         {
-            SetRequest request = new SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttl };
+            ByteString byteKey = Google.Protobuf.ByteString.CopyFromUtf8(key);
+            ByteString byteValue = Google.Protobuf.ByteString.CopyFromUtf8(value);
+            SetRequest request = new SetRequest() { CacheBody = byteValue, CacheKey = byteKey, TtlMilliseconds = ttlSeconds * 1000 };
+            return await this.client.SetAsync(request);
+        }
+
+        public async Task<GetResponse> GetAsync(String key)
+        {
+            ByteString byteKey = Google.Protobuf.ByteString.CopyFromUtf8(key);
+            GetRequest request = new GetRequest() { CacheKey = byteKey };
+            return await this.client.GetAsync(request);
+        }
+
+        public SetResponse Set(ByteString key, ByteString value, uint ttlSeconds)
+        {
+            SetRequest request = new SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSeconds * 1000 };
             return this.client.Set(request);
         }
 
         public GetResponse Get(ByteString key)
         {
             GetRequest request = new GetRequest() { CacheKey = key };
+            return this.client.Get(request);
+        }
+
+        public SetResponse Set(String key, String value, uint ttlSeconds)
+        {
+            ByteString byteKey = Google.Protobuf.ByteString.CopyFromUtf8(key);
+            ByteString byteValue = Google.Protobuf.ByteString.CopyFromUtf8(value);
+            SetRequest request = new SetRequest() { CacheBody = byteValue, CacheKey = byteKey, TtlMilliseconds = ttlSeconds * 1000 };
+            return this.client.Set(request);
+        }
+
+        public GetResponse Get(String key)
+        {
+            ByteString byteKey = Google.Protobuf.ByteString.CopyFromUtf8(key);
+            GetRequest request = new GetRequest() { CacheKey = byteKey };
             return this.client.Get(request);
         }
 

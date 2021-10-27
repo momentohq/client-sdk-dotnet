@@ -7,17 +7,16 @@ namespace MomentoSdk
 {
     public class JwtUtils
     {
-        public JwtUtils(string jwt)
-        {
-            IJsonSerializer serializer = new JsonNetSerializer();
-            IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
-            JwtDecoder decoder = new JWT.JwtDecoder(serializer, urlEncoder);
-            decoder.Decode(jwt);
-        }
-
+        /// <summary>
+        /// extracts the controlEndpoint and cacheEndpoint
+        /// from the jwt
+        /// </summary>
+        /// <param name="jwt"></param>
+        /// <returns></returns>
         public static Claims decodeJwt(string jwt)
         {
             IJsonSerializer serializer = new JsonNetSerializer();
+
             IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
             JwtDecoder decoder = new JWT.JwtDecoder(serializer, urlEncoder);
             var decodedJwt = decoder.Decode(jwt);
