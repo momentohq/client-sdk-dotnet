@@ -26,17 +26,25 @@ jobs:
         with:
           nuget-version: '5.x'
 
+      - name: Configure Artifactory publish credentials
+        run: |
+          set -e
+          set -x
+          nuget sources Add -Name Artifactory -Source https://momento.jfrog.io/artifactory/api/nuget/nuget-local -username deploy-user -password ${{ secrets.PUBLIC_ARTIFACTORY_DEPLOY_USER_MAGIC_PASSTOKEN }}
+          nuget setapikey deploy-user:${{ secrets.PUBLIC_ARTIFACTORY_DEPLOY_USER_MAGIC_PASSTOKEN }} -Source Artifactory
+        shell: bash
+
       - name: Build
         run: |
             dotnet build
         shell: bash
 
-      - name: Build
+      - name: Unit Test
         run: |
             dotnet test MomentoTest
         shell: bash
 
-      - name: Build
+      - name: Integration Test
         run: |
             dotnet test MomentoIntegrationTest
         shell: bash
@@ -48,14 +56,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           allow-initial-development-versions: true
           force-bump-patch-version: true
-
-      - name: Configure Artifactory publish credentials
-        run: |
-          set -e
-          set -x
-          nuget sources Add -Name Artifactory -Source https://momento.jfrog.io/artifactory/api/nuget/nuget-local -username deploy-user -password ${{ secrets.PUBLIC_ARTIFACTORY_DEPLOY_USER_MAGIC_PASSTOKEN }}
-          nuget setapikey deploy-user:${{ secrets.PUBLIC_ARTIFACTORY_DEPLOY_USER_MAGIC_PASSTOKEN }} -Source Artifactory
-        shell: bash
 
       - name: Pack and Publish
         run: |
