@@ -11,6 +11,7 @@
     <None Remove="Grpc.Core" />
     <None Remove="JWT" />
     <None Remove="Exceptions\" />
+    <None Remove="Responses\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.19.0" />
@@ -21,5 +22,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Exceptions\" />
+    <Folder Include="Responses\" />
   </ItemGroup>
 </Project>

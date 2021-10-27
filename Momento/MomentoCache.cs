@@ -6,24 +6,33 @@ using Grpc.Core.Interceptors;
 using Grpc.Net.Client;
 using System.Threading.Tasks;
 using Google.Protobuf;
+using MomentoSdk.Responses;
+using MomentoSdk.Exceptions;
 
 namespace MomentoSdk
 {
     public class MomentoCache
     {
-        private readonly int defaultTtlSeconds;
         private readonly ScsClient client;
         private readonly string cacheName;
-        private readonly uint defaultTtl;
+        private readonly uint defaultTtlMillis;
         protected MomentoCache(string authToken, string cacheName, string endpoint, uint defaultTtlSeconds)
         {
             GrpcChannel channel = GrpcChannel.ForAddress(endpoint, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
             Header[] headers = { new Header(name: "Authorization", value: authToken), new Header(name: "cache", value: cacheName) };
             CallInvoker invoker = channel.Intercept(new HeaderInterceptor(headers));
             this.client = new ScsClient(invoker);
-            this.defaultTtl = defaultTtlSeconds * 1000;
+            this.defaultTtlMillis = defaultTtlSeconds * 1000;
         }
 
+        /// <summary>
+        /// Intitializes a MomentoCache
+        /// </summary>
+        /// <param name="authToken"></param>
+        /// <param name="cacheName"></param>
+        /// <param name="endpoint"></param>
+        /// <param name="defaultTtlSeconds"></param>
+        /// <returns>returns a cache ready for gets and sets</returns>
         public static MomentoCache Init(string authToken, string cacheName, string endpoint, uint defaultTtlSeconds)
         {
             MomentoCache cache = new MomentoCache(authToken, cacheName, endpoint, defaultTtlSeconds);
@@ -31,58 +40,154 @@ namespace MomentoSdk
             return cache;
         }
 
-        public async Task<SetResponse> SetAsync(ByteString key, ByteString value, uint ttlSeconds)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="ttlSeconds"></param>
+        /// <returns></returns>
+        public async Task<CacheSetResponse> SetAsync(ByteString key, ByteString value, uint ttlSeconds)
         {
-            SetRequest request = new SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSeconds * 1000 };
-            return await this.client.SetAsync(request);
+            SetResponse response = await this.SendSetAsync(value: value, key: key, ttlSeconds: ttlSeconds);
+            return new CacheSetResponse(response);
         }
 
-        public async Task<GetResponse> GetAsync(ByteString key)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key">The key to perform a cache lookup on</param>
+        /// <returns></returns>
+        public async Task<CacheGetResponse> GetAsync(ByteString key)
         {
-            GetRequest request = new GetRequest() { CacheKey = key };
-            return await this.client.GetAsync(request);
+            GetResponse resp = await this.SendGetAsync(key);
+            return new CacheGetResponse(resp);
         }
 
-        public async Task<SetResponse> SetAsync(String key, String value, uint ttlSeconds)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="ttlSeconds"></param>
+        /// <returns></returns>
+        public async Task<CacheSetResponse> SetAsync(String key, String value, uint ttlSeconds)
         {
             ByteString byteKey = Google.Protobuf.ByteString.CopyFromUtf8(key);
             ByteString byteValue = Google.Protobuf.ByteString.CopyFromUtf8(value);
-            SetRequest request = new SetRequest() { CacheBody = byteValue, CacheKey = byteKey, TtlMilliseconds = ttlSeconds * 1000 };
-            return await this.client.SetAsync(request);
+            SetResponse response = await this.SendSetAsync(key: byteKey, value: byteValue, ttlSeconds: ttlSeconds);
+            return new CacheSetResponse(response);
         }
 
-        public async Task<GetResponse> GetAsync(String key)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public async Task<CacheGetResponse> GetAsync(String key)
         {
             ByteString byteKey = Google.Protobuf.ByteString.CopyFromUtf8(key);
-            GetRequest request = new GetRequest() { CacheKey = byteKey };
-            return await this.client.GetAsync(request);
+            GetResponse resp = await this.SendGetAsync(byteKey);
+            return new CacheGetResponse(resp);
         }
 
-        public SetResponse Set(ByteString key, ByteString value, uint ttlSeconds)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="ttlSeconds"></param>
+        /// <returns></returns>
+        public CacheSetResponse Set(ByteString key, ByteString value, uint ttlSeconds)
         {
-            SetRequest request = new SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSeconds * 1000 };
-            return this.client.Set(request);
+            SetResponse resp = this.SendSet(key: key, value: value, ttlSeconds: ttlSeconds);
+            return new CacheSetResponse(resp);
         }
 
-        public GetResponse Get(ByteString key)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public CacheGetResponse Get(ByteString key)
         {
-            GetRequest request = new GetRequest() { CacheKey = key };
-            return this.client.Get(request);
+            GetResponse resp = this.SendGet(key);
+            return new CacheGetResponse(resp);
         }
 
-        public SetResponse Set(String key, String value, uint ttlSeconds)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="ttlSeconds"></param>
+        /// <returns></returns>
+        public CacheSetResponse Set(String key, String value, uint ttlSeconds)
         {
             ByteString byteKey = Google.Protobuf.ByteString.CopyFromUtf8(key);
             ByteString byteValue = Google.Protobuf.ByteString.CopyFromUtf8(value);
-            SetRequest request = new SetRequest() { CacheBody = byteValue, CacheKey = byteKey, TtlMilliseconds = ttlSeconds * 1000 };
-            return this.client.Set(request);
+            SetResponse response = this.SendSet(key: byteKey, value: byteValue, ttlSeconds: ttlSeconds);
+            return new CacheSetResponse(response);
         }
 
-        public GetResponse Get(String key)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public CacheGetResponse Get(String key)
         {
             ByteString byteKey = Google.Protobuf.ByteString.CopyFromUtf8(key);
-            GetRequest request = new GetRequest() { CacheKey = byteKey };
-            return this.client.Get(request);
+            GetResponse resp = this.SendGet(byteKey);
+            return new CacheGetResponse(resp);
+        }
+
+        private GetResponse SendGet(ByteString key)
+        {
+            GetRequest request = new GetRequest() { CacheKey = key };
+            try
+            {
+                return this.client.Get(request);
+            } catch(Exception e)
+            {
+                throw CacheExceptionMapper.Convert(e);
+            }
+        }
+
+        private async Task<GetResponse> SendGetAsync(ByteString key)
+        {
+            GetRequest request = new GetRequest() { CacheKey = key };
+            try
+            {
+                return await this.client.GetAsync(request);
+            } catch(Exception e)
+            {
+                throw CacheExceptionMapper.Convert(e);
+            }
+        }
+
+        private SetResponse SendSet(ByteString key, ByteString value, uint ttlSeconds)
+        {
+            SetRequest request = new SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSeconds * 1000 };
+            try
+            {
+                return this.client.Set(request);
+            } catch(Exception e)
+            {
+                throw CacheExceptionMapper.Convert(e);
+            }
+        }
+
+        private async Task<SetResponse> SendSetAsync(ByteString key, ByteString value, uint ttlSeconds)
+        {
+            SetRequest request = new SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSeconds * 1000 };
+            try
+            {
+                return await this.client.SetAsync(request);
+            } catch(Exception e)
+            {
+                throw CacheExceptionMapper.Convert(e);
+            }
         }
 
         private async void WaitUntilReady()

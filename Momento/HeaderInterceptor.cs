@@ -4,7 +4,7 @@ using Grpc.Core.Interceptors;
 
 namespace MomentoSdk
 {
-    public class Header
+    class Header
     {
         public string Name;
         public string Value;
@@ -15,7 +15,7 @@ namespace MomentoSdk
         }
 
     }
-    public class HeaderInterceptor : Grpc.Core.Interceptors.Interceptor
+    class HeaderInterceptor : Grpc.Core.Interceptors.Interceptor
     {
         private readonly Header[] headersToAdd;
         public HeaderInterceptor(Header[] headers)

@@ -16,6 +16,10 @@ namespace MomentoSdk
         private readonly string authToken;
         private readonly ScsControlClient client;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="authToken">Momento jwt</param>
         public Momento(string authToken)
         {
             Claims claims = JwtUtils.decodeJwt(authToken);
@@ -32,7 +36,7 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="cacheName"></param>
         /// <param name="defaultTtlSeconds"></param>
-        /// <returns></returns>
+        /// <returns>An instance of MomentoCache to perform sets and against against</returns>
         public MomentoCache CreateOrGetCache(String cacheName, uint defaultTtlSeconds)
         {
             try
@@ -49,8 +53,8 @@ namespace MomentoSdk
         /// <summary>
         /// Creates a cache with the given name
         /// </summary>
-        /// <param name="cacheName"></param>
-        public void CreateCache (String cacheName)
+        /// <param name="cacheName">Name of the cache to create</param>
+        public Responses.CreateCacheResponse CreateCache (String cacheName)
         {
             CheckValidCacheName(cacheName);
             try
@@ -65,6 +69,8 @@ namespace MomentoSdk
                     throw new CacheAlreadyExistsException("cache with name " + cacheName + " already exists");
                 }
             }
+
+            return new Responses.CreateCacheResponse();
         }
 
         /// <summary>
@@ -72,7 +78,7 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="cacheName"></param>
         /// <param name="defaultTtlSeconds"></param>
-        /// <returns></returns>
+        /// <returns>An instance of MomentoCache to perform sets and against against</returns>
         public MomentoCache GetCache(String cacheName, uint defaultTtlSeconds)
         {
             CheckValidCacheName(cacheName);
@@ -84,10 +90,11 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="cacheName"></param>
         /// <returns></returns>
-        public DeleteCacheResponse DeleteCache(String cacheName)
+        public Responses.DeleteCacheResponse DeleteCache(String cacheName)
         {
             DeleteCacheRequest request = new DeleteCacheRequest() { CacheName = cacheName };
-            return this.client.DeleteCache(request);
+            this.client.DeleteCache(request);
+            return new Responses.DeleteCacheResponse();
         }
 
         private Boolean CheckValidCacheName(String cacheName)

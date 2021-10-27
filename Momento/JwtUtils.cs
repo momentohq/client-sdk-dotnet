@@ -1,6 +1,7 @@
 ﻿using System;
 using JWT;
 using JWT.Serializers;
+using MomentoSdk.Exceptions;
 using Newtonsoft.Json;
 
 namespace MomentoSdk
@@ -19,16 +20,22 @@ namespace MomentoSdk
 
             IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
             JwtDecoder decoder = new JWT.JwtDecoder(serializer, urlEncoder);
-            var decodedJwt = decoder.Decode(jwt);
-            return JsonConvert.DeserializeObject<Claims>(decodedJwt);
+            try
+            {
+                var decodedJwt = decoder.Decode(jwt);
+                return JsonConvert.DeserializeObject<Claims>(decodedJwt);
+            } catch(Exception)
+            {
+                throw new InvalidJwtException("invalid jwt passed");
+            }
         }
     }
 
     public class Claims
     {
-        [JsonProperty(PropertyName = "cp")]
+        [JsonProperty(PropertyName = "cp", Required = Required.Always)]
         public string controlEndpoint { get; set; }
-        [JsonProperty(PropertyName = "c")]
+        [JsonProperty(PropertyName = "c", Required = Required.Always)]
         public string cacheEndpoint { get; set; }
 
         public Claims(string cacheEndpoint, string controlEndpoint)
