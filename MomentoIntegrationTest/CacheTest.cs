@@ -20,7 +20,7 @@ namespace MomentoIntegrationTest
             MomentoCache cache = momento.CreateOrGetCache(cacheName, defaultTtlSeconds);
             cache.Set(cacheKey, cacheValue, defaultTtlSeconds);
             CacheGetResponse result = cache.Get(cacheKey);
-            String stringResult = result.body.ToStringUtf8();
+            String stringResult = result.Text();
             Assert.Equal(cacheValue, stringResult);
         }
 
@@ -49,7 +49,7 @@ namespace MomentoIntegrationTest
             await cache.SetAsync(cacheKey, cacheValue, defaultTtlSeconds);
             CacheGetResponse result = await cache.GetAsync(cacheKey);
             Assert.Equal(MomentoCacheResult.Hit, result.result);
-            Assert.Equal(cacheValue, result.body.ToStringUtf8());
+            Assert.Equal(cacheValue, result.Text());
         }
     }
 }

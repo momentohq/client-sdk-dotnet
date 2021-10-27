@@ -14,14 +14,14 @@ namespace MomentoSdk
     public class MomentoCache
     {
         private readonly ScsClient client;
-        private readonly uint defaultTtlMillis;
+        private readonly uint defaultTtlSeconds;
         protected MomentoCache(string authToken, string cacheName, string endpoint, uint defaultTtlSeconds)
         {
             GrpcChannel channel = GrpcChannel.ForAddress(endpoint, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
             Header[] headers = { new Header(name: "Authorization", value: authToken), new Header(name: "cache", value: cacheName) };
             CallInvoker invoker = channel.Intercept(new HeaderInterceptor(headers));
             this.client = new ScsClient(invoker);
-            this.defaultTtlMillis = defaultTtlSeconds * 1000;
+            this.defaultTtlSeconds = defaultTtlSeconds;
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace MomentoSdk
         /// <param name="endpoint"></param>
         /// <param name="defaultTtlSeconds"></param>
         /// <returns>returns a cache ready for gets and sets</returns>
-        public static MomentoCache Init(string authToken, string cacheName, string endpoint, uint defaultTtlSeconds)
+        internal static MomentoCache Init(string authToken, string cacheName, string endpoint, uint defaultTtlSeconds)
         {
             MomentoCache cache = new MomentoCache(authToken, cacheName, endpoint, defaultTtlSeconds);
             cache.WaitUntilReady();
@@ -46,9 +46,9 @@ namespace MomentoSdk
         /// <param name="value"></param>
         /// <param name="ttlSeconds"></param>
         /// <returns></returns>
-        public async Task<CacheSetResponse> SetAsync(ByteString key, ByteString value, uint ttlSeconds)
+        public async Task<CacheSetResponse> SetAsync(byte[] key, byte[] value, uint ttlSeconds)
         {
-            SetResponse response = await this.SendSetAsync(value: value, key: key, ttlSeconds: ttlSeconds);
+            SetResponse response = await this.SendSetAsync(value: Convert(value), key: Convert(key), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
         }
 
@@ -57,9 +57,9 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="key">The key to perform a cache lookup on</param>
         /// <returns></returns>
-        public async Task<CacheGetResponse> GetAsync(ByteString key)
+        public async Task<CacheGetResponse> GetAsync(byte[] key)
         {
-            GetResponse resp = await this.SendGetAsync(key);
+            GetResponse resp = await this.SendGetAsync(Convert(key));
             return new CacheGetResponse(resp);
         }
 
@@ -72,9 +72,7 @@ namespace MomentoSdk
         /// <returns></returns>
         public async Task<CacheSetResponse> SetAsync(String key, String value, uint ttlSeconds)
         {
-            ByteString byteKey = Google.Protobuf.ByteString.CopyFromUtf8(key);
-            ByteString byteValue = Google.Protobuf.ByteString.CopyFromUtf8(value);
-            SetResponse response = await this.SendSetAsync(key: byteKey, value: byteValue, ttlSeconds: ttlSeconds);
+            SetResponse response = await this.SendSetAsync(key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
         }
 
@@ -85,8 +83,7 @@ namespace MomentoSdk
         /// <returns></returns>
         public async Task<CacheGetResponse> GetAsync(String key)
         {
-            ByteString byteKey = Google.Protobuf.ByteString.CopyFromUtf8(key);
-            GetResponse resp = await this.SendGetAsync(byteKey);
+            GetResponse resp = await this.SendGetAsync(Convert(key));
             return new CacheGetResponse(resp);
         }
 
@@ -97,9 +94,9 @@ namespace MomentoSdk
         /// <param name="value"></param>
         /// <param name="ttlSeconds"></param>
         /// <returns></returns>
-        public CacheSetResponse Set(ByteString key, ByteString value, uint ttlSeconds)
+        public CacheSetResponse Set(byte[] key, byte[] value, uint ttlSeconds)
         {
-            SetResponse resp = this.SendSet(key: key, value: value, ttlSeconds: ttlSeconds);
+            SetResponse resp = this.SendSet(key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(resp);
         }
 
@@ -108,9 +105,9 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public CacheGetResponse Get(ByteString key)
+        public CacheGetResponse Get(byte[] key)
         {
-            GetResponse resp = this.SendGet(key);
+            GetResponse resp = this.SendGet(Convert(key));
             return new CacheGetResponse(resp);
         }
 
@@ -123,9 +120,7 @@ namespace MomentoSdk
         /// <returns></returns>
         public CacheSetResponse Set(String key, String value, uint ttlSeconds)
         {
-            ByteString byteKey = Google.Protobuf.ByteString.CopyFromUtf8(key);
-            ByteString byteValue = Google.Protobuf.ByteString.CopyFromUtf8(value);
-            SetResponse response = this.SendSet(key: byteKey, value: byteValue, ttlSeconds: ttlSeconds);
+            SetResponse response = this.SendSet(key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
         }
 
@@ -136,8 +131,7 @@ namespace MomentoSdk
         /// <returns></returns>
         public CacheGetResponse Get(String key)
         {
-            ByteString byteKey = Google.Protobuf.ByteString.CopyFromUtf8(key);
-            GetResponse resp = this.SendGet(byteKey);
+            GetResponse resp = this.SendGet(Convert(key));
             return new CacheGetResponse(resp);
         }
 
@@ -187,6 +181,16 @@ namespace MomentoSdk
             {
                 throw CacheExceptionMapper.Convert(e);
             }
+        }
+
+        private ByteString Convert(byte[] bytes)
+        {
+            return ByteString.CopyFrom(bytes);
+        }
+
+        private ByteString Convert(String s)
+        {
+            return ByteString.CopyFromUtf8(s);
         }
 
         private async void WaitUntilReady()

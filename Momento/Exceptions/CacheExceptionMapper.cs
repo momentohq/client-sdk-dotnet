@@ -26,7 +26,7 @@ namespace MomentoSdk.Exceptions
                     return new IllegalArgumentException(ex.Message);
                 }
             }
-            return new CacheServiceException("unable to process request");
+            return new InternalServerException("unable to process request");
         }
     }
 }
