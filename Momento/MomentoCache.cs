@@ -14,7 +14,6 @@ namespace MomentoSdk
     public class MomentoCache
     {
         private readonly ScsClient client;
-        private readonly string cacheName;
         private readonly uint defaultTtlMillis;
         protected MomentoCache(string authToken, string cacheName, string endpoint, uint defaultTtlSeconds)
         {
