@@ -1,0 +1,44 @@
+
+name: On pull request
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build_csharp:
+    runs-on: ubuntu-latest
+    env:
+      TEST_AUTH_TOKEN: ${{ secrets.ALPHA_TEST_AUTH_TOKEN }}
+      TEST_CACHE_NAME: dummy
+
+    steps:
+      - name: Get current time
+        uses: gerred/actions/current-time@master
+        id: current-time
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+
+      - uses: nuget/setup-nuget@v1
+        with:
+          nuget-version: '5.x'
+
+      - name: Build
+        run: |
+            dotnet build
+        shell: bash
+
+      - name: Test
+	run: |
+	    dotnet test MomentoTest
+	shell: bash
+
+      - name: Integration Test
+	run: |
+	    dotnet test MomentoIntegrationTest
+	shell: bash
+
