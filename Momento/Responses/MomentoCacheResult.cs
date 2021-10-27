@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace MomentoSdk.Responses
 {
     public class MomentoCacheResult
@@ -13,5 +14,22 @@ namespace MomentoSdk.Responses
         public static MomentoCacheResult Miss { get { return new MomentoCacheResult("MISS"); } }
         public static MomentoCacheResult Unknown { get { return new MomentoCacheResult("UNKNOWN"); } }
 
+        public override bool Equals(object obj)
+        {
+            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            }
+            else
+            {
+                MomentoCacheResult r = (MomentoCacheResult)obj;
+                return (Value == r.Value);
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
     }
 }
