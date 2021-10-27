@@ -9,7 +9,7 @@ namespace MomentoIntegrationTest
         [Fact]
         public void HappyPath()
         {
-            String authKey = Environment.GetEnvironmentVariable("ALPHA_TEST_AUTH_TOKEN");
+            String authKey = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN");
             String cacheName = Environment.GetEnvironmentVariable("TEST_CACHE_NAME");
             String cacheKey = "some cache key";
             String cacheValue = "some cache value";
