@@ -25,7 +25,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public void HappyPathExpiredTtl()
+        public async void HappyPathExpiredTtl()
         {
             String cacheKey = "some cache key";
             String cacheValue = "some cache value";
@@ -33,7 +33,7 @@ namespace MomentoIntegrationTest
             Momento momento = new Momento(authKey);
             MomentoCache cache = momento.CreateOrGetCache(cacheName, defaultTtlSeconds);
             cache.Set(cacheKey, cacheValue, 1);
-            Task.Delay(1100);
+            await Task.Delay(1100);
             CacheGetResponse result = cache.Get(cacheKey);
             Assert.Equal(MomentoCacheResult.Miss, result.result);
         }
