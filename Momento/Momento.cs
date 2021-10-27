@@ -68,6 +68,11 @@ namespace MomentoSdk
                 {
                     throw new CacheAlreadyExistsException("cache with name " + cacheName + " already exists");
                 }
+                throw CacheExceptionMapper.Convert(e);
+            }
+            catch(Exception e)
+            {
+                throw CacheExceptionMapper.Convert(e);
             }
 
             return new Responses.CreateCacheResponse();
@@ -93,8 +98,14 @@ namespace MomentoSdk
         public Responses.DeleteCacheResponse DeleteCache(String cacheName)
         {
             DeleteCacheRequest request = new DeleteCacheRequest() { CacheName = cacheName };
-            this.client.DeleteCache(request);
-            return new Responses.DeleteCacheResponse();
+            try
+            {
+                this.client.DeleteCache(request);
+                return new Responses.DeleteCacheResponse();
+            } catch(Exception e)
+            {
+                throw CacheExceptionMapper.Convert(e);
+            }
         }
 
         private Boolean CheckValidCacheName(String cacheName)
