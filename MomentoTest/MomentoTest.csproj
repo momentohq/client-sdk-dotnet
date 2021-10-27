@@ -20,6 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Test\MomentoSdk.csproj" />
+    <ProjectReference Include="..\Momento\MomentoSdk.csproj" />
   </ItemGroup>
 </Project>
