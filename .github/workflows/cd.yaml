@@ -62,7 +62,7 @@ jobs:
         run: |
           set -x
           pushd Momento
-            VERSION="${{needs.release.outputs.version}}"
+            VERSION="${{ steps.semrel.outputs.version }}"
             echo "version: ${VERSION}"
             dotnet build --configuration Release
             nuget pack -Version ${VERSION} -Properties Configuration=Release
