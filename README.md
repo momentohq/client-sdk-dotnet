@@ -7,4 +7,5 @@
 1. [.NET](https://docs.microsoft.com/en-us/dotnet/core/install/macos)
 
 ### How to run
+1. dotnet nuget add source https://momento.jfrog.io/artifactory/api/nuget/nuget-public --name Artifactory
 1. dotnet build
