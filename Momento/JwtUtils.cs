@@ -16,6 +16,7 @@ namespace MomentoSdk
         public static Claims decodeJwt(string jwt)
         {
             IJsonSerializer serializer = new JsonNetSerializer();
+
             IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
             JwtDecoder decoder = new JWT.JwtDecoder(serializer, urlEncoder);
             var decodedJwt = decoder.Decode(jwt);
