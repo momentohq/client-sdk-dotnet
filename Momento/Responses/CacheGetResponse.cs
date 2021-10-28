@@ -7,21 +7,35 @@ namespace MomentoSdk.Responses
     public class CacheGetResponse : BaseCacheResponse
     {
         public MomentoCacheResult result { get; private set; }
-        private byte[] body;
+        private readonly ByteString body;
+
         public CacheGetResponse(GetResponse response)
         {
-            body = response.CacheBody.ToByteArray();
+            body = response.CacheBody;
             result = this.ResultMapper(response.Result);
         }
 
-        public String Text()
+        public String String()
         {
-            return Encoding.UTF8.GetString(this.body, 0, this.body.Length);
+            return String(Encoding.UTF8);
+        }
+
+        public String String(Encoding encoding)
+        {
+            if (result == MomentoCacheResult.Hit)
+            {
+                return body.ToString(encoding);
+            }
+            return null;
         }
 
         public byte[] Bytes()
         {
-            return this.body;
+            if (result == MomentoCacheResult.Hit)
+            {
+                return this.body.ToByteArray();
+            }
+            return null;
         }
     }
 }

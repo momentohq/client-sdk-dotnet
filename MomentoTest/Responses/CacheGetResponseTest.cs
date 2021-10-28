@@ -16,7 +16,7 @@ namespace MomentoTest.Responses
             GetResponse serverResponseHit = new GetResponse() { CacheBody = body, Result = ECacheResult.Hit };
             CacheGetResponse responseHit = new CacheGetResponse(serverResponseHit);
             Assert.Equal(MomentoCacheResult.Hit, responseHit.result);
-            Assert.Equal(cacheBody, responseHit.Text());
+            Assert.Equal(cacheBody, responseHit.String());
 
             GetResponse serverResponseMiss = new GetResponse() { Result = ECacheResult.Miss };
             CacheGetResponse responseMiss = new CacheGetResponse(serverResponseMiss);

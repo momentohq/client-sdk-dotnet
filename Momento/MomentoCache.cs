@@ -55,6 +55,17 @@ namespace MomentoSdk
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public async Task<CacheSetResponse> SetAsync(byte[] key, byte[] value)
+        {
+            return await this.SetAsync(key, value, defaultTtlSeconds);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="key">The key to perform a cache lookup on</param>
         /// <returns></returns>
         public async Task<CacheGetResponse> GetAsync(byte[] key)
@@ -74,6 +85,17 @@ namespace MomentoSdk
         {
             SetResponse response = await this.SendSetAsync(key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public async Task<CacheSetResponse> SetAsync(String key, String value)
+        {
+            return await this.SetAsync(key, value, defaultTtlSeconds);
         }
 
         /// <summary>
@@ -104,6 +126,17 @@ namespace MomentoSdk
         /// 
         /// </summary>
         /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public CacheSetResponse Set(byte[] key, byte[] value)
+        {
+            return this.Set(key, value, defaultTtlSeconds);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
         /// <returns></returns>
         public CacheGetResponse Get(byte[] key)
         {
@@ -122,6 +155,18 @@ namespace MomentoSdk
         {
             SetResponse response = this.SendSet(key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="ttlSeconds"></param>
+        /// <returns></returns>
+        public CacheSetResponse Set(String key, String value)
+        {
+            return this.Set(key, value, defaultTtlSeconds);
         }
 
         /// <summary>
