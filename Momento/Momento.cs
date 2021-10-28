@@ -23,7 +23,7 @@ namespace MomentoSdk
         public Momento(string authToken)
         {
             Claims claims = JwtUtils.decodeJwt(authToken);
-            GrpcChannel channel = GrpcChannel.ForAddress("https://" + claims.controlEndpoint + ":443", new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
+            using GrpcChannel channel = GrpcChannel.ForAddress("https://" + claims.controlEndpoint + ":443", new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
             Header[] headers = { new Header(name: "Authorization", value: authToken) };
             CallInvoker invoker = channel.Intercept(new HeaderInterceptor(headers));
             this.client = new ScsControlClient(invoker);
