@@ -2,27 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+    <PackOnBuild>true</PackOnBuild>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Momento" />
-    <None Remove="Google.Protobuf" />
-    <None Remove="Grpc.Net.Client" />
-    <None Remove="Grpc.Core" />
-    <None Remove="JWT" />
-    <None Remove="Exceptions\" />
-    <None Remove="Responses\" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.19.0" />
     <PackageReference Include="Grpc.Net.Client" Version="2.40.0" />
     <PackageReference Include="Grpc.Core" Version="2.41.1" />
     <PackageReference Include="Momento" Version="0.4.3" />
     <PackageReference Include="JWT" Version="8.4.2" />
-    <PackageReference Include="Teronis.MSBuild.Packaging.ProjectBuildInPackage" Version="0.1.7">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Exceptions\" />
