@@ -11,15 +11,18 @@ using MomentoSdk.Exceptions;
 
 namespace MomentoSdk
 {
-    public class MomentoCache
+    public class MomentoCache : IDisposable
     {
         private readonly ScsClient client;
         private readonly uint defaultTtlSeconds;
+        private readonly GrpcChannel channel;
+        private bool disposedValue;
+
         protected MomentoCache(string authToken, string cacheName, string endpoint, uint defaultTtlSeconds)
         {
-            using GrpcChannel channel = GrpcChannel.ForAddress(endpoint, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
+            this.channel = GrpcChannel.ForAddress(endpoint, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
             Header[] headers = { new Header(name: "Authorization", value: authToken), new Header(name: "cache", value: cacheName) };
-            CallInvoker invoker = channel.Intercept(new HeaderInterceptor(headers));
+            CallInvoker invoker = this.channel.Intercept(new HeaderInterceptor(headers));
             this.client = new ScsClient(invoker);
             this.defaultTtlSeconds = defaultTtlSeconds;
         }
@@ -225,6 +228,28 @@ namespace MomentoSdk
         {
             DateTime now = DateTime.Now;
             return ((DateTimeOffset)now).ToUnixTimeSeconds();
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    this.channel.Dispose();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

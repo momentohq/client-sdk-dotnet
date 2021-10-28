@@ -10,11 +10,13 @@ using MomentoSdk.Exceptions;
 
 namespace MomentoSdk
 {
-    public class Momento
+    public class Momento : IDisposable
     {
         private readonly string cacheEndpoint;
         private readonly string authToken;
         private readonly ScsControlClient client;
+        private readonly GrpcChannel channel;
+        private bool disposedValue;
 
         /// <summary>
         /// 
@@ -23,9 +25,9 @@ namespace MomentoSdk
         public Momento(string authToken)
         {
             Claims claims = JwtUtils.decodeJwt(authToken);
-            using GrpcChannel channel = GrpcChannel.ForAddress("https://" + claims.controlEndpoint + ":443", new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
+            this.channel = GrpcChannel.ForAddress("https://" + claims.controlEndpoint + ":443", new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
             Header[] headers = { new Header(name: "Authorization", value: authToken) };
-            CallInvoker invoker = channel.Intercept(new HeaderInterceptor(headers));
+            CallInvoker invoker = this.channel.Intercept(new HeaderInterceptor(headers));
             this.client = new ScsControlClient(invoker);
             this.authToken = authToken;
             this.cacheEndpoint = "https://" + claims.cacheEndpoint + ":443";
@@ -117,5 +119,26 @@ namespace MomentoSdk
             return true;
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    this.channel.Dispose();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }
