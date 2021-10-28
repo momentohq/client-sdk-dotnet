@@ -19,6 +19,7 @@
     </PackageReference>
     <PackageReference Include="Momento" Version="0.4.3" />
     <PackageReference Include="Google.Protobuf" Version="3.19.0" />
+    <PackageReference Include="JWT" Version="8.4.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,6 +29,7 @@
     <None Remove="Responses\" />
     <None Remove="Momento" />
     <None Remove="Google.Protobuf" />
+    <None Remove="JWT" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Responses\" />
