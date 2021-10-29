@@ -1,11 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
-    <PackOnBuild>true</PackOnBuild>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Momento" />
+    <None Remove="Google.Protobuf" />
+    <None Remove="Grpc.Net.Client" />
+    <None Remove="Grpc.Core" />
+    <None Remove="JWT" />
+    <None Remove="Exceptions\" />
+    <None Remove="Responses\" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.19.0" />
     <PackageReference Include="Grpc.Net.Client" Version="2.40.0" />
