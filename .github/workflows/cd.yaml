@@ -65,7 +65,7 @@ jobs:
             VERSION="${{ steps.semrel.outputs.version }}"
             echo "version: ${VERSION}"
             dotnet build --configuration Release
-            nuget pack -Version ${VERSION} -Properties Configuration=Release
+            dotnet pack -c Release -p:Version=${VERSION}
             nuget push MomentoSdk.${VERSION}.nupkg -Source Artifactory -Verbosity detailed
           popd
         shell: bash
