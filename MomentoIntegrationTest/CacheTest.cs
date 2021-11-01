@@ -59,11 +59,7 @@ namespace MomentoIntegrationTest
             Momento momento = new Momento(authKey);
             MomentoCache cache = momento.CreateOrGetCache(cacheName, defaultTtlSeconds);
             CacheGetResponse result = cache.Get(Guid.NewGuid().ToString());
-<<<<<<< Updated upstream
-            Assert.Equal(MomentoCacheResult.Miss, result.result);
-=======
             Assert.Equal(MomentoCacheResult.Miss, result.Result);
->>>>>>> Stashed changes
             Assert.Null(result.String());
             Assert.Null(result.Bytes());
         }
