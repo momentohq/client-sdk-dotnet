@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace MomentoSdk
 {
-    public class JwtUtils
+   public class JwtUtils
     {
         /// <summary>
         /// extracts the controlEndpoint and cacheEndpoint
