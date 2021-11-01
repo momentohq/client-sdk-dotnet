@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace MomentoSdk
 {
-   public class JwtUtils
+   class JwtUtils
     {
         /// <summary>
         /// extracts the controlEndpoint and cacheEndpoint
@@ -14,7 +14,7 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="jwt"></param>
         /// <returns></returns>
-        protected internal static Claims DecodeJwt(string jwt)
+        public static Claims DecodeJwt(string jwt)
         {
             IJsonSerializer serializer = new JsonNetSerializer();
 
