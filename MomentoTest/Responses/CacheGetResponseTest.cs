@@ -15,14 +15,8 @@ namespace MomentoTest.Responses
             ByteString body = ByteString.CopyFromUtf8(cacheBody);
             GetResponse serverResponseHit = new GetResponse() { CacheBody = body, Result = ECacheResult.Hit };
             CacheGetResponse responseHit = new CacheGetResponse(serverResponseHit);
-<<<<<<< Updated upstream
-            Assert.Equal(MomentoCacheResult.Hit, responseHit.result);
-            Assert.Equal(cacheBody, responseHit.String());
-=======
             Assert.Equal(MomentoCacheResult.Hit, responseHit.Result);
             Assert.Equal(cacheBody, responseHit.String());
-
->>>>>>> Stashed changes
 
             GetResponse serverResponseMiss = new GetResponse() { Result = ECacheResult.Miss };
             CacheGetResponse responseMiss = new CacheGetResponse(serverResponseMiss);
