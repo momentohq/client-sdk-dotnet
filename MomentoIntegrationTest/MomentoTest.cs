@@ -7,7 +7,7 @@ namespace MomentoIntegrationTest
     public class MomentoTest
     {
         private String authKey = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN");
-        private String cacheName = Environment.GetEnvironmentVariable("TEST_CACHE_NAME");
+
         [Fact]
         public void DeleteCacheThatDoesntExist()
         {
