@@ -17,7 +17,7 @@ namespace MomentoIntegrationTest
             String cacheValue = "some cache value";
             uint defaultTtlSeconds = 10;
             Momento momento = new Momento(authKey);
-            MomentoCache cache = momento.CreateOrGetCache(cacheName, defaultTtlSeconds);
+            MomentoCache cache = momento.GetOrCreateCache(cacheName, defaultTtlSeconds);
             cache.Set(cacheKey, cacheValue, defaultTtlSeconds);
             CacheGetResponse result = cache.Get(cacheKey);
             String stringResult = result.String();
@@ -31,7 +31,7 @@ namespace MomentoIntegrationTest
             String cacheValue = "some cache value";
             uint defaultTtlSeconds = 10;
             Momento momento = new Momento(authKey);
-            MomentoCache cache = momento.CreateOrGetCache(cacheName, defaultTtlSeconds);
+            MomentoCache cache = momento.GetOrCreateCache(cacheName, defaultTtlSeconds);
             cache.Set(cacheKey, cacheValue, 1);
             await Task.Delay(1100);
             CacheGetResponse result = cache.Get(cacheKey);
@@ -45,7 +45,7 @@ namespace MomentoIntegrationTest
             String cacheValue = "async cache value";
             uint defaultTtlSeconds = 10;
             Momento momento = new Momento(authKey);
-            MomentoCache cache = momento.CreateOrGetCache(cacheName, defaultTtlSeconds);
+            MomentoCache cache = momento.GetOrCreateCache(cacheName, defaultTtlSeconds);
             await cache.SetAsync(cacheKey, cacheValue, defaultTtlSeconds);
             CacheGetResponse result = await cache.GetAsync(cacheKey);
             Assert.Equal(MomentoCacheResult.Hit, result.Result);
@@ -57,7 +57,7 @@ namespace MomentoIntegrationTest
         {
             uint defaultTtlSeconds = 10;
             Momento momento = new Momento(authKey);
-            MomentoCache cache = momento.CreateOrGetCache(cacheName, defaultTtlSeconds);
+            MomentoCache cache = momento.GetOrCreateCache(cacheName, defaultTtlSeconds);
             CacheGetResponse result = cache.Get(Guid.NewGuid().ToString());
             Assert.Equal(MomentoCacheResult.Miss, result.Result);
             Assert.Null(result.String());
