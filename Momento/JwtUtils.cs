@@ -31,7 +31,7 @@ namespace MomentoSdk
         }
     }
 
-    public class Claims
+    class Claims
     {
         [JsonProperty(PropertyName = "cp", Required = Required.Always)]
         public string ControlEndpoint { get; private set; }
