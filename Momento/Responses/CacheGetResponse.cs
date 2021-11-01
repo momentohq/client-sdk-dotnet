@@ -6,13 +6,13 @@ namespace MomentoSdk.Responses
 {
     public class CacheGetResponse : BaseCacheResponse
     {
-        public MomentoCacheResult result { get; private set; }
+        public MomentoCacheResult Result { get; private set; }
         private readonly ByteString body;
 
         public CacheGetResponse(GetResponse response)
         {
             body = response.CacheBody;
-            result = this.ResultMapper(response.Result);
+            Result = this.ResultMapper(response.Result);
         }
 
         public String String()
@@ -22,7 +22,7 @@ namespace MomentoSdk.Responses
 
         public String String(Encoding encoding)
         {
-            if (result == MomentoCacheResult.Hit)
+            if (Result == MomentoCacheResult.Hit)
             {
                 return body.ToString(encoding);
             }
@@ -31,7 +31,7 @@ namespace MomentoSdk.Responses
 
         public byte[] Bytes()
         {
-            if (result == MomentoCacheResult.Hit)
+            if (Result == MomentoCacheResult.Hit)
             {
                 return this.body.ToByteArray();
             }

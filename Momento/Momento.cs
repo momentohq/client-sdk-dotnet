@@ -1,7 +1,5 @@
 ﻿using System;
 using ControlClient;
-using CacheClient;
-using static CacheClient.Scs; 
 using static ControlClient.ScsControl;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
@@ -24,13 +22,18 @@ namespace MomentoSdk
         /// <param name="authToken">Momento jwt</param>
         public Momento(string authToken)
         {
+<<<<<<< Updated upstream
             Claims claims = JwtUtils.decodeJwt(authToken);
             this.channel = GrpcChannel.ForAddress("https://" + claims.controlEndpoint + ":443", new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
+=======
+            Claims claims = JwtUtils.DecodeJwt(authToken);
+            GrpcChannel channel = GrpcChannel.ForAddress("https://" + claims.ControlEndpoint + ":443", new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
+>>>>>>> Stashed changes
             Header[] headers = { new Header(name: "Authorization", value: authToken) };
             CallInvoker invoker = this.channel.Intercept(new HeaderInterceptor(headers));
             this.client = new ScsControlClient(invoker);
             this.authToken = authToken;
-            this.cacheEndpoint = "https://" + claims.cacheEndpoint + ":443";
+            this.cacheEndpoint = "https://" + claims.CacheEndpoint + ":443";
         }
 
         /// <summary>
@@ -62,9 +65,9 @@ namespace MomentoSdk
             try
             {
                 CreateCacheRequest request = new CreateCacheRequest() { CacheName = cacheName };
-                this.client.CreateCache(request);
+                client.CreateCache(request);
             }
-            catch (Grpc.Core.RpcException e)
+            catch (RpcException e)
             {
                 if (e.StatusCode == StatusCode.AlreadyExists)
                 {
@@ -89,7 +92,7 @@ namespace MomentoSdk
         public MomentoCache GetCache(String cacheName, uint defaultTtlSeconds)
         {
             CheckValidCacheName(cacheName);
-            return MomentoCache.Init(this.authToken, cacheName, this.cacheEndpoint, defaultTtlSeconds);
+            return MomentoCache.Init(authToken, cacheName, cacheEndpoint, defaultTtlSeconds);
         }
 
         /// <summary>
@@ -102,7 +105,7 @@ namespace MomentoSdk
             DeleteCacheRequest request = new DeleteCacheRequest() { CacheName = cacheName };
             try
             {
-                this.client.DeleteCache(request);
+                client.DeleteCache(request);
                 return new Responses.DeleteCacheResponse();
             } catch(Exception e)
             {

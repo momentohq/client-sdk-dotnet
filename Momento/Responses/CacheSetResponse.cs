@@ -4,11 +4,11 @@ namespace MomentoSdk.Responses
 {
     public class CacheSetResponse : BaseCacheResponse
     {
-        public MomentoCacheResult result { get; private set; }
+        public MomentoCacheResult Result { get; private set; }
 
         public CacheSetResponse(SetResponse response)
         {
-            result = this.ResultMapper(response.Result);
+            Result = this.ResultMapper(response.Result);
         }
     }
 }
