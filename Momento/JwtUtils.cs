@@ -6,20 +6,20 @@ using Newtonsoft.Json;
 
 namespace MomentoSdk
 {
-    public class JwtUtils
-    {
+   class JwtUtils
+   {
         /// <summary>
         /// extracts the controlEndpoint and cacheEndpoint
         /// from the jwt
         /// </summary>
         /// <param name="jwt"></param>
         /// <returns></returns>
-        public static Claims decodeJwt(string jwt)
+        public static Claims DecodeJwt(string jwt)
         {
             IJsonSerializer serializer = new JsonNetSerializer();
 
             IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
-            JwtDecoder decoder = new JWT.JwtDecoder(serializer, urlEncoder);
+            JwtDecoder decoder = new JwtDecoder(serializer, urlEncoder);
             try
             {
                 var decodedJwt = decoder.Decode(jwt);
@@ -31,17 +31,17 @@ namespace MomentoSdk
         }
     }
 
-    public class Claims
+    class Claims
     {
         [JsonProperty(PropertyName = "cp", Required = Required.Always)]
-        public string controlEndpoint { get; set; }
+        public string ControlEndpoint { get; private set; }
         [JsonProperty(PropertyName = "c", Required = Required.Always)]
-        public string cacheEndpoint { get; set; }
+        public string CacheEndpoint { get; private set; }
 
         public Claims(string cacheEndpoint, string controlEndpoint)
         {
-            this.cacheEndpoint = cacheEndpoint;
-            this.controlEndpoint = controlEndpoint;
+            this.CacheEndpoint = cacheEndpoint;
+            this.ControlEndpoint = controlEndpoint;
         }
     }
 }

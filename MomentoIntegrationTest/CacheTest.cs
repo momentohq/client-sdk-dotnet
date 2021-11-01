@@ -35,7 +35,7 @@ namespace MomentoIntegrationTest
             cache.Set(cacheKey, cacheValue, 1);
             await Task.Delay(1100);
             CacheGetResponse result = cache.Get(cacheKey);
-            Assert.Equal(MomentoCacheResult.Miss, result.result);
+            Assert.Equal(MomentoCacheResult.Miss, result.Result);
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace MomentoIntegrationTest
             MomentoCache cache = momento.CreateOrGetCache(cacheName, defaultTtlSeconds);
             await cache.SetAsync(cacheKey, cacheValue, defaultTtlSeconds);
             CacheGetResponse result = await cache.GetAsync(cacheKey);
-            Assert.Equal(MomentoCacheResult.Hit, result.result);
+            Assert.Equal(MomentoCacheResult.Hit, result.Result);
             Assert.Equal(cacheValue, result.String());
         }
 
@@ -59,7 +59,7 @@ namespace MomentoIntegrationTest
             Momento momento = new Momento(authKey);
             MomentoCache cache = momento.CreateOrGetCache(cacheName, defaultTtlSeconds);
             CacheGetResponse result = cache.Get(Guid.NewGuid().ToString());
-            Assert.Equal(MomentoCacheResult.Miss, result.result);
+            Assert.Equal(MomentoCacheResult.Miss, result.Result);
             Assert.Null(result.String());
             Assert.Null(result.Bytes());
         }
