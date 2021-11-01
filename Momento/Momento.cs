@@ -37,7 +37,7 @@ namespace MomentoSdk
         /// <param name="cacheName"></param>
         /// <param name="defaultTtlSeconds"></param>
         /// <returns>An instance of MomentoCache to perform sets and against against</returns>
-        public MomentoCache CreateOrGetCache(String cacheName, uint defaultTtlSeconds)
+        public MomentoCache GetOrCreateCache(String cacheName, uint defaultTtlSeconds)
         {
             try
             {
