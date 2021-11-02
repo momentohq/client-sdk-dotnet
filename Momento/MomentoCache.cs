@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using CacheClient;
 using static CacheClient.Scs;
 using Grpc.Core;
@@ -241,9 +242,10 @@ namespace MomentoSdk
             return ByteString.CopyFromUtf8(s);
         }
 
-        private async void WaitUntilReady()
+        // Temporary measure. Till the metadata stream is up and running.
+        private void WaitUntilReady()
         {
-            ByteString cacheKey = ByteString.CopyFromUtf8("matt");
+            ByteString cacheKey = ByteString.CopyFromUtf8(Guid.NewGuid().ToString());
             GetRequest request = new GetRequest() { CacheKey = cacheKey };
             Exception lastError = new Exception();
             int backoffMillis = 50;
@@ -261,12 +263,11 @@ namespace MomentoSdk
                 catch (Exception e)
                 {
                     lastError = e;
-                    await Task.Delay(backoffMillis);
+                    Thread.Sleep(backoffMillis);
                 }
                 
             }
-
-            throw lastError;
+            throw CacheExceptionMapper.Convert(lastError);
         }
 
         private long GetUnixTime()
