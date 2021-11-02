@@ -245,7 +245,7 @@ namespace MomentoSdk
         // Temporary measure. Till the metadata stream is up and running.
         private void WaitUntilReady()
         {
-            ByteString cacheKey = ByteString.CopyFromUtf8("1");
+            ByteString cacheKey = ByteString.CopyFromUtf8(Guid.NewGuid().ToString());
             GetRequest request = new GetRequest() { CacheKey = cacheKey };
             Exception lastError = new Exception();
             int backoffMillis = 50;
