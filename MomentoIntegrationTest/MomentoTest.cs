@@ -27,7 +27,6 @@ namespace MomentoIntegrationTest
         {
             Momento momento = new(authKey);
             Assert.Throws<CacheNotFoundException>(() => momento.GetCache(Guid.NewGuid().ToString(), 60));
-           
         }
     }
 }
