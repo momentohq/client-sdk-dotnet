@@ -38,9 +38,13 @@ namespace MomentoSdk
         /// <returns>returns a cache ready for gets and sets</returns>
         internal static MomentoCache Init(string authToken, string cacheName, string endpoint, uint defaultTtlSeconds)
         {
-            MomentoCache cache = new MomentoCache(authToken, cacheName, endpoint, defaultTtlSeconds);
-            cache.WaitUntilReady();
-            return cache;
+            return new MomentoCache(authToken, cacheName, endpoint, defaultTtlSeconds);
+        }
+
+        internal MomentoCache Connect()
+        {
+            SendGet(ByteString.CopyFromUtf8(Guid.NewGuid().ToString()));
+            return this;
         }
 
         /// <summary>
@@ -240,40 +244,6 @@ namespace MomentoSdk
         private ByteString Convert(String s)
         {
             return ByteString.CopyFromUtf8(s);
-        }
-
-        // Temporary measure. Till the metadata stream is up and running.
-        private void WaitUntilReady()
-        {
-            ByteString cacheKey = ByteString.CopyFromUtf8(Guid.NewGuid().ToString());
-            GetRequest request = new GetRequest() { CacheKey = cacheKey };
-            Exception lastError = new Exception();
-            int backoffMillis = 50;
-            int maxWaitDuration = 5000;
-
-            long start = GetUnixTime();
-
-            while(GetUnixTime() - start < maxWaitDuration)
-            {
-                try
-                {
-                    this.client.Get(request);
-                    return;
-                }
-                catch (Exception e)
-                {
-                    lastError = e;
-                    Thread.Sleep(backoffMillis);
-                }
-                
-            }
-            throw CacheExceptionMapper.Convert(lastError);
-        }
-
-        private long GetUnixTime()
-        {
-            DateTime now = DateTime.Now;
-            return ((DateTimeOffset)now).ToUnixTimeSeconds();
         }
 
         protected virtual void Dispose(bool disposing)
