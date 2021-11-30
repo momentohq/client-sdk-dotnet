@@ -39,15 +39,18 @@ namespace MomentoSdk
         /// <returns>An instance of MomentoCache to perform sets and against against</returns>
         public MomentoCache GetOrCreateCache(String cacheName, uint defaultTtlSeconds)
         {
+            MomentoCache cacheClient = InitializeCacheClient(cacheName, defaultTtlSeconds);
             try
             {
-                CreateCache(cacheName);
-                // swallow this error since the cache is already created
-            } catch(CacheAlreadyExistsException)
+                return cacheClient.Connect();
+            } catch (CacheNotFoundException)
             {
+                // No action needed, just means that the cache hasn't been created yet.
             }
-            return GetCache(cacheName, defaultTtlSeconds);
 
+            CreateCache(cacheName);
+
+            return cacheClient.Connect();
         }
 
         /// <summary>
@@ -85,6 +88,12 @@ namespace MomentoSdk
         /// <param name="defaultTtlSeconds"></param>
         /// <returns>An instance of MomentoCache to perform sets and against against</returns>
         public MomentoCache GetCache(String cacheName, uint defaultTtlSeconds)
+        {
+            MomentoCache cacheClient = InitializeCacheClient(cacheName, defaultTtlSeconds);
+            return cacheClient.Connect();
+        }
+
+        private MomentoCache InitializeCacheClient(String cacheName, uint defaultTtlSeconds)
         {
             CheckValidCacheName(cacheName);
             return MomentoCache.Init(authToken, cacheName, cacheEndpoint, defaultTtlSeconds);
