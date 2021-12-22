@@ -125,15 +125,15 @@ namespace MomentoSdk
         public Responses.ListCachesResponse ListCaches(string nextPageToken = null)
         {
             ListCachesRequest request = new ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
-            //try
-            //{
+            try
+            {
                 ControlClient.ListCachesResponse result = client.ListCaches(request);
                 return new Responses.ListCachesResponse(result);
-            //}
-            //catch (Exception e)
-            //{
-            //    throw CacheExceptionMapper.Convert(e);
-            //}
+            }
+            catch (Exception e)
+            {
+                throw CacheExceptionMapper.Convert(e);
+            }
 }
 
         private Boolean CheckValidCacheName(String cacheName)
