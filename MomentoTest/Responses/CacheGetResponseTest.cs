@@ -22,7 +22,7 @@ namespace MomentoTest.Responses
             CacheGetResponse responseMiss = new CacheGetResponse(serverResponseMiss);
             Assert.Equal(MomentoCacheResult.Miss, responseMiss.Result);
 
-            GetResponse serverResponseBadRequest = new GetResponse() { Result = ECacheResult.BadRequest };
+            GetResponse serverResponseBadRequest = new GetResponse() { Result = ECacheResult.Invalid };
             CacheGetResponse responseBadRequest = new CacheGetResponse(serverResponseBadRequest);
             Assert.Equal(MomentoCacheResult.Unknown, responseBadRequest.Result);
         }
