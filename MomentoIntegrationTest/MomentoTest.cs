@@ -33,7 +33,7 @@ namespace MomentoIntegrationTest
         public void HappyPathListCache()
         {
             Momento momento = new(authKey);
-            MomentoSdk.Responses.ListCacheResponse result = momento.ListCache();
+            MomentoSdk.Responses.ListCachesResponse result = momento.ListCaches();
             Assert.Contains(Environment.GetEnvironmentVariable("TEST_CACHE_NAME"), result.Caches());
         }
     }
