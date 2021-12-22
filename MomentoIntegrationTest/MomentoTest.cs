@@ -2,6 +2,8 @@
 using Xunit;
 using MomentoSdk;
 using MomentoSdk.Exceptions;
+using MomentoSdk.Responses;
+using System.Collections.Generic;
 namespace MomentoIntegrationTest
 {
     public class MomentoTest
@@ -33,8 +35,16 @@ namespace MomentoIntegrationTest
         public void HappyPathListCache()
         {
             Momento momento = new(authKey);
-            MomentoSdk.Responses.ListCachesResponse result = momento.ListCaches();
-            Assert.Contains(Environment.GetEnvironmentVariable("TEST_CACHE_NAME"), result.Caches());
+            ListCachesResponse result = momento.ListCaches();
+            List<CacheInfo> caches = result.Caches();
+            List<string> names = new List<string>(new string[caches.Count]);
+            int counter = 0;
+            foreach (CacheInfo c in caches)
+            {
+                names[counter] = c.Name();
+                counter++;
+            }
+            Assert.Contains(Environment.GetEnvironmentVariable("TEST_CACHE_NAME"), names);
         }
     }
 }
