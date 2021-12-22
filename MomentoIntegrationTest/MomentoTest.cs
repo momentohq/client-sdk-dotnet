@@ -35,8 +35,8 @@ namespace MomentoIntegrationTest
             string cacheName = "listCacheName";
             Momento momento = new Momento(authKey);
             momento.CreateCache(cacheName);
-            string[] returnedCaches = momento.ListCache().Caches();
-            Assert.Contains(cacheName, returnedCaches);
+            MomentoSdk.Responses.ListCacheResponse result = momento.ListCache();
+            Assert.Contains(cacheName, result.Caches());
             momento.DeleteCache(cacheName);
         }
     }
