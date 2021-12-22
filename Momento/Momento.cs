@@ -122,13 +122,13 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="nextPageToken"></param>
         /// <returns></returns>
-        public Responses.ListCacheResponse ListCache(String nextPageToken = "")
+        public Responses.ListCachesResponse ListCaches(String nextPageToken = "")
         {
             ListCachesRequest request = new ListCachesRequest() { NextToken = nextPageToken };
             try
             {
                 ControlClient.ListCachesResponse result = client.ListCaches(request);
-                return new Responses.ListCacheResponse(result);
+                return new Responses.ListCachesResponse(result);
             }
             catch (Exception e)
             {

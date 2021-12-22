@@ -1,13 +1,12 @@
 ﻿using System;
 namespace MomentoSdk.Responses
 {
-    public class ListCacheResponse
+    public class ListCachesResponse
     {
-        private readonly ControlClient.ListCachesResponse result;
         private readonly string[] caches;
         private readonly string nextPageToken;
 
-        public ListCacheResponse(ControlClient.ListCachesResponse result)
+        public ListCachesResponse(ControlClient.ListCachesResponse result)
         {
             this.nextPageToken = result.NextToken;
             this.caches = new string[0];
