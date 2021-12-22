@@ -9,12 +9,10 @@ namespace MomentoSdk.Responses
         public ListCachesResponse(ControlClient.ListCachesResponse result)
         {
             this.nextPageToken = result.NextToken;
-            this.caches = new List<CacheInfo>(new CacheInfo[result.Cache.Count]);
-            int counter = 0;
+            this.caches = new List<CacheInfo>();
             foreach (ControlClient.Cache c in result.Cache)
             {
-                this.caches[counter] = new CacheInfo(c.CacheName);
-                counter++;
+                this.caches.Add(new CacheInfo(c.CacheName));
             }
         }
 

@@ -35,6 +35,8 @@ namespace MomentoIntegrationTest
         public void HappyPathListCache()
         {
             Momento momento = new(authKey);
+            string cacheName = Guid.NewGuid().ToString();
+            momento.CreateCache(cacheName);
             ListCachesResponse result = momento.ListCaches();
             List<CacheInfo> caches = result.Caches();
             List<string> names = new List<string>(new string[caches.Count]);
@@ -44,7 +46,8 @@ namespace MomentoIntegrationTest
                 names[counter] = c.Name();
                 counter++;
             }
-            Assert.Contains(Environment.GetEnvironmentVariable("TEST_CACHE_NAME"), names);
+            Assert.Contains(cacheName, names);
+            momento.DeleteCache(cacheName);
         }
     }
 }
