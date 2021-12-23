@@ -39,14 +39,7 @@ namespace MomentoIntegrationTest
             momento.CreateCache(cacheName);
             ListCachesResponse result = momento.ListCaches();
             List<CacheInfo> caches = result.Caches();
-            List<string> names = new List<string>(new string[caches.Count]);
-            int counter = 0;
-            foreach (CacheInfo c in caches)
-            {
-                names[counter] = c.Name();
-                counter++;
-            }
-            Assert.Contains(cacheName, names);
+            Assert.True(caches.Exists(item => item.Name().Equals(cacheName)));
             momento.DeleteCache(cacheName);
         }
     }

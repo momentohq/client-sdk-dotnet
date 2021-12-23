@@ -8,7 +8,7 @@ namespace MomentoSdk.Responses
 
         public ListCachesResponse(ControlClient.ListCachesResponse result)
         {
-            this.nextPageToken = result.NextToken;
+            this.nextPageToken = result.NextToken == "" ? null : result.NextToken;
             this.caches = new List<CacheInfo>();
             foreach (ControlClient.Cache c in result.Cache)
             {
