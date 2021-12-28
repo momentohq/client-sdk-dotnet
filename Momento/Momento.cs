@@ -117,6 +117,25 @@ namespace MomentoSdk
             }
         }
 
+        /// <summary>
+        /// List all caches
+        /// </summary>
+        /// <param name="nextPageToken"></param>
+        /// <returns></returns>
+        public Responses.ListCachesResponse ListCaches(string nextPageToken = null)
+        {
+            ListCachesRequest request = new ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
+            try
+            {
+                ControlClient.ListCachesResponse result = client.ListCaches(request);
+                return new Responses.ListCachesResponse(result);
+            }
+            catch (Exception e)
+            {
+                throw CacheExceptionMapper.Convert(e);
+            }
+}
+
         private Boolean CheckValidCacheName(String cacheName)
         {
             if (String.IsNullOrWhiteSpace(cacheName))
