@@ -22,7 +22,7 @@ namespace MomentoSdk.Responses
 
         public String String(Encoding encoding)
         {
-            if (Result == MomentoCacheResult.Hit)
+            if (Result == MomentoCacheResult.HIT)
             {
                 return body.ToString(encoding);
             }
@@ -31,7 +31,7 @@ namespace MomentoSdk.Responses
 
         public byte[] Bytes()
         {
-            if (Result == MomentoCacheResult.Hit)
+            if (Result == MomentoCacheResult.HIT)
             {
                 return this.body.ToByteArray();
             }

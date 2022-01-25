@@ -12,10 +12,9 @@ namespace MomentoSdk.Responses
         {
             switch (result)
             {
-                case ECacheResult.Ok: return MomentoCacheResult.Ok;
-                case ECacheResult.Hit: return MomentoCacheResult.Hit;
-                case ECacheResult.Miss: return MomentoCacheResult.Miss;
-                default: return MomentoCacheResult.Unknown;
+                case ECacheResult.Hit: return MomentoCacheResult.HIT;
+                case ECacheResult.Miss: return MomentoCacheResult.MISS;
+                default: return MomentoCacheResult.UNKNOWN;
             }
         }
     }
