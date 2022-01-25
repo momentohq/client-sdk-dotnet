@@ -15,16 +15,16 @@ namespace MomentoTest.Responses
             ByteString body = ByteString.CopyFromUtf8(cacheBody);
             GetResponse serverResponseHit = new GetResponse() { CacheBody = body, Result = ECacheResult.Hit };
             CacheGetResponse responseHit = new CacheGetResponse(serverResponseHit);
-            Assert.Equal(MomentoCacheResult.Hit, responseHit.Result);
+            Assert.Equal(MomentoCacheResult.HIT, responseHit.Result);
             Assert.Equal(cacheBody, responseHit.String());
 
             GetResponse serverResponseMiss = new GetResponse() { Result = ECacheResult.Miss };
             CacheGetResponse responseMiss = new CacheGetResponse(serverResponseMiss);
-            Assert.Equal(MomentoCacheResult.Miss, responseMiss.Result);
+            Assert.Equal(MomentoCacheResult.MISS, responseMiss.Result);
 
             GetResponse serverResponseBadRequest = new GetResponse() { Result = ECacheResult.Invalid };
             CacheGetResponse responseBadRequest = new CacheGetResponse(serverResponseBadRequest);
-            Assert.Equal(MomentoCacheResult.Unknown, responseBadRequest.Result);
+            Assert.Equal(MomentoCacheResult.UNKNOWN, responseBadRequest.Result);
         }
     }
 }

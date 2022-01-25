@@ -4,9 +4,8 @@ namespace MomentoSdk.Responses
 {
     public enum MomentoCacheResult
     {
-        Ok,
-        Hit,
-        Miss,
-        Unknown
+        HIT,
+        MISS,
+        UNKNOWN
     }
 }
