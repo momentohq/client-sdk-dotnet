@@ -5,12 +5,12 @@
         private readonly string name;
         public CacheInfo(string cachename)
         {
-            this.name = cachename;
+            name = cachename;
         }
 
         public string Name()
         {
-            return this.name;
+            return name;
         }
     }
 }

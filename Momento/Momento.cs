@@ -37,13 +37,13 @@ namespace MomentoSdk
         /// <param name="cacheName"></param>
         /// <param name="defaultTtlSeconds"></param>
         /// <returns>An instance of MomentoCache to perform sets and against against</returns>
-        public MomentoCache GetOrCreateCache(String cacheName, uint defaultTtlSeconds)
+        public MomentoCache GetOrCreateCache(string cacheName, uint defaultTtlSeconds)
         {
             MomentoCache cacheClient = InitializeCacheClient(cacheName, defaultTtlSeconds);
             try
             {
                 return cacheClient.Connect();
-            } catch (CacheNotFoundException)
+            } catch (NotFoundException)
             {
                 // No action needed, just means that the cache hasn't been created yet.
             }
@@ -57,7 +57,7 @@ namespace MomentoSdk
         /// Creates a cache with the given name
         /// </summary>
         /// <param name="cacheName">Name of the cache to create</param>
-        public Responses.CreateCacheResponse CreateCache (String cacheName)
+        public Responses.CreateCacheResponse CreateCache(string cacheName)
         {
             CheckValidCacheName(cacheName);
             try
@@ -65,15 +65,7 @@ namespace MomentoSdk
                 CreateCacheRequest request = new CreateCacheRequest() { CacheName = cacheName };
                 client.CreateCache(request);
             }
-            catch (RpcException e)
-            {
-                if (e.StatusCode == StatusCode.AlreadyExists)
-                {
-                    throw new CacheAlreadyExistsException("cache with name " + cacheName + " already exists");
-                }
-                throw CacheExceptionMapper.Convert(e);
-            }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw CacheExceptionMapper.Convert(e);
             }
@@ -87,7 +79,7 @@ namespace MomentoSdk
         /// <param name="cacheName"></param>
         /// <param name="defaultTtlSeconds"></param>
         /// <returns>An instance of MomentoCache to perform sets and against against</returns>
-        public MomentoCache GetCache(String cacheName, uint defaultTtlSeconds)
+        public MomentoCache GetCache(string cacheName, uint defaultTtlSeconds)
         {
             MomentoCache cacheClient = InitializeCacheClient(cacheName, defaultTtlSeconds);
             return cacheClient.Connect();
@@ -136,11 +128,11 @@ namespace MomentoSdk
             }
 }
 
-        private Boolean CheckValidCacheName(String cacheName)
+        private bool CheckValidCacheName(string cacheName)
         {
-            if (String.IsNullOrWhiteSpace(cacheName))
+            if (string.IsNullOrWhiteSpace(cacheName))
             {
-                throw new InvalidCacheNameException("cache name must be nonempty");
+                throw new InvalidArgumentException("Cache name must be nonempty");
             }
             return true;
         }

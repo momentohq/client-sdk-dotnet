@@ -1,13 +1,11 @@
-﻿using System;
-namespace MomentoSdk.Exceptions
+﻿namespace MomentoSdk.Exceptions
 {
     /// <summary>
-    /// This exception is thrown when the user tries to perform any actions that
-    /// they do not have permissions for.
+    /// Insufficient permissions to execute an operation.
     /// </summary>
     public class PermissionDeniedException : MomentoServiceException
     {
-        public PermissionDeniedException(String message) : base(message)
+        public PermissionDeniedException(string message) : base(message)
         {
         }
     }

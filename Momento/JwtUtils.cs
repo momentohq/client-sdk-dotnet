@@ -26,7 +26,7 @@ namespace MomentoSdk
                 return JsonConvert.DeserializeObject<Claims>(decodedJwt);
             } catch(Exception)
             {
-                throw new InvalidJwtException("invalid jwt passed");
+                throw new InvalidArgumentException("invalid jwt passed");
             }
         }
     }

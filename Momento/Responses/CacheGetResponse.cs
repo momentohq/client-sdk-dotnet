@@ -1,28 +1,29 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using CacheClient;
 using Google.Protobuf;
+using MomentoSdk.Exceptions;
+
 namespace MomentoSdk.Responses
 {
-    public class CacheGetResponse : BaseCacheResponse
+    public class CacheGetResponse
     {
-        public MomentoCacheResult Result { get; private set; }
+        public CacheGetStatus Status { get; private set; }
         private readonly ByteString body;
 
         public CacheGetResponse(GetResponse response)
         {
             body = response.CacheBody;
-            Result = this.ResultMapper(response.Result);
+            Status = From(response.Result);
         }
 
-        public String String()
+        public string String()
         {
             return String(Encoding.UTF8);
         }
 
-        public String String(Encoding encoding)
+        public string String(Encoding encoding)
         {
-            if (Result == MomentoCacheResult.HIT)
+            if (Status == CacheGetStatus.HIT)
             {
                 return body.ToString(encoding);
             }
@@ -31,11 +32,23 @@ namespace MomentoSdk.Responses
 
         public byte[] Bytes()
         {
-            if (Result == MomentoCacheResult.HIT)
+            if (Status == CacheGetStatus.HIT)
             {
-                return this.body.ToByteArray();
+                return body.ToByteArray();
             }
             return null;
         }
-    }
+
+
+        private static CacheGetStatus From(ECacheResult result)
+        {
+            switch (result)
+            {
+                case ECacheResult.Hit: return CacheGetStatus.HIT;
+                case ECacheResult.Miss: return CacheGetStatus.MISS;
+                default: throw new InternalServerException("Invalid Cache Status.");
+            }
+        }
+
+}
 }

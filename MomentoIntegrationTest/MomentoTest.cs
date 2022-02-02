@@ -14,21 +14,21 @@ namespace MomentoIntegrationTest
         public void DeleteCacheThatDoesntExist()
         {
             Momento momento = new(authKey);
-            Assert.Throws<CacheNotFoundException>(() => momento.DeleteCache("non existant cache"));
+            Assert.Throws<NotFoundException>(() => momento.DeleteCache("non existant cache"));
         }
 
 
         [Fact]
         public void InvalidJwtException()
         {
-            Assert.Throws<InvalidJwtException>(() => new Momento("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs"));
+            Assert.Throws<InvalidArgumentException>(() => new Momento("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs"));
         }
 
         [Fact]
         public void GetThrowsNotFoundForNonExistentCache()
         {
             Momento momento = new(authKey);
-            Assert.Throws<CacheNotFoundException>(() => momento.GetCache(Guid.NewGuid().ToString(), 60));
+            Assert.Throws<NotFoundException>(() => momento.GetCache(Guid.NewGuid().ToString(), 60));
         }
 
         [Fact]

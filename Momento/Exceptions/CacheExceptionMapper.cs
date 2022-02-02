@@ -4,29 +4,54 @@ namespace MomentoSdk.Exceptions
 {
     class CacheExceptionMapper
     {
+        private const string INTERNAL_SERVER_ERROR_MESSAGE = "Unexpected exception occurred while trying to fulfill the request.";
+        private const string SDK_ERROR_MESSAGE = "SDK Failed to process the request.";
+
         public static Exception Convert(Exception e)
         {
-            if (e is SdkException)
+            if (e is SdkException exception)
             {
-                return (SdkException)e;
+                return exception;
             }
-            if(e is RpcException)
+            if (e is RpcException ex)
             {
-                RpcException ex = (RpcException)e;
-                if (ex.StatusCode == StatusCode.PermissionDenied)
+                switch(ex.StatusCode)
                 {
-                    return new PermissionDeniedException(ex.Message);
-                }
-                if (ex.StatusCode == StatusCode.NotFound)
-                {
-                    return new CacheNotFoundException(ex.Message);
-                }
-                if (ex.StatusCode == StatusCode.InvalidArgument)
-                {
-                    return new IllegalArgumentException(ex.Message);
+                    case StatusCode.InvalidArgument:
+                    case StatusCode.OutOfRange:
+                    case StatusCode.FailedPrecondition:
+                    case StatusCode.Unimplemented:
+                        return new BadRequestException(ex.Message);
+
+                    case StatusCode.PermissionDenied:
+                        return new PermissionDeniedException(ex.Message);
+
+                    case StatusCode.Unauthenticated:
+                        return new AuthenticationException(ex.Message);
+
+                    case StatusCode.ResourceExhausted:
+                        return new LimitExceededException(ex.Message);
+
+                    case StatusCode.NotFound:
+                        return new NotFoundException(ex.Message);
+
+                    case StatusCode.AlreadyExists:
+                        return new AlreadyExistsException(ex.Message);
+
+                    case StatusCode.DeadlineExceeded:
+                        return new TimeoutException(ex.Message);
+
+                    case StatusCode.Cancelled:
+                        return new CancelledException(ex.Message);
+
+                    case StatusCode.Unknown:
+                    case StatusCode.Unavailable:
+                    case StatusCode.Aborted:
+                    case StatusCode.DataLoss:
+                    default: return new InternalServerException(INTERNAL_SERVER_ERROR_MESSAGE);
                 }
             }
-            return new InternalServerException("unable to process request");
+            return new ClientSdkException(SDK_ERROR_MESSAGE, e);
         }
     }
 }
