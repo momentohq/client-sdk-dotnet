@@ -21,7 +21,7 @@ namespace MomentoIntegrationTest
         [Fact]
         public void InvalidJwtException()
         {
-            Assert.Throws<InvalidJwtException>(() => new Momento("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs"));
+            _ = Assert.Throws<InvalidArgumentException>(() => new Momento("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs"));
         }
 
         [Fact]
