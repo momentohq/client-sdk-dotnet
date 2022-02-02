@@ -1,9 +1,14 @@
 ﻿using System;
+
 namespace MomentoSdk.Exceptions
 {
-    public abstract class ClientSdkException : SdkException
+    public class ClientSdkException : SdkException
     {
-        protected ClientSdkException(String message) : base(message)
+        public ClientSdkException(string message) : base(message)
+        {
+        }
+
+        public ClientSdkException(string message, Exception e) : base(message, e)
         {
         }
     }
