@@ -15,18 +15,42 @@ namespace MomentoSdk.Exceptions
             }
             if (e is RpcException ex)
             {
-                return ex.StatusCode switch
+                switch(ex.StatusCode)
                 {
-                    StatusCode.InvalidArgument or StatusCode.OutOfRange or StatusCode.FailedPrecondition or StatusCode.Unimplemented => new BadRequestException(ex.Message),
-                    StatusCode.PermissionDenied => new PermissionDeniedException(ex.Message),
-                    StatusCode.Unauthenticated => new AuthenticationException(ex.Message),
-                    StatusCode.ResourceExhausted => new LimitExceededException(ex.Message),
-                    StatusCode.NotFound => new NotFoundException(ex.Message),
-                    StatusCode.AlreadyExists => new AlreadyExistsException(ex.Message),
-                    StatusCode.DeadlineExceeded => new TimeoutException(ex.Message),
-                    StatusCode.Cancelled => new CancelledException(ex.Message),
-                    _ => new InternalServerException(INTERNAL_SERVER_ERROR_MESSAGE),
-                };
+                    case StatusCode.InvalidArgument:
+                    case StatusCode.OutOfRange:
+                    case StatusCode.FailedPrecondition:
+                    case StatusCode.Unimplemented:
+                        return new BadRequestException(ex.Message);
+
+                    case StatusCode.PermissionDenied:
+                        return new PermissionDeniedException(ex.Message);
+
+                    case StatusCode.Unauthenticated:
+                        return new AuthenticationException(ex.Message);
+
+                    case StatusCode.ResourceExhausted:
+                        return new LimitExceededException(ex.Message);
+
+                    case StatusCode.NotFound:
+                        return new NotFoundException(ex.Message);
+
+                    case StatusCode.AlreadyExists:
+                        return new AlreadyExistsException(ex.Message);
+
+                    case StatusCode.DeadlineExceeded:
+                        return new TimeoutException(ex.Message);
+
+                    case StatusCode.Cancelled:
+                        return new CancelledException(ex.Message);
+
+                    case StatusCode.Unknown:
+                    case StatusCode.Unavailable:
+                    case StatusCode.Aborted:
+                    case StatusCode.DataLoss:
+                    default: return new InternalServerException(INTERNAL_SERVER_ERROR_MESSAGE);
+
+                }
             }
             return new ClientSdkException(SDK_ERROR_MESSAGE, e);
         }
