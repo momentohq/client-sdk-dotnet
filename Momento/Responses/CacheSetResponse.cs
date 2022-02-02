@@ -2,13 +2,12 @@
 using CacheClient;
 namespace MomentoSdk.Responses
 {
-    public class CacheSetResponse : BaseCacheResponse
+    public class CacheSetResponse
     {
-        public MomentoCacheResult Result { get; private set; }
-
         public CacheSetResponse(SetResponse response)
         {
-            Result = this.ResultMapper(response.Result);
         }
+
+        // TODO: Add values that were set.
     }
 }

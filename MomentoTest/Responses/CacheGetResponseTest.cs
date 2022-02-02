@@ -1,8 +1,8 @@
-﻿using System;
-using Xunit;
+﻿using Xunit;
 using MomentoSdk.Responses;
 using CacheClient;
 using Google.Protobuf;
+using MomentoSdk.Exceptions;
 
 namespace MomentoTest.Responses
 {
@@ -11,20 +11,20 @@ namespace MomentoTest.Responses
         [Fact]
         public void CorrectResultMapping()
         {
-            String cacheBody = "test body";
+            string cacheBody = "test body";
             ByteString body = ByteString.CopyFromUtf8(cacheBody);
             GetResponse serverResponseHit = new GetResponse() { CacheBody = body, Result = ECacheResult.Hit };
             CacheGetResponse responseHit = new CacheGetResponse(serverResponseHit);
-            Assert.Equal(MomentoCacheResult.HIT, responseHit.Result);
+            Assert.Equal(CacheGetStatus.HIT, responseHit.Status);
             Assert.Equal(cacheBody, responseHit.String());
 
             GetResponse serverResponseMiss = new GetResponse() { Result = ECacheResult.Miss };
             CacheGetResponse responseMiss = new CacheGetResponse(serverResponseMiss);
-            Assert.Equal(MomentoCacheResult.MISS, responseMiss.Result);
+            Assert.Equal(CacheGetStatus.MISS, responseMiss.Status);
 
             GetResponse serverResponseBadRequest = new GetResponse() { Result = ECacheResult.Invalid };
-            CacheGetResponse responseBadRequest = new CacheGetResponse(serverResponseBadRequest);
-            Assert.Equal(MomentoCacheResult.UNKNOWN, responseBadRequest.Result);
+            _ = Assert.Throws<InternalServerException>(() => new CacheGetResponse(serverResponseBadRequest));
+            
         }
     }
 }
