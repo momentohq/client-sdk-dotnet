@@ -45,7 +45,7 @@ namespace MomentoIntegrationTest
             string cacheKey = "some cache key";
             string cacheValue = "some cache value";
             client.Set(cacheName, cacheKey, cacheValue, 1);
-            await Task.Delay(2000);
+            await Task.Delay(3000);
             CacheGetResponse result = client.Get(cacheName, cacheKey);
             Assert.Equal(CacheGetStatus.MISS, result.Status);
         }
