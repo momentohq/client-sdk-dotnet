@@ -6,13 +6,13 @@ using ControlClient;
 
 namespace MomentoSdk
 {
-    public class ControlGrpcManager : IDisposable
+    internal class ControlGrpcManager : IDisposable
     {
         private readonly GrpcChannel channel;
         private readonly ScsControl.ScsControlClient client;
         private bool disposedValue;
 
-        public ControlGrpcManager(string authToken, string endpoint)
+        internal ControlGrpcManager(string authToken, string endpoint)
         {
             this.channel = GrpcChannel.ForAddress(endpoint, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
             Header[] headers = { new Header(name: "Authorization", value: authToken) };
@@ -20,7 +20,7 @@ namespace MomentoSdk
             this.client = new ScsControl.ScsControlClient(invoker);
         }
 
-        public ScsControl.ScsControlClient Client()
+        internal ScsControl.ScsControlClient Client()
         {
             return this.client;
         }

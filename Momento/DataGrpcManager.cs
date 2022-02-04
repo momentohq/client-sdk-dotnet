@@ -6,13 +6,13 @@ using Grpc.Net.Client;
 
 namespace MomentoSdk
 {
-    public class DataGrpcManager : IDisposable
+    internal class DataGrpcManager : IDisposable
     {
         private readonly GrpcChannel channel;
         private readonly Scs.ScsClient client;
         private bool disposedValue;
 
-        public DataGrpcManager(string authToken, string endpoint)
+        internal DataGrpcManager(string authToken, string endpoint)
         {
             this.channel = GrpcChannel.ForAddress(endpoint, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
             Header[] headers = { new Header(name: "Authorization", value: authToken) };
@@ -20,7 +20,7 @@ namespace MomentoSdk
             this.client = new Scs.ScsClient(invoker);
         }
 
-        public Scs.ScsClient Client()
+        internal Scs.ScsClient Client()
         {
             return this.client;
         }

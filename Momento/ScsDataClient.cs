@@ -8,81 +8,81 @@ using Grpc.Core;
 
 namespace MomentoSdk
 {
-    public class ScsDataClient : IDisposable
+    internal class ScsDataClient : IDisposable
     {
         private readonly DataGrpcManager grpcManager;
         private readonly uint defaultTtlSeconds;
         private bool disposedValue;
 
-        public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds)
+        internal ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds)
         {
             this.grpcManager = new DataGrpcManager(authToken, endpoint);
             this.defaultTtlSeconds = defaultTtlSeconds;
         }
 
-        public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
+        internal async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
         {
             SetResponse response = await this.SendSetAsync(cacheName, value: Convert(value), key: Convert(key), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
         }
 
-        public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value)
+        internal async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value)
         {
             return await this.SetAsync(cacheName, key, value, defaultTtlSeconds);
         }
 
-        public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
+        internal async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
         {
             GetResponse resp = await this.SendGetAsync(cacheName, Convert(key));
             return new CacheGetResponse(resp);
         }
 
-        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint ttlSeconds)
+        internal async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint ttlSeconds)
         {
             SetResponse response = await this.SendSetAsync(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
         }
 
-        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value)
+        internal async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value)
         {
             return await this.SetAsync(cacheName, key, value, defaultTtlSeconds);
         }
 
-        public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
+        internal async Task<CacheGetResponse> GetAsync(string cacheName, string key)
         {
             GetResponse resp = await this.SendGetAsync(cacheName, Convert(key));
             return new CacheGetResponse(resp);
         }
 
-        public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
+        internal CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
         {
             SetResponse resp = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(resp);
         }
 
-        public CacheSetResponse Set(string cacheName, byte[] key, byte[] value)
+        internal CacheSetResponse Set(string cacheName, byte[] key, byte[] value)
         {
             return this.Set(cacheName, key, value, defaultTtlSeconds);
         }
 
-        public CacheGetResponse Get(string cacheName, byte[] key)
+        internal CacheGetResponse Get(string cacheName, byte[] key)
         {
             GetResponse resp = this.SendGet(cacheName, Convert(key));
             return new CacheGetResponse(resp);
         }
 
-        public CacheSetResponse Set(string cacheName, string key, string value, uint ttlSeconds)
+        internal CacheSetResponse Set(string cacheName, string key, string value, uint ttlSeconds)
         {
             SetResponse response = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
         }
 
-        public CacheSetResponse Set(string cacheName, string key, string value)
+        internal CacheSetResponse Set(string cacheName, string key, string value)
         {
             return this.Set(cacheName, key, value, defaultTtlSeconds);
         }
 
-        public CacheGetResponse Get(string cacheName, string key)
+        internal CacheGetResponse Get(string cacheName, string key)
         {
             GetResponse resp = this.SendGet(cacheName, Convert(key));
             return new CacheGetResponse(resp);

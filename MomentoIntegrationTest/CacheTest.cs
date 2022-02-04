@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Xunit;
 using MomentoSdk.Responses;
+using MomentoSdk.Exceptions;
 
 namespace MomentoIntegrationTest
 {
@@ -61,6 +62,22 @@ namespace MomentoIntegrationTest
             Assert.Equal(CacheGetStatus.MISS, result.Status);
             Assert.Null(result.String());
             Assert.Null(result.Bytes());
+        }
+
+        [Fact]
+        public void GetThrowsNotFoundExceptionNonExistentCache()
+        {
+            uint defaultTtlSeconds = 10;
+            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
+            Assert.Throws<NotFoundException>(() => client.Get("non-existent-cache", Guid.NewGuid().ToString()));
+        }
+
+        [Fact]
+        public void SetThrowsNotFoundExceptionNonExistentCache()
+        {
+            uint defaultTtlSeconds = 10;
+            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
+            Assert.Throws<NotFoundException>(() => client.Set("non-existent-cache", Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
         }
     }
 }

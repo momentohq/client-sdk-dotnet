@@ -4,21 +4,21 @@ using ControlClient;
 
 namespace MomentoSdk
 {
-    public class ScsControlClient
+    internal class ScsControlClient : IDisposable
     {
         private readonly ControlGrpcManager grpcManager;
         private readonly string authToken;
         private readonly string endpoint;
         private bool disposedValue;
 
-        public ScsControlClient(string authToken, string endpoint)
+        internal ScsControlClient(string authToken, string endpoint)
         {
             this.grpcManager = new ControlGrpcManager(authToken, endpoint);
             this.authToken = authToken;
             this.endpoint = endpoint;
         }
 
-        public Responses.CreateCacheResponse CreateCache(string cacheName)
+        internal Responses.CreateCacheResponse CreateCache(string cacheName)
         {
             CheckValidCacheName(cacheName);
             try
@@ -38,7 +38,7 @@ namespace MomentoSdk
             }
         }
 
-        public Responses.DeleteCacheResponse DeleteCache(string cacheName)
+        internal Responses.DeleteCacheResponse DeleteCache(string cacheName)
         {
             DeleteCacheRequest request = new DeleteCacheRequest() { CacheName = cacheName };
             try
@@ -52,7 +52,7 @@ namespace MomentoSdk
             }
         }
 
-        public Responses.ListCachesResponse ListCaches(string nextPageToken = null)
+        internal Responses.ListCachesResponse ListCaches(string nextPageToken = null)
         {
             ListCachesRequest request = new ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
             try
