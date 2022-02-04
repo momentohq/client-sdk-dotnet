@@ -13,6 +13,7 @@ namespace MomentoIntegrationTest
         private uint defaultTtlSeconds = 10;
         private SimpleCacheClient client;
 
+        // Test initialization
         public CacheTest()
         {
             uint defaultTtlSeconds = 10;
@@ -20,6 +21,7 @@ namespace MomentoIntegrationTest
             client.CreateCache(cacheName);
         }
 
+        // Test cleanup
         public void Dispose()
         {
             client.DeleteCache(cacheName);
