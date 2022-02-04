@@ -1,94 +1,50 @@
 ﻿using System;
-using ControlClient;
-using static ControlClient.ScsControl;
-using Grpc.Core;
-using Grpc.Core.Interceptors;
-using Grpc.Net.Client;
 using MomentoSdk.Exceptions;
+using ControlClient;
 
 namespace MomentoSdk
 {
-    public class Momento : IDisposable
+    public class ScsControlClient
     {
-        private readonly string cacheEndpoint;
+        private readonly ControlGrpcManager grpcManager;
         private readonly string authToken;
-        private readonly ScsControlClient client;
-        private readonly GrpcChannel channel;
+        private readonly string endpoint;
         private bool disposedValue;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="authToken">Momento jwt</param>
-        public Momento(string authToken)
+        /// <param name="endpoint">Control client endpint</param>
+        public ScsControlClient(string authToken, string endpoint)
         {
-            Claims claims = JwtUtils.DecodeJwt(authToken);
-            this.channel = GrpcChannel.ForAddress("https://" + claims.ControlEndpoint + ":443", new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
-            Header[] headers = { new Header(name: "Authorization", value: authToken) };
-            CallInvoker invoker = this.channel.Intercept(new HeaderInterceptor(headers));
-            this.client = new ScsControlClient(invoker);
+            this.grpcManager = new ControlGrpcManager(authToken, endpoint);
             this.authToken = authToken;
-            this.cacheEndpoint = "https://" + claims.CacheEndpoint + ":443";
+            this.endpoint = endpoint;
         }
 
         /// <summary>
         /// Creates a cache if it doesnt exist. Returns the cache.
         /// </summary>
         /// <param name="cacheName"></param>
-        /// <param name="defaultTtlSeconds"></param>
-        /// <returns>An instance of MomentoCache to perform sets and against against</returns>
-        public MomentoCache GetOrCreateCache(string cacheName, uint defaultTtlSeconds)
-        {
-            MomentoCache cacheClient = InitializeCacheClient(cacheName, defaultTtlSeconds);
-            try
-            {
-                return cacheClient.Connect();
-            } catch (NotFoundException)
-            {
-                // No action needed, just means that the cache hasn't been created yet.
-            }
-
-            CreateCache(cacheName);
-
-            return cacheClient.Connect();
-        }
-
-        /// <summary>
-        /// Creates a cache with the given name
-        /// </summary>
-        /// <param name="cacheName">Name of the cache to create</param>
+        /// <returns></returns>
         public Responses.CreateCacheResponse CreateCache(string cacheName)
         {
             CheckValidCacheName(cacheName);
             try
             {
                 CreateCacheRequest request = new CreateCacheRequest() { CacheName = cacheName };
-                client.CreateCache(request);
+                this.grpcManager.Client().CreateCache(request);
+            }
+            catch (AlreadyExistsException)
+            {
+                // No action needed, just means that the cache has already been created.
             }
             catch (Exception e)
             {
                 throw CacheExceptionMapper.Convert(e);
             }
-
             return new Responses.CreateCacheResponse();
-        }
-
-        /// <summary>
-        /// Gets an instance of MomentoCache to perform gets and sets on
-        /// </summary>
-        /// <param name="cacheName"></param>
-        /// <param name="defaultTtlSeconds"></param>
-        /// <returns>An instance of MomentoCache to perform sets and against against</returns>
-        public MomentoCache GetCache(string cacheName, uint defaultTtlSeconds)
-        {
-            MomentoCache cacheClient = InitializeCacheClient(cacheName, defaultTtlSeconds);
-            return cacheClient.Connect();
-        }
-
-        private MomentoCache InitializeCacheClient(String cacheName, uint defaultTtlSeconds)
-        {
-            CheckValidCacheName(cacheName);
-            return MomentoCache.Init(authToken, cacheName, cacheEndpoint, defaultTtlSeconds);
         }
 
         /// <summary>
@@ -96,14 +52,15 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="cacheName"></param>
         /// <returns></returns>
-        public Responses.DeleteCacheResponse DeleteCache(String cacheName)
+        public Responses.DeleteCacheResponse DeleteCache(string cacheName)
         {
             DeleteCacheRequest request = new DeleteCacheRequest() { CacheName = cacheName };
             try
             {
-                client.DeleteCache(request);
+                this.grpcManager.Client().DeleteCache(request);
                 return new Responses.DeleteCacheResponse();
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 throw CacheExceptionMapper.Convert(e);
             }
@@ -119,14 +76,14 @@ namespace MomentoSdk
             ListCachesRequest request = new ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
             try
             {
-                ControlClient.ListCachesResponse result = client.ListCaches(request);
+                ControlClient.ListCachesResponse result = this.grpcManager.Client().ListCaches(request);
                 return new Responses.ListCachesResponse(result);
             }
             catch (Exception e)
             {
                 throw CacheExceptionMapper.Convert(e);
             }
-}
+        }
 
         private bool CheckValidCacheName(string cacheName)
         {
@@ -143,7 +100,7 @@ namespace MomentoSdk
             {
                 if (disposing)
                 {
-                    this.channel.Dispose();
+                    this.grpcManager.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer

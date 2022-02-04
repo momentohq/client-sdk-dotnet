@@ -1,46 +1,50 @@
 ﻿using System;
 using Xunit;
-using MomentoSdk;
 using MomentoSdk.Exceptions;
 using MomentoSdk.Responses;
 using System.Collections.Generic;
+
 namespace MomentoIntegrationTest
 {
     public class MomentoTest
     {
-        private String authKey = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN");
+        private string authKey = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN");
 
         [Fact]
         public void DeleteCacheThatDoesntExist()
         {
-            Momento momento = new(authKey);
-            Assert.Throws<NotFoundException>(() => momento.DeleteCache("non existant cache"));
+            uint defaultTtlSeconds = 10;
+            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
+            Assert.Throws<NotFoundException>(() => client.DeleteCache("non existant cache"));
         }
 
 
         [Fact]
         public void InvalidJwtException()
         {
-            Assert.Throws<InvalidArgumentException>(() => new Momento("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs"));
+            uint defaultTtlSeconds = 10;
+            Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs", defaultTtlSeconds));
         }
 
         [Fact]
         public void GetThrowsNotFoundForNonExistentCache()
         {
-            Momento momento = new(authKey);
-            Assert.Throws<NotFoundException>(() => momento.GetCache(Guid.NewGuid().ToString(), 60));
+            uint defaultTtlSeconds = 10;
+            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
+            Assert.Throws<NotFoundException>(() => client.CreateCache(Guid.NewGuid().ToString()));
         }
 
         [Fact]
         public void HappyPathListCache()
         {
-            Momento momento = new(authKey);
+            uint defaultTtlSeconds = 10;
+            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
             string cacheName = Guid.NewGuid().ToString();
-            momento.CreateCache(cacheName);
-            ListCachesResponse result = momento.ListCaches();
+            client.CreateCache(cacheName);
+            ListCachesResponse result = client.ListCaches();
             List<CacheInfo> caches = result.Caches();
             Assert.True(caches.Exists(item => item.Name().Equals(cacheName)));
-            momento.DeleteCache(cacheName);
+            client.DeleteCache(cacheName);
         }
     }
 }
