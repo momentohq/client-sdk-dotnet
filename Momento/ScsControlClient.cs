@@ -35,16 +35,16 @@ namespace MomentoSdk
             {
                 CreateCacheRequest request = new CreateCacheRequest() { CacheName = cacheName };
                 this.grpcManager.Client().CreateCache(request);
+                return new Responses.CreateCacheResponse();
             }
             catch (AlreadyExistsException)
             {
-                // No action needed, just means that the cache has already been created.
+                return new Responses.CreateCacheResponse();
             }
             catch (Exception e)
             {
                 throw CacheExceptionMapper.Convert(e);
             }
-            return new Responses.CreateCacheResponse();
         }
 
         /// <summary>
