@@ -42,7 +42,7 @@ namespace MomentoIntegrationTest
         {
             string cacheKey = "async cache key";
             string cacheValue = "async cache value";
-            uint defaultTtlSeconds = 10\;
+            uint defaultTtlSeconds = 10;
             SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
             client.CreateCache(cacheName);
             await client.SetAsync(cacheName, cacheKey, cacheValue, defaultTtlSeconds);
