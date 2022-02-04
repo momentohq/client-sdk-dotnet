@@ -163,7 +163,7 @@ namespace MomentoSdk.Responses
         /// <returns></returns>
         public CacheSetResponse Set(string cacheName, string key, string value, uint ttlSeconds)
         {
-            return this.dataClient.Set(cacheName, key, value);
+            return this.dataClient.Set(cacheName, key, value, ttlSeconds);
         }
 
         /// <summary>
