@@ -8,81 +8,80 @@ using Grpc.Core;
 
 namespace MomentoSdk
 {
-    internal class ScsDataClient : IDisposable
+    internal sealed class ScsDataClient : IDisposable
     {
         private readonly DataGrpcManager grpcManager;
         private readonly uint defaultTtlSeconds;
-        private bool disposedValue;
 
-        internal ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds)
+        public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds)
         {
             this.grpcManager = new DataGrpcManager(authToken, endpoint);
             this.defaultTtlSeconds = defaultTtlSeconds;
         }
 
-        internal async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
+        public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
         {
             SetResponse response = await this.SendSetAsync(cacheName, value: Convert(value), key: Convert(key), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
         }
 
-        internal async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value)
+        public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value)
         {
             return await this.SetAsync(cacheName, key, value, defaultTtlSeconds);
         }
 
-        internal async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
+        public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
         {
             GetResponse resp = await this.SendGetAsync(cacheName, Convert(key));
             return new CacheGetResponse(resp);
         }
 
-        internal async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint ttlSeconds)
+        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint ttlSeconds)
         {
             SetResponse response = await this.SendSetAsync(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
         }
 
-        internal async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value)
+        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value)
         {
             return await this.SetAsync(cacheName, key, value, defaultTtlSeconds);
         }
 
-        internal async Task<CacheGetResponse> GetAsync(string cacheName, string key)
+        public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
         {
             GetResponse resp = await this.SendGetAsync(cacheName, Convert(key));
             return new CacheGetResponse(resp);
         }
 
-        internal CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
+        public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
         {
             SetResponse resp = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(resp);
         }
 
-        internal CacheSetResponse Set(string cacheName, byte[] key, byte[] value)
+        public CacheSetResponse Set(string cacheName, byte[] key, byte[] value)
         {
             return this.Set(cacheName, key, value, defaultTtlSeconds);
         }
 
-        internal CacheGetResponse Get(string cacheName, byte[] key)
+        public CacheGetResponse Get(string cacheName, byte[] key)
         {
             GetResponse resp = this.SendGet(cacheName, Convert(key));
             return new CacheGetResponse(resp);
         }
 
-        internal CacheSetResponse Set(string cacheName, string key, string value, uint ttlSeconds)
+        public CacheSetResponse Set(string cacheName, string key, string value, uint ttlSeconds)
         {
             SetResponse response = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
         }
 
-        internal CacheSetResponse Set(string cacheName, string key, string value)
+        public CacheSetResponse Set(string cacheName, string key, string value)
         {
             return this.Set(cacheName, key, value, defaultTtlSeconds);
         }
 
-        internal CacheGetResponse Get(string cacheName, string key)
+        public CacheGetResponse Get(string cacheName, string key)
         {
             GetResponse resp = this.SendGet(cacheName, Convert(key));
             return new CacheGetResponse(resp);
@@ -150,26 +149,9 @@ namespace MomentoSdk
             return ByteString.CopyFromUtf8(s);
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    this.grpcManager.Dispose();
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
-                disposedValue = true;
-            }
-        }
-
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            this.grpcManager.Dispose();
         }
     }
 }

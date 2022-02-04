@@ -4,21 +4,20 @@ using ControlClient;
 
 namespace MomentoSdk
 {
-    internal class ScsControlClient : IDisposable
+    internal sealed class ScsControlClient : IDisposable
     {
         private readonly ControlGrpcManager grpcManager;
         private readonly string authToken;
         private readonly string endpoint;
-        private bool disposedValue;
 
-        internal ScsControlClient(string authToken, string endpoint)
+        public ScsControlClient(string authToken, string endpoint)
         {
             this.grpcManager = new ControlGrpcManager(authToken, endpoint);
             this.authToken = authToken;
             this.endpoint = endpoint;
         }
 
-        internal Responses.CreateCacheResponse CreateCache(string cacheName)
+        public Responses.CreateCacheResponse CreateCache(string cacheName)
         {
             CheckValidCacheName(cacheName);
             try
@@ -38,7 +37,7 @@ namespace MomentoSdk
             }
         }
 
-        internal Responses.DeleteCacheResponse DeleteCache(string cacheName)
+        public Responses.DeleteCacheResponse DeleteCache(string cacheName)
         {
             DeleteCacheRequest request = new DeleteCacheRequest() { CacheName = cacheName };
             try
@@ -52,7 +51,7 @@ namespace MomentoSdk
             }
         }
 
-        internal Responses.ListCachesResponse ListCaches(string nextPageToken = null)
+        public Responses.ListCachesResponse ListCaches(string nextPageToken = null)
         {
             ListCachesRequest request = new ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
             try
@@ -75,26 +74,9 @@ namespace MomentoSdk
             return true;
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    this.grpcManager.Dispose();
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
-                disposedValue = true;
-            }
-        }
-
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            this.grpcManager.Dispose();
         }
     }
 }

@@ -6,11 +6,10 @@ using Grpc.Net.Client;
 
 namespace MomentoSdk
 {
-    internal class DataGrpcManager : IDisposable
+    internal sealed class DataGrpcManager : IDisposable
     {
         private readonly GrpcChannel channel;
         private readonly Scs.ScsClient client;
-        private bool disposedValue;
 
         internal DataGrpcManager(string authToken, string endpoint)
         {
@@ -25,25 +24,9 @@ namespace MomentoSdk
             return this.client;
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    this.channel.Dispose();
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
-                disposedValue = true;
-            }
-        }
-
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
+            this.channel.Dispose();
             GC.SuppressFinalize(this);
         }
     }

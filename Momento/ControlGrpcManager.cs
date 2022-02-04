@@ -6,13 +6,12 @@ using ControlClient;
 
 namespace MomentoSdk
 {
-    internal class ControlGrpcManager : IDisposable
+    internal sealed class ControlGrpcManager : IDisposable
     {
         private readonly GrpcChannel channel;
         private readonly ScsControl.ScsControlClient client;
-        private bool disposedValue;
 
-        internal ControlGrpcManager(string authToken, string endpoint)
+        public ControlGrpcManager(string authToken, string endpoint)
         {
             this.channel = GrpcChannel.ForAddress(endpoint, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
             Header[] headers = { new Header(name: "Authorization", value: authToken) };
@@ -20,30 +19,14 @@ namespace MomentoSdk
             this.client = new ScsControl.ScsControlClient(invoker);
         }
 
-        internal ScsControl.ScsControlClient Client()
+        public ScsControl.ScsControlClient Client()
         {
             return this.client;
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    this.channel.Dispose();
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
-                disposedValue = true;
-            }
-        }
-
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
+            this.channel.Dispose();
             GC.SuppressFinalize(this);
         }
     }
