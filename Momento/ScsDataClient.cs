@@ -14,153 +14,74 @@ namespace MomentoSdk
         private readonly uint defaultTtlSeconds;
         private bool disposedValue;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="authToken">Momento jwt</param>
-        /// <param name="endpoint">Control client endpint</param>
-        /// <param name="defaultTtlSeconds"></param>
         public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds)
         {
             this.grpcManager = new DataGrpcManager(authToken, endpoint);
             this.defaultTtlSeconds = defaultTtlSeconds;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="ttlSeconds"></param>
-        /// <returns></returns>
         public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
         {
             SetResponse response = await this.SendSetAsync(cacheName, value: Convert(value), key: Convert(key), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
         public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value)
         {
             return await this.SetAsync(cacheName, key, value, defaultTtlSeconds);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key">The key to perform a cache lookup on</param>
-        /// <returns></returns>
         public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
         {
             GetResponse resp = await this.SendGetAsync(cacheName, Convert(key));
             return new CacheGetResponse(resp);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="ttlSeconds"></param>
-        /// <returns></returns>
         public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint ttlSeconds)
         {
             SetResponse response = await this.SendSetAsync(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
         public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value)
         {
             return await this.SetAsync(cacheName, key, value, defaultTtlSeconds);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
         {
             GetResponse resp = await this.SendGetAsync(cacheName, Convert(key));
             return new CacheGetResponse(resp);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="ttlSeconds"></param>
-        /// <returns></returns>
         public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
         {
             SetResponse resp = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(resp);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
         public CacheSetResponse Set(string cacheName, byte[] key, byte[] value)
         {
             return this.Set(cacheName, key, value, defaultTtlSeconds);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public CacheGetResponse Get(string cacheName, byte[] key)
         {
             GetResponse resp = this.SendGet(cacheName, Convert(key));
             return new CacheGetResponse(resp);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="ttlSeconds"></param>
-        /// <returns></returns>
         public CacheSetResponse Set(string cacheName, string key, string value, uint ttlSeconds)
         {
             SetResponse response = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="ttlSeconds"></param>
-        /// <returns></returns>
         public CacheSetResponse Set(string cacheName, string key, string value)
         {
             return this.Set(cacheName, key, value, defaultTtlSeconds);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public CacheGetResponse Get(string cacheName, string key)
         {
             GetResponse resp = this.SendGet(cacheName, Convert(key));

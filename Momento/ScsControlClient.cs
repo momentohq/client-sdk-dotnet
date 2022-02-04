@@ -11,11 +11,6 @@ namespace MomentoSdk
         private readonly string endpoint;
         private bool disposedValue;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="authToken">Momento jwt</param>
-        /// <param name="endpoint">Control client endpint</param>
         public ScsControlClient(string authToken, string endpoint)
         {
             this.grpcManager = new ControlGrpcManager(authToken, endpoint);
@@ -23,11 +18,6 @@ namespace MomentoSdk
             this.endpoint = endpoint;
         }
 
-        /// <summary>
-        /// Creates a cache if it doesnt exist. Returns the cache.
-        /// </summary>
-        /// <param name="cacheName"></param>
-        /// <returns></returns>
         public Responses.CreateCacheResponse CreateCache(string cacheName)
         {
             CheckValidCacheName(cacheName);
@@ -48,11 +38,6 @@ namespace MomentoSdk
             }
         }
 
-        /// <summary>
-        /// Deletes a cache and all of the items within it
-        /// </summary>
-        /// <param name="cacheName"></param>
-        /// <returns></returns>
         public Responses.DeleteCacheResponse DeleteCache(string cacheName)
         {
             DeleteCacheRequest request = new DeleteCacheRequest() { CacheName = cacheName };
@@ -67,11 +52,6 @@ namespace MomentoSdk
             }
         }
 
-        /// <summary>
-        /// List all caches
-        /// </summary>
-        /// <param name="nextPageToken"></param>
-        /// <returns></returns>
         public Responses.ListCachesResponse ListCaches(string nextPageToken = null)
         {
             ListCachesRequest request = new ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };

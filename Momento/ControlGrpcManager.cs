@@ -12,11 +12,6 @@ namespace MomentoSdk
         private readonly ScsControl.ScsControlClient client;
         private bool disposedValue;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="authToken">Momento jwt</param>
-        /// <param name="endpoint">Control client endpint</param>
         public ControlGrpcManager(string authToken, string endpoint)
         {
             this.channel = GrpcChannel.ForAddress(endpoint, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
