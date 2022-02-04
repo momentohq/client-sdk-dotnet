@@ -26,13 +26,6 @@ namespace MomentoIntegrationTest
             Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs", defaultTtlSeconds));
         }
 
-        [Fact]
-        public void GetThrowsNotFoundForNonExistentCache()
-        {
-            uint defaultTtlSeconds = 10;
-            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
-            Assert.Throws<NotFoundException>(() => client.CreateCache(Guid.NewGuid().ToString()));
-        }
 
         [Fact]
         public void HappyPathListCache()
