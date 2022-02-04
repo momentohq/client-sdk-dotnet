@@ -37,13 +37,14 @@ namespace MomentoSdk
                 this.grpcManager.Client().CreateCache(request);
                 return new Responses.CreateCacheResponse();
             }
-            catch (AlreadyExistsException)
-            {
-                return new Responses.CreateCacheResponse();
-            }
             catch (Exception e)
             {
-                throw CacheExceptionMapper.Convert(e);
+                Exception exception = CacheExceptionMapper.Convert(e);
+                if (exception is AlreadyExistsException)
+                {
+                    return new Responses.CreateCacheResponse();
+                }
+                throw exception;
             }
         }
 
