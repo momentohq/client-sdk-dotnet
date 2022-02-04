@@ -26,7 +26,7 @@ namespace MomentoSdk.Responses
         }
 
         /// <summary>
-        /// Creates a cache if it doesnt exist. Returns the cache.
+        /// Creates a cache if it doesn't exist.
         /// </summary>
         /// <param name="cacheName">Name of the cache to be created</param>
         /// <returns>The result of the create cache operation</returns>
