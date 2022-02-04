@@ -6,18 +6,31 @@ using MomentoSdk.Exceptions;
 
 namespace MomentoIntegrationTest
 {
-    public class CacheTest
+    public class CacheTest : IDisposable
     {
         private string authKey = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN");
-        private string cacheName = Environment.GetEnvironmentVariable("TEST_CACHE_NAME");
+        private string cacheName = "client-sdk-csharp";
+        private uint defaultTtlSeconds = 10;
+        private SimpleCacheClient client;
+
+        public CacheTest()
+        {
+            uint defaultTtlSeconds = 10;
+            client = new SimpleCacheClient(authKey, defaultTtlSeconds);
+            client.CreateCache(cacheName);
+        }
+
+        public void Dispose()
+        {
+            client.DeleteCache(cacheName);
+            client.Dispose();
+        }
+
         [Fact]
         public void HappyPath()
         {
             string cacheKey = "some cache key";
             string cacheValue = "some cache value";
-            uint defaultTtlSeconds = 10;
-            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
-            client.CreateCache(cacheName);
             client.Set(cacheName, cacheKey, cacheValue, defaultTtlSeconds);
             CacheGetResponse result = client.Get(cacheName, cacheKey);
             string stringResult = result.String();
@@ -29,9 +42,6 @@ namespace MomentoIntegrationTest
         {
             string cacheKey = "some cache key";
             string cacheValue = "some cache value";
-            uint defaultTtlSeconds = 10;
-            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
-            client.CreateCache(cacheName);
             client.Set(cacheName, cacheKey, cacheValue, 1);
             await Task.Delay(1100);
             CacheGetResponse result = client.Get(cacheName, cacheKey);
@@ -43,9 +53,6 @@ namespace MomentoIntegrationTest
         {
             string cacheKey = "async cache key";
             string cacheValue = "async cache value";
-            uint defaultTtlSeconds = 10;
-            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
-            client.CreateCache(cacheName);
             await client.SetAsync(cacheName, cacheKey, cacheValue, defaultTtlSeconds);
             CacheGetResponse result = await client.GetAsync(cacheName, cacheKey);
             Assert.Equal(CacheGetStatus.HIT, result.Status);
@@ -55,9 +62,6 @@ namespace MomentoIntegrationTest
         [Fact]
         public void HappyPathMiss()
         {
-            uint defaultTtlSeconds = 10;
-            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
-            client.CreateCache(cacheName);
             CacheGetResponse result = client.Get(cacheName, Guid.NewGuid().ToString());
             Assert.Equal(CacheGetStatus.MISS, result.Status);
             Assert.Null(result.String());

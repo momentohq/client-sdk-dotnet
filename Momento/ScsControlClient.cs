@@ -28,12 +28,7 @@ namespace MomentoSdk
             }
             catch (Exception e)
             {
-                Exception exception = CacheExceptionMapper.Convert(e);
-                if (exception is AlreadyExistsException)
-                {
-                    return new Responses.CreateCacheResponse();
-                }
-                throw exception;
+                throw CacheExceptionMapper.Convert(e);
             }
         }
 
