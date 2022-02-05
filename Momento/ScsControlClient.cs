@@ -22,7 +22,7 @@ namespace MomentoSdk
             CheckValidCacheName(cacheName);
             try
             {
-                CreateCacheRequest request = new CreateCacheRequest() { CacheName = cacheName };
+                _CreateCacheRequest request = new _CreateCacheRequest() { CacheName = cacheName };
                 this.grpcManager.Client().CreateCache(request);
                 return new Responses.CreateCacheResponse();
             }
@@ -34,7 +34,7 @@ namespace MomentoSdk
 
         public Responses.DeleteCacheResponse DeleteCache(string cacheName)
         {
-            DeleteCacheRequest request = new DeleteCacheRequest() { CacheName = cacheName };
+            _DeleteCacheRequest request = new _DeleteCacheRequest() { CacheName = cacheName };
             try
             {
                 this.grpcManager.Client().DeleteCache(request);
@@ -48,10 +48,10 @@ namespace MomentoSdk
 
         public Responses.ListCachesResponse ListCaches(string nextPageToken = null)
         {
-            ListCachesRequest request = new ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
+            _ListCachesRequest request = new _ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
             try
             {
-                ControlClient.ListCachesResponse result = this.grpcManager.Client().ListCaches(request);
+                ControlClient._ListCachesResponse result = this.grpcManager.Client().ListCaches(request);
                 return new Responses.ListCachesResponse(result);
             }
             catch (Exception e)

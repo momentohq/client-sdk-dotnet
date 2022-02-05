@@ -7,7 +7,6 @@ namespace MomentoSdk.Responses
     {
         private readonly ScsControlClient controlClient;
         private readonly ScsDataClient dataClient;
-        private bool disposedValue;
 
         /// <summary>
         /// Client to perform operations against the Simple Cache Service

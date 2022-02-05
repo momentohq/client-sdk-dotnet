@@ -6,11 +6,11 @@ namespace MomentoSdk.Responses
         private readonly List<CacheInfo> caches;
         private readonly string nextPageToken;
 
-        public ListCachesResponse(ControlClient.ListCachesResponse result)
+        public ListCachesResponse(ControlClient._ListCachesResponse result)
         {
             nextPageToken = result.NextToken == "" ? null : result.NextToken;
             caches = new List<CacheInfo>();
-            foreach (ControlClient.Cache c in result.Cache)
+            foreach (ControlClient._Cache c in result.Cache)
             {
                 caches.Add(new CacheInfo(c.CacheName));
             }
