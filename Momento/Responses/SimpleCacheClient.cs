@@ -48,7 +48,7 @@ namespace MomentoSdk.Responses
         /// <summary>
         /// List all caches
         /// </summary>
-        /// <param name="nextPageToken">Optional auth token to be used to list all caches for that token</param>
+        /// <param name="nextPageToken">A token to specify where to start paginating. This is the NextToken from a previous response.</param>
         /// <returns>The result of the list cache operation</returns>
         public Responses.ListCachesResponse ListCaches(string nextPageToken = null)
         {
@@ -189,26 +189,10 @@ namespace MomentoSdk.Responses
             return this.dataClient.Get(cacheName, key);
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    this.controlClient.Dispose();
-                    this.dataClient.Dispose();
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
-                disposedValue = true;
-            }
-        }
-
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
+            this.controlClient.Dispose();
+            this.dataClient.Dispose();
             GC.SuppressFinalize(this);
         }
     }

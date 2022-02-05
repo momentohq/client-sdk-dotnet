@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace MomentoIntegrationTest
 {
-    public class MomentoTest
+    public class SimpleCacheControlPlaneTests
     {
         private string authKey = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN");
 
