@@ -10,7 +10,7 @@ namespace MomentoSdk.Responses
         public CacheGetStatus Status { get; private set; }
         private readonly ByteString body;
 
-        public CacheGetResponse(GetResponse response)
+        public CacheGetResponse(_GetResponse response)
         {
             body = response.CacheBody;
             Status = From(response.Result);
@@ -50,5 +50,5 @@ namespace MomentoSdk.Responses
             }
         }
 
-}
+    }
 }

@@ -13,18 +13,18 @@ namespace MomentoTest.Responses
         {
             string cacheBody = "test body";
             ByteString body = ByteString.CopyFromUtf8(cacheBody);
-            GetResponse serverResponseHit = new GetResponse() { CacheBody = body, Result = ECacheResult.Hit };
+            _GetResponse serverResponseHit = new _GetResponse() { CacheBody = body, Result = ECacheResult.Hit };
             CacheGetResponse responseHit = new CacheGetResponse(serverResponseHit);
             Assert.Equal(CacheGetStatus.HIT, responseHit.Status);
             Assert.Equal(cacheBody, responseHit.String());
 
-            GetResponse serverResponseMiss = new GetResponse() { Result = ECacheResult.Miss };
+            _GetResponse serverResponseMiss = new _GetResponse() { Result = ECacheResult.Miss };
             CacheGetResponse responseMiss = new CacheGetResponse(serverResponseMiss);
             Assert.Equal(CacheGetStatus.MISS, responseMiss.Status);
 
-            GetResponse serverResponseBadRequest = new GetResponse() { Result = ECacheResult.Invalid };
+            _GetResponse serverResponseBadRequest = new _GetResponse() { Result = ECacheResult.Invalid };
             _ = Assert.Throws<InternalServerException>(() => new CacheGetResponse(serverResponseBadRequest));
-            
+
         }
     }
 }

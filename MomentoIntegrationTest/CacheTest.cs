@@ -1,53 +1,62 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Xunit;
-using MomentoSdk;
 using MomentoSdk.Responses;
+using MomentoSdk.Exceptions;
 
 namespace MomentoIntegrationTest
 {
-    public class CacheTest
+    public class CacheTest : IDisposable
     {
-        private String authKey = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN");
-        private String cacheName = Environment.GetEnvironmentVariable("TEST_CACHE_NAME");
+        private string authKey = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN");
+        private string cacheName = "client-sdk-csharp";
+        private uint defaultTtlSeconds = 10;
+        private SimpleCacheClient client;
+
+        // Test initialization
+        public CacheTest()
+        {
+            uint defaultTtlSeconds = 10;
+            client = new SimpleCacheClient(authKey, defaultTtlSeconds);
+            client.CreateCache(cacheName);
+        }
+
+        // Test cleanup
+        public void Dispose()
+        {
+            client.DeleteCache(cacheName);
+            client.Dispose();
+        }
+
         [Fact]
         public void HappyPath()
         {
-            String cacheKey = "some cache key";
-            String cacheValue = "some cache value";
-            uint defaultTtlSeconds = 10;
-            Momento momento = new Momento(authKey);
-            MomentoCache cache = momento.GetOrCreateCache(cacheName, defaultTtlSeconds);
-            cache.Set(cacheKey, cacheValue, defaultTtlSeconds);
-            CacheGetResponse result = cache.Get(cacheKey);
-            String stringResult = result.String();
+            string cacheKey = "some cache key";
+            string cacheValue = "some cache value";
+            client.Set(cacheName, cacheKey, cacheValue, defaultTtlSeconds);
+            CacheGetResponse result = client.Get(cacheName, cacheKey);
+            string stringResult = result.String();
             Assert.Equal(cacheValue, stringResult);
         }
 
         [Fact]
         public async void HappyPathExpiredTtl()
         {
-            String cacheKey = "some cache key";
-            String cacheValue = "some cache value";
-            uint defaultTtlSeconds = 10;
-            Momento momento = new Momento(authKey);
-            MomentoCache cache = momento.GetOrCreateCache(cacheName, defaultTtlSeconds);
-            cache.Set(cacheKey, cacheValue, 1);
-            await Task.Delay(1100);
-            CacheGetResponse result = cache.Get(cacheKey);
+            string cacheKey = "some cache key";
+            string cacheValue = "some cache value";
+            client.Set(cacheName, cacheKey, cacheValue, 1);
+            await Task.Delay(3000);
+            CacheGetResponse result = client.Get(cacheName, cacheKey);
             Assert.Equal(CacheGetStatus.MISS, result.Status);
         }
 
         [Fact]
         public async void HappyPathAsync()
         {
-            String cacheKey = "async cache key";
-            String cacheValue = "async cache value";
-            uint defaultTtlSeconds = 10;
-            Momento momento = new Momento(authKey);
-            MomentoCache cache = momento.GetOrCreateCache(cacheName, defaultTtlSeconds);
-            await cache.SetAsync(cacheKey, cacheValue, defaultTtlSeconds);
-            CacheGetResponse result = await cache.GetAsync(cacheKey);
+            string cacheKey = "async cache key";
+            string cacheValue = "async cache value";
+            await client.SetAsync(cacheName, cacheKey, cacheValue, defaultTtlSeconds);
+            CacheGetResponse result = await client.GetAsync(cacheName, cacheKey);
             Assert.Equal(CacheGetStatus.HIT, result.Status);
             Assert.Equal(cacheValue, result.String());
         }
@@ -55,13 +64,26 @@ namespace MomentoIntegrationTest
         [Fact]
         public void HappyPathMiss()
         {
-            uint defaultTtlSeconds = 10;
-            Momento momento = new Momento(authKey);
-            MomentoCache cache = momento.GetOrCreateCache(cacheName, defaultTtlSeconds);
-            CacheGetResponse result = cache.Get(Guid.NewGuid().ToString());
+            CacheGetResponse result = client.Get(cacheName, Guid.NewGuid().ToString());
             Assert.Equal(CacheGetStatus.MISS, result.Status);
             Assert.Null(result.String());
             Assert.Null(result.Bytes());
+        }
+
+        [Fact]
+        public void GetThrowsNotFoundExceptionNonExistentCache()
+        {
+            uint defaultTtlSeconds = 10;
+            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
+            Assert.Throws<NotFoundException>(() => client.Get("non-existent-cache", Guid.NewGuid().ToString()));
+        }
+
+        [Fact]
+        public void SetThrowsNotFoundExceptionNonExistentCache()
+        {
+            uint defaultTtlSeconds = 10;
+            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
+            Assert.Throws<NotFoundException>(() => client.Set("non-existent-cache", Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
         }
     }
 }

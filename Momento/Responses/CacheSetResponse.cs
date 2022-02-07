@@ -4,7 +4,7 @@ namespace MomentoSdk.Responses
 {
     public class CacheSetResponse
     {
-        public CacheSetResponse(SetResponse response)
+        public CacheSetResponse(_SetResponse response)
         {
         }
 
