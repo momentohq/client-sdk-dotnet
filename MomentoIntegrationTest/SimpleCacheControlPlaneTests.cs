@@ -34,10 +34,18 @@ namespace MomentoIntegrationTest
             SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
             string cacheName = Guid.NewGuid().ToString();
             client.CreateCache(cacheName);
-            ListCachesResponse result = client.ListCaches();
+            ListCachesResponse result = client.ListCaches().Result;
             List<CacheInfo> caches = result.Caches();
             Assert.True(caches.Exists(item => item.Name().Equals(cacheName)));
             client.DeleteCache(cacheName);
+        }
+
+        [Fact]
+        public void InvalidRequestTimeout()
+        {
+            uint defaultTtlSeconds = 10;
+            uint requestTimeoutSeconds = 0;
+            Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(authKey, defaultTtlSeconds, requestTimeoutSeconds));
         }
     }
 }

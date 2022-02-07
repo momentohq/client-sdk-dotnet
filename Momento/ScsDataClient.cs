@@ -12,16 +12,26 @@ namespace MomentoSdk
     {
         private readonly DataGrpcManager grpcManager;
         private readonly uint defaultTtlSeconds;
+        private readonly uint dataClientOperationTimeoutSeconds;
+        private const uint DEFAULT_DEADLINE_SECONDS = 5;
 
         public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds)
         {
             this.grpcManager = new DataGrpcManager(authToken, endpoint);
             this.defaultTtlSeconds = defaultTtlSeconds;
+            this.dataClientOperationTimeoutSeconds = DEFAULT_DEADLINE_SECONDS;
+        }
+
+        public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds, uint dataClientOperationTimeoutSeconds)
+        {
+            this.grpcManager = new DataGrpcManager(authToken, endpoint);
+            this.defaultTtlSeconds = defaultTtlSeconds;
+            this.dataClientOperationTimeoutSeconds = dataClientOperationTimeoutSeconds;
         }
 
         public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
         {
-            _SetResponse response = await this.SendSetAsync(cacheName, value: Convert(value), key: Convert(key), ttlSeconds: ttlSeconds);
+            _SetResponse response = await this.SendSetAsync(cacheName, value: Convert(value), key: Convert(key), ttlSeconds: ttlSeconds, dataClientOperationTimeoutSeconds: this.dataClientOperationTimeoutSeconds);
             return new CacheSetResponse(response);
         }
 
@@ -32,13 +42,13 @@ namespace MomentoSdk
 
         public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
         {
-            _GetResponse resp = await this.SendGetAsync(cacheName, Convert(key));
+            _GetResponse resp = await this.SendGetAsync(cacheName, Convert(key), dataClientOperationTimeoutSeconds: this.dataClientOperationTimeoutSeconds);
             return new CacheGetResponse(resp);
         }
 
         public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint ttlSeconds)
         {
-            _SetResponse response = await this.SendSetAsync(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
+            _SetResponse response = await this.SendSetAsync(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds, dataClientOperationTimeoutSeconds: this.dataClientOperationTimeoutSeconds);
             return new CacheSetResponse(response);
         }
 
@@ -49,7 +59,7 @@ namespace MomentoSdk
 
         public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
         {
-            _GetResponse resp = await this.SendGetAsync(cacheName, Convert(key));
+            _GetResponse resp = await this.SendGetAsync(cacheName, Convert(key), dataClientOperationTimeoutSeconds: this.dataClientOperationTimeoutSeconds);
             return new CacheGetResponse(resp);
         }
 
@@ -87,12 +97,13 @@ namespace MomentoSdk
             return new CacheGetResponse(resp);
         }
 
-        private async Task<_SetResponse> SendSetAsync(string cacheName, ByteString key, ByteString value, uint ttlSeconds)
+        private async Task<_SetResponse> SendSetAsync(string cacheName, ByteString key, ByteString value, uint ttlSeconds, uint dataClientOperationTimeoutSeconds)
         {
             _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSeconds * 1000 };
+            DateTime deadline = DateTime.UtcNow.AddSeconds(dataClientOperationTimeoutSeconds);
             try
             {
-                return await this.grpcManager.Client().SetAsync(request, new Metadata { { "cache", cacheName } });
+                return await this.grpcManager.Client().SetAsync(request, new Metadata { { "cache", cacheName } }, deadline: deadline);
             }
             catch (Exception e)
             {
@@ -113,12 +124,13 @@ namespace MomentoSdk
             }
         }
 
-        private async Task<_GetResponse> SendGetAsync(string cacheName, ByteString key)
+        private async Task<_GetResponse> SendGetAsync(string cacheName, ByteString key, uint dataClientOperationTimeoutSeconds)
         {
             _GetRequest request = new _GetRequest() { CacheKey = key };
+            DateTime deadline = DateTime.UtcNow.AddSeconds(dataClientOperationTimeoutSeconds);
             try
             {
-                return await this.grpcManager.Client().GetAsync(request, new Metadata { { "cache", cacheName } });
+                return await this.grpcManager.Client().GetAsync(request, new Metadata { { "cache", cacheName } }, deadline: deadline);
             }
             catch (Exception e)
             {
