@@ -22,9 +22,9 @@ namespace MomentoIntegrationTest
         }
 
         // Test cleanup
-        public void Dispose()
+        public async void Dispose()
         {
-            client.DeleteCache(cacheName);
+            await client.DeleteCache(cacheName);
             client.Dispose();
         }
 

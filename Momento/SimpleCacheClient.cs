@@ -52,9 +52,9 @@ namespace MomentoSdk.Responses
         /// </summary>
         /// <param name="cacheName">Name of the cache to be created</param>
         /// <returns>The result of the delete cache operation</returns>
-        public Responses.DeleteCacheResponse DeleteCache(string cacheName)
+        public async Task<Responses.DeleteCacheResponse> DeleteCache(string cacheName)
         {
-            return this.controlClient.DeleteCache(cacheName);
+            return await this.controlClient.DeleteCache(cacheName);
         }
 
         /// <summary>

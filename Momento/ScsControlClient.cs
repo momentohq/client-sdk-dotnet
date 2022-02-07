@@ -34,12 +34,12 @@ namespace MomentoSdk
             }
         }
 
-        public Responses.DeleteCacheResponse DeleteCache(string cacheName)
+        public async Task<Responses.DeleteCacheResponse> DeleteCache(string cacheName)
         {
             _DeleteCacheRequest request = new _DeleteCacheRequest() { CacheName = cacheName };
             try
             {
-                this.grpcManager.Client().DeleteCacheAsync(request, deadline: DateTime.UtcNow.AddSeconds(DEADLINE_SECONDS));
+                await this.grpcManager.Client().DeleteCacheAsync(request, deadline: DateTime.UtcNow.AddSeconds(DEADLINE_SECONDS));
                 return new Responses.DeleteCacheResponse();
             }
             catch (Exception e)

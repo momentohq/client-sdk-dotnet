@@ -3,6 +3,7 @@ using Xunit;
 using MomentoSdk.Exceptions;
 using MomentoSdk.Responses;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MomentoIntegrationTest
 {
@@ -11,11 +12,11 @@ namespace MomentoIntegrationTest
         private string authKey = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN");
 
         [Fact]
-        public void DeleteCacheThatDoesntExist()
+        public async Task DeleteCacheThatDoesntExist()
         {
             uint defaultTtlSeconds = 10;
             SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
-            Assert.Throws<NotFoundException>(() => client.DeleteCache("non existant cache"));
+            await Assert.ThrowsAsync<NotFoundException>(() => client.DeleteCache("non existant cache"));
         }
 
 
@@ -28,16 +29,17 @@ namespace MomentoIntegrationTest
 
 
         [Fact]
-        public void HappyPathListCache()
+        public async void HappyPathListCache()
         {
             uint defaultTtlSeconds = 10;
             SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
             string cacheName = Guid.NewGuid().ToString();
             client.CreateCache(cacheName);
-            ListCachesResponse result = client.ListCaches().Result;
-            List<CacheInfo> caches = result.Caches();
+            Task<ListCachesResponse> result = client.ListCaches();
+            result.Wait();
+            List<CacheInfo> caches = result.Result.Caches();
             Assert.True(caches.Exists(item => item.Name().Equals(cacheName)));
-            client.DeleteCache(cacheName);
+            await client.DeleteCache(cacheName);
         }
 
         [Fact]
