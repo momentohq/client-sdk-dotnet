@@ -52,9 +52,9 @@ namespace MomentoSdk.Responses
         /// </summary>
         /// <param name="cacheName">Name of the cache to be created</param>
         /// <returns>The result of the delete cache operation</returns>
-        public async Task<Responses.DeleteCacheResponse> DeleteCache(string cacheName)
+        public Responses.DeleteCacheResponse DeleteCache(string cacheName)
         {
-            return await this.controlClient.DeleteCache(cacheName);
+            return this.controlClient.DeleteCache(cacheName);
         }
 
         /// <summary>
@@ -62,9 +62,9 @@ namespace MomentoSdk.Responses
         /// </summary>
         /// <param name="nextPageToken">A token to specify where to start paginating. This is the NextToken from a previous response.</param>
         /// <returns>The result of the list cache operation</returns>
-        public async Task<Responses.ListCachesResponse> ListCaches(string nextPageToken = null)
+        public Responses.ListCachesResponse ListCaches(string nextPageToken = null)
         {
-            return await this.controlClient.ListCaches(nextPageToken);
+            return this.controlClient.ListCaches(nextPageToken);
         }
 
         /// <summary>

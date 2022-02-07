@@ -65,7 +65,7 @@ namespace MomentoSdk
 
         public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
         {
-            _SetResponse resp = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
+            _SetResponse resp = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds, dataClientOperationTimeoutSeconds: this.dataClientOperationTimeoutSeconds);
             return new CacheSetResponse(resp);
         }
 
@@ -76,13 +76,13 @@ namespace MomentoSdk
 
         public CacheGetResponse Get(string cacheName, byte[] key)
         {
-            _GetResponse resp = this.SendGet(cacheName, Convert(key));
+            _GetResponse resp = this.SendGet(cacheName, Convert(key), dataClientOperationTimeoutSeconds: this.dataClientOperationTimeoutSeconds);
             return new CacheGetResponse(resp);
         }
 
         public CacheSetResponse Set(string cacheName, string key, string value, uint ttlSeconds)
         {
-            _SetResponse response = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
+            _SetResponse response = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds, dataClientOperationTimeoutSeconds: this.dataClientOperationTimeoutSeconds);
             return new CacheSetResponse(response);
         }
 
@@ -93,7 +93,7 @@ namespace MomentoSdk
 
         public CacheGetResponse Get(string cacheName, string key)
         {
-            _GetResponse resp = this.SendGet(cacheName, Convert(key));
+            _GetResponse resp = this.SendGet(cacheName, Convert(key), dataClientOperationTimeoutSeconds: this.dataClientOperationTimeoutSeconds);
             return new CacheGetResponse(resp);
         }
 
@@ -111,12 +111,13 @@ namespace MomentoSdk
             }
         }
 
-        private _GetResponse SendGet(string cacheName, ByteString key)
+        private _GetResponse SendGet(string cacheName, ByteString key, uint dataClientOperationTimeoutSeconds)
         {
             _GetRequest request = new _GetRequest() { CacheKey = key };
+            DateTime deadline = DateTime.UtcNow.AddSeconds(dataClientOperationTimeoutSeconds);
             try
             {
-                return this.grpcManager.Client().Get(request, new Metadata { { "cache", cacheName } });
+                return this.grpcManager.Client().Get(request, new Metadata { { "cache", cacheName } }, deadline: deadline);
             }
             catch (Exception e)
             {
@@ -138,12 +139,13 @@ namespace MomentoSdk
             }
         }
 
-        private _SetResponse SendSet(string cacheName, ByteString key, ByteString value, uint ttlSeconds)
+        private _SetResponse SendSet(string cacheName, ByteString key, ByteString value, uint ttlSeconds, uint dataClientOperationTimeoutSeconds)
         {
             _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSeconds * 1000 };
+            DateTime deadline = DateTime.UtcNow.AddSeconds(dataClientOperationTimeoutSeconds);
             try
             {
-                return this.grpcManager.Client().Set(request, new Metadata { { "cache", cacheName } });
+                return this.grpcManager.Client().Set(request, new Metadata { { "cache", cacheName } }, deadline: deadline);
             }
             catch (Exception e)
             {

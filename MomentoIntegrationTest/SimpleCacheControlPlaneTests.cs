@@ -12,13 +12,12 @@ namespace MomentoIntegrationTest
         private string authKey = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN");
 
         [Fact]
-        public async Task DeleteCacheThatDoesntExist()
+        public void DeleteCacheThatDoesntExist()
         {
             uint defaultTtlSeconds = 10;
             SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
-            await Assert.ThrowsAsync<NotFoundException>(() => client.DeleteCache("non existant cache"));
+            Assert.Throws<NotFoundException>(() => client.DeleteCache("non existant cache"));
         }
-
 
         [Fact]
         public void InvalidJwtException()
@@ -29,17 +28,16 @@ namespace MomentoIntegrationTest
 
 
         [Fact]
-        public async void HappyPathListCache()
+        public void HappyPathListCache()
         {
             uint defaultTtlSeconds = 10;
             SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
             string cacheName = Guid.NewGuid().ToString();
             client.CreateCache(cacheName);
-            Task<ListCachesResponse> result = client.ListCaches();
-            result.Wait();
-            List<CacheInfo> caches = result.Result.Caches();
+            ListCachesResponse result = client.ListCaches();
+            List<CacheInfo> caches = result.Caches();
             Assert.True(caches.Exists(item => item.Name().Equals(cacheName)));
-            await client.DeleteCache(cacheName);
+            client.DeleteCache(cacheName);
         }
 
         [Fact]

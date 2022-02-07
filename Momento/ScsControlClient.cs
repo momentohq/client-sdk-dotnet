@@ -25,7 +25,7 @@ namespace MomentoSdk
             try
             {
                 _CreateCacheRequest request = new _CreateCacheRequest() { CacheName = cacheName };
-                this.grpcManager.Client().CreateCacheAsync(request, deadline: DateTime.UtcNow.AddSeconds(DEADLINE_SECONDS));
+                this.grpcManager.Client().CreateCache(request, deadline: DateTime.UtcNow.AddSeconds(DEADLINE_SECONDS));
                 return new Responses.CreateCacheResponse();
             }
             catch (Exception e)
@@ -34,12 +34,12 @@ namespace MomentoSdk
             }
         }
 
-        public async Task<Responses.DeleteCacheResponse> DeleteCache(string cacheName)
+        public Responses.DeleteCacheResponse DeleteCache(string cacheName)
         {
             _DeleteCacheRequest request = new _DeleteCacheRequest() { CacheName = cacheName };
             try
             {
-                await this.grpcManager.Client().DeleteCacheAsync(request, deadline: DateTime.UtcNow.AddSeconds(DEADLINE_SECONDS));
+                this.grpcManager.Client().DeleteCache(request, deadline: DateTime.UtcNow.AddSeconds(DEADLINE_SECONDS));
                 return new Responses.DeleteCacheResponse();
             }
             catch (Exception e)
@@ -48,12 +48,12 @@ namespace MomentoSdk
             }
         }
 
-        public async Task<Responses.ListCachesResponse> ListCaches(string nextPageToken = null)
+        public Responses.ListCachesResponse ListCaches(string nextPageToken = null)
         {
             _ListCachesRequest request = new _ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
             try
             {
-                ControlClient._ListCachesResponse result = await this.grpcManager.Client().ListCachesAsync(request, deadline: DateTime.UtcNow.AddSeconds(DEADLINE_SECONDS));
+                ControlClient._ListCachesResponse result = this.grpcManager.Client().ListCaches(request, deadline: DateTime.UtcNow.AddSeconds(DEADLINE_SECONDS));
                 return new Responses.ListCachesResponse(result);
             }
             catch (Exception e)
