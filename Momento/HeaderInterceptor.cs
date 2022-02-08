@@ -64,7 +64,7 @@ namespace MomentoSdk
                 context = new ClientInterceptorContext<TRequest, TResponse>(context.Method, context.Host, options);
             }
 
-            foreach(Header header in this.headersToAdd)
+            foreach (Header header in this.headersToAdd)
             {
                 headers.Add(header.Name, header.Value);
             }

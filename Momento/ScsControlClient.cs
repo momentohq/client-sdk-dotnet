@@ -1,6 +1,7 @@
 ﻿using System;
 using MomentoSdk.Exceptions;
 using ControlClient;
+using System.Threading.Tasks;
 
 namespace MomentoSdk
 {
@@ -9,6 +10,7 @@ namespace MomentoSdk
         private readonly ControlGrpcManager grpcManager;
         private readonly string authToken;
         private readonly string endpoint;
+        private const uint DEADLINE_SECONDS = 60;
 
         public ScsControlClient(string authToken, string endpoint)
         {
@@ -23,7 +25,7 @@ namespace MomentoSdk
             try
             {
                 _CreateCacheRequest request = new _CreateCacheRequest() { CacheName = cacheName };
-                this.grpcManager.Client().CreateCache(request);
+                this.grpcManager.Client().CreateCache(request, deadline: DateTime.UtcNow.AddSeconds(DEADLINE_SECONDS));
                 return new Responses.CreateCacheResponse();
             }
             catch (Exception e)
@@ -37,7 +39,7 @@ namespace MomentoSdk
             _DeleteCacheRequest request = new _DeleteCacheRequest() { CacheName = cacheName };
             try
             {
-                this.grpcManager.Client().DeleteCache(request);
+                this.grpcManager.Client().DeleteCache(request, deadline: DateTime.UtcNow.AddSeconds(DEADLINE_SECONDS));
                 return new Responses.DeleteCacheResponse();
             }
             catch (Exception e)
@@ -51,7 +53,7 @@ namespace MomentoSdk
             _ListCachesRequest request = new _ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
             try
             {
-                ControlClient._ListCachesResponse result = this.grpcManager.Client().ListCaches(request);
+                ControlClient._ListCachesResponse result = this.grpcManager.Client().ListCaches(request, deadline: DateTime.UtcNow.AddSeconds(DEADLINE_SECONDS));
                 return new Responses.ListCachesResponse(result);
             }
             catch (Exception e)
