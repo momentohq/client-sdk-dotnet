@@ -48,7 +48,7 @@ namespace MomentoSdk.Exceptions
                     case StatusCode.Unavailable:
                     case StatusCode.Aborted:
                     case StatusCode.DataLoss:
-                    default: return new InternalServerException(INTERNAL_SERVER_ERROR_MESSAGE);
+                    default: return new InternalServerException(INTERNAL_SERVER_ERROR_MESSAGE, e);
                 }
             }
             return new ClientSdkException(SDK_ERROR_MESSAGE, e);
