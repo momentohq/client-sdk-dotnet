@@ -1,4 +1,5 @@
-﻿namespace MomentoSdk.Exceptions
+﻿using System;
+namespace MomentoSdk.Exceptions
 {
     /// <summary>
     /// Base type for all the exceptions resulting from invalid interactions with Momento Services.
@@ -6,6 +7,9 @@
     public abstract class MomentoServiceException : SdkException
     {
         protected MomentoServiceException(string message) : base(message)
+        {
+        }
+        protected MomentoServiceException(string message, Exception e) : base(message, e)
         {
         }
     }

@@ -1,5 +1,4 @@
-﻿using System;
-namespace MomentoSdk.Exceptions
+﻿namespace MomentoSdk.Exceptions
 {
     public class CancelledException : MomentoServiceException
     {

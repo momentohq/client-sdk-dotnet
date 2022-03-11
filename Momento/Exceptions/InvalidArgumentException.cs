@@ -1,4 +1,5 @@
-﻿namespace MomentoSdk.Exceptions
+﻿using System;
+namespace MomentoSdk.Exceptions
 {
     /// <summary>
     /// SDK client side validation failed.
