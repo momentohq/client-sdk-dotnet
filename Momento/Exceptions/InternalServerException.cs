@@ -9,5 +9,8 @@ namespace MomentoSdk.Exceptions
         public InternalServerException(string message, Exception e) : base(message, e)
         {
         }
+        public InternalServerException(string message) : base(message)
+        {
+        }
     }
 }
