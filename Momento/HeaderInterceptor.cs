@@ -1,6 +1,7 @@
 ﻿using System;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
+using System.Collections.Generic;
 
 namespace MomentoSdk
 {
@@ -17,8 +18,8 @@ namespace MomentoSdk
     }
     class HeaderInterceptor : Grpc.Core.Interceptors.Interceptor
     {
-        private readonly Header[] headersToAdd;
-        public HeaderInterceptor(Header[] headers)
+        private readonly List<Header> headersToAdd;
+        public HeaderInterceptor(List<Header> headers)
         {
             this.headersToAdd = headers;
         }
