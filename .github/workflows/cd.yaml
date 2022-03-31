@@ -2,7 +2,7 @@ name: On push Main
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build_csharp:
@@ -20,11 +20,11 @@ jobs:
 
       - uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '5.0.x'
+          dotnet-version: "6.0.x"
 
       - uses: nuget/setup-nuget@v1
         with:
-          nuget-version: '5.x'
+          nuget-version: "5.x"
 
       - name: Configure Artifactory publish credentials
         run: |
@@ -37,17 +37,17 @@ jobs:
 
       - name: Build
         run: |
-            dotnet build
+          dotnet build
         shell: bash
 
       - name: Unit Test
         run: |
-            dotnet test MomentoTest
+          dotnet test MomentoTest
         shell: bash
 
       - name: Integration Test
         run: |
-            dotnet test MomentoIntegrationTest
+          dotnet test MomentoIntegrationTest
         shell: bash
 
       - name: Set release
