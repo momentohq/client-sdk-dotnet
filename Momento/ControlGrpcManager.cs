@@ -10,6 +10,8 @@ namespace MomentoSdk
 {
     internal sealed class ControlGrpcManager : IDisposable
     {
+        private const string Authorization = "Authorization";
+        private const string Agent = "Agent";
         private readonly GrpcChannel channel;
         private readonly ScsControl.ScsControlClient client;
         private readonly string version = GetAssembly(typeof(MomentoSdk.Responses.CacheGetResponse)).GetName().Version.ToString();
@@ -17,7 +19,7 @@ namespace MomentoSdk
         public ControlGrpcManager(string authToken, string endpoint)
         {
             this.channel = GrpcChannel.ForAddress(endpoint, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
-            List<Header> headers = new List<Header>{ new Header(name: "Authorization", value: authToken), new Header(name: "Agent", value: version) };
+            List<Header> headers = new List<Header>{ new Header(name: Authorization, value: authToken), new Header(name: Agent, value: version) };
             CallInvoker invoker = channel.Intercept(new HeaderInterceptor(headers));
             this.client = new ScsControl.ScsControlClient(invoker);
         }
