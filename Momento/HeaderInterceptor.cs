@@ -19,6 +19,7 @@ namespace MomentoSdk
     class HeaderInterceptor : Grpc.Core.Interceptors.Interceptor
     {
         private readonly List<Header> headersToAdd;
+        private volatile Boolean isUserAgentSent = false;
         public HeaderInterceptor(List<Header> headers)
         {
             this.headersToAdd = headers;
@@ -64,10 +65,15 @@ namespace MomentoSdk
                 var options = context.Options.WithHeaders(headers);
                 context = new ClientInterceptorContext<TRequest, TResponse>(context.Method, context.Host, options);
             }
-
-            foreach (Header header in this.headersToAdd)
-            {
-                headers.Add(header.Name, header.Value);
+            if (!isUserAgentSent) {
+                foreach (Header header in this.headersToAdd)
+                {
+                    headers.Add(header.Name, header.Value);
+                }
+                isUserAgentSent = false;
+            } else {
+                // Only add Authorization metadata
+                headers.Add(this.headersToAdd[0].Name, this.headersToAdd[0].Value);
             }
         }
     }
