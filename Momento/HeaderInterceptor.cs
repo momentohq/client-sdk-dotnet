@@ -70,7 +70,7 @@ namespace MomentoSdk
                 {
                     headers.Add(header.Name, header.Value);
                 }
-                isUserAgentSent = false;
+                isUserAgentSent = true;
             } else {
                 // Only add Authorization metadata
                 headers.Add(this.headersToAdd[0].Name, this.headersToAdd[0].Value);
