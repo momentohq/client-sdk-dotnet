@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Xunit;
 using MomentoSdk.Responses;
 using MomentoSdk.Exceptions;
+using System.Text;
 
 namespace MomentoIntegrationTest
 {
@@ -37,6 +38,17 @@ namespace MomentoIntegrationTest
             CacheGetResponse result = client.Get(cacheName, cacheKey);
             string stringResult = result.String();
             Assert.Equal(cacheValue, stringResult);
+        }
+
+        [Fact]
+        public void HappyPathStringKeyByteValue()
+        {
+            string cacheKey = "some cache key";
+            byte[] cacheValue = Encoding.ASCII.GetBytes("some cache value");
+            client.Set(cacheName, cacheKey, cacheValue, defaultTtlSeconds);
+            CacheGetResponse result = client.Get(cacheName, cacheKey);
+            string stringResult = result.String();
+            Assert.Equal(Encoding.ASCII.GetString(cacheValue), stringResult);
         }
 
         [Fact]
