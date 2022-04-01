@@ -2,11 +2,13 @@
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MomentoSdk
 {
     class Header
     {
+        public readonly List<string>  onceOnlyHeaders = new List<string>{"Authorization"};
         public string Name;
         public string Value;
         public Header(String name, String value)
@@ -20,16 +22,11 @@ namespace MomentoSdk
     {
         private readonly List<Header> headersToAddEveryTime = new List<Header>{};
         private readonly List<Header> headersToAddOnce = new List<Header>{};
-        private volatile Boolean isUserAgentSent = false;
+        private volatile Boolean areOnlyOnceHeadersSent = false;
         public HeaderInterceptor(List<Header> headers)
         {
-            foreach(Header header in headers) {
-                if (header.Name == "Authorization") {
-                    this.headersToAddEveryTime.Add(new Header(name: header.Name, value: header.Value));
-                } else {
-                    this.headersToAddOnce.Add(new Header(name: header.Name, value: header.Value));
-                }
-            }
+            this.headersToAddOnce = headers.Where(header => header.onceOnlyHeaders.Contains(header.Name)).ToList();
+            this.headersToAddEveryTime = headers.Where(header => !header.onceOnlyHeaders.Contains(header.Name)).ToList();
         }
 
         public override TResponse BlockingUnaryCall<TRequest, TResponse>(TRequest request, ClientInterceptorContext<TRequest, TResponse> context, BlockingUnaryCallContinuation<TRequest, TResponse> continuation)
@@ -76,12 +73,12 @@ namespace MomentoSdk
                 {
                     headers.Add(header.Name, header.Value);
                 }
-            if (!isUserAgentSent) {
+            if (!areOnlyOnceHeadersSent) {
                 foreach (Header header in this.headersToAddOnce)
                 {
                     headers.Add(header.Name, header.Value);
                 }
-                isUserAgentSent = true;
+                areOnlyOnceHeadersSent = true;
             }
         }
     }
