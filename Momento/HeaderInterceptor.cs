@@ -72,18 +72,16 @@ namespace MomentoSdk
                 var options = context.Options.WithHeaders(headers);
                 context = new ClientInterceptorContext<TRequest, TResponse>(context.Method, context.Host, options);
             }
+            foreach (Header header in this.headersToAddEveryTime)
+                {
+                    headers.Add(header.Name, header.Value);
+                }
             if (!isUserAgentSent) {
                 foreach (Header header in this.headersToAddOnce)
                 {
                     headers.Add(header.Name, header.Value);
                 }
                 isUserAgentSent = true;
-            } else {
-                // Only add Authorization metadata
-                foreach (Header header in this.headersToAddEveryTime)
-                {
-                    headers.Add(header.Name, header.Value);
-                }
             }
         }
     }
