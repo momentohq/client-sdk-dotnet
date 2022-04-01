@@ -1,6 +1,7 @@
 ﻿using System;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
+using System.Collections.Generic;
 
 namespace MomentoSdk
 {
@@ -17,10 +18,18 @@ namespace MomentoSdk
     }
     class HeaderInterceptor : Grpc.Core.Interceptors.Interceptor
     {
-        private readonly Header[] headersToAdd;
-        public HeaderInterceptor(Header[] headers)
+        private readonly List<Header> headersToAddEveryTime = new List<Header>{};
+        private readonly List<Header> headersToAddOnce = new List<Header>{};
+        private volatile Boolean isUserAgentSent = false;
+        public HeaderInterceptor(List<Header> headers)
         {
-            this.headersToAdd = headers;
+            foreach(Header header in headers) {
+                if (header.Name == "Authorization") {
+                    this.headersToAddEveryTime.Add(new Header(name: header.Name, value: header.Value));
+                } else {
+                    this.headersToAddOnce.Add(new Header(name: header.Name, value: header.Value));
+                }
+            }
         }
 
         public override TResponse BlockingUnaryCall<TRequest, TResponse>(TRequest request, ClientInterceptorContext<TRequest, TResponse> context, BlockingUnaryCallContinuation<TRequest, TResponse> continuation)
@@ -63,10 +72,16 @@ namespace MomentoSdk
                 var options = context.Options.WithHeaders(headers);
                 context = new ClientInterceptorContext<TRequest, TResponse>(context.Method, context.Host, options);
             }
-
-            foreach (Header header in this.headersToAdd)
-            {
-                headers.Add(header.Name, header.Value);
+            foreach (Header header in this.headersToAddEveryTime)
+                {
+                    headers.Add(header.Name, header.Value);
+                }
+            if (!isUserAgentSent) {
+                foreach (Header header in this.headersToAddOnce)
+                {
+                    headers.Add(header.Name, header.Value);
+                }
+                isUserAgentSent = true;
             }
         }
     }
