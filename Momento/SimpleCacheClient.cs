@@ -132,6 +132,28 @@ namespace MomentoSdk.Responses
         {
             return await this.dataClient.GetAsync(cacheName, key);
         }
+        /// <summary>
+        /// Sets the value in cache with a given Time To Live (TTL) seconds.
+        /// </summary>
+        /// <param name="key">The key under which the value is to be added</param>
+        /// <param name="value">The value to be stored</param>
+        /// <param name="ttlSeconds">Time to Live for the item in Cache. This ttl takes precedence over the TTL used when initializing a cache client</param>
+        /// <returns>Future containing the result of the set operation</returns>
+        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint ttlSeconds)
+        {
+            return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
+        }
+
+        /// <summary>
+        /// Sets the value in cache with a default Time To Live (TTL) seconds used initializing a cache client
+        /// </summary>
+        /// <param name="key">The value to be stored</param>
+        /// <param name="value">The value to be stored</param>
+        /// <returns>Future containing the result of the set operation</returns>
+        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value)
+        {
+            return await this.dataClient.SetAsync(cacheName, key, value);
+        }
 
         /// <summary>
         ///  Sets the value in the cache. If a value for this key is already present it will be replaced by the new value.
@@ -140,6 +162,7 @@ namespace MomentoSdk.Responses
         /// <param name="value">The value to be stored</param>
         /// <param name="ttlSeconds">Time to Live for the item in Cache. This ttl takes precedence over the TTL used when initializing a cache client</param>
         /// <returns>Result of the set operation</returns>
+        
         public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
         {
             return this.dataClient.Set(cacheName, key, value, ttlSeconds);
@@ -199,6 +222,30 @@ namespace MomentoSdk.Responses
         public CacheGetResponse Get(string cacheName, string key)
         {
             return this.dataClient.Get(cacheName, key);
+        }
+        /// <summary>
+        /// Sets the value in cache with a given Time To Live (TTL) seconds. If a value for this key is already present it will be replaced by the new value.
+        /// </summary>
+        /// <param name="key">The key under which the value is to be added</param>
+        /// <param name="value">The value to be stored</param>
+        /// <param name="ttlSeconds">Time to Live for the item in Cache. This ttl takes precedence over the TTL used when initializing a cache client</param>
+        /// <returns>Result of the set operation</returns>
+        public CacheSetResponse Set(string cacheName, string key, byte[] value, uint ttlSeconds)
+        {
+            return this.dataClient.Set(cacheName, key, value, ttlSeconds);
+        }
+
+        /// <summary>
+        /// Sets the value in the cache. If a value for this key is already present it will be replaced by the new value.
+        /// The Time to Live (TTL) seconds defaults to the parameter used when initializing this Cache client
+        /// </summary>
+        /// <param name="key">The key under which the value is to be added</param>
+        /// <param name="value">The value to be stored</param>
+        /// <param name="ttlSeconds">Time to Live for the item in Cache. This ttl takes precedence over the TTL used when initializing a cache client</param>
+        /// <returns>Result of the set operation</returns>
+        public CacheSetResponse Set(string cacheName, string key, byte[] value)
+        {
+            return this.dataClient.Set(cacheName, key, value);
         }
 
         public void Dispose()
