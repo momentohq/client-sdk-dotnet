@@ -19,7 +19,10 @@ namespace MomentoIntegrationTest
         {
             uint defaultTtlSeconds = 10;
             client = new SimpleCacheClient(authKey, defaultTtlSeconds);
-            client.CreateCache(cacheName);
+            try {
+                client.CreateCache(cacheName);
+            } catch (AlreadyExistsException) {
+            }
         }
 
         // Test cleanup
