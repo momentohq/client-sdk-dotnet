@@ -18,8 +18,8 @@ namespace MomentoSdk
     }
     class HeaderInterceptor : Grpc.Core.Interceptors.Interceptor
     {
-        private readonly List<Header> headersToAddEveryTime;
-        private readonly List<Header> headersToAddOnce;
+        private readonly List<Header> headersToAddEveryTime = new List<Header>{};
+        private readonly List<Header> headersToAddOnce = new List<Header>{};
         private volatile Boolean isUserAgentSent = false;
         public HeaderInterceptor(List<Header> headers)
         {
