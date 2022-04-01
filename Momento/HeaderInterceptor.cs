@@ -18,11 +18,18 @@ namespace MomentoSdk
     }
     class HeaderInterceptor : Grpc.Core.Interceptors.Interceptor
     {
-        private readonly List<Header> headersToAdd;
+        private readonly List<Header> headersToAddEveryTime;
+        private readonly List<Header> headersToAddOnce;
         private volatile Boolean isUserAgentSent = false;
         public HeaderInterceptor(List<Header> headers)
         {
-            this.headersToAdd = headers;
+            foreach(Header header in headers) {
+                if (header.Name == "Authorization") {
+                    this.headersToAddEveryTime.Add(new Header(name: header.Name, value: header.Value));
+                } else {
+                    this.headersToAddOnce.Add(new Header(name: header.Name, value: header.Value));
+                }
+            }
         }
 
         public override TResponse BlockingUnaryCall<TRequest, TResponse>(TRequest request, ClientInterceptorContext<TRequest, TResponse> context, BlockingUnaryCallContinuation<TRequest, TResponse> continuation)
@@ -66,14 +73,17 @@ namespace MomentoSdk
                 context = new ClientInterceptorContext<TRequest, TResponse>(context.Method, context.Host, options);
             }
             if (!isUserAgentSent) {
-                foreach (Header header in this.headersToAdd)
+                foreach (Header header in this.headersToAddOnce)
                 {
                     headers.Add(header.Name, header.Value);
                 }
                 isUserAgentSent = true;
             } else {
                 // Only add Authorization metadata
-                headers.Add(this.headersToAdd[0].Name, this.headersToAdd[0].Value);
+                foreach (Header header in this.headersToAddEveryTime)
+                {
+                    headers.Add(header.Name, header.Value);
+                }
             }
         }
     }
