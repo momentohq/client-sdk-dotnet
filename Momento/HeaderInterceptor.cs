@@ -8,8 +8,9 @@ namespace MomentoSdk
 {
     class Header
     {
-        private const string Agent = "Agent";
-        public readonly List<string>  onceOnlyHeaders = new List<string>{Agent};
+        public const string AuthorizationKey = "Authorization";
+        public const string AgentKey = "Agent";
+        public readonly List<string>  onceOnlyHeaders = new List<string>{Header.AgentKey};
         public string Name;
         public string Value;
         public Header(String name, String value)
