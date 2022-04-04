@@ -9,5 +9,9 @@ namespace MomentoSdk.Exceptions
         public InvalidArgumentException(string message) : base(message)
         {
         }
+
+        public InvalidArgumentException(string message, Exception e) : base(message, e)
+        {
+        }
     }
 }
