@@ -60,7 +60,7 @@ namespace MomentoTest
             uint expiryEpochSeconds = uint.MaxValue;
             var req = new SigningRequest("testCacheName", "testCacheKey", CacheOperation.SET, expiryEpochSeconds)
             {
-                TtlSeconds = 5
+                TtlSeconds = uint.MaxValue
             };
             var url = signer.CreatePresignedUrl("foobar.com", req);
 
@@ -68,7 +68,7 @@ namespace MomentoTest
             bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult);
             Assert.True(result);
             Assert.Equal(Uri.UriSchemeHttps, uriResult.Scheme);
-            Assert.StartsWith("https://foobar.com/cache/set/testCacheName/testCacheKey?ttl=5000&token=", url);
+            Assert.StartsWith("https://foobar.com/cache/set/testCacheName/testCacheKey?ttl=4294967295000&token=", url);
         }
 
         [Fact]

@@ -7,7 +7,6 @@ namespace MomentoSdk
 {
     public class MomentoSigner
     {
-
         private readonly JwtHeader jwtHeader;
 
         public MomentoSigner(string jwkJsonString)
@@ -39,13 +38,13 @@ namespace MomentoSdk
             return signingRequest.CacheOperation switch
             {
                 CacheOperation.GET => $"https://{hostname}/cache/get/{cacheName}/{cacheKey}?token={jwtToken}",
-                CacheOperation.SET => $"https://{hostname}/cache/set/{cacheName}/{cacheKey}?ttl={signingRequest.TtlSeconds * 1000}&token={jwtToken}",
+                CacheOperation.SET => $"https://{hostname}/cache/set/{cacheName}/{cacheKey}?ttl={signingRequest.TtlSeconds * (ulong)1000}&token={jwtToken}",
                 _ => throw new NotImplementedException($"Unhandled {signingRequest.CacheOperation}")
             };
         }
 
         /// <summary>
-        /// Create a pre-signed HTTPS URL.
+        /// Create the signature for auth to be used in JWT.
         /// </summary>
         /// <param name="hostname">Hostname of the SimpleCacheService. Use the value returned from CreateSigningKey's response.</param>
         /// <param name="signingRequest">The parameters used for generating a pre-signed URL</param>
@@ -53,23 +52,23 @@ namespace MomentoSdk
         public string SignAccessToken(SigningRequest signingRequest)
         {
             var payload = CommonJwtBody(signingRequest.CacheName, signingRequest.CacheKey, signingRequest.ExpiryEpochSeconds);
-            switch(signingRequest.CacheOperation)
+            switch (signingRequest.CacheOperation)
             {
                 case CacheOperation.GET:
-                {
+                    {
                         payload.Add("method", new string[] { "get" });
                         break;
-                }
+                    }
                 case CacheOperation.SET:
-                {
+                    {
                         payload.Add("method", new string[] { "set" });
                         payload.Add("ttl", signingRequest.TtlSeconds);
                         break;
-                }
+                    }
                 default:
-                {
+                    {
                         throw new NotImplementedException($"Unhandled {signingRequest.CacheOperation}");
-                }
+                    }
             }
 
             return CreateJwtToken(payload);
