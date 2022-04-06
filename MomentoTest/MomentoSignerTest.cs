@@ -14,21 +14,15 @@ namespace MomentoTest
         private const string ES256_JWK = "{\"kty\":\"EC\",\"d\":\"wLj6mq_IqGAqz40RyR1QiH1KElvhECQ8dQAcu7iRwWE\",\"crv\":\"P-256\",\"kid\":\"fooKeyId\",\"x\":\"pSU203ud3cNnVeCgaho2z-JBao21EHFm4or75sV8RkY\",\"y\":\"uSwevlzSV3kyArKAu7qv7I_ffaXAvAp98YM0zwUA5jA\",\"alg\":\"ES256\"}";
         private const string RS384_JWK = "{\"p\":\"_LVm8mWfx8Td7zg7Xupll_2pVGyhwmos18Mi6_vr0DglnDWOg3nsfjaS6j5a_mwgeEHUUjXaORf5zZMI3hVaD9-1WaaErmrUlZuNDvAtgb1MLLzgzP2WYmdAAzSn1-0fOqUiiZtAADEr-gmCrN-ofbDcKmppdwA1DbOaCMmVvc0\",\"kty\":\"RSA\",\"q\":\"yr9ZUQAotA7KllPB7klkeDwfDv2FIz-N7Yms20Nv20oALB3XLWlEkG85AOuYwAk-gXBtu45piM4D3jfHDsP5uycvXdxVGlna56XKUjgfSHW3UdfKxhd9FzOY4MvPG_Aj1rdkuNOPCNUGtRRbXA3HNjhBoJoSg5dbSCwnQzi10rM\",\"d\":\"DsnOr7w7Zo5qmNMr7sfhKvtQOJFaUwS_IhLyyNntmn57FuqlqMO1cv7_uzRer-LbI9dF7J4DVjtf6jEe7CcbYQHMCQqbj2RPrubprqYojjBKVtSlUt9hOIK8DswgyrXX8JnpMsLIw8Mdvyo5EbCw7tt4qKeTePFk-xA7GAqHi3FLisst3ijkpQT5OjbUA1GYMIijzJfcFOgjtbvLghDl1XLW29ZP3K1MYkNtX9P3bbbI5GRwWSo5SsGzzcNCbI4unfHU8MIf-cDUDopeAM6ixjB-OXzz6Fq4J-XeIS0-4vZMYD2l5OuD0gQfkCiYfOyrNPL0KqZxolioRvD1dRzTXQ\",\"e\":\"AQAB\",\"kid\":\"fooKeyId\",\"qi\":\"YWx6rzgadSyrpCc4YTmq_ly_JHXxPO5ddZoWmukVb_tF-3E-sBaOd7jBj4OJnrHqTz2EkwUw8krexoptZEvMPjvLRxdubwgqw6d8SCC-6DKOfUJB43diY56lzIxlIA32BemLx6B0SrBIbgWhY1IkAJlj2AiAh01ygDh1tH-FoKI\",\"dp\":\"x152MZZrUDfIwAolDOTv8dF13d02YSNS7YZN7s95Y3Rod6zpGmD-azSzA4reTwsPMtD8qT9DQvffZIgz3sIJo6xibrAozVILFVz7FGX4APtPNZxt3kvScR_0KJNKN9gjYykU7mtFOuGQSFtodOqfC0qU6AG74t6O_JhNVdF0CaE\",\"alg\":\"RS384\",\"dq\":\"C53ZFT4IFwD99I0KAIgt_IGdWfOGrFVY4XJQ-CMuBod_6QcwrAZrCkeFIZteHiqpbSsu7l8jhtYe_J1_h0YNSf7dxOf57E-XrkwegoV6rWEpRsQxdxYjca_gI4kp7bTdqNDLMZfVizEBeGCZN3YGowGoKPaK9wU2ErWM7loSeOc\",\"n\":\"yCQGvhlh6_RTK3gtJPgllHHUYT_hx9xgeDhLRQAadHd0FjCCBHXLisTABHIu568rn86chznbzN0yLDJ-C5Q8YM46xxJZgDfG3Sq4NlZJcrxjBeTIVXeqWj0W5HDK8PDIYgEZfXmJ4AKeB3PQT5o25zN92ja45bFHk8vHBo_TECYYxHvI7TzbMOs5Z4PvWQnfR34GR0TvD4iHSEq6r0TTrYhdtLRq-PsIOk--0subO7uTEVqLCU99wQmsty0VacmIeezuap2OgR0EG4nlAzjqs8EyZqJKin8b9dRfQm8UOpQ1GbU7pKxymQc7pb1K54YSXFF5lYalcQOWlhmM01bgVw\"}";
 
-        MomentoSigner signer = new MomentoSigner();
-
         [Theory]
         [InlineData(RS256_JWK)]
         [InlineData(ES256_JWK)]
         [InlineData(RS384_JWK)]
         public void TestJwkRoundTrip(string jwk)
         {
+            MomentoSigner signer = new MomentoSigner(jwk);
             uint expiryEpochSeconds = uint.MaxValue;
-            var url = signer.CreatePresignedUrlForGet("foobar.com", jwk, "testCacheName", "testCacheKey", expiryEpochSeconds);
-            Uri uriResult;
-            bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult);
-            Assert.True(result);
-            Assert.Equal(Uri.UriSchemeHttps, uriResult.Scheme);
-            Assert.StartsWith("https://foobar.com/cache/get/testCacheName/testCacheKey?token=", url);
+            var url = signer.CreatePresignedUrl("foobar.com", new SigningRequest("testCacheName", "testCacheKey", CacheOperation.GET, expiryEpochSeconds));;
 
             string jwt = HttpUtility.ParseQueryString(new Uri(url).Query).Get("token");
 
@@ -46,11 +40,45 @@ namespace MomentoTest
         }
 
         [Fact]
+        public void TestPresignedUrlForGet()
+        {
+            MomentoSigner signer = new MomentoSigner(RS256_JWK);
+            uint expiryEpochSeconds = uint.MaxValue;
+            var url = signer.CreatePresignedUrl("foobar.com", new SigningRequest("testCacheName", "testCacheKey", CacheOperation.GET, expiryEpochSeconds));
+
+            Uri uriResult;
+            bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult);
+            Assert.True(result);
+            Assert.Equal(Uri.UriSchemeHttps, uriResult.Scheme);
+            Assert.StartsWith("https://foobar.com/cache/get/testCacheName/testCacheKey?token=", url);
+        }
+
+        [Fact]
+        public void TestPresignedUrlForSet()
+        {
+            MomentoSigner signer = new MomentoSigner(RS256_JWK);
+            uint expiryEpochSeconds = uint.MaxValue;
+            var req = new SigningRequest("testCacheName", "testCacheKey", CacheOperation.SET, expiryEpochSeconds)
+            {
+                TtlSeconds = 5
+            };
+            var url = signer.CreatePresignedUrl("foobar.com", req);
+
+            Uri uriResult;
+            bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult);
+            Assert.True(result);
+            Assert.Equal(Uri.UriSchemeHttps, uriResult.Scheme);
+            Assert.StartsWith("https://foobar.com/cache/get/testCacheName/testCacheKey?ttl=5000&token=", url);
+        }
+
+        [Fact]
         public void TestJwkError()
         {
             uint expiryEpochSeconds = uint.MaxValue;
             var invalidJwk = "{\"alg\":\"foo\"}";
-            Assert.Throws<InvalidArgumentException>(() => signer.CreatePresignedUrlForGet("foobar.com", invalidJwk, "testCacheName", "testCacheKey", expiryEpochSeconds));
+            MomentoSigner signer = new MomentoSigner(invalidJwk);
+            
+            Assert.Throws<InvalidArgumentException>(() => signer.SignAccessToken(new SigningRequest("testCacheName", "testCacheKey", CacheOperation.GET, expiryEpochSeconds)));
         }
     }
 }

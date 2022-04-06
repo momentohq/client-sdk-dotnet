@@ -8,60 +8,83 @@ namespace MomentoSdk
     public class MomentoSigner
     {
 
-        /// <summary>
-        /// Create a pre-signed HTTPS URL to retrieve an object.
-        /// </summary>
-        /// <param name="hostname">Hostname of the SimpleCacheService. Use the value returned from CreateSigningKey's response.</param>
-        /// <param name="jwkJsonString">JWK in JSON string. Use the value returned from CreateSigningKey's response.</param>
-        /// <param name="cacheName">The name of the Cache.</param>
-        /// <param name="cacheKey">The key of the Object.</param>
-        /// <param name="expiryEpochSeconds">The timestamp that the pre-signed URL is valid until.</param>
-        /// <returns></returns>
-        public string CreatePresignedUrlForGet(string hostname, string jwkJsonString, string cacheName, string cacheKey, uint expiryEpochSeconds)
-        {
-            var payload = CommonJwtBody(cacheName, cacheKey, expiryEpochSeconds);
-            payload.Add("method", new string[] { "get" });
+        private readonly JwtHeader jwtHeader;
 
-            var encodedJwt = CreateJwtToken(jwkJsonString, payload);
-
-            return $"https://{hostname}/cache/get/{cacheName}/{cacheKey}?token={encodedJwt}";
-        }
-
-        /// <summary>
-        /// Create a pre-signed HTTPS URL to upload an object.
-        /// </summary>
-        /// <param name="hostname">Hostname of the SimpleCacheService. Use the value returned from CreateSigningKey's response.</param>
-        /// <param name="jwkJsonString">JWK in JSON string. Use the value returned from CreateSigningKey's response.</param>
-        /// <param name="cacheName">The name of the Cache.</param>
-        /// <param name="cacheKey">The key of the Object.</param>
-        /// <param name="expiryEpochSeconds">The timestamp that the pre-signed URL is valid until.</param>
-        /// <param name="ttlSeconds">The timestamp that the object is valid until.</param>
-        /// <returns></returns>
-        public string CreatePresignedUrlForSet(string hostname, string jwkJsonString, string cacheName, string cacheKey, uint expiryEpochSeconds, uint ttlSeconds)
-        {
-            var payload = CommonJwtBody(cacheName, cacheKey, expiryEpochSeconds);
-            payload.Add("method", new string[] { "set" });
-            payload.Add("ttl", ttlSeconds);
-
-            var encodedJwt = CreateJwtToken(jwkJsonString, payload);
-
-            return $"https://{hostname}/cache/set/{cacheName}/{cacheKey}?token={encodedJwt}";
-        }
-
-        internal string CreateJwtToken(string jwkJsonString, JwtPayload jwtPayload)
+        public MomentoSigner(string jwkJsonString)
         {
             try
             {
                 var securityKey = new JsonWebKey(jwkJsonString);
                 var credentials = new SigningCredentials(securityKey, securityKey.Alg);
-                var JWTHeader = new JwtHeader(credentials);
-
-                var jwtToken = new JwtSecurityToken(JWTHeader, jwtPayload);
-                return new JwtSecurityTokenHandler().WriteToken(jwtToken);
+                this.jwtHeader = new JwtHeader(credentials);
             }
             catch (Exception e)
             {
                 throw new InvalidArgumentException($"Invalid JWK: {jwkJsonString}", e);
+            }
+        }
+
+        /// <summary>
+        /// Create a pre-signed HTTPS URL.
+        /// </summary>
+        /// <param name="hostname">Hostname of the SimpleCacheService. Use the value returned from CreateSigningKey's response.</param>
+        /// <param name="signingRequest">The parameters used for generating a pre-signed URL</param>
+        /// <returns></returns>
+        public string CreatePresignedUrl(string hostname, SigningRequest signingRequest)
+        {
+            var jwtToken = SignAccessToken(signingRequest);
+            var cacheName = signingRequest.CacheName;
+            var cacheKey = signingRequest.CacheKey;
+
+            return signingRequest.CacheOperation switch
+            {
+                CacheOperation.GET => $"https://{hostname}/cache/get/{cacheName}/{cacheKey}?token={jwtToken}",
+                CacheOperation.SET => $"https://{hostname}/cache/set/{cacheName}/{cacheKey}?ttl={signingRequest.TtlSeconds * 1000}&token={jwtToken}",
+                _ => throw new NotImplementedException($"Unhandled {signingRequest.CacheOperation}")
+            };
+        }
+
+        /// <summary>
+        /// Create a pre-signed HTTPS URL.
+        /// </summary>
+        /// <param name="hostname">Hostname of the SimpleCacheService. Use the value returned from CreateSigningKey's response.</param>
+        /// <param name="signingRequest">The parameters used for generating a pre-signed URL</param>
+        /// <returns></returns>
+        public string SignAccessToken(SigningRequest signingRequest)
+        {
+            var payload = CommonJwtBody(signingRequest.CacheName, signingRequest.CacheKey, signingRequest.ExpiryEpochSeconds);
+            switch(signingRequest.CacheOperation)
+            {
+                case CacheOperation.GET:
+                {
+                        payload.Add("method", new string[] { "get" });
+                        break;
+                }
+                case CacheOperation.SET:
+                {
+                        payload.Add("method", new string[] { "set" });
+                        payload.Add("ttl", signingRequest.TtlSeconds);
+                        break;
+                }
+                default:
+                {
+                        throw new NotImplementedException($"Unhandled {signingRequest.CacheOperation}");
+                }
+            }
+
+            return CreateJwtToken(payload);
+        }
+
+        private string CreateJwtToken(JwtPayload jwtPayload)
+        {
+            try
+            {
+                var jwtToken = new JwtSecurityToken(this.jwtHeader, jwtPayload);
+                return new JwtSecurityTokenHandler().WriteToken(jwtToken);
+            }
+            catch (Exception e)
+            {
+                throw new InvalidArgumentException($"Invalid JWK alg: {jwtHeader.Alg}", e);
             }
         }
 
