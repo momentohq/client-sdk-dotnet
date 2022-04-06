@@ -68,7 +68,7 @@ namespace MomentoTest
             bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult);
             Assert.True(result);
             Assert.Equal(Uri.UriSchemeHttps, uriResult.Scheme);
-            Assert.StartsWith("https://foobar.com/cache/get/testCacheName/testCacheKey?ttl=5000&token=", url);
+            Assert.StartsWith("https://foobar.com/cache/set/testCacheName/testCacheKey?ttl=5000&token=", url);
         }
 
         [Fact]
