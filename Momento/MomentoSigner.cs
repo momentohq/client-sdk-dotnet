@@ -38,7 +38,7 @@ namespace MomentoSdk
             return signingRequest.CacheOperation switch
             {
                 CacheOperation.GET => $"https://{hostname}/cache/get/{cacheName}/{cacheKey}?token={jwtToken}",
-                CacheOperation.SET => $"https://{hostname}/cache/set/{cacheName}/{cacheKey}?ttl={signingRequest.TtlSeconds * (ulong)1000}&token={jwtToken}",
+                CacheOperation.SET => $"https://{hostname}/cache/set/{cacheName}/{cacheKey}?ttl_milliseconds={signingRequest.TtlSeconds * (ulong)1000}&token={jwtToken}",
                 _ => throw new NotImplementedException($"Unhandled {signingRequest.CacheOperation}")
             };
         }

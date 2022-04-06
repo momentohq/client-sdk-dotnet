@@ -22,7 +22,7 @@ namespace MomentoTest
         {
             MomentoSigner signer = new MomentoSigner(jwk);
             uint expiryEpochSeconds = uint.MaxValue;
-            var url = signer.CreatePresignedUrl("foobar.com", new SigningRequest("testCacheName", "testCacheKey", CacheOperation.GET, expiryEpochSeconds));;
+            var url = signer.CreatePresignedUrl("foobar.com", new SigningRequest("testCacheName", "testCacheKey", CacheOperation.GET, expiryEpochSeconds)); ;
 
             string jwt = HttpUtility.ParseQueryString(new Uri(url).Query).Get("token");
 
@@ -68,7 +68,7 @@ namespace MomentoTest
             bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult);
             Assert.True(result);
             Assert.Equal(Uri.UriSchemeHttps, uriResult.Scheme);
-            Assert.StartsWith("https://foobar.com/cache/set/testCacheName/testCacheKey?ttl=4294967295000&token=", url);
+            Assert.StartsWith("https://foobar.com/cache/set/testCacheName/testCacheKey?ttl_milliseconds=4294967295000&token=", url);
         }
 
         [Fact]
@@ -77,7 +77,7 @@ namespace MomentoTest
             uint expiryEpochSeconds = uint.MaxValue;
             var invalidJwk = "{\"alg\":\"foo\"}";
             MomentoSigner signer = new MomentoSigner(invalidJwk);
-            
+
             Assert.Throws<InvalidArgumentException>(() => signer.SignAccessToken(new SigningRequest("testCacheName", "testCacheKey", CacheOperation.GET, expiryEpochSeconds)));
         }
     }
