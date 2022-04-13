@@ -72,6 +72,20 @@ namespace MomentoTest
         }
 
         [Fact]
+        public void TestUrlEncoding()
+        {
+            MomentoSigner signer = new MomentoSigner(RS256_JWK);
+            uint expiryEpochSeconds = uint.MaxValue;
+            var url = signer.CreatePresignedUrl("foobar.com", new SigningRequest("testCacheName", "///", CacheOperation.GET, expiryEpochSeconds));
+
+            Uri uriResult;
+            bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult);
+            Assert.True(result);
+            Assert.Equal(Uri.UriSchemeHttps, uriResult.Scheme);
+            Assert.StartsWith("https://foobar.com/cache/get/testCacheName/%2f%2f%2f?token=", url);
+        }
+
+        [Fact]
         public void TestJwkError()
         {
             uint expiryEpochSeconds = uint.MaxValue;
