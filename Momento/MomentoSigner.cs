@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Web;
 using Microsoft.IdentityModel.Tokens;
 using MomentoSdk.Exceptions;
 
@@ -32,8 +33,8 @@ namespace MomentoSdk
         public string CreatePresignedUrl(string hostname, SigningRequest signingRequest)
         {
             var jwtToken = SignAccessToken(signingRequest);
-            var cacheName = signingRequest.CacheName;
-            var cacheKey = signingRequest.CacheKey;
+            var cacheName = HttpUtility.UrlEncode(signingRequest.CacheName);
+            var cacheKey = HttpUtility.UrlEncode(signingRequest.CacheKey);
 
             return signingRequest.CacheOperation switch
             {
