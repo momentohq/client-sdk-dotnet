@@ -13,7 +13,7 @@ namespace MomentoSdk
         private readonly GrpcChannel channel;
         private readonly Scs.ScsClient client;
         
-        private readonly string version = GetAssembly(typeof(MomentoSdk.Responses.CacheGetResponse)).GetName().Version.ToString();
+        private readonly string version = "csharp:" + GetAssembly(typeof(MomentoSdk.Responses.CacheGetResponse)).GetName().Version.ToString();
 
         internal DataGrpcManager(string authToken, string endpoint)
         {
