@@ -27,7 +27,7 @@ namespace MomentoSdk
         /// <summary>
         /// Create a pre-signed HTTPS URL.
         /// </summary>
-        /// <param name="hostname">Hostname of the SimpleCacheService. Use the value returned from CreateSigningKey's response.</param>
+        /// <param name="hostname">Hostname of the SimpleCacheService. Use the value returned from CreateSigningKey's response. A rest keyword is prepended to the hostname</param>
         /// <param name="signingRequest">The parameters used for generating a pre-signed URL</param>
         /// <returns></returns>
         public string CreatePresignedUrl(string hostname, SigningRequest signingRequest)
@@ -38,8 +38,8 @@ namespace MomentoSdk
 
             return signingRequest.CacheOperation switch
             {
-                CacheOperation.GET => $"https://{hostname}/cache/get/{cacheName}/{cacheKey}?token={jwtToken}",
-                CacheOperation.SET => $"https://{hostname}/cache/set/{cacheName}/{cacheKey}?ttl_milliseconds={signingRequest.TtlSeconds * (ulong)1000}&token={jwtToken}",
+                CacheOperation.GET => $"https://rest.{hostname}/cache/get/{cacheName}/{cacheKey}?token={jwtToken}",
+                CacheOperation.SET => $"https://rest.{hostname}/cache/set/{cacheName}/{cacheKey}?ttl_milliseconds={signingRequest.TtlSeconds * (ulong)1000}&token={jwtToken}",
                 _ => throw new NotImplementedException($"Unhandled {signingRequest.CacheOperation}")
             };
         }

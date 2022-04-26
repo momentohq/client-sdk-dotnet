@@ -50,7 +50,7 @@ namespace MomentoTest
             bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult);
             Assert.True(result);
             Assert.Equal(Uri.UriSchemeHttps, uriResult.Scheme);
-            Assert.StartsWith("https://foobar.com/cache/get/testCacheName/testCacheKey?token=", url);
+            Assert.StartsWith("https://rest.foobar.com/cache/get/testCacheName/testCacheKey?token=", url);
         }
 
         [Fact]
@@ -68,7 +68,7 @@ namespace MomentoTest
             bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult);
             Assert.True(result);
             Assert.Equal(Uri.UriSchemeHttps, uriResult.Scheme);
-            Assert.StartsWith("https://foobar.com/cache/set/testCacheName/testCacheKey?ttl_milliseconds=4294967295000&token=", url);
+            Assert.StartsWith("https://rest.foobar.com/cache/set/testCacheName/testCacheKey?ttl_milliseconds=4294967295000&token=", url);
         }
 
         [Fact]
@@ -83,7 +83,7 @@ namespace MomentoTest
             bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult);
             Assert.True(result);
             Assert.Equal(Uri.UriSchemeHttps, uriResult.Scheme);
-            Assert.StartsWith("https://foobar.com/cache/get/testCacheName/%23%24%26%5c%27%2b%2c%2f%3a%3b%3d%3f%40%5b%5d?token=", url);
+            Assert.StartsWith("https://rest.foobar.com/cache/get/testCacheName/%23%24%26%5c%27%2b%2c%2f%3a%3b%3d%3f%40%5b%5d?token=", url);
         }
 
         [Fact]
