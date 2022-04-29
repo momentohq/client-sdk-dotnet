@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MomentoSdk", "Momento\Momen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MomentoTest", "MomentoTest\MomentoTest.csproj", "{77C34767-7796-4842-BE75-20563DB3230A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MomentoIntegrationTest", "MomentoIntegrationTest\MomentoIntegrationTest.csproj", "{FB56314E-BDCF-474A-A2CD-8956934FF11B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{77C34767-7796-4842-BE75-20563DB3230A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77C34767-7796-4842-BE75-20563DB3230A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77C34767-7796-4842-BE75-20563DB3230A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FB56314E-BDCF-474A-A2CD-8956934FF11B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FB56314E-BDCF-474A-A2CD-8956934FF11B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FB56314E-BDCF-474A-A2CD-8956934FF11B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FB56314E-BDCF-474A-A2CD-8956934FF11B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
