@@ -45,11 +45,6 @@ jobs:
           dotnet test MomentoTest
         shell: bash
 
-      - name: Integration Test
-        run: |
-          dotnet test MomentoIntegrationTest
-        shell: bash
-
       - name: Set release
         id: semrel
         uses: go-semantic-release/action@v1
