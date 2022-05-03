@@ -2,7 +2,6 @@
 using System.Text;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.IdentityModel.Logging;
 using MomentoSdk;
 
 namespace MomentoApplicationPresignedUrl
@@ -33,7 +32,6 @@ namespace MomentoApplicationPresignedUrl
 
         static async Task Main(string[] args)
         {
-            IdentityModelEventSource.ShowPII = true;
             if (String.IsNullOrEmpty(SIGNING_KEY))
             {
                 Console.WriteLine($"Enviroment variable SIGNING_KEY not set");
