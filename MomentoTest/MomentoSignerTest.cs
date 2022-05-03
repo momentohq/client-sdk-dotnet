@@ -2,7 +2,7 @@
 using System.Text;
 using System.Net.Http;
 using System.Threading.Tasks;
-using MomentoSdk;
+using MomentoSdkDotnet45;
 
 namespace MomentoApplicationPresignedUrl
 {

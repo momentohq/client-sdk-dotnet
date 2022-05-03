@@ -1,4 +1,4 @@
-﻿namespace MomentoSdk.Exceptions
+﻿namespace MomentoSdkDotnet45.Exceptions
 {
     /// <summary>
     /// Requested resource or the resource on which an operation was requested doesn't exist.

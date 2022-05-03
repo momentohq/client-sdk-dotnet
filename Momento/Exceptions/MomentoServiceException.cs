@@ -1,5 +1,5 @@
 ﻿using System;
-namespace MomentoSdk.Exceptions
+namespace MomentoSdkDotnet45.Exceptions
 {
     /// <summary>
     /// Base type for all the exceptions resulting from invalid interactions with Momento Services.

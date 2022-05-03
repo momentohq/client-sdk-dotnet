@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MomentoSdk.Exceptions
+namespace MomentoSdkDotnet45.Exceptions
 {
     public abstract class SdkException : Exception
     {

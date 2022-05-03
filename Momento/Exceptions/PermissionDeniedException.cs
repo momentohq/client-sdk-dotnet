@@ -1,4 +1,4 @@
-﻿namespace MomentoSdk.Exceptions
+﻿namespace MomentoSdkDotnet45.Exceptions
 {
     /// <summary>
     /// Insufficient permissions to execute an operation.

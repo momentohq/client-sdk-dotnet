@@ -1,4 +1,4 @@
-﻿namespace MomentoSdk.Exceptions
+﻿namespace MomentoSdkDotnet45.Exceptions
 {
     /// <summary>
     /// Requested operation couldn't be completed because system limits were hit.

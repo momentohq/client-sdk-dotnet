@@ -2,9 +2,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Web;
 using Microsoft.IdentityModel.Tokens;
-using MomentoSdk.Exceptions;
+using MomentoSdkDotnet45.Exceptions;
 
-namespace MomentoSdk
+namespace MomentoSdkDotnet45
 {
     public class MomentoSigner
     {

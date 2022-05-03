@@ -1,5 +1,5 @@
 ﻿using System;
-namespace MomentoSdk
+namespace MomentoSdkDotnet45
 {
     public enum CacheOperation
     {
