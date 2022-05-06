@@ -51,7 +51,7 @@ namespace MomentoApplicationPresignedUrl
             }
 
             // prepare requests
-            uint expiryEpochSeconds = (uint)DateTimeOffset.UtcNow.AddMinutes(URL_TTL_MINUTES).Subtract(new DateTime(1970, 1, 1)).TotalSeconds; ;
+            uint expiryEpochSeconds = (uint)DateTimeOffset.UtcNow.AddMinutes(URL_TTL_MINUTES).Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
             var setReq = new SigningRequest(cacheName, OBJECT_KEY, CacheOperation.SET, expiryEpochSeconds) { TtlSeconds = OBJECT_TTL_SECONDS };
             var getReq = new SigningRequest(cacheName, OBJECT_KEY, CacheOperation.GET, expiryEpochSeconds);
             Console.WriteLine($"Request claims: exp = {expiryEpochSeconds}, cache = {cacheName}, key = {OBJECT_KEY}, ttl (for set) = {OBJECT_TTL_SECONDS}");
