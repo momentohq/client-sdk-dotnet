@@ -4,6 +4,7 @@ using Xunit;
 using MomentoSdk.Responses;
 using MomentoSdk.Exceptions;
 using System.Text;
+using System.Collections.Generic;
 
 namespace MomentoIntegrationTest
 {
@@ -19,9 +20,12 @@ namespace MomentoIntegrationTest
         {
             uint defaultTtlSeconds = 10;
             client = new SimpleCacheClient(authKey, defaultTtlSeconds);
-            try {
+            try
+            {
                 client.CreateCache(cacheName);
-            } catch (AlreadyExistsException) {
+            }
+            catch (AlreadyExistsException)
+            {
             }
         }
 
@@ -41,6 +45,79 @@ namespace MomentoIntegrationTest
             CacheGetResponse result = client.Get(cacheName, cacheKey);
             string stringResult = result.String();
             Assert.Equal(cacheValue, stringResult);
+        }
+
+        [Fact]
+        public async Task HappyPathMultiGetAsync()
+        {
+            string cacheKey1 = "key1";
+            string cacheValue1 = "value1";
+            string cacheKey2 = "key2";
+            string cacheValue2 = "value2";
+            client.Set(cacheName, cacheKey1, cacheValue1, defaultTtlSeconds);
+            client.Set(cacheName, cacheKey2, cacheValue2, defaultTtlSeconds);
+            List<string> keys = new() { cacheKey1, cacheKey2 };
+            CacheMultiGetResponse result = await client.MultiGetAsync(cacheName, keys);
+            string stringResult1 = result.Strings()[0];
+            string stringResult2 = result.Strings()[1];
+            Assert.Equal(cacheValue1, stringResult1);
+            Assert.Equal(cacheValue2, stringResult2);
+        }
+
+        [Fact]
+        public async Task HappyPathMultiGetAsyncByteKeys()
+        {
+            string cacheKey1 = "key1";
+            string cacheValue1 = "value1";
+            string cacheKey2 = "key2";
+            string cacheValue2 = "value2";
+            client.Set(cacheName, cacheKey1, cacheValue1, defaultTtlSeconds);
+            client.Set(cacheName, cacheKey2, cacheValue2, defaultTtlSeconds);
+            List<byte[]> keys = new() { Encoding.ASCII.GetBytes(cacheKey1), Encoding.ASCII.GetBytes(cacheKey2) };
+            CacheMultiGetResponse result = await client.MultiGetAsync(cacheName, keys);
+            string stringResult1 = result.Strings()[0];
+            string stringResult2 = result.Strings()[1];
+            Assert.Equal(cacheValue1, stringResult1);
+            Assert.Equal(cacheValue2, stringResult2);
+        }
+
+        [Fact]
+        public async Task HappyPathMultiGetAsyncFailureRetry()
+        {
+            uint defaultTtlSeconds = 10;
+            uint dataClientOperationTimeoutSeconds = 1;
+            // Create a cache client that has only 1 second for data client operation timeout
+            SimpleCacheClient simpleCacheClient = new SimpleCacheClient(authKey, defaultTtlSeconds, dataClientOperationTimeoutSeconds);
+            try
+            {
+                client.CreateCache(cacheName);
+            }
+            catch (AlreadyExistsException)
+            {
+            }
+            string cacheKey1 = "key1";
+            string cacheValue1 = "value1";
+            string cacheKey2 = "key2";
+            string cacheValue2 = "value2";
+            simpleCacheClient.Set(cacheName, cacheKey1, cacheValue1, defaultTtlSeconds);
+            simpleCacheClient.Set(cacheName, cacheKey2, cacheValue2, defaultTtlSeconds);
+            await Task.Delay(3000);
+            List<string> keys = new() { cacheKey1, cacheKey2 };
+            CacheMultiGetResponse failedResult = await simpleCacheClient.MultiGetAsync(cacheName, keys);
+            Assert.Empty(failedResult.SuccessfulResponses());
+            Assert.Equal(2, failedResult.FailedResponses().Count);
+
+
+            // Conduct set operations with normal test client and use FailedResponses as MultiGetAsync's arg
+            client.Set(cacheName, cacheKey1, cacheValue1, defaultTtlSeconds);
+            client.Set(cacheName, cacheKey2, cacheValue2, defaultTtlSeconds);
+            CacheMultiGetResponse result = await client.MultiGetAsync(cacheName, failedResult.FailedResponses());
+            Assert.Empty(result.FailedResponses());
+            Assert.Equal(2, result.SuccessfulResponses().Count);
+            string stringResult1 = result.Strings()[0];
+            string stringResult2 = result.Strings()[1];
+            Assert.Equal(cacheValue1, stringResult1);
+            Assert.Equal(cacheValue2, stringResult2);
         }
 
         [Fact]

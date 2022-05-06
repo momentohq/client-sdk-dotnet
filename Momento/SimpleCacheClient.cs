@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using MomentoSdk.Exceptions;
+using System.Collections.Generic;
 
 namespace MomentoSdk.Responses
 {
@@ -156,13 +157,43 @@ namespace MomentoSdk.Responses
         }
 
         /// <summary>
+        /// Executes a list of passed Get operations in parallel.
+        /// </summary>
+        /// <param name="keys">The keys to perform a cache lookup on</param>
+        /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data</returns>
+        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<byte[]> keys)
+        {
+            return await this.dataClient.MultiGetAsync(cacheName, keys);
+        }
+
+        /// <summary>
+        /// Executes a list of passed Get operations in parallel.
+        /// </summary>
+        /// <param name="keys">The keys to perform a cache lookup on</param>
+        /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data</returns>
+        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<string> keys)
+        {
+            return await this.dataClient.MultiGetAsync(cacheName, keys);
+        }
+
+        /// <summary>
+        /// Executes a list of passed Get operations in parallel.
+        /// </summary>
+        /// <param name="failureResponses">Failed responses to perform a cache lookup on</param>
+        /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data</returns>
+        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<CacheMultiGetFailureResponse> failureResponses)
+        {
+            return await this.dataClient.MultiGetAsync(cacheName, failureResponses);
+        }
+
+        /// <summary>
         ///  Sets the value in the cache. If a value for this key is already present it will be replaced by the new value.
         /// </summary>
         /// <param name="key">The key under which the value is to be added</param>
         /// <param name="value">The value to be stored</param>
         /// <param name="ttlSeconds">Time to Live for the item in Cache. This ttl takes precedence over the TTL used when initializing a cache client</param>
         /// <returns>Result of the set operation</returns>
-        
+
         public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
         {
             return this.dataClient.Set(cacheName, key, value, ttlSeconds);

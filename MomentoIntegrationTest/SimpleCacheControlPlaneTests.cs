@@ -3,7 +3,6 @@ using Xunit;
 using MomentoSdk.Exceptions;
 using MomentoSdk.Responses;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace MomentoIntegrationTest
 {
