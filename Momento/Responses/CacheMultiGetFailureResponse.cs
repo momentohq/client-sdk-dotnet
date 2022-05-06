@@ -7,10 +7,10 @@ namespace MomentoSdk.Responses
         public byte[] Key { get; private set; }
         public Exception Failure { get; private set; }
 
-        public CacheMultiGetFailureResponse(byte[] key, Exception faiure)
+        public CacheMultiGetFailureResponse(byte[] key, Exception failure)
         {
             Key = key;
-            Failure = faiure;
+            Failure = failure;
         }
     }
 }
