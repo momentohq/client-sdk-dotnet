@@ -1,30 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Momento" />
-    <None Remove="Google.Protobuf" />
-    <None Remove="Grpc.Net.Client" />
-    <None Remove="Grpc.Core" />
-    <None Remove="JWT" />
-    <None Remove="Exceptions\" />
-    <None Remove="Responses\" />
-    <None Remove="Requests\" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.19.0" />
-    <PackageReference Include="Grpc.Net.Client" Version="2.40.0" />
-    <PackageReference Include="Grpc.Core" Version="2.41.1" />
-    <PackageReference Include="Momento" Version="0.8.0" />
-    <PackageReference Include="JWT" Version="8.4.2" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.16.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Exceptions\" />
-    <Folder Include="Responses\" />
-    <Folder Include="Requests\" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Remove="Momento" />
+		<None Remove="Google.Protobuf" />
+		<None Remove="Grpc.Net.Client" />
+		<None Remove="Grpc.Core" />
+		<None Remove="JWT" />
+		<None Remove="Exceptions\" />
+		<None Remove="Responses\" />
+		<None Remove="Requests\" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Google.Protobuf" Version="3.19.0" />
+		<PackageReference Include="Grpc.Net.Client" Version="2.40.0" />
+		<PackageReference Include="Grpc.Core" Version="2.41.1" />
+		<PackageReference Include="Momento" Version="0.8.0" />
+		<PackageReference Include="JWT" Version="8.4.2" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.16.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<Folder Include="Exceptions\" />
+		<Folder Include="Responses\" />
+		<Folder Include="Requests\" />
+	</ItemGroup>
 </Project>
