@@ -6,7 +6,7 @@ using CacheClient;
 using Google.Protobuf;
 using Grpc.Core;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace MomentoSdk
 {
@@ -78,23 +78,24 @@ namespace MomentoSdk
 
         public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<string> keys)
         {
+            List<Task<CacheMultiGetResponse>> tasks = new();
             List<CacheGetResponse> successResponses = new();
             List<CacheMultiGetFailureResponse> failedResponses = new();
             foreach (string key in keys)
             {
-                _GetRequest request = new _GetRequest() { CacheKey = Convert(key) };
-                DateTime deadline = DateTime.UtcNow.AddSeconds(this.dataClientOperationTimeoutSeconds);
-                try
+                tasks.Add(SendMultiGetAsync(cacheName, Convert(key)));
+            }
+
+            await Task.WhenAll(tasks);
+            foreach (Task<CacheMultiGetResponse> t in tasks)
+            {
+                if (t.Result.SuccessfulResponse() is not null)
                 {
-                    _GetResponse resp = await this.grpcManager.Client().GetAsync(request, new Metadata { { "cache", cacheName } }, deadline: deadline);
-                    if (resp.Result == ECacheResult.Hit)
-                    {
-                        successResponses.Add(new CacheGetResponse(resp));
-                    }
+                    successResponses.Add(t.Result.SuccessfulResponse());
                 }
-                catch (Exception e)
+                if (t.Result.FailedResponse() is not null)
                 {
-                    failedResponses.Add(new CacheMultiGetFailureResponse(Encoding.ASCII.GetBytes(key), CacheExceptionMapper.Convert(e)));
+                    failedResponses.Add(t.Result.FailedResponse());
                 }
             }
 
@@ -103,23 +104,24 @@ namespace MomentoSdk
 
         public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<byte[]> keys)
         {
+            List<Task<CacheMultiGetResponse>> tasks = new();
             List<CacheGetResponse> successResponses = new();
             List<CacheMultiGetFailureResponse> failedResponses = new();
             foreach (byte[] key in keys)
             {
-                _GetRequest request = new _GetRequest() { CacheKey = Convert(key) };
-                DateTime deadline = DateTime.UtcNow.AddSeconds(this.dataClientOperationTimeoutSeconds);
-                try
+                tasks.Add(SendMultiGetAsync(cacheName, Convert(key)));
+            }
+
+            await Task.WhenAll(tasks);
+            foreach (Task<CacheMultiGetResponse> t in tasks)
+            {
+                if (t.Result.SuccessfulResponse() is not null)
                 {
-                    _GetResponse resp = await this.grpcManager.Client().GetAsync(request, new Metadata { { "cache", cacheName } }, deadline: deadline);
-                    if (resp.Result == ECacheResult.Hit)
-                    {
-                        successResponses.Add(new CacheGetResponse(resp));
-                    }
+                    successResponses.Add(t.Result.SuccessfulResponse());
                 }
-                catch (Exception e)
+                if (t.Result.FailedResponse() is not null)
                 {
-                    failedResponses.Add(new CacheMultiGetFailureResponse(key, CacheExceptionMapper.Convert(e)));
+                    failedResponses.Add(t.Result.FailedResponse());
                 }
             }
 
@@ -128,23 +130,24 @@ namespace MomentoSdk
 
         public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<CacheMultiGetFailureResponse> responses)
         {
+            List<Task<CacheMultiGetResponse>> tasks = new();
             List<CacheGetResponse> successResponses = new();
             List<CacheMultiGetFailureResponse> failedResponses = new();
             foreach (CacheMultiGetFailureResponse response in responses)
             {
-                _GetRequest request = new _GetRequest() { CacheKey = Convert(response.Key) };
-                DateTime deadline = DateTime.UtcNow.AddSeconds(this.dataClientOperationTimeoutSeconds);
-                try
+                tasks.Add(SendMultiGetAsync(cacheName, Convert(response.Key)));
+            }
+
+            await Task.WhenAll(tasks);
+            foreach (Task<CacheMultiGetResponse> t in tasks)
+            {
+                if (t.Result.SuccessfulResponse() is not null)
                 {
-                    _GetResponse resp = await this.grpcManager.Client().GetAsync(request, new Metadata { { "cache", cacheName } }, deadline: deadline);
-                    if (resp.Result == ECacheResult.Hit)
-                    {
-                        successResponses.Add(new CacheGetResponse(resp));
-                    }
+                    successResponses.Add(t.Result.SuccessfulResponse());
                 }
-                catch (Exception e)
+                if (t.Result.FailedResponse() is not null)
                 {
-                    failedResponses.Add(new CacheMultiGetFailureResponse(response.Key, CacheExceptionMapper.Convert(e)));
+                    failedResponses.Add(t.Result.FailedResponse());
                 }
             }
 
@@ -250,6 +253,23 @@ namespace MomentoSdk
             {
                 throw CacheExceptionMapper.Convert(e);
             }
+        }
+
+        private async Task<CacheMultiGetResponse> SendMultiGetAsync(string cacheName, ByteString key)
+        {
+            _GetRequest request = new _GetRequest() { CacheKey = key };
+            DateTime deadline = DateTime.UtcNow.AddSeconds(this.dataClientOperationTimeoutSeconds);
+            try
+            {
+                _GetResponse resp = await this.grpcManager.Client().GetAsync(request, new Metadata { { "cache", cacheName } }, deadline: deadline);
+                return new CacheMultiGetResponse(new CacheGetResponse(resp));
+
+            }
+            catch (Exception e)
+            {
+                return new CacheMultiGetResponse(new CacheMultiGetFailureResponse(key.ToByteArray(), CacheExceptionMapper.Convert(e)));
+            }
+
         }
 
         private ByteString Convert(byte[] bytes)

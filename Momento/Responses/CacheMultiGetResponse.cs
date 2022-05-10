@@ -7,10 +7,33 @@ namespace MomentoSdk.Responses
         private readonly List<CacheGetResponse> successfulResponses;
         private readonly List<CacheMultiGetFailureResponse> failedResponses;
 
-        public CacheMultiGetResponse(List<CacheGetResponse> cacheGetResponses, List<CacheMultiGetFailureResponse> cacheMultiGetFailureResponse)
+        private readonly CacheGetResponse successfulResponse = null;
+        private readonly CacheMultiGetFailureResponse failedResponse = null;
+
+        public CacheMultiGetResponse(List<CacheGetResponse> cacheGetResponses, List<CacheMultiGetFailureResponse> cacheMultiGetFailureResponses)
         {
             successfulResponses = cacheGetResponses;
-            failedResponses = cacheMultiGetFailureResponse;
+            failedResponses = cacheMultiGetFailureResponses;
+        }
+
+        public CacheMultiGetResponse(CacheGetResponse cacheGetResponse)
+        {
+            successfulResponse = cacheGetResponse;
+        }
+
+        public CacheMultiGetResponse(CacheMultiGetFailureResponse cacheMultiGetFailureResponse)
+        {
+            failedResponse = cacheMultiGetFailureResponse;
+        }
+
+        public CacheGetResponse SuccessfulResponse()
+        {
+            return successfulResponse;
+        }
+
+        public CacheMultiGetFailureResponse FailedResponse()
+        {
+            return failedResponse;
         }
 
         public List<CacheGetResponse> SuccessfulResponses()
