@@ -86,18 +86,7 @@ namespace MomentoSdk
             }
 
             await Task.WhenAll(tasks);
-            foreach (Task<CacheMultiGetResponse> t in tasks)
-            {
-                if (t.Result.SuccessfulResponse() is not null)
-                {
-                    successResponses.Add(t.Result.SuccessfulResponse());
-                }
-                if (t.Result.FailedResponse() is not null)
-                {
-                    failedResponses.Add(t.Result.FailedResponse());
-                }
-            }
-
+            ProcessCacheMultiGetResponseTaskResult(tasks, successResponses, failedResponses);
             return new CacheMultiGetResponse(successResponses, failedResponses);
         }
 
@@ -112,18 +101,7 @@ namespace MomentoSdk
             }
 
             await Task.WhenAll(tasks);
-            foreach (Task<CacheMultiGetResponse> t in tasks)
-            {
-                if (t.Result.SuccessfulResponse() is not null)
-                {
-                    successResponses.Add(t.Result.SuccessfulResponse());
-                }
-                if (t.Result.FailedResponse() is not null)
-                {
-                    failedResponses.Add(t.Result.FailedResponse());
-                }
-            }
-
+            ProcessCacheMultiGetResponseTaskResult(tasks, successResponses, failedResponses);
             return new CacheMultiGetResponse(successResponses, failedResponses);
         }
 
@@ -138,18 +116,7 @@ namespace MomentoSdk
             }
 
             await Task.WhenAll(tasks);
-            foreach (Task<CacheMultiGetResponse> t in tasks)
-            {
-                if (t.Result.SuccessfulResponse() is not null)
-                {
-                    successResponses.Add(t.Result.SuccessfulResponse());
-                }
-                if (t.Result.FailedResponse() is not null)
-                {
-                    failedResponses.Add(t.Result.FailedResponse());
-                }
-            }
-
+            ProcessCacheMultiGetResponseTaskResult(tasks, successResponses, failedResponses);
             return new CacheMultiGetResponse(successResponses, failedResponses);
         }
 
@@ -269,6 +236,21 @@ namespace MomentoSdk
                 return new CacheMultiGetResponse(new CacheMultiGetFailureResponse(key.ToByteArray(), CacheExceptionMapper.Convert(e)));
             }
 
+        }
+
+        private void ProcessCacheMultiGetResponseTaskResult(List<Task<CacheMultiGetResponse>> tasks, List<CacheGetResponse> successResponses, List<CacheMultiGetFailureResponse> failedResponses)
+        {
+            foreach (Task<CacheMultiGetResponse> t in tasks)
+            {
+                if (t.Result.SuccessfulResponse() is not null)
+                {
+                    successResponses.Add(t.Result.SuccessfulResponse());
+                }
+                if (t.Result.FailedResponse() is not null)
+                {
+                    failedResponses.Add(t.Result.FailedResponse());
+                }
+            }
         }
 
         private ByteString Convert(byte[] bytes)
