@@ -82,6 +82,31 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
+        public async Task HappyPathMultiGetAsyncFailureRetry()
+        {
+            // Set very small timeout for dataClientOperationTimeoutMilliseconds
+            SimpleCacheClient simpleCacheClient = new SimpleCacheClient(authKey, defaultTtlSeconds, 1);
+            string cacheKey1 = "key1";
+            string cacheValue1 = "value1";
+            string cacheKey2 = "key2";
+            string cacheValue2 = "value2";
+            List<string> keys = new() { cacheKey1, cacheKey2 };
+            CacheMultiGetResponse failedResult = await simpleCacheClient.MultiGetAsync(cacheName, keys);
+            Assert.Equal(2, failedResult.FailedResponses().Count);
+            Assert.Empty(failedResult.SuccessfulResponses());
+
+            // Use normal test client and retry
+            client.Set(cacheName, cacheKey1, cacheValue1, defaultTtlSeconds);
+            client.Set(cacheName, cacheKey2, cacheValue2, defaultTtlSeconds);
+            CacheMultiGetResponse result = await client.MultiGetAsync(cacheName, failedResult.FailedResponses());
+            string stringResult1 = result.Strings()[0];
+            string stringResult2 = result.Strings()[1];
+            Assert.Equal(2, result.SuccessfulResponses().Count);
+            Assert.Equal(cacheValue1, stringResult1);
+            Assert.Equal(cacheValue2, stringResult2);
+        }
+
+        [Fact]
         public void HappyPathStringKeyByteValue()
         {
             string cacheKey = "some cache key";

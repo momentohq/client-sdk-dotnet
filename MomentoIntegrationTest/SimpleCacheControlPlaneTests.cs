@@ -43,8 +43,8 @@ namespace MomentoIntegrationTest
         public void InvalidRequestTimeout()
         {
             uint defaultTtlSeconds = 10;
-            uint requestTimeoutSeconds = 0;
-            Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(authKey, defaultTtlSeconds, requestTimeoutSeconds));
+            uint requestTimeoutMilliseconds = 0;
+            Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(authKey, defaultTtlSeconds, requestTimeoutMilliseconds));
         }
     }
 }

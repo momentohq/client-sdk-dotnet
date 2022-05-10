@@ -26,14 +26,14 @@ namespace MomentoSdk.Responses
             this.dataClient = dataClient;
         }
 
-        public SimpleCacheClient(string authToken, uint defaultTtlSeconds, uint dataClientOperationTimeoutSeconds)
+        public SimpleCacheClient(string authToken, uint defaultTtlSeconds, uint dataClientOperationTimeoutMilliseconds)
         {
-            ValidateRequestTimeout(dataClientOperationTimeoutSeconds);
+            ValidateRequestTimeout(dataClientOperationTimeoutMilliseconds);
             Claims claims = JwtUtils.DecodeJwt(authToken);
             string controlEndpoint = "https://" + claims.ControlEndpoint + ":443";
             string cacheEndpoint = "https://" + claims.CacheEndpoint + ":443";
             ScsControlClient controlClient = new ScsControlClient(authToken, controlEndpoint);
-            ScsDataClient dataClient = new ScsDataClient(authToken, cacheEndpoint, defaultTtlSeconds, dataClientOperationTimeoutSeconds);
+            ScsDataClient dataClient = new ScsDataClient(authToken, cacheEndpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds);
             this.controlClient = controlClient;
             this.dataClient = dataClient;
         }
@@ -286,9 +286,9 @@ namespace MomentoSdk.Responses
             GC.SuppressFinalize(this);
         }
 
-        private void ValidateRequestTimeout(uint requestTimeoutSeconds)
+        private void ValidateRequestTimeout(uint requestTimeoutMilliseconds)
         {
-            if (requestTimeoutSeconds == 0)
+            if (requestTimeoutMilliseconds == 0)
             {
                 throw new InvalidArgumentException("Request timeout must be greater than zero.");
             }
