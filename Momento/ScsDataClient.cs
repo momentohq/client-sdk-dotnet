@@ -69,7 +69,7 @@ namespace MomentoSdk
             return new CacheSetResponse(response);
         }
 
-         public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value)
+        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value)
         {
             return await this.SetAsync(cacheName, key, value, defaultTtlSeconds);
         }
