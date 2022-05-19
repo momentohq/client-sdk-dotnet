@@ -163,5 +163,77 @@ namespace MomentoIntegrationTest
             SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
             Assert.Throws<NotFoundException>(() => client.Set("non-existent-cache", Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
         }
+
+        [Fact]
+        public void Delete_KeyIsByteArray_HappyPath()
+        {
+            // Set a key to then delete
+            byte[] key = new byte[] { 0x01, 0x02, 0x03, 0x04 };
+            byte[] value = new byte[] { 0x05, 0x06, 0x07, 0x08 };
+            client.Set(cacheName, key, value, ttlSeconds: 60);
+            CacheGetResponse getResponse = client.Get(cacheName, key);
+            Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
+
+            // Delete
+            client.Delete(cacheName, key);
+
+            // Check deleted
+            getResponse = client.Get(cacheName, key);
+            Assert.Equal(CacheGetStatus.MISS, getResponse.Status);
+        }
+
+        [Fact]
+        public async Task DeleteAsync_KeyIsByteArray_HappyPath()
+        {
+            // Set a key to then delete
+            byte[] key = new byte[] { 0x01, 0x02, 0x03, 0x04 };
+            byte[] value = new byte[] { 0x05, 0x06, 0x07, 0x08 };
+            await client.SetAsync(cacheName, key, value, ttlSeconds: 60);
+            CacheGetResponse getResponse = await client.GetAsync(cacheName, key);
+            Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
+
+            // Delete
+            await client.DeleteAsync(cacheName, key);
+
+            // Check deleted
+            getResponse = await client.GetAsync(cacheName, key);
+            Assert.Equal(CacheGetStatus.MISS, getResponse.Status);
+        }
+
+        [Fact]
+        public void Delete_KeyIsString_HappyPath()
+        {
+            // Set a key to then delete
+            string key = "key";
+            string value = "value";
+            client.Set(cacheName, key, value, ttlSeconds: 60);
+            CacheGetResponse getResponse = client.Get(cacheName, key);
+            Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
+
+            // Delete
+            client.Delete(cacheName, key);
+
+            // Check deleted
+            getResponse = client.Get(cacheName, key);
+            Assert.Equal(CacheGetStatus.MISS, getResponse.Status);
+        }
+
+        [Fact]
+        public async Task DeleteAsync_KeyIsString_HappyPath()
+        {
+            // Set a key to then delete
+            string key = "key";
+            string value = "value";
+            await client.SetAsync(cacheName, key, value, ttlSeconds: 60);
+            CacheGetResponse getResponse = await client.GetAsync(cacheName, key);
+            Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
+
+            // Delete
+            await client.DeleteAsync(cacheName, key);
+
+            // Check deleted
+            getResponse = await client.GetAsync(cacheName, key);
+            Assert.Equal(CacheGetStatus.MISS, getResponse.Status);
+        }
     }
 }
