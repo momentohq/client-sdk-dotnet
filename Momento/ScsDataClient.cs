@@ -47,6 +47,12 @@ namespace MomentoSdk
             return new CacheGetResponse(resp);
         }
 
+        public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, byte[] key)
+        {
+            await this.SendDeleteAsync(cacheName, Convert(key));
+            return new CacheDeleteResponse();
+        }
+
         public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint ttlSeconds)
         {
             _SetResponse response = await this.SendSetAsync(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds, dataClientOperationTimeoutMilliseconds: this.dataClientOperationTimeoutMilliseconds);
@@ -62,6 +68,12 @@ namespace MomentoSdk
         {
             _GetResponse resp = await this.SendGetAsync(cacheName, Convert(key), dataClientOperationTimeoutMilliseconds: this.dataClientOperationTimeoutMilliseconds);
             return new CacheGetResponse(resp);
+        }
+
+        public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key)
+        {
+            await this.SendDeleteAsync(cacheName, Convert(key));
+            return new CacheDeleteResponse();
         }
 
         public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint ttlSeconds)
@@ -137,6 +149,12 @@ namespace MomentoSdk
             return new CacheGetResponse(resp);
         }
 
+        public CacheDeleteResponse Delete(string cacheName, byte[] key)
+        {
+            this.SendDelete(cacheName, Convert(key));
+            return new CacheDeleteResponse();
+        }
+
         public CacheSetResponse Set(string cacheName, string key, string value, uint ttlSeconds)
         {
             _SetResponse response = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds, dataClientOperationTimeoutMilliseconds: this.dataClientOperationTimeoutMilliseconds);
@@ -152,6 +170,12 @@ namespace MomentoSdk
         {
             _GetResponse resp = this.SendGet(cacheName, Convert(key), dataClientOperationTimeoutMilliseconds: this.dataClientOperationTimeoutMilliseconds);
             return new CacheGetResponse(resp);
+        }
+
+        public CacheDeleteResponse Delete(string cacheName, string key)
+        {
+            this.SendDelete(cacheName, Convert(key));
+            return new CacheDeleteResponse();
         }
 
         public CacheSetResponse Set(string cacheName, string key, byte[] value, uint ttlSeconds)
@@ -214,6 +238,34 @@ namespace MomentoSdk
             try
             {
                 return this.grpcManager.Client().Set(request, new Metadata { { "cache", cacheName } }, deadline: deadline);
+            }
+            catch (Exception e)
+            {
+                throw CacheExceptionMapper.Convert(e);
+            }
+        }
+
+        private _DeleteResponse SendDelete(string cacheName, ByteString key)
+        {
+            _DeleteRequest request = new _DeleteRequest() { CacheKey = key };
+            DateTime deadline = DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
+            try
+            {
+                return this.grpcManager.Client().Delete(request, new Metadata { { "cache", cacheName } }, deadline: deadline);
+            }
+            catch (Exception e)
+            {
+                throw CacheExceptionMapper.Convert(e);
+            }
+        }
+
+        private async Task<_DeleteResponse> SendDeleteAsync(string cacheName, ByteString key)
+        {
+            _DeleteRequest request = new _DeleteRequest() { CacheKey = key };
+            DateTime deadline = DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
+            try
+            {
+                return await this.grpcManager.Client().DeleteAsync(request, new Metadata { { "cache", cacheName } }, deadline: deadline);
             }
             catch (Exception e)
             {

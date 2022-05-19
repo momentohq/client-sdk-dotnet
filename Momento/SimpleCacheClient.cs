@@ -102,6 +102,17 @@ namespace MomentoSdk.Responses
         }
 
         /// <summary>
+        /// Remove the key from the cache.
+        /// </summary>
+        /// <param name="cacheName">Name of the cache to delete the key from.</param>
+        /// <param name="key">The key to perform a cache lookup on.</param>
+        /// <returns>Future containing the result of the delete operation.</returns>
+        public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, byte[] key)
+        {
+            return await this.dataClient.DeleteAsync(cacheName, key);
+        }
+
+        /// <summary>
         /// Sets the value in cache with a given Time To Live (TTL) seconds.
         /// </summary>
         /// <param name="key">The key under which the value is to be added</param>
@@ -133,6 +144,18 @@ namespace MomentoSdk.Responses
         {
             return await this.dataClient.GetAsync(cacheName, key);
         }
+
+        /// <summary>
+        /// Remove the key from the cache.
+        /// </summary>
+        /// <param name="cacheName">Name of the cache to delete the key from.</param>
+        /// <param name="key">The key to perform a cache lookup on.</param>
+        /// <returns>Future containing the result of the delete operation.</returns>
+        public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key)
+        {
+            return await this.dataClient.DeleteAsync(cacheName, key);
+        }
+
         /// <summary>
         /// Sets the value in cache with a given Time To Live (TTL) seconds.
         /// </summary>
@@ -221,6 +244,17 @@ namespace MomentoSdk.Responses
         }
 
         /// <summary>
+        /// Remove the key from the cache.
+        /// </summary>
+        /// <param name="cacheName">Name of the cache to delete the key from.</param>
+        /// <param name="key">The key to perform a cache lookup on.</param>
+        /// <returns>Future containing the result of the delete operation.</returns>
+        public CacheDeleteResponse Delete(string cacheName, byte[] key)
+        {
+            return this.dataClient.Delete(cacheName, key);
+        }
+
+        /// <summary>
         /// Sets the value in cache with a given Time To Live (TTL) seconds. If a value for this key is already present it will be replaced by the new value.
         /// </summary>
         /// <param name="key">The key under which the value is to be added</param>
@@ -254,6 +288,18 @@ namespace MomentoSdk.Responses
         {
             return this.dataClient.Get(cacheName, key);
         }
+
+        /// <summary>
+        /// Remove the key from the cache.
+        /// </summary>
+        /// <param name="cacheName">Name of the cache to delete the key from.</param>
+        /// <param name="key">The key to perform a cache lookup on.</param>
+        /// <returns>Future containing the result of the delete operation.</returns>
+        public CacheDeleteResponse Delete(string cacheName, string key)
+        {
+            return this.dataClient.Delete(cacheName, key);
+        }
+
         /// <summary>
         /// Sets the value in cache with a given Time To Live (TTL) seconds. If a value for this key is already present it will be replaced by the new value.
         /// </summary>
