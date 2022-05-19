@@ -37,7 +37,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public void HappyPath()
+        public void Set_KeyIsStringValueIsString_HappyPath()
         {
             string cacheKey = "some cache key";
             string cacheValue = "some cache value";
@@ -48,7 +48,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public async Task HappyPathMultiGetAsync()
+        public async Task MultiGetAsync_KeysAreString_HappyPath()
         {
             string cacheKey1 = "key1";
             string cacheValue1 = "value1";
@@ -65,7 +65,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public async Task HappyPathMultiGetAsyncByteKeys()
+        public async Task MultiGetAsync_KeysAreByteArray_HappyPath()
         {
             string cacheKey1 = "key1";
             string cacheValue1 = "value1";
@@ -82,7 +82,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public async Task HappyPathMultiGetAsyncFailureRetry()
+        public async Task MultiGetAsync_FailureRetry_HappyPath()
         {
             // Set very small timeout for dataClientOperationTimeoutMilliseconds
             SimpleCacheClient simpleCacheClient = new SimpleCacheClient(authKey, defaultTtlSeconds, 1);
@@ -107,7 +107,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public void HappyPathStringKeyByteValue()
+        public void Set_KeyIsStringValueIsByteArray_HappyPath()
         {
             string cacheKey = "some cache key";
             byte[] cacheValue = Encoding.ASCII.GetBytes("some cache value");
@@ -118,7 +118,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public async void HappyPathExpiredTtl()
+        public async void Get_ExpiredTtl_HappyPath()
         {
             string cacheKey = "some cache key";
             string cacheValue = "some cache value";
@@ -129,7 +129,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public async void HappyPathAsync()
+        public async void SetAsync_KeyIsStringValueIsString_HappyPath()
         {
             string cacheKey = "async cache key";
             string cacheValue = "async cache value";
@@ -140,7 +140,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public void HappyPathMiss()
+        public void Get_Miss_HappyPath()
         {
             CacheGetResponse result = client.Get(cacheName, Guid.NewGuid().ToString());
             Assert.Equal(CacheGetStatus.MISS, result.Status);
@@ -149,7 +149,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public void GetThrowsNotFoundExceptionNonExistentCache()
+        public void Get_CacheDoesntExist_ThrowsException()
         {
             uint defaultTtlSeconds = 10;
             SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
@@ -157,7 +157,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public void SetThrowsNotFoundExceptionNonExistentCache()
+        public void Set_CacheDoesntExist_ThrowsException()
         {
             uint defaultTtlSeconds = 10;
             SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);

@@ -11,7 +11,7 @@ namespace MomentoIntegrationTest
         private string authKey = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN");
 
         [Fact]
-        public void DeleteCacheThatDoesntExist()
+        public void DeleteCache_CacheDoesntExist_NotFoundException()
         {
             uint defaultTtlSeconds = 10;
             SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
@@ -19,7 +19,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public void InvalidJwtException()
+        public void SimpleCacheClientConstructor_BadJWT_InvalidJwtException()
         {
             uint defaultTtlSeconds = 10;
             Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs", defaultTtlSeconds));
@@ -27,7 +27,7 @@ namespace MomentoIntegrationTest
 
 
         [Fact]
-        public void HappyPathListCache()
+        public void ListCaches_OneCache_HappyPath()
         {
             uint defaultTtlSeconds = 10;
             SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
@@ -40,7 +40,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public void InvalidRequestTimeout()
+        public void SimpleCacheClientConstructor_BadRequestTimeout_ThrowsException()
         {
             uint defaultTtlSeconds = 10;
             uint requestTimeoutMilliseconds = 0;
