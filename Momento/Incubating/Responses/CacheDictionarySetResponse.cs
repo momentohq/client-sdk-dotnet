@@ -16,7 +16,7 @@ namespace MomentoSdk.Incubating.Responses
             throw new NotImplementedException();
         }
 
-        public Dictionary<string, CacheDictionaryValue>? Dictionary(Encoding encoding = null)
+        public Dictionary<string, string>? Dictionary(Encoding encoding = null)
         {
             throw new NotImplementedException();
         }
