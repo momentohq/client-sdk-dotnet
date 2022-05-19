@@ -165,7 +165,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public void HappyPathDelete_KeyIsByteArray()
+        public void Delete_KeyIsByteArray_HappyPath()
         {
             // Set a key to then delete
             byte[] key = new byte[] { 0x01, 0x02, 0x03, 0x04 };
@@ -183,7 +183,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public async Task HappyPathDeleteAsync_KeyIsByteArray()
+        public async Task DeleteAsync_KeyIsByteArray_HappyPath()
         {
             // Set a key to then delete
             byte[] key = new byte[] { 0x01, 0x02, 0x03, 0x04 };
@@ -201,7 +201,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public void HappyPathDelete_KeyIsString()
+        public void Delete_KeyIsString_HappyPath()
         {
             // Set a key to then delete
             string key = "key";
@@ -219,7 +219,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public async Task HappyPathDeleteAsync_KeyIsString()
+        public async Task DeleteAsync_KeyIsString_HappyPath()
         {
             // Set a key to then delete
             string key = "key";
