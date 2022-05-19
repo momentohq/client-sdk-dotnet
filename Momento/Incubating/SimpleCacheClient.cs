@@ -21,7 +21,7 @@ namespace MomentoSdk.Incubating
             throw new NotImplementedException();
         }
 
-        public Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, Dictionary<string, string> dictionary)
+        public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, Dictionary<string, string> dictionary)
         {
             throw new NotImplementedException();
         }
@@ -32,7 +32,7 @@ namespace MomentoSdk.Incubating
             throw new NotImplementedException();
         }
 
-        public Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, string key)
+        public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, string key)
         {
             throw new NotImplementedException();
         }
@@ -42,7 +42,7 @@ namespace MomentoSdk.Incubating
             throw new NotImplementedException();
         }
 
-        public Task<CacheDictionaryGetAllResponse> DictionaryGetAllAsync(string cacheName, string dictionaryName)
+        public async Task<CacheDictionaryGetAllResponse> DictionaryGetAllAsync(string cacheName, string dictionaryName)
         {
             throw new NotImplementedException();
         }
