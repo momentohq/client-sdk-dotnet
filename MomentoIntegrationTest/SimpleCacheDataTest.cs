@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace MomentoIntegrationTest
 {
-    public class CacheTest : IDisposable
+    public class SimpleCacheDataTest : IDisposable
     {
         private string authKey = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN");
         private string cacheName = "client-sdk-csharp";
@@ -16,7 +16,7 @@ namespace MomentoIntegrationTest
         private SimpleCacheClient client;
 
         // Test initialization
-        public CacheTest()
+        public SimpleCacheDataTest()
         {
             uint defaultTtlSeconds = 10;
             client = new SimpleCacheClient(authKey, defaultTtlSeconds);
