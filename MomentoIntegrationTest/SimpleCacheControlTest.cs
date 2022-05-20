@@ -71,7 +71,6 @@ namespace MomentoIntegrationTest
             Assert.DoesNotContain(new CacheInfo(cacheName), caches);
         }
 
-        /* TODO: ensure local client supports many caches
         [Fact]
         public void ListCaches_Iteration_HappyPath()
         {
@@ -88,21 +87,29 @@ namespace MomentoIntegrationTest
             // List caches
             HashSet<String> retrievedCaches = new HashSet<string>();
             ListCachesResponse result = client.ListCaches();
-            do
+            while (true)
             {
                 foreach (CacheInfo cache in result.Caches())
                 {
                     retrievedCaches.Add(cache.Name());
                 }
-            } while (result.NextPageToken != null);
+                if (result.NextPageToken() == null)
+                {
+                    break;
+                }
+                result = client.ListCaches(result.NextPageToken());
+            }
+
+            int sizeOverlap = cacheNames.Intersect(retrievedCaches).Count();
 
             // Cleanup
             foreach (String cacheName in cacheNames)
             {
                 client.DeleteCache(cacheName);
             }
+
+            Assert.True(sizeOverlap == cacheNames.Count);
         }
-        */
 
         [Fact]
         public void ListCaches_BadNextToken_NoException()
