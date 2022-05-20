@@ -192,10 +192,9 @@ namespace MomentoSdk
         private async Task<_SetResponse> SendSetAsync(string cacheName, ByteString key, ByteString value, uint ttlSeconds)
         {
             _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSeconds * 1000 };
-            DateTime deadline = DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
             try
             {
-                return await this.grpcManager.Client().SetAsync(request, new Metadata { { "cache", cacheName } }, deadline: deadline);
+                return await this.grpcManager.Client().SetAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
             }
             catch (Exception e)
             {
@@ -206,10 +205,9 @@ namespace MomentoSdk
         private _GetResponse SendGet(string cacheName, ByteString key)
         {
             _GetRequest request = new _GetRequest() { CacheKey = key };
-            DateTime deadline = DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
             try
             {
-                return this.grpcManager.Client().Get(request, new Metadata { { "cache", cacheName } }, deadline: deadline);
+                return this.grpcManager.Client().Get(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
             }
             catch (Exception e)
             {
@@ -220,10 +218,9 @@ namespace MomentoSdk
         private async Task<_GetResponse> SendGetAsync(string cacheName, ByteString key)
         {
             _GetRequest request = new _GetRequest() { CacheKey = key };
-            DateTime deadline = DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
             try
             {
-                return await this.grpcManager.Client().GetAsync(request, new Metadata { { "cache", cacheName } }, deadline: deadline);
+                return await this.grpcManager.Client().GetAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
             }
             catch (Exception e)
             {
@@ -234,10 +231,9 @@ namespace MomentoSdk
         private _SetResponse SendSet(string cacheName, ByteString key, ByteString value, uint ttlSeconds)
         {
             _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSeconds * 1000 };
-            DateTime deadline = DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
             try
             {
-                return this.grpcManager.Client().Set(request, new Metadata { { "cache", cacheName } }, deadline: deadline);
+                return this.grpcManager.Client().Set(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
             }
             catch (Exception e)
             {
@@ -248,10 +244,9 @@ namespace MomentoSdk
         private _DeleteResponse SendDelete(string cacheName, ByteString key)
         {
             _DeleteRequest request = new _DeleteRequest() { CacheKey = key };
-            DateTime deadline = DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
             try
             {
-                return this.grpcManager.Client().Delete(request, new Metadata { { "cache", cacheName } }, deadline: deadline);
+                return this.grpcManager.Client().Delete(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
             }
             catch (Exception e)
             {
@@ -262,10 +257,9 @@ namespace MomentoSdk
         private async Task<_DeleteResponse> SendDeleteAsync(string cacheName, ByteString key)
         {
             _DeleteRequest request = new _DeleteRequest() { CacheKey = key };
-            DateTime deadline = DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
             try
             {
-                return await this.grpcManager.Client().DeleteAsync(request, new Metadata { { "cache", cacheName } }, deadline: deadline);
+                return await this.grpcManager.Client().DeleteAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
             }
             catch (Exception e)
             {
@@ -276,10 +270,9 @@ namespace MomentoSdk
         private async Task<CacheMultiGetResponse> SendMultiGetAsync(string cacheName, ByteString key)
         {
             _GetRequest request = new _GetRequest() { CacheKey = key };
-            DateTime deadline = DateTime.UtcNow.AddMilliseconds(this.dataClientOperationTimeoutMilliseconds);
             try
             {
-                _GetResponse resp = await this.grpcManager.Client().GetAsync(request, new Metadata { { "cache", cacheName } }, deadline: deadline);
+                _GetResponse resp = await this.grpcManager.Client().GetAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
                 return new CacheMultiGetResponse(new CacheGetResponse(resp));
 
             }
@@ -314,6 +307,11 @@ namespace MomentoSdk
         {
             return ByteString.CopyFromUtf8(s);
         }
+
+	private DateTime CalculateDeadline()
+	{
+            return DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
+	}
 
         public void Dispose()
         {

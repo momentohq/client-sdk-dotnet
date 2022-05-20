@@ -25,7 +25,7 @@ namespace MomentoSdk
             try
             {
                 _CreateCacheRequest request = new _CreateCacheRequest() { CacheName = cacheName };
-                this.grpcManager.Client().CreateCache(request, deadline: DateTime.UtcNow.AddSeconds(DEADLINE_SECONDS));
+                this.grpcManager.Client().CreateCache(request, deadline: CalculateDeadline());
                 return new Responses.CreateCacheResponse();
             }
             catch (Exception e)
@@ -39,7 +39,7 @@ namespace MomentoSdk
             _DeleteCacheRequest request = new _DeleteCacheRequest() { CacheName = cacheName };
             try
             {
-                this.grpcManager.Client().DeleteCache(request, deadline: DateTime.UtcNow.AddSeconds(DEADLINE_SECONDS));
+                this.grpcManager.Client().DeleteCache(request, deadline: CalculateDeadline());
                 return new Responses.DeleteCacheResponse();
             }
             catch (Exception e)
@@ -53,7 +53,7 @@ namespace MomentoSdk
             _ListCachesRequest request = new _ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
             try
             {
-                ControlClient._ListCachesResponse result = this.grpcManager.Client().ListCaches(request, deadline: DateTime.UtcNow.AddSeconds(DEADLINE_SECONDS));
+                ControlClient._ListCachesResponse result = this.grpcManager.Client().ListCaches(request, deadline: CalculateDeadline());
                 return new Responses.ListCachesResponse(result);
             }
             catch (Exception e)
@@ -70,6 +70,11 @@ namespace MomentoSdk
             }
             return true;
         }
+
+	private DateTime CalculateDeadline()
+	{
+            return DateTime.UtcNow.AddSeconds(DEADLINE_SECONDS);
+	}
 
         public void Dispose()
         {
