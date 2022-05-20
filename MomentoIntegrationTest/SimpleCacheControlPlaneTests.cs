@@ -14,24 +14,40 @@ namespace MomentoIntegrationTest
         [Fact]
         public void SimpleCacheClientConstructor_BadRequestTimeout_ThrowsException()
         {
-            uint defaultTtlSeconds = 10;
-            uint requestTimeoutMilliseconds = 0;
-            Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(authKey, defaultTtlSeconds, requestTimeoutMilliseconds));
+            Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(authKey, defaultTtlSeconds: 10, dataClientOperationTimeoutMilliseconds: 0));
         }
 
         [Fact]
         public void SimpleCacheClientConstructor_BadJWT_InvalidJwtException()
         {
-            uint defaultTtlSeconds = 10;
-            Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs", defaultTtlSeconds));
+            Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs", defaultTtlSeconds: 10));
+        }
+
+        [Fact]
+        public void SimpleCacheClientConstructor_NullJWT_InvalidJwtException()
+        {
+            Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(null, defaultTtlSeconds: 10));
+        }
+
+        [Fact]
+        public void DeleteCache_NullCache_ArgumentNullException()
+        {
+            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds: 10);
+            Assert.Throws<ArgumentNullException>(() => client.DeleteCache(null));
         }
 
         [Fact]
         public void DeleteCache_CacheDoesntExist_NotFoundException()
         {
-            uint defaultTtlSeconds = 10;
-            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds);
+            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds: 10);
             Assert.Throws<NotFoundException>(() => client.DeleteCache("non existant cache"));
+        }
+
+        [Fact]
+        public void CreateCache_NullCache_ArgumentNullException()
+        {
+            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds: 10);
+            Assert.Throws<ArgumentNullException>(() => client.CreateCache(null));
         }
 
         // Tests: creating a cache, listing a cache, and deleting a cache.
@@ -46,13 +62,13 @@ namespace MomentoIntegrationTest
             // Test cache exists
             ListCachesResponse result = client.ListCaches();
             List<CacheInfo> caches = result.Caches();
-            Assert.True(caches.Contains(new CacheInfo(cacheName)));
+            Assert.Contains(new CacheInfo(cacheName), caches);
 
             // Test deleting cache
             client.DeleteCache(cacheName);
             result = client.ListCaches();
             caches = result.Caches();
-            Assert.False(caches.Contains(new CacheInfo(cacheName)));
+            Assert.DoesNotContain(new CacheInfo(cacheName), caches);
         }
 
         /* TODO: ensure local client supports many caches

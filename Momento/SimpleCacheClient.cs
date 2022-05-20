@@ -51,6 +51,10 @@ namespace MomentoSdk.Responses
         /// <returns>The result of the create cache operation</returns>
         public Responses.CreateCacheResponse CreateCache(string cacheName)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
             return this.controlClient.CreateCache(cacheName);
         }
 
@@ -61,6 +65,10 @@ namespace MomentoSdk.Responses
         /// <returns>The result of the delete cache operation.</returns>
         public Responses.DeleteCacheResponse DeleteCache(string cacheName)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
             return this.controlClient.DeleteCache(cacheName);
         }
 
