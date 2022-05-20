@@ -72,10 +72,10 @@ namespace MomentoSdk
             return true;
         }
 
-	private DateTime CalculateDeadline()
-	{
+        private DateTime CalculateDeadline()
+        {
             return DateTime.UtcNow.AddSeconds(DEADLINE_SECONDS);
-	}
+        }
 
         public void Dispose()
         {

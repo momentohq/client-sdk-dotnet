@@ -323,7 +323,7 @@ namespace MomentoSdk.Responses
         /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data.</returns>
         public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<byte[]> keys)
         {
-	    if (cacheName == null)
+            if (cacheName == null)
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
@@ -343,7 +343,7 @@ namespace MomentoSdk.Responses
         /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data.</returns>
         public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<string> keys)
         {
-	    if (cacheName == null)
+            if (cacheName == null)
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
@@ -363,7 +363,7 @@ namespace MomentoSdk.Responses
         /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data.</returns>
         public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<CacheMultiGetFailureResponse> failureResponses)
         {
-	    if (cacheName == null)
+            if (cacheName == null)
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
@@ -385,7 +385,7 @@ namespace MomentoSdk.Responses
         /// <returns>Result of the set operation</returns>
         public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
         {
-	    if (cacheName == null)
+            if (cacheName == null)
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
@@ -410,7 +410,7 @@ namespace MomentoSdk.Responses
         /// <returns>Result of the set operation.</returns>
         public CacheSetResponse Set(string cacheName, byte[] key, byte[] value)
         {
-	    if (cacheName == null)
+            if (cacheName == null)
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
@@ -423,7 +423,7 @@ namespace MomentoSdk.Responses
                 throw new ArgumentNullException(nameof(value));
             }
 
-	    return this.dataClient.Set(cacheName, key, value);
+            return this.dataClient.Set(cacheName, key, value);
         }
 
         /// <summary>
@@ -434,7 +434,7 @@ namespace MomentoSdk.Responses
         /// <returns>CacheGetResponse containing the status of the get operation and the associated value data.</returns>
         public CacheGetResponse Get(string cacheName, byte[] key)
         {
-	    if (cacheName == null)
+            if (cacheName == null)
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
@@ -454,7 +454,7 @@ namespace MomentoSdk.Responses
         /// <returns>Future containing the result of the delete operation.</returns>
         public CacheDeleteResponse Delete(string cacheName, byte[] key)
         {
-	    if (cacheName == null)
+            if (cacheName == null)
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
@@ -475,7 +475,7 @@ namespace MomentoSdk.Responses
         /// <returns>Result of the set operation.</returns>
         public CacheSetResponse Set(string cacheName, string key, string value, uint ttlSeconds)
         {
-	    if (cacheName == null)
+            if (cacheName == null)
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
@@ -483,10 +483,10 @@ namespace MomentoSdk.Responses
             {
                 throw new ArgumentNullException(nameof(key));
             }
-	    if (value == null)
-	    {
+            if (value == null)
+            {
                 throw new ArgumentNullException(nameof(value));
-	    }
+            }
 
             return this.dataClient.Set(cacheName, key, value, ttlSeconds);
         }
@@ -502,7 +502,7 @@ namespace MomentoSdk.Responses
         /// <returns>Result of the set operation</returns>
         public CacheSetResponse Set(string cacheName, string key, string value)
         {
-	    if (cacheName == null)
+            if (cacheName == null)
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
@@ -510,10 +510,10 @@ namespace MomentoSdk.Responses
             {
                 throw new ArgumentNullException(nameof(key));
             }
-	    if (value == null)
-	    {
+            if (value == null)
+            {
                 throw new ArgumentNullException(nameof(value));
-	    }
+            }
 
             return this.dataClient.Set(cacheName, key, value);
         }
@@ -526,7 +526,7 @@ namespace MomentoSdk.Responses
         /// <returns>CacheGetResponse containing the status of the get operation and the associated value data.</returns>
         public CacheGetResponse Get(string cacheName, string key)
         {
-	    if (cacheName == null)
+            if (cacheName == null)
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
@@ -546,7 +546,7 @@ namespace MomentoSdk.Responses
         /// <returns>Future containing the result of the delete operation.</returns>
         public CacheDeleteResponse Delete(string cacheName, string key)
         {
-	    if (cacheName == null)
+            if (cacheName == null)
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
@@ -568,7 +568,7 @@ namespace MomentoSdk.Responses
         /// <returns>Result of the set operation</returns>
         public CacheSetResponse Set(string cacheName, string key, byte[] value, uint ttlSeconds)
         {
-	    if (cacheName == null)
+            if (cacheName == null)
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
@@ -595,7 +595,7 @@ namespace MomentoSdk.Responses
         /// <returns>Result of the set operation</returns>
         public CacheSetResponse Set(string cacheName, string key, byte[] value)
         {
-	    if (cacheName == null)
+            if (cacheName == null)
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }

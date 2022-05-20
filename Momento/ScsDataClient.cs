@@ -308,10 +308,10 @@ namespace MomentoSdk
             return ByteString.CopyFromUtf8(s);
         }
 
-	private DateTime CalculateDeadline()
-	{
+        private DateTime CalculateDeadline()
+        {
             return DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
-	}
+        }
 
         public void Dispose()
         {
