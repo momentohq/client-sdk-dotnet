@@ -4,7 +4,7 @@ The `MomentoSdk.Incubating` namespace has work-in-progress features that may or 
 # Dictionary Methods
 
 This demonstrates the methods and response types for a dictionary data type in the cache:
-```
+```csharp
 using System.Collections.Generic;
 using MomentoSdk.Responses;
 using MomentoSdk.Incubating.Responses;
