@@ -11,10 +11,10 @@ namespace MomentoSdk.Responses
         private readonly ScsDataClient dataClient;
 
         /// <summary>
-        /// Client to perform operations against the Simple Cache Service
+        /// Client to perform operations against the Simple Cache Service.
         /// </summary>
-        /// <param name="authToken">Momento jwt</param>
-        /// <param name="defaultTtlSeconds">Default Time to Live for the item in Cache</param>
+        /// <param name="authToken">Momento JWT.</param>
+        /// <param name="defaultTtlSeconds">Default time to live for the item in cache.</param>
         public SimpleCacheClient(string authToken, uint defaultTtlSeconds)
         {
             Claims claims = JwtUtils.DecodeJwt(authToken);
@@ -26,6 +26,12 @@ namespace MomentoSdk.Responses
             this.dataClient = dataClient;
         }
 
+        /// <summary>
+        /// Client to perform operations against the Simple Cache Service.
+        /// </summary>
+        /// <param name="authToken">Momento JWT.</param>
+        /// <param name="defaultTtlSeconds">Default time to live for the item in cache.</param>
+        /// <param name="dataClientOperationTimeoutMilliseconds">Deadline (timeout) for communicating to the server.</param>
         public SimpleCacheClient(string authToken, uint defaultTtlSeconds, uint dataClientOperationTimeoutMilliseconds)
         {
             ValidateRequestTimeout(dataClientOperationTimeoutMilliseconds);
@@ -41,63 +47,109 @@ namespace MomentoSdk.Responses
         /// <summary>
         /// Creates a cache if it doesn't exist.
         /// </summary>
-        /// <param name="cacheName">Name of the cache to be created</param>
+        /// <param name="cacheName">Name of the cache to be created.</param>
         /// <returns>The result of the create cache operation</returns>
-        public Responses.CreateCacheResponse CreateCache(string cacheName)
+        public CreateCacheResponse CreateCache(string cacheName)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
             return this.controlClient.CreateCache(cacheName);
         }
 
         /// <summary>
-        /// Deletes a cache and all of the items within it
+        /// Deletes a cache and all of the items within it.
         /// </summary>
-        /// <param name="cacheName">Name of the cache to be created</param>
-        /// <returns>The result of the delete cache operation</returns>
-        public Responses.DeleteCacheResponse DeleteCache(string cacheName)
+        /// <param name="cacheName">Name of the cache to be deleted.</param>
+        /// <returns>The result of the delete cache operation.</returns>
+        public DeleteCacheResponse DeleteCache(string cacheName)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
             return this.controlClient.DeleteCache(cacheName);
         }
 
         /// <summary>
-        /// List all caches
+        /// List all caches.
         /// </summary>
         /// <param name="nextPageToken">A token to specify where to start paginating. This is the NextToken from a previous response.</param>
-        /// <returns>The result of the list cache operation</returns>
-        public Responses.ListCachesResponse ListCaches(string nextPageToken = null)
+        /// <returns>The result of the list cache operation.</returns>
+        public ListCachesResponse ListCaches(string nextPageToken = null)
         {
             return this.controlClient.ListCaches(nextPageToken);
         }
 
         /// <summary>
-        /// Sets the value in cache with a given Time To Live (TTL) seconds.
+        /// Sets the value in cache with a given time to live (TTL) seconds.
         /// </summary>
-        /// <param name="key">The key to get</param>
-        /// <param name="value">The value to be stored</param>
-        /// <param name="ttlSeconds">Time to Live for the item in Cache. This ttl takes precedence over the TTL used when initializing a cache client</param>
-        /// <returns>Future containing the result of the set operation</returns>
+        /// <param name="cacheName">Name of the cache to store the item in.</param>
+        /// <param name="key">The key to set.</param>
+        /// <param name="value">The value to be stored.</param>
+        /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client.</param>
+        /// <returns>Future containing the result of the set operation.</returns>
         public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
         }
 
         /// <summary>
-        /// Sets the value in cache with a given Time To Live (TTL) seconds.
+        /// Sets the value in cache with a given time to live (TTL) seconds.
         /// </summary>
-        /// <param name="key">The key under which the value is to be added</param>
-        /// <param name="value">The value to be stored</param>
-        /// <returns>Future containing the result of the set operation</returns>
+        /// <param name="cacheName">Name of the cache to store the item in.</param>
+        /// <param name="key">The key to set.</param>
+        /// <param name="value">The value to be stored.</param>
+        /// <returns>Future containing the result of the set operation.</returns>
         public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             return await this.dataClient.SetAsync(cacheName, key, value);
         }
 
         /// <summary>
         /// Get the cache value stored for the given key.
         /// </summary>
-        /// <param name="key">The key to perform a cache lookup on</param>
-        /// <returns>Future with CacheGetResponse containing the status of the get operation and the associated value data</returns>
+        /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+        /// <param name="key">The key to lookup.</param>
+        /// <returns>Future with CacheGetResponse containing the status of the get operation and the associated value data.</returns>
         public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             return await this.dataClient.GetAsync(cacheName, key);
         }
 
@@ -105,43 +157,90 @@ namespace MomentoSdk.Responses
         /// Remove the key from the cache.
         /// </summary>
         /// <param name="cacheName">Name of the cache to delete the key from.</param>
-        /// <param name="key">The key to perform a cache lookup on.</param>
+        /// <param name="key">The key to delete.</param>
         /// <returns>Future containing the result of the delete operation.</returns>
         public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, byte[] key)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             return await this.dataClient.DeleteAsync(cacheName, key);
         }
 
         /// <summary>
-        /// Sets the value in cache with a given Time To Live (TTL) seconds.
+        /// Sets the value in cache with a given time to live (TTL) seconds.
         /// </summary>
-        /// <param name="key">The key under which the value is to be added</param>
-        /// <param name="value">The value to be stored</param>
-        /// <param name="ttlSeconds">Time to Live for the item in Cache. This ttl takes precedence over the TTL used when initializing a cache client</param>
+        /// <param name="cacheName">Name of the cache to store the item in.</param>
+        /// <param name="key">The key to set.</param>
+        /// <param name="value">The value to be stored.</param>
+        /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client.</param>
         /// <returns>Future containing the result of the set operation</returns>
         public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint ttlSeconds)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
         }
 
         /// <summary>
-        /// Sets the value in cache with a default Time To Live (TTL) seconds used initializing a cache client
+        /// Sets the value in cache with a default time to live (TTL) seconds used initializing a cache client.
         /// </summary>
-        /// <param name="key">The value to be stored</param>
-        /// <param name="value">The value to be stored</param>
-        /// <returns>Future containing the result of the set operation</returns>
+        /// <param name="cacheName">Name of the cache to store the item in.</param>
+        /// <param name="key">The key to set.</param>
+        /// <param name="value">The value to be stored.</param>
+        /// <returns>Future containing the result of the set operation.</returns>
         public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             return await this.dataClient.SetAsync(cacheName, key, value);
         }
 
         /// <summary>
         /// Get the cache value stored for the given key.
         /// </summary>
-        /// <param name="key">The key to perform a cache lookup on</param>
+        /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+        /// <param name="key">The key to lookup.</param>
         /// <returns>Future with CacheGetResponse containing the status of the get operation and the associated value data</returns>
         public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             return await this.dataClient.GetAsync(cacheName, key);
         }
 
@@ -149,97 +248,201 @@ namespace MomentoSdk.Responses
         /// Remove the key from the cache.
         /// </summary>
         /// <param name="cacheName">Name of the cache to delete the key from.</param>
-        /// <param name="key">The key to perform a cache lookup on.</param>
+        /// <param name="key">The key to delete.</param>
         /// <returns>Future containing the result of the delete operation.</returns>
         public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             return await this.dataClient.DeleteAsync(cacheName, key);
         }
 
         /// <summary>
-        /// Sets the value in cache with a given Time To Live (TTL) seconds.
+        /// Sets the value in cache with a given time to live (TTL) seconds.
         /// </summary>
-        /// <param name="key">The key under which the value is to be added</param>
-        /// <param name="value">The value to be stored</param>
-        /// <param name="ttlSeconds">Time to Live for the item in Cache. This ttl takes precedence over the TTL used when initializing a cache client</param>
+        /// <param name="cacheName">Name of the cache to store the item in.</param>
+        /// <param name="key">The key to set.</param>
+        /// <param name="value">The value to be stored.</param>
+        /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client</param>
         /// <returns>Future containing the result of the set operation</returns>
         public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint ttlSeconds)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
         }
 
         /// <summary>
-        /// Sets the value in cache with a default Time To Live (TTL) seconds used initializing a cache client
+        /// Sets the value in cache with a default time to live (TTL) seconds used initializing a cache client
         /// </summary>
-        /// <param name="key">The value to be stored</param>
-        /// <param name="value">The value to be stored</param>
-        /// <returns>Future containing the result of the set operation</returns>
+        /// <param name="cacheName">Name of the cache to store the item in.</param>
+        /// <param name="key">The value to be stored.</param>
+        /// <param name="value">The value to be stored.</param>
+        /// <returns>Future containing the result of the set operation.</returns>
         public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             return await this.dataClient.SetAsync(cacheName, key, value);
         }
 
         /// <summary>
         /// Executes a list of passed Get operations in parallel.
         /// </summary>
-        /// <param name="keys">The keys to perform a cache lookup on</param>
-        /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data</returns>
+        /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+        /// <param name="keys">The keys to get.</param>
+        /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data.</returns>
         public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<byte[]> keys)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (keys == null)
+            {
+                throw new ArgumentNullException(nameof(keys));
+            }
+
             return await this.dataClient.MultiGetAsync(cacheName, keys);
         }
 
         /// <summary>
         /// Executes a list of passed Get operations in parallel.
         /// </summary>
-        /// <param name="keys">The keys to perform a cache lookup on</param>
-        /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data</returns>
+        /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+        /// <param name="keys">The keys to get.</param>
+        /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data.</returns>
         public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<string> keys)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (keys == null)
+            {
+                throw new ArgumentNullException(nameof(keys));
+            }
+
             return await this.dataClient.MultiGetAsync(cacheName, keys);
         }
 
         /// <summary>
         /// Executes a list of passed Get operations in parallel.
         /// </summary>
-        /// <param name="failureResponses">Failed responses to perform a cache lookup on</param>
-        /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data</returns>
+        /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+        /// <param name="failureResponses">Failed responses to perform a cache lookup on.</param>
+        /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data.</returns>
         public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<CacheMultiGetFailureResponse> failureResponses)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (failureResponses == null)
+            {
+                throw new ArgumentNullException(nameof(failureResponses));
+            }
+
             return await this.dataClient.MultiGetAsync(cacheName, failureResponses);
         }
 
         /// <summary>
         ///  Sets the value in the cache. If a value for this key is already present it will be replaced by the new value.
         /// </summary>
-        /// <param name="key">The key under which the value is to be added</param>
-        /// <param name="value">The value to be stored</param>
-        /// <param name="ttlSeconds">Time to Live for the item in Cache. This ttl takes precedence over the TTL used when initializing a cache client</param>
+        /// <param name="cacheName">Name of the cache to store the item in.</param>
+        /// <param name="key">The key to set.</param>
+        /// <param name="value">The value to be stored.</param>
+        /// <param name="ttlSeconds">Time to live (TTL) for the item in Cache. This TTL takes precedence over the TTL used when initializing a cache client.</param>
         /// <returns>Result of the set operation</returns>
-
         public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             return this.dataClient.Set(cacheName, key, value, ttlSeconds);
         }
 
         /// <summary>
         /// Sets the value in the cache. If a value for this key is already present it will be replaced by the new value.
         /// </summary>
-        /// <param name="key">The key under which the value is to be added</param>
-        /// <param name="value">The value to be stored</param>
-        /// <returns>Result of the set operation</returns>
+        /// <param name="cacheName">Name of the cache to store the item in.</param>
+        /// <param name="key">The key to set.</param>
+        /// <param name="value">The value to be stored.</param>
+        /// <returns>Result of the set operation.</returns>
         public CacheSetResponse Set(string cacheName, byte[] key, byte[] value)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             return this.dataClient.Set(cacheName, key, value);
         }
 
         /// <summary>
-        /// Get the cache value stored for the given key
+        /// Get the cache value stored for the given key.
         /// </summary>
-        /// <param name="key">The key to get</param>
-        /// <returns>CacheGetResponse containing the status of the get operation and the associated value data</returns>
+        /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+        /// <param name="key">The key to lookup.</param>
+        /// <returns>CacheGetResponse containing the status of the get operation and the associated value data.</returns>
         public CacheGetResponse Get(string cacheName, byte[] key)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             return this.dataClient.Get(cacheName, key);
         }
 
@@ -247,45 +450,91 @@ namespace MomentoSdk.Responses
         /// Remove the key from the cache.
         /// </summary>
         /// <param name="cacheName">Name of the cache to delete the key from.</param>
-        /// <param name="key">The key to perform a cache lookup on.</param>
+        /// <param name="key">The key to delete.</param>
         /// <returns>Future containing the result of the delete operation.</returns>
         public CacheDeleteResponse Delete(string cacheName, byte[] key)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             return this.dataClient.Delete(cacheName, key);
         }
 
         /// <summary>
-        /// Sets the value in cache with a given Time To Live (TTL) seconds. If a value for this key is already present it will be replaced by the new value.
+        /// Sets the value in cache with a given time to live (TTL) seconds. If a value for this key is already present it will be replaced by the new value.
         /// </summary>
-        /// <param name="key">The key under which the value is to be added</param>
-        /// <param name="value">The value to be stored</param>
-        /// <param name="ttlSeconds">Time to Live for the item in Cache. This ttl takes precedence over the TTL used when initializing a cache client</param>
-        /// <returns>Result of the set operation</returns>
+        /// <param name="key">The key to set.</param>
+        /// <param name="value">The value to be stored.</param>
+        /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client.</param>
+        /// <returns>Result of the set operation.</returns>
         public CacheSetResponse Set(string cacheName, string key, string value, uint ttlSeconds)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             return this.dataClient.Set(cacheName, key, value, ttlSeconds);
         }
 
         /// <summary>
         /// Sets the value in the cache. If a value for this key is already present it will be replaced by the new value.
-        /// The Time to Live (TTL) seconds defaults to the parameter used when initializing this Cache client
+        /// The time to live (TTL) seconds defaults to the parameter used when initializing this cache client.
         /// </summary>
-        /// <param name="key">The key under which the value is to be added</param>
-        /// <param name="value">The value to be stored</param>
-        /// <param name="ttlSeconds">Time to Live for the item in Cache. This ttl takes precedence over the TTL used when initializing a cache client</param>
+        /// <param name="cacheName">Name of the cache to store the item in.</param>
+        /// <param name="key">The key to set.</param>
+        /// <param name="value">The value to be stored.</param>
+        /// <param name="ttlSeconds">TTL for the item in Cache. This TTL takes precedence over the TTL used when initializing a cache client.</param>
         /// <returns>Result of the set operation</returns>
         public CacheSetResponse Set(string cacheName, string key, string value)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             return this.dataClient.Set(cacheName, key, value);
         }
 
         /// <summary>
-        /// Get the cache value stored for the given key
+        /// Get the cache value stored for the given key.
         /// </summary>
-        /// <param name="key">The key to get</param>
-        /// <returns>CacheGetResponse containing the status of the get operation and the associated value data</returns>
+        /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+        /// <param name="key">The key to lookup.</param>
+        /// <returns>CacheGetResponse containing the status of the get operation and the associated value data.</returns>
         public CacheGetResponse Get(string cacheName, string key)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             return this.dataClient.Get(cacheName, key);
         }
 
@@ -293,35 +542,72 @@ namespace MomentoSdk.Responses
         /// Remove the key from the cache.
         /// </summary>
         /// <param name="cacheName">Name of the cache to delete the key from.</param>
-        /// <param name="key">The key to perform a cache lookup on.</param>
+        /// <param name="key">The key to delete.</param>
         /// <returns>Future containing the result of the delete operation.</returns>
         public CacheDeleteResponse Delete(string cacheName, string key)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             return this.dataClient.Delete(cacheName, key);
         }
 
         /// <summary>
-        /// Sets the value in cache with a given Time To Live (TTL) seconds. If a value for this key is already present it will be replaced by the new value.
+        /// Sets the value in cache with a given time to live (TTL) seconds. If a value for this key is already present it will be replaced by the new value.
         /// </summary>
-        /// <param name="key">The key under which the value is to be added</param>
-        /// <param name="value">The value to be stored</param>
-        /// <param name="ttlSeconds">Time to Live for the item in Cache. This ttl takes precedence over the TTL used when initializing a cache client</param>
+        /// <param name="cacheName">Name of the cache to store the item in.</param>
+        /// <param name="key">The key to set.</param>
+        /// <param name="value">The value to be stored.</param>
+        /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client.</param>
         /// <returns>Result of the set operation</returns>
         public CacheSetResponse Set(string cacheName, string key, byte[] value, uint ttlSeconds)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             return this.dataClient.Set(cacheName, key, value, ttlSeconds);
         }
 
         /// <summary>
         /// Sets the value in the cache. If a value for this key is already present it will be replaced by the new value.
-        /// The Time to Live (TTL) seconds defaults to the parameter used when initializing this Cache client
+        /// The time to live (TTL) seconds defaults to the parameter used when initializing this cache client.
         /// </summary>
-        /// <param name="key">The key under which the value is to be added</param>
-        /// <param name="value">The value to be stored</param>
-        /// <param name="ttlSeconds">Time to Live for the item in Cache. This ttl takes precedence over the TTL used when initializing a cache client</param>
+        /// <param name="cacheName">Name of the cache to store the item in.</param>
+        /// <param name="key">The key to set.</param>
+        /// <param name="value">The value to be stored.</param>
+        /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client.</param>
         /// <returns>Result of the set operation</returns>
         public CacheSetResponse Set(string cacheName, string key, byte[] value)
         {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             return this.dataClient.Set(cacheName, key, value);
         }
 
