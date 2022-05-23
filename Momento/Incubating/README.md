@@ -2,7 +2,6 @@
 The `MomentoSdk.Incubating` namespace has work-in-progress features that may or may be be in the final version.
 
 # Dictionary Methods
-
 This demonstrates the methods and response types for a dictionary data type in the cache:
 ```csharp
 using System.Collections.Generic;
@@ -32,7 +31,7 @@ class Driver
         CacheGetStatus status = gr.Status;
         string value = gr.String();
 
-        // Get the whole thing
+        // Get the whole dictionary
         CacheDictionaryGetAllResponse gar = scc.DictionaryGetAll(cacheName: "my-cache", dictionaryName: "my-dictionary");
         status = gar.Status;
         dictionary = gar.Dictionary();
