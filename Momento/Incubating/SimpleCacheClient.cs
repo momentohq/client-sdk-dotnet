@@ -71,6 +71,26 @@ namespace MomentoSdk.Incubating
             return await Task.FromException<CacheDictionaryMultiSetResponse>(new NotImplementedException());
         }
 
+        public CacheDictionaryMultiGetResponse DictionaryMultiGet(string cacheName, string dictionaryName, params byte[][] keys)
+        {
+            throw new NotImplementedException();
+        }
+
+        public CacheDictionaryMultiGetResponse DictionaryMultiGet(string cacheName, string dictionaryName, params string[] key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<CacheDictionaryMultiGetResponse> DictionaryMultiGetAsync(string cacheName, string dictionaryName, params byte[][] key)
+        {
+            return await Task.FromException<CacheDictionaryMultiGetResponse>(new NotImplementedException());
+        }
+
+        public async Task<CacheDictionaryMultiGetResponse> DictionaryMultiGetAsync(string cacheName, string dictionaryName, params string[] key)
+        {
+            return await Task.FromException<CacheDictionaryMultiGetResponse>(new NotImplementedException());
+        }
+
         public CacheDictionaryGetAllResponse DictionaryGetAll(string cacheName, string dictionaryName)
         {
             throw new NotImplementedException();

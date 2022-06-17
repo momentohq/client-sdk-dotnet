@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using CacheClient;
 using Google.Protobuf;
-using MomentoSdk.Exceptions;
 using MomentoSdk.Responses;
 
 namespace MomentoSdk.Incubating.Responses
