@@ -75,7 +75,7 @@ namespace MomentoSdk
         /// <param name="value">The value to be stored.</param>
         /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client.</param>
         /// <returns>Future containing the result of the set operation.</returns>
-        public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
+        public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
         {
             if (cacheName == null)
             {
@@ -91,31 +91,6 @@ namespace MomentoSdk
             }
 
             return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
-        }
-
-        /// <summary>
-        /// Sets the value in cache with a given time to live (TTL) seconds.
-        /// </summary>
-        /// <param name="cacheName">Name of the cache to store the item in.</param>
-        /// <param name="key">The key to set.</param>
-        /// <param name="value">The value to be stored.</param>
-        /// <returns>Future containing the result of the set operation.</returns>
-        public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value)
-        {
-            if (cacheName == null)
-            {
-                throw new ArgumentNullException(nameof(cacheName));
-            }
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-
-            return await this.dataClient.SetAsync(cacheName, key, value);
         }
 
         /// <summary>
@@ -166,7 +141,7 @@ namespace MomentoSdk
         /// <param name="value">The value to be stored.</param>
         /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client.</param>
         /// <returns>Future containing the result of the set operation</returns>
-        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint ttlSeconds)
+        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint? ttlSeconds = null)
         {
             if (cacheName == null)
             {
@@ -182,31 +157,6 @@ namespace MomentoSdk
             }
 
             return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
-        }
-
-        /// <summary>
-        /// Sets the value in cache with a default time to live (TTL) seconds used initializing a cache client.
-        /// </summary>
-        /// <param name="cacheName">Name of the cache to store the item in.</param>
-        /// <param name="key">The key to set.</param>
-        /// <param name="value">The value to be stored.</param>
-        /// <returns>Future containing the result of the set operation.</returns>
-        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value)
-        {
-            if (cacheName == null)
-            {
-                throw new ArgumentNullException(nameof(cacheName));
-            }
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-
-            return await this.dataClient.SetAsync(cacheName, key, value);
         }
 
         /// <summary>
@@ -257,7 +207,7 @@ namespace MomentoSdk
         /// <param name="value">The value to be stored.</param>
         /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client</param>
         /// <returns>Future containing the result of the set operation</returns>
-        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint ttlSeconds)
+        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
         {
             if (cacheName == null)
             {
@@ -273,31 +223,6 @@ namespace MomentoSdk
             }
 
             return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
-        }
-
-        /// <summary>
-        /// Sets the value in cache with a default time to live (TTL) seconds used initializing a cache client
-        /// </summary>
-        /// <param name="cacheName">Name of the cache to store the item in.</param>
-        /// <param name="key">The value to be stored.</param>
-        /// <param name="value">The value to be stored.</param>
-        /// <returns>Future containing the result of the set operation.</returns>
-        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value)
-        {
-            if (cacheName == null)
-            {
-                throw new ArgumentNullException(nameof(cacheName));
-            }
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-
-            return await this.dataClient.SetAsync(cacheName, key, value);
         }
 
         /// <summary>
@@ -368,7 +293,7 @@ namespace MomentoSdk
         /// <param name="value">The value to be stored.</param>
         /// <param name="ttlSeconds">Time to live (TTL) for the item in Cache. This TTL takes precedence over the TTL used when initializing a cache client.</param>
         /// <returns>Result of the set operation</returns>
-        public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
+        public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
         {
             if (cacheName == null)
             {
@@ -384,31 +309,6 @@ namespace MomentoSdk
             }
 
             return this.dataClient.Set(cacheName, key, value, ttlSeconds);
-        }
-
-        /// <summary>
-        /// Sets the value in the cache. If a value for this key is already present it will be replaced by the new value.
-        /// </summary>
-        /// <param name="cacheName">Name of the cache to store the item in.</param>
-        /// <param name="key">The key to set.</param>
-        /// <param name="value">The value to be stored.</param>
-        /// <returns>Result of the set operation.</returns>
-        public CacheSetResponse Set(string cacheName, byte[] key, byte[] value)
-        {
-            if (cacheName == null)
-            {
-                throw new ArgumentNullException(nameof(cacheName));
-            }
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-
-            return this.dataClient.Set(cacheName, key, value);
         }
 
         /// <summary>
@@ -458,7 +358,7 @@ namespace MomentoSdk
         /// <param name="value">The value to be stored.</param>
         /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client.</param>
         /// <returns>Result of the set operation.</returns>
-        public CacheSetResponse Set(string cacheName, string key, string value, uint ttlSeconds)
+        public CacheSetResponse Set(string cacheName, string key, string value, uint? ttlSeconds = null)
         {
             if (cacheName == null)
             {
@@ -474,33 +374,6 @@ namespace MomentoSdk
             }
 
             return this.dataClient.Set(cacheName, key, value, ttlSeconds);
-        }
-
-        /// <summary>
-        /// Sets the value in the cache. If a value for this key is already present it will be replaced by the new value.
-        /// The time to live (TTL) seconds defaults to the parameter used when initializing this cache client.
-        /// </summary>
-        /// <param name="cacheName">Name of the cache to store the item in.</param>
-        /// <param name="key">The key to set.</param>
-        /// <param name="value">The value to be stored.</param>
-        /// <param name="ttlSeconds">TTL for the item in Cache. This TTL takes precedence over the TTL used when initializing a cache client.</param>
-        /// <returns>Result of the set operation</returns>
-        public CacheSetResponse Set(string cacheName, string key, string value)
-        {
-            if (cacheName == null)
-            {
-                throw new ArgumentNullException(nameof(cacheName));
-            }
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-
-            return this.dataClient.Set(cacheName, key, value);
         }
 
         /// <summary>
@@ -551,7 +424,7 @@ namespace MomentoSdk
         /// <param name="value">The value to be stored.</param>
         /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client.</param>
         /// <returns>Result of the set operation</returns>
-        public CacheSetResponse Set(string cacheName, string key, byte[] value, uint ttlSeconds)
+        public CacheSetResponse Set(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
         {
             if (cacheName == null)
             {
@@ -567,33 +440,6 @@ namespace MomentoSdk
             }
 
             return this.dataClient.Set(cacheName, key, value, ttlSeconds);
-        }
-
-        /// <summary>
-        /// Sets the value in the cache. If a value for this key is already present it will be replaced by the new value.
-        /// The time to live (TTL) seconds defaults to the parameter used when initializing this cache client.
-        /// </summary>
-        /// <param name="cacheName">Name of the cache to store the item in.</param>
-        /// <param name="key">The key to set.</param>
-        /// <param name="value">The value to be stored.</param>
-        /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client.</param>
-        /// <returns>Result of the set operation</returns>
-        public CacheSetResponse Set(string cacheName, string key, byte[] value)
-        {
-            if (cacheName == null)
-            {
-                throw new ArgumentNullException(nameof(cacheName));
-            }
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            return this.dataClient.Set(cacheName, key, value);
         }
 
         public void Dispose()
