@@ -18,12 +18,12 @@ namespace MomentoSdk.Incubating.Responses
             throw new NotImplementedException();
         }
 
-        public IList<String> Values(Encoding encoding = null)
+        public IList<string?> Values(Encoding encoding = null)
         {
             throw new NotImplementedException();
         }
 
-        public IList<byte[]> ValuesAsBytes()
+        public IList<byte[]?> ValuesAsBytes()
         {
             throw new NotImplementedException();
         }

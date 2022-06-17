@@ -39,9 +39,9 @@ class Driver
 
         // Get multiple values
         CacheDictionaryMultiGetResponse mgr = scc.DictionaryMultiGet(cacheName: "my-cache",
-            dictionaryName: "my-dictionary", "key1", "key2", "key3");
-        IList<CacheGetStatus> manyStatus = mgr.Status(); // [HIT, HIT, HIT]
-        IList<string> values = mgr.Values(); // ["value1", "value2", "value3"]
+            dictionaryName: "my-dictionary", "key1", "key2", "key3", "key4");
+        IList<CacheGetStatus> manyStatus = mgr.Status(); // [HIT, HIT, HIT, MISS]
+        IList<string?> values = mgr.Values(); // ["value1", "value2", "value3", null]
         IList<CacheGetResponse> individualResponses = mgr.ToList();
 
         // Get the whole dictionary
