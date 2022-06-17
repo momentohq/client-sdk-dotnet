@@ -13,12 +13,17 @@ namespace MomentoSdk.Incubating.Responses
         public CacheGetStatus Status { get; private set; }
         private readonly ByteString body;
 
-		// TODO populate constructor with DictionaryResponse gRPC message
+        // TODO populate constructor with DictionaryResponse gRPC message
         public CacheDictionaryGetAllResponse()
         {
         }
 
-        public Dictionary<string, CacheDictionaryValue>? Dictionary(Encoding encoding = null)
+        public Dictionary<byte[], byte[]>? DictionaryAsBytes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Dictionary<string, string>? Dictionary(Encoding encoding = null)
         {
             throw new NotImplementedException();
         }
