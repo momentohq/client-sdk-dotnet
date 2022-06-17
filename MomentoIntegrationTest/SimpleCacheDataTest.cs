@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Xunit;
+using MomentoSdk;
 using MomentoSdk.Responses;
 using MomentoSdk.Exceptions;
 using System.Text;
@@ -242,7 +243,7 @@ namespace MomentoIntegrationTest
         public void Get_NullChecksBytes_ThrowsException()
         {
             Assert.Throws<ArgumentNullException>(() => client.Get("cache", (byte[])null));
-            Assert.Throws<ArgumentNullException>(() => client.Get(null, new byte[] {0x00}));
+            Assert.Throws<ArgumentNullException>(() => client.Get(null, new byte[] { 0x00 }));
         }
 
         [Fact]
@@ -350,7 +351,7 @@ namespace MomentoIntegrationTest
         {
             Assert.Throws<ArgumentNullException>(() => client.Delete(cacheName, key));
         }
-	
+
         [Fact]
         public void Delete_KeyIsBytes_HappyPath()
         {

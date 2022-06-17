@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Xunit;
+using MomentoSdk;
 using MomentoSdk.Exceptions;
 using MomentoSdk.Responses;
 using System.Collections.Generic;
@@ -78,7 +79,7 @@ namespace MomentoIntegrationTest
             SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds: 10);
             List<String> cacheNames = new List<String>();
 
-	    // TODO: increase limit after pagination is enabled
+            // TODO: increase limit after pagination is enabled
             foreach (int val in Enumerable.Range(1, 5))
             {
                 String cacheName = Guid.NewGuid().ToString();

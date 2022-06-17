@@ -5,7 +5,7 @@ using MomentoSdk.Incubating.Responses;
 
 namespace MomentoSdk.Incubating
 {
-    public class SimpleCacheClient : MomentoSdk.Responses.SimpleCacheClient
+    public class SimpleCacheClient : MomentoSdk.SimpleCacheClient
     {
         public SimpleCacheClient(string authToken, uint defaultTtlSeconds) : base(authToken, defaultTtlSeconds)
         {
