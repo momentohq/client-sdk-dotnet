@@ -16,29 +16,17 @@ namespace MomentoSdk
         private readonly uint dataClientOperationTimeoutMilliseconds;
         private const uint DEFAULT_DEADLINE_MILLISECONDS = 5000;
 
-        public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds)
+        public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
         {
             this.grpcManager = new DataGrpcManager(authToken, endpoint);
             this.defaultTtlSeconds = defaultTtlSeconds;
-            this.dataClientOperationTimeoutMilliseconds = DEFAULT_DEADLINE_MILLISECONDS;
+            this.dataClientOperationTimeoutMilliseconds = dataClientOperationTimeoutMilliseconds ?? DEFAULT_DEADLINE_MILLISECONDS;
         }
 
-        public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds, uint dataClientOperationTimeoutMilliseconds)
-        {
-            this.grpcManager = new DataGrpcManager(authToken, endpoint);
-            this.defaultTtlSeconds = defaultTtlSeconds;
-            this.dataClientOperationTimeoutMilliseconds = dataClientOperationTimeoutMilliseconds;
-        }
-
-        public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
+        public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
         {
             _SetResponse response = await this.SendSetAsync(cacheName, value: Convert(value), key: Convert(key), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
-        }
-
-        public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value)
-        {
-            return await this.SetAsync(cacheName, key, value, defaultTtlSeconds);
         }
 
         public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
@@ -53,15 +41,10 @@ namespace MomentoSdk
             return new CacheDeleteResponse();
         }
 
-        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint ttlSeconds)
+        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint? ttlSeconds = null)
         {
             _SetResponse response = await this.SendSetAsync(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
-        }
-
-        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value)
-        {
-            return await this.SetAsync(cacheName, key, value, defaultTtlSeconds);
         }
 
         public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
@@ -76,15 +59,10 @@ namespace MomentoSdk
             return new CacheDeleteResponse();
         }
 
-        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint ttlSeconds)
+        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
         {
             _SetResponse response = await this.SendSetAsync(cacheName, value: Convert(value), key: Convert(key), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
-        }
-
-        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value)
-        {
-            return await this.SetAsync(cacheName, key, value, defaultTtlSeconds);
         }
 
         public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<string> keys)
@@ -132,15 +110,10 @@ namespace MomentoSdk
             return new CacheMultiGetResponse(successResponses, failedResponses);
         }
 
-        public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint ttlSeconds)
+        public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
         {
             _SetResponse resp = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(resp);
-        }
-
-        public CacheSetResponse Set(string cacheName, byte[] key, byte[] value)
-        {
-            return this.Set(cacheName, key, value, defaultTtlSeconds);
         }
 
         public CacheGetResponse Get(string cacheName, byte[] key)
@@ -155,15 +128,10 @@ namespace MomentoSdk
             return new CacheDeleteResponse();
         }
 
-        public CacheSetResponse Set(string cacheName, string key, string value, uint ttlSeconds)
+        public CacheSetResponse Set(string cacheName, string key, string value, uint? ttlSeconds = null)
         {
             _SetResponse response = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
-        }
-
-        public CacheSetResponse Set(string cacheName, string key, string value)
-        {
-            return this.Set(cacheName, key, value, defaultTtlSeconds);
         }
 
         public CacheGetResponse Get(string cacheName, string key)
@@ -178,20 +146,15 @@ namespace MomentoSdk
             return new CacheDeleteResponse();
         }
 
-        public CacheSetResponse Set(string cacheName, string key, byte[] value, uint ttlSeconds)
+        public CacheSetResponse Set(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
         {
             _SetResponse response = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
             return new CacheSetResponse(response);
         }
 
-        public CacheSetResponse Set(string cacheName, string key, byte[] value)
+        private async Task<_SetResponse> SendSetAsync(string cacheName, ByteString key, ByteString value, uint? ttlSeconds = null)
         {
-            return this.Set(cacheName, key, value, defaultTtlSeconds);
-        }
-
-        private async Task<_SetResponse> SendSetAsync(string cacheName, ByteString key, ByteString value, uint ttlSeconds)
-        {
-            _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSeconds * 1000 };
+            _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds) };
             try
             {
                 return await this.grpcManager.Client().SetAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
@@ -228,9 +191,9 @@ namespace MomentoSdk
             }
         }
 
-        private _SetResponse SendSet(string cacheName, ByteString key, ByteString value, uint ttlSeconds)
+        private _SetResponse SendSet(string cacheName, ByteString key, ByteString value, uint? ttlSeconds = null)
         {
-            _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSeconds * 1000 };
+            _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds) };
             try
             {
                 return this.grpcManager.Client().Set(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
@@ -311,6 +274,16 @@ namespace MomentoSdk
         private DateTime CalculateDeadline()
         {
             return DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
+        }
+
+        /// <summary>
+        /// Converts TTL in seconds to milliseconds. Defaults to <c>defaultTtlSeconds</c>.
+        /// </summary>
+        /// <param name="ttlSeconds">The TTL to convert. Defaults to defaultTtlSeconds</param>
+        /// <returns></returns>
+        private uint ttlSecondsToMilliseconds(uint? ttlSeconds = null)
+        {
+            return (ttlSeconds ?? defaultTtlSeconds) * 1000;
         }
 
         public void Dispose()
