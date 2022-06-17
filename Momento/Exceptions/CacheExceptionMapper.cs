@@ -15,7 +15,7 @@ namespace MomentoSdk.Exceptions
             }
             if (e is RpcException ex)
             {
-                switch(ex.StatusCode)
+                switch (ex.StatusCode)
                 {
                     case StatusCode.InvalidArgument:
                     case StatusCode.OutOfRange:

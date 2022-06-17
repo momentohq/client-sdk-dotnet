@@ -10,7 +10,7 @@ namespace MomentoSdk
     {
         public const string AuthorizationKey = "Authorization";
         public const string AgentKey = "Agent";
-        public readonly List<string>  onceOnlyHeaders = new List<string>{Header.AgentKey};
+        public readonly List<string> onceOnlyHeaders = new List<string> { Header.AgentKey };
         public string Name;
         public string Value;
         public Header(String name, String value)
@@ -22,8 +22,8 @@ namespace MomentoSdk
     }
     class HeaderInterceptor : Grpc.Core.Interceptors.Interceptor
     {
-        private readonly List<Header> headersToAddEveryTime = new List<Header>{};
-        private readonly List<Header> headersToAddOnce = new List<Header>{};
+        private readonly List<Header> headersToAddEveryTime = new List<Header> { };
+        private readonly List<Header> headersToAddOnce = new List<Header> { };
         private volatile Boolean areOnlyOnceHeadersSent = false;
         public HeaderInterceptor(List<Header> headers)
         {
@@ -72,10 +72,11 @@ namespace MomentoSdk
                 context = new ClientInterceptorContext<TRequest, TResponse>(context.Method, context.Host, options);
             }
             foreach (Header header in this.headersToAddEveryTime)
-                {
-                    headers.Add(header.Name, header.Value);
-                }
-            if (!areOnlyOnceHeadersSent) {
+            {
+                headers.Add(header.Name, header.Value);
+            }
+            if (!areOnlyOnceHeadersSent)
+            {
                 foreach (Header header in this.headersToAddOnce)
                 {
                     headers.Add(header.Name, header.Value);
