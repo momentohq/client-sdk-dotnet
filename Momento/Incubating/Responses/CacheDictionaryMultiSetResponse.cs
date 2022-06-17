@@ -15,11 +15,11 @@ namespace MomentoSdk.Incubating.Responses
         {
             throw new NotImplementedException();
         }
-        public Dictionary<byte[], byte>? DictionaryAsBytes()
+        public IDictionary<byte[], byte>? DictionaryAsBytes()
         {
             throw new NotImplementedException();
         }
-        public Dictionary<string, string>? Dictionary(Encoding encoding = null)
+        public IDictionary<string, string>? Dictionary(Encoding encoding = null)
         {
             throw new NotImplementedException();
         }
