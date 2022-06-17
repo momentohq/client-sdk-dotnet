@@ -19,7 +19,6 @@ namespace MomentoIntegrationTest
         // Test initialization
         public SimpleCacheDataTest()
         {
-            uint defaultTtlSeconds = 10;
             client = new SimpleCacheClient(authKey, defaultTtlSeconds);
             try
             {
