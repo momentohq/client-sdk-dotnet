@@ -276,6 +276,11 @@ namespace MomentoSdk
             return DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
         }
 
+        /// <summary>
+        /// Converts TTL in seconds to milliseconds. Defaults to <c>defaultTtlSeconds</c>.
+        /// </summary>
+        /// <param name="ttlSeconds">The TTL to convert. Defaults to defaultTtlSeconds</param>
+        /// <returns></returns>
         private uint ttlSecondsToMilliseconds(uint? ttlSeconds = null)
         {
             return (ttlSeconds ?? defaultTtlSeconds) * 1000;
