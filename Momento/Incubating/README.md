@@ -24,28 +24,35 @@ class Driver
             key: "my-key", value: "my-value", ttlSeconds: 60, refreshTtl: false);
 
         // Set multiple values
-        scc.DictionaryMultiSet(cacheName: "my-cache", dictionaryName: "my-dictionary",
+        scc.DictionaryMultiSet(
+            cacheName: "my-cache",
+            dictionaryName: "my-dictionary",
             new Dictionary<string, string>() {
                 { "key1", "value1" },
                 { "key2", "value2" },
-                { "key3", "value3" }
-        }, refreshTtl: false);
+                { "key3", "value3" }},
+            refreshTtl: false);
 
         // Get a value
-        CacheDictionaryGetResponse gr = scc.DictionaryGet(cacheName: "my-cache",
-            dictionaryName: "my-dictionary", key: "key1");
+        CacheDictionaryGetResponse gr = scc.DictionaryGet(
+            cacheName: "my-cache",
+            dictionaryName: "my-dictionary",
+            key: "key1");
         CacheGetStatus status = gr.Status(); // HIT
         string value = gr.String(); // "value1"
 
         // Get multiple values
-        CacheDictionaryMultiGetResponse mgr = scc.DictionaryMultiGet(cacheName: "my-cache",
-            dictionaryName: "my-dictionary", "key1", "key2", "key3", "key4");
+        CacheDictionaryMultiGetResponse mgr = scc.DictionaryMultiGet(
+            cacheName: "my-cache",
+            dictionaryName: "my-dictionary",
+            "key1", "key2", "key3", "key4");
         IList<CacheGetStatus> manyStatus = mgr.Status(); // [HIT, HIT, HIT, MISS]
         IList<string?> values = mgr.Values(); // ["value1", "value2", "value3", null]
         IList<CacheGetResponse> individualResponses = mgr.ToList();
 
         // Get the whole dictionary
-        CacheDictionaryGetAllResponse gar = scc.DictionaryGetAll(cacheName: "my-cache",
+        CacheDictionaryGetAllResponse gar = scc.DictionaryGetAll(
+            cacheName: "my-cache",
             dictionaryName: "my-dictionary");
         status = gar.Status;
         Dictionary<string, string> dictionary = gar.Dictionary();
