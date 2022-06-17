@@ -418,6 +418,78 @@ namespace MomentoSdk
         }
 
         /// <summary>
+        /// Executes a list of passed Get operations in parallel.
+        /// </summary>
+        /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+        /// <param name="keys">The keys to get.</param>
+        /// <returns>Response object with the status of the get operation and the associated value data.</returns>
+        public CacheMultiGetResponse MultiGet(string cacheName, IEnumerable<byte[]> keys)
+        {
+            try
+            {
+                return MultiGetAsync(cacheName, keys).Result;
+            }
+            catch (AggregateException e)
+            {
+                throw e.GetBaseException();
+            }
+        }
+
+        /// <summary>
+        /// Executes a list of passed Get operations in parallel.
+        /// </summary>
+        /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+        /// <param name="keys">The keys to get.</param>
+        /// <returns>Response object with the status of the get operation and the associated value data.</returns>
+        public CacheMultiGetResponse MultiGet(string cacheName, IEnumerable<string> keys)
+        {
+            try
+            {
+                return MultiGetAsync(cacheName, keys).Result;
+            }
+            catch (AggregateException e)
+            {
+                throw e.GetBaseException();
+            }
+        }
+
+        /// <summary>
+        /// Executes a list of passed Get operations in parallel.
+        /// </summary>
+        /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+        /// <param name="keys">The keys to get.</param>
+        /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data.</returns>
+        public CacheMultiGetResponse MultiGet(string cacheName, params byte[][] keys)
+        {
+            try
+            {
+                return MultiGetAsync(cacheName, keys).Result;
+            }
+            catch (AggregateException e)
+            {
+                throw e.GetBaseException();
+            }
+        }
+
+        /// <summary>
+        /// Executes a list of passed Get operations in parallel.
+        /// </summary>
+        /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+        /// <param name="keys">The keys to get.</param>
+        /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data.</returns>
+        public CacheMultiGetResponse MultiGet(string cacheName, params string[] keys)
+        {
+            try
+            {
+                return MultiGetAsync(cacheName, keys).Result;
+            }
+            catch (AggregateException e)
+            {
+                throw e.GetBaseException();
+            }
+        }
+
+        /// <summary>
         /// Remove the key from the cache.
         /// </summary>
         /// <param name="cacheName">Name of the cache to delete the key from.</param>
