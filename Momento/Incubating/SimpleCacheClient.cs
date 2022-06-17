@@ -11,11 +11,11 @@ namespace MomentoSdk.Incubating
         {
         }
 
-        public SimpleCacheClient(string authToken, uint defaultTtlSeconds, uint dataClientOperationTimeoutSeconds) : base(authToken, defaultTtlSeconds, dataClientOperationTimeoutSeconds)
+        public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, Dictionary<byte[], byte[]> dictionary)
         {
+            throw new NotImplementedException();
         }
 
-        // TODO: Dictionary can be <string|byte[], string|byte[]>
         public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, Dictionary<string, string> dictionary)
         {
             throw new NotImplementedException();
@@ -23,18 +23,32 @@ namespace MomentoSdk.Incubating
 
         public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, Dictionary<string, string> dictionary)
         {
+            return await Task.FromException<CacheDictionarySetResponse>(new NotImplementedException());
+        }
+
+        public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, Dictionary<byte[], byte[]> dictionary)
+        {
+            return await Task.FromException<CacheDictionarySetResponse>(new NotImplementedException());
+        }
+
+        public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, byte[] key)
+        {
             throw new NotImplementedException();
         }
 
-        // TODO: key can be byte[]
         public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, string key)
         {
             throw new NotImplementedException();
         }
 
+        public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, byte[] key)
+        {
+            return await Task.FromException<CacheDictionaryGetResponse>(new NotImplementedException());
+        }
+
         public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, string key)
         {
-            throw new NotImplementedException();
+            return await Task.FromException<CacheDictionaryGetResponse>(new NotImplementedException());
         }
 
         public CacheDictionaryGetAllResponse DictionaryGetAll(string cacheName, string dictionaryName)
@@ -44,7 +58,7 @@ namespace MomentoSdk.Incubating
 
         public async Task<CacheDictionaryGetAllResponse> DictionaryGetAllAsync(string cacheName, string dictionaryName)
         {
-            throw new NotImplementedException();
+            return await Task.FromException<CacheDictionaryGetAllResponse>(new NotImplementedException());
         }
     }
 }
