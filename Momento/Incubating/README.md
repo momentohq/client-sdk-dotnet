@@ -21,7 +21,7 @@ class Driver
 
         // Set a value
         scc.DictionarySet(cacheName: "my-cache", dictionaryName: "my-dictionary"
-            key: "my-key", value: "my-value");
+            key: "my-key", value: "my-value", ttlSeconds: 60, refreshTtl: false);
 
         // Set multiple values
         scc.DictionaryMultiSet(cacheName: "my-cache", dictionaryName: "my-dictionary",
@@ -29,7 +29,7 @@ class Driver
                 { "key1", "value1" },
                 { "key2", "value2" },
                 { "key3", "value3" }
-        });
+        }, refreshTtl: false);
 
         // Get a value
         CacheDictionaryGetResponse gr = scc.DictionaryGet(cacheName: "my-cache",

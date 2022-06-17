@@ -11,22 +11,22 @@ namespace MomentoSdk.Incubating
         {
         }
 
-        public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, byte[] key, byte[] value)
+        public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, byte[] key, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
         {
             throw new NotImplementedException();
         }
 
-        public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, string key, string value)
+        public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, string key, string value, bool refreshTtl, uint? ttlSeconds = null)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, byte[] key, byte[] value)
+        public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, byte[] key, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
         {
             return await Task.FromException<CacheDictionarySetResponse>(new NotImplementedException());
         }
 
-        public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, string key, string value)
+        public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, string key, string value, bool refreshTtl, uint? ttlSeconds = null)
         {
             return await Task.FromException<CacheDictionarySetResponse>(new NotImplementedException());
         }
@@ -51,22 +51,22 @@ namespace MomentoSdk.Incubating
             return await Task.FromException<CacheDictionaryGetResponse>(new NotImplementedException());
         }
 
-        public CacheDictionaryMultiSetResponse DictionaryMultiSet(string cacheName, string dictionaryName, IDictionary<byte[], byte[]> dictionary)
+        public CacheDictionaryMultiSetResponse DictionaryMultiSet(string cacheName, string dictionaryName, IDictionary<byte[], byte[]> dictionary, bool refreshTtl, uint? ttlSeconds = null)
         {
             throw new NotImplementedException();
         }
 
-        public CacheDictionaryMultiSetResponse DictionaryMultiSet(string cacheName, string dictionaryName, IDictionary<string, string> dictionary)
+        public CacheDictionaryMultiSetResponse DictionaryMultiSet(string cacheName, string dictionaryName, IDictionary<string, string> dictionary, bool refreshTtl, uint? ttlSeconds = null)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<CacheDictionaryMultiSetResponse> DictionaryMultiSetAsync(string cacheName, string dictionaryName, IDictionary<string, string> dictionary)
+        public async Task<CacheDictionaryMultiSetResponse> DictionaryMultiSetAsync(string cacheName, string dictionaryName, IDictionary<string, string> dictionary, bool refreshTtl, uint? ttlSeconds = null)
         {
             return await Task.FromException<CacheDictionaryMultiSetResponse>(new NotImplementedException());
         }
 
-        public async Task<CacheDictionaryMultiSetResponse> DictionaryMultiSetAsync(string cacheName, string dictionaryName, IDictionary<byte[], byte[]> dictionary)
+        public async Task<CacheDictionaryMultiSetResponse> DictionaryMultiSetAsync(string cacheName, string dictionaryName, IDictionary<byte[], byte[]> dictionary, bool refreshTtl, uint? ttlSeconds = null)
         {
             return await Task.FromException<CacheDictionaryMultiSetResponse>(new NotImplementedException());
         }
