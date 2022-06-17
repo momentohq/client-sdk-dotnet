@@ -14,24 +14,23 @@ namespace MomentoSdk.Incubating.Responses
         {
         }
 
-        public IList<CacheGetStatus> Status()
+        public List<CacheGetStatus> Status()
         {
             throw new NotImplementedException();
         }
 
-        public IList<string?> Values(Encoding? encoding = null)
+        public List<string?> Values(Encoding? encoding = null)
         {
             throw new NotImplementedException();
         }
 
-        public IList<byte[]?> ValuesAsBytes()
+        public List<byte[]?> ValuesAsBytes()
         {
             throw new NotImplementedException();
         }
 
-        public IList<CacheGetResponse> ToList()
+        public List<CacheGetResponse> ToList()
         {
-
             throw new NotImplementedException();
         }
     }
