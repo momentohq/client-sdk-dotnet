@@ -1,69 +1,36 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MomentoSdk.Responses
 {
     public class CacheMultiGetResponse
     {
-        private readonly List<CacheGetResponse> successfulResponses;
-        private readonly List<CacheMultiGetFailureResponse> failedResponses;
+        private readonly List<CacheGetResponse> responses;
 
-        private readonly CacheGetResponse successfulResponse = null;
-        private readonly CacheMultiGetFailureResponse failedResponse = null;
-
-        public CacheMultiGetResponse(List<CacheGetResponse> cacheGetResponses, List<CacheMultiGetFailureResponse> cacheMultiGetFailureResponses)
+        public CacheMultiGetResponse(IEnumerable<CacheGetResponse> responses)
         {
-            successfulResponses = cacheGetResponses;
-            failedResponses = cacheMultiGetFailureResponses;
+            this.responses = new(responses);
         }
 
-        public CacheMultiGetResponse(CacheGetResponse cacheGetResponse)
+        public List<CacheGetResponse> ToList()
         {
-            successfulResponse = cacheGetResponse;
+            return responses;
         }
 
-        public CacheMultiGetResponse(CacheMultiGetFailureResponse cacheMultiGetFailureResponse)
+        public List<CacheGetStatus> Status()
         {
-            failedResponse = cacheMultiGetFailureResponse;
+            return responses.Select(response => response.Status).ToList();
         }
 
-        public CacheGetResponse SuccessfulResponse()
+        public List<string?> Strings()
         {
-            return successfulResponse;
+            return responses.Select(response => response.String()).ToList();
         }
 
-        public CacheMultiGetFailureResponse FailedResponse()
+        public List<byte[]?> Bytes()
         {
-            return failedResponse;
-        }
-
-        public List<CacheGetResponse> SuccessfulResponses()
-        {
-            return successfulResponses;
-        }
-
-        public List<CacheMultiGetFailureResponse> FailedResponses()
-        {
-            return failedResponses;
-        }
-
-        public List<string> Strings()
-        {
-            List<string> values = new();
-            foreach (CacheGetResponse response in successfulResponses)
-            {
-                values.Add(response.String());
-            }
-            return values;
-        }
-
-        public List<byte[]> Bytes()
-        {
-            List<byte[]> values = new();
-            foreach (CacheGetResponse response in successfulResponses)
-            {
-                values.Add(response.Bytes());
-            }
-            return values;
+            return responses.Select(response => response.Bytes()).ToList();
         }
     }
 }

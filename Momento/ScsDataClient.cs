@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using MomentoSdk.Responses;
 using MomentoSdk.Exceptions;
@@ -65,49 +66,45 @@ namespace MomentoSdk
             return new CacheSetResponse(response);
         }
 
-        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<string> keys)
+        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, IEnumerable<string> keys)
         {
-            List<Task<CacheMultiGetResponse>> tasks = new();
-            List<CacheGetResponse> successResponses = new();
-            List<CacheMultiGetFailureResponse> failedResponses = new();
-            foreach (string key in keys)
-            {
-                tasks.Add(SendMultiGetAsync(cacheName, Convert(key)));
-            }
-
-            await Task.WhenAll(tasks);
-            ProcessCacheMultiGetResponseTaskResult(tasks, successResponses, failedResponses);
-            return new CacheMultiGetResponse(successResponses, failedResponses);
+            return await MultiGetAsync(cacheName, keys.Select(key => Convert(key)));
         }
 
-        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<byte[]> keys)
+        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, IEnumerable<byte[]> keys)
         {
-            List<Task<CacheMultiGetResponse>> tasks = new();
-            List<CacheGetResponse> successResponses = new();
-            List<CacheMultiGetFailureResponse> failedResponses = new();
-            foreach (byte[] key in keys)
-            {
-                tasks.Add(SendMultiGetAsync(cacheName, Convert(key)));
-            }
-
-            await Task.WhenAll(tasks);
-            ProcessCacheMultiGetResponseTaskResult(tasks, successResponses, failedResponses);
-            return new CacheMultiGetResponse(successResponses, failedResponses);
+            return await MultiGetAsync(cacheName, keys.Select(key => Convert(key)));
         }
 
-        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<CacheMultiGetFailureResponse> responses)
+        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, IEnumerable<ByteString> keys)
         {
-            List<Task<CacheMultiGetResponse>> tasks = new();
-            List<CacheGetResponse> successResponses = new();
-            List<CacheMultiGetFailureResponse> failedResponses = new();
-            foreach (CacheMultiGetFailureResponse response in responses)
+            // Gather the tasks
+            var tasks = keys.Select(key => SendGetAsync(cacheName, key));
+
+            // Run the tasks
+            var continuation = Task.WhenAll(tasks);
+            try
             {
-                tasks.Add(SendMultiGetAsync(cacheName, Convert(response.Key)));
+                await continuation;
+            }
+            catch (Exception e)
+            {
+                throw CacheExceptionMapper.Convert(e);
             }
 
-            await Task.WhenAll(tasks);
-            ProcessCacheMultiGetResponseTaskResult(tasks, successResponses, failedResponses);
-            return new CacheMultiGetResponse(successResponses, failedResponses);
+            // Handle failures
+            if (continuation.Status == TaskStatus.Faulted)
+            {
+                throw CacheExceptionMapper.Convert(continuation.Exception);
+            }
+            else if (continuation.Status != TaskStatus.RanToCompletion)
+            {
+                throw CacheExceptionMapper.Convert(new Exception(String.Format("Failure issuing multi-get: {0}", continuation.Status)));
+            }
+
+            // Package results
+            var results = continuation.Result.Select(response => new CacheGetResponse(response));
+            return new CacheMultiGetResponse(results);
         }
 
         public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
@@ -227,37 +224,6 @@ namespace MomentoSdk
             catch (Exception e)
             {
                 throw CacheExceptionMapper.Convert(e);
-            }
-        }
-
-        private async Task<CacheMultiGetResponse> SendMultiGetAsync(string cacheName, ByteString key)
-        {
-            _GetRequest request = new _GetRequest() { CacheKey = key };
-            try
-            {
-                _GetResponse resp = await this.grpcManager.Client().GetAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
-                return new CacheMultiGetResponse(new CacheGetResponse(resp));
-
-            }
-            catch (Exception e)
-            {
-                return new CacheMultiGetResponse(new CacheMultiGetFailureResponse(key.ToByteArray(), CacheExceptionMapper.Convert(e)));
-            }
-
-        }
-
-        private void ProcessCacheMultiGetResponseTaskResult(List<Task<CacheMultiGetResponse>> tasks, List<CacheGetResponse> successResponses, List<CacheMultiGetFailureResponse> failedResponses)
-        {
-            foreach (Task<CacheMultiGetResponse> t in tasks)
-            {
-                if (t.Result.SuccessfulResponse() is not null)
-                {
-                    successResponses.Add(t.Result.SuccessfulResponse());
-                }
-                if (t.Result.FailedResponse() is not null)
-                {
-                    failedResponses.Add(t.Result.FailedResponse());
-                }
             }
         }
 
