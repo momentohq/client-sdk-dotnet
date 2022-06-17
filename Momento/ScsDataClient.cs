@@ -16,18 +16,11 @@ namespace MomentoSdk
         private readonly uint dataClientOperationTimeoutMilliseconds;
         private const uint DEFAULT_DEADLINE_MILLISECONDS = 5000;
 
-        public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds)
+        public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
         {
             this.grpcManager = new DataGrpcManager(authToken, endpoint);
             this.defaultTtlSeconds = defaultTtlSeconds;
-            this.dataClientOperationTimeoutMilliseconds = DEFAULT_DEADLINE_MILLISECONDS;
-        }
-
-        public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds, uint dataClientOperationTimeoutMilliseconds)
-        {
-            this.grpcManager = new DataGrpcManager(authToken, endpoint);
-            this.defaultTtlSeconds = defaultTtlSeconds;
-            this.dataClientOperationTimeoutMilliseconds = dataClientOperationTimeoutMilliseconds;
+            this.dataClientOperationTimeoutMilliseconds = dataClientOperationTimeoutMilliseconds ?? DEFAULT_DEADLINE_MILLISECONDS;
         }
 
         public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint ttlSeconds)

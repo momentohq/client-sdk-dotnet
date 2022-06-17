@@ -16,24 +16,8 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="authToken">Momento JWT.</param>
         /// <param name="defaultTtlSeconds">Default time to live for the item in cache.</param>
-        public SimpleCacheClient(string authToken, uint defaultTtlSeconds)
-        {
-            Claims claims = JwtUtils.DecodeJwt(authToken);
-            string controlEndpoint = "https://" + claims.ControlEndpoint + ":443";
-            string cacheEndpoint = "https://" + claims.CacheEndpoint + ":443";
-            ScsControlClient controlClient = new ScsControlClient(authToken, controlEndpoint);
-            ScsDataClient dataClient = new ScsDataClient(authToken, cacheEndpoint, defaultTtlSeconds);
-            this.controlClient = controlClient;
-            this.dataClient = dataClient;
-        }
-
-        /// <summary>
-        /// Client to perform operations against the Simple Cache Service.
-        /// </summary>
-        /// <param name="authToken">Momento JWT.</param>
-        /// <param name="defaultTtlSeconds">Default time to live for the item in cache.</param>
-        /// <param name="dataClientOperationTimeoutMilliseconds">Deadline (timeout) for communicating to the server.</param>
-        public SimpleCacheClient(string authToken, uint defaultTtlSeconds, uint dataClientOperationTimeoutMilliseconds)
+        /// <param name="dataClientOperationTimeoutMilliseconds">Deadline (timeout) for communicating to the server. Defaults to 5 seconds.</param>
+        public SimpleCacheClient(string authToken, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
         {
             ValidateRequestTimeout(dataClientOperationTimeoutMilliseconds);
             Claims claims = JwtUtils.DecodeJwt(authToken);
@@ -619,8 +603,12 @@ namespace MomentoSdk
             GC.SuppressFinalize(this);
         }
 
-        private void ValidateRequestTimeout(uint requestTimeoutMilliseconds)
+        private void ValidateRequestTimeout(uint? requestTimeoutMilliseconds = null)
         {
+            if (requestTimeoutMilliseconds == null)
+            {
+                return;
+            }
             if (requestTimeoutMilliseconds == 0)
             {
                 throw new InvalidArgumentException("Request timeout must be greater than zero.");
