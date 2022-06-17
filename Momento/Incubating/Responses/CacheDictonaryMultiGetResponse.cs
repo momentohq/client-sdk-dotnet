@@ -1,7 +1,8 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Text;
-using Google.Protobuf;
 using MomentoSdk.Responses;
 
 
@@ -18,7 +19,7 @@ namespace MomentoSdk.Incubating.Responses
             throw new NotImplementedException();
         }
 
-        public IList<string?> Values(Encoding encoding = null)
+        public IList<string?> Values(Encoding? encoding = null)
         {
             throw new NotImplementedException();
         }

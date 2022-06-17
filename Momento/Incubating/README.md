@@ -34,7 +34,7 @@ class Driver
         // Get a value
         CacheDictionaryGetResponse gr = scc.DictionaryGet(cacheName: "my-cache",
             dictionaryName: "my-dictionary", key: "key1");
-        CacheGetStatus status = gr.Status; // HIT
+        CacheGetStatus status = gr.Status(); // HIT
         string value = gr.String(); // "value1"
 
         // Get multiple values

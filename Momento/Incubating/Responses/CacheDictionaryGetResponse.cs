@@ -1,6 +1,6 @@
-﻿using System.Text;
-using CacheClient;
-using Google.Protobuf;
+﻿#nullable enable
+using System;
+using System.Text;
 using MomentoSdk.Responses;
 
 
@@ -8,27 +8,23 @@ namespace MomentoSdk.Incubating.Responses
 {
     public class CacheDictionaryGetResponse
     {
-        public CacheGetStatus Status { get; private set; }
-        private readonly ByteString body;
-
         public CacheDictionaryGetResponse()
         {
         }
 
-        public string? String(Encoding encoding = null)
+        public CacheGetStatus Status()
         {
-            if (Status == CacheGetStatus.MISS)
-                return null;
-            if (encoding is null)
-                return body.ToString(Encoding.UTF8);
-            return body.ToString(encoding);
+            throw new NotImplementedException();
+        }
+
+        public string? String(Encoding? encoding = null)
+        {
+            throw new NotImplementedException();
         }
 
         public byte[]? Bytes()
         {
-            if (Status == CacheGetStatus.MISS)
-                return null;
-            return body.ToByteArray();
+            throw new NotImplementedException();
         }
     }
 }
