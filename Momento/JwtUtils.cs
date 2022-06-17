@@ -6,8 +6,8 @@ using Newtonsoft.Json;
 
 namespace MomentoSdk
 {
-   class JwtUtils
-   {
+    class JwtUtils
+    {
         /// <summary>
         /// extracts the controlEndpoint and cacheEndpoint
         /// from the jwt
@@ -24,7 +24,8 @@ namespace MomentoSdk
             {
                 var decodedJwt = decoder.Decode(jwt);
                 return JsonConvert.DeserializeObject<Claims>(decodedJwt);
-            } catch(Exception)
+            }
+            catch (Exception)
             {
                 throw new InvalidArgumentException("invalid jwt passed");
             }
