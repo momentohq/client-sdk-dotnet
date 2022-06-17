@@ -1,29 +1,37 @@
 ﻿#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 using MomentoSdk.Responses;
 
+
 namespace MomentoSdk.Incubating.Responses
 {
-    public class CacheDictionaryGetAllResponse
+    public class CacheDictionaryMultiGetResponse
     {
-        public CacheDictionaryGetAllResponse()
+        public CacheDictionaryMultiGetResponse()
         {
         }
 
-        public CacheGetStatus Status()
+        public IList<CacheGetStatus> Status()
         {
             throw new NotImplementedException();
         }
 
-        public IDictionary<byte[], byte[]>? DictionaryAsBytes()
+        public IList<string?> Values(Encoding? encoding = null)
         {
             throw new NotImplementedException();
         }
 
-        public IDictionary<string, string>? Dictionary(Encoding? encoding = null)
+        public IList<byte[]?> ValuesAsBytes()
         {
+            throw new NotImplementedException();
+        }
+
+        public IList<CacheGetResponse> ToList()
+        {
+
             throw new NotImplementedException();
         }
     }

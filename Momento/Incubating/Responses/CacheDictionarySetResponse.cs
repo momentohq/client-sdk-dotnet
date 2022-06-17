@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#nullable enable
+using System;
 using System.Text;
-using CacheClient;
 
 namespace MomentoSdk.Incubating.Responses
 {
@@ -16,7 +15,22 @@ namespace MomentoSdk.Incubating.Responses
             throw new NotImplementedException();
         }
 
-        public Dictionary<string, string>? Dictionary(Encoding encoding = null)
+        public byte[] KeyAsBytes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string Key(Encoding? encoding = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public byte[] ValueAsBytes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string Value(Encoding? encoding = null)
         {
             throw new NotImplementedException();
         }
