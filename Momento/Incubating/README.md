@@ -19,26 +19,37 @@ class Driver
         MomentoSdk.Incubating.SimpleCacheClient scc = new MomentoSdk.Incubating.SimpleCacheClient(
             authToken: "MYTOKEN", defaultTtlSeconds: 60);
 
-        // Set some values
-        CacheDictionaryMultiSetResponse sr = scc.DictionaryMultiSet(cacheName: "my-cache", dictionaryName: "my-dictionary",
+        // Set a value
+        scc.DictionarySet(cacheName: "my-cache", dictionaryName: "my-dictionary"
+            key: "my-key", value: "my-value");
+
+        // Set multiple values
+        scc.DictionaryMultiSet(cacheName: "my-cache", dictionaryName: "my-dictionary",
             new Dictionary<string, string>() {
                 { "key1", "value1" },
                 { "key2", "value2" },
                 { "key3", "value3" }
         });
-        string dictionaryName = sr.DictionaryName();
-        Dictionary<string, CacheDictionaryValue> dictionary = sr.Dictionary();
 
         // Get a value
-        CacheDictionaryGetResponse gr = scc.DictionaryGet(cacheName: "my-cache", dictionaryName: "my-dictionary", key: "key1");
-        CacheGetStatus status = gr.Status;
-        string value = gr.String();
+        CacheDictionaryGetResponse gr = scc.DictionaryGet(cacheName: "my-cache",
+            dictionaryName: "my-dictionary", key: "key1");
+        CacheGetStatus status = gr.Status; // HIT
+        string value = gr.String(); // "value1"
+
+        // Get multiple values
+        CacheDictionaryMultiGetResponse mgr = scc.DictionaryMultiGet(cacheName: "my-cache",
+            dictionaryName: "my-dictionary", "key1", "key2", "key3");
+        IList<CacheGetStatus> manyStatus = mgr.Status(); // [HIT, HIT, HIT]
+        IList<string> values = mgr.Values(); // ["value1", "value2", "value3"]
+        IList<CacheGetResponse> individualResponses = mgr.ToList();
 
         // Get the whole dictionary
-        CacheDictionaryGetAllResponse gar = scc.DictionaryGetAll(cacheName: "my-cache", dictionaryName: "my-dictionary");
+        CacheDictionaryGetAllResponse gar = scc.DictionaryGetAll(cacheName: "my-cache",
+            dictionaryName: "my-dictionary");
         status = gar.Status;
-        dictionary = gar.Dictionary();
-        value = dictionary["key1"];
+        Dictionary<string, string> dictionary = gar.Dictionary();
+        value = dictionary["key1"]; // == "value1"
     }
 }
 ```
