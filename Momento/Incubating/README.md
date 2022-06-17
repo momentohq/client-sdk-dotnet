@@ -20,7 +20,7 @@ class Driver
             authToken: "MYTOKEN", defaultTtlSeconds: 60);
 
         // Set some values
-        CacheDictionarySetResponse sr = scc.DictionarySet(cacheName: "my-cache", dictionaryName: "my-dictionary",
+        CacheDictionaryMultiSetResponse sr = scc.DictionaryMultiSet(cacheName: "my-cache", dictionaryName: "my-dictionary",
             new Dictionary<string, string>() {
                 { "key1", "value1" },
                 { "key2", "value2" },

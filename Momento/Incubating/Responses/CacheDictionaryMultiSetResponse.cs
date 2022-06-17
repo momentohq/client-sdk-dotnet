@@ -5,9 +5,9 @@ using CacheClient;
 
 namespace MomentoSdk.Incubating.Responses
 {
-    public class CacheDictionarySetResponse
+    public class CacheDictionaryMultiSetResponse
     {
-        public CacheDictionarySetResponse()
+        public CacheDictionaryMultiSetResponse()
         {
         }
 
@@ -15,7 +15,10 @@ namespace MomentoSdk.Incubating.Responses
         {
             throw new NotImplementedException();
         }
-
+        public Dictionary<byte[], byte>? DictionaryAsBytes()
+        {
+            throw new NotImplementedException();
+        }
         public Dictionary<string, string>? Dictionary(Encoding encoding = null)
         {
             throw new NotImplementedException();
