@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿#nullable enable
+using System.Text;
 using CacheClient;
 using Google.Protobuf;
 using MomentoSdk.Exceptions;
@@ -16,12 +17,12 @@ namespace MomentoSdk.Responses
             Status = From(response.Result);
         }
 
-        public string String()
+        public string? String()
         {
             return String(Encoding.UTF8);
         }
 
-        public string String(Encoding encoding)
+        public string? String(Encoding encoding)
         {
             if (Status == CacheGetStatus.HIT)
             {
@@ -30,7 +31,7 @@ namespace MomentoSdk.Responses
             return null;
         }
 
-        public byte[] Bytes()
+        public byte[]? Bytes()
         {
             if (Status == CacheGetStatus.HIT)
             {

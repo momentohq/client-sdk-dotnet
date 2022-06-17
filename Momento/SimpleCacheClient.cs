@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using MomentoSdk.Responses;
 using MomentoSdk.Exceptions;
@@ -231,13 +232,13 @@ namespace MomentoSdk
         /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
         /// <param name="keys">The keys to get.</param>
         /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data.</returns>
-        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<byte[]> keys)
+        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, IEnumerable<byte[]> keys)
         {
             if (cacheName == null)
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
-            if (keys == null)
+            if (keys == null || keys.Any(key => key == null))
             {
                 throw new ArgumentNullException(nameof(keys));
             }
@@ -251,13 +252,13 @@ namespace MomentoSdk
         /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
         /// <param name="keys">The keys to get.</param>
         /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data.</returns>
-        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<string> keys)
+        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, IEnumerable<string> keys)
         {
             if (cacheName == null)
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
-            if (keys == null)
+            if (keys == null || keys.Any(key => key == null))
             {
                 throw new ArgumentNullException(nameof(keys));
             }
@@ -269,20 +270,40 @@ namespace MomentoSdk
         /// Executes a list of passed Get operations in parallel.
         /// </summary>
         /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-        /// <param name="failureResponses">Failed responses to perform a cache lookup on.</param>
+        /// <param name="keys">The keys to get.</param>
         /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data.</returns>
-        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, List<CacheMultiGetFailureResponse> failureResponses)
+        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, params byte[][] keys)
         {
             if (cacheName == null)
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
-            if (failureResponses == null)
+            if (keys == null || keys.Any(key => key == null))
             {
-                throw new ArgumentNullException(nameof(failureResponses));
+                throw new ArgumentNullException(nameof(keys));
             }
 
-            return await this.dataClient.MultiGetAsync(cacheName, failureResponses);
+            return await this.dataClient.MultiGetAsync(cacheName, keys);
+        }
+
+        /// <summary>
+        /// Executes a list of passed Get operations in parallel.
+        /// </summary>
+        /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+        /// <param name="keys">The keys to get.</param>
+        /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data.</returns>
+        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, params string[] keys)
+        {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (keys == null || keys.Any(key => key == null))
+            {
+                throw new ArgumentNullException(nameof(keys));
+            }
+
+            return await this.dataClient.MultiGetAsync(cacheName, keys);
         }
 
         /// <summary>
