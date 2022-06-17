@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using MomentoSdk.Responses;
 using MomentoSdk.Exceptions;
 using System.Collections.Generic;
 
-namespace MomentoSdk.Responses
+namespace MomentoSdk
 {
     public class SimpleCacheClient : IDisposable
     {
