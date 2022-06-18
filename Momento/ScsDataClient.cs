@@ -107,6 +107,47 @@ namespace MomentoSdk
             return new CacheMultiGetResponse(results);
         }
 
+        public async Task MultiSetAsync(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
+        {
+            await MultiSetAsync(cacheName: cacheName,
+                items: items.ToDictionary(item => Convert(item.Key), item => Convert(item.Value)),
+                ttlSeconds: ttlSeconds);
+        }
+
+        public async Task MultiSetAsync(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
+        {
+            await MultiSetAsync(cacheName: cacheName,
+                items: items.ToDictionary(item => Convert(item.Key), item => Convert(item.Value)),
+                ttlSeconds: ttlSeconds);
+        }
+
+        public async Task MultiSetAsync(string cacheName, IDictionary<ByteString, ByteString> items, uint? ttlSeconds = null)
+        {
+            // Gather the tasks
+            var tasks = items.Select(item => SendSetAsync(cacheName, item.Key, item.Value, ttlSeconds));
+
+            // Run the tasks
+            var continuation = Task.WhenAll(tasks);
+            try
+            {
+                await continuation;
+            }
+            catch (Exception e)
+            {
+                throw CacheExceptionMapper.Convert(e);
+            }
+
+            // Handle failures
+            if (continuation.Status == TaskStatus.Faulted)
+            {
+                throw CacheExceptionMapper.Convert(continuation.Exception);
+            }
+            else if (continuation.Status != TaskStatus.RanToCompletion)
+            {
+                throw CacheExceptionMapper.Convert(new Exception(String.Format("Failure issuing multi-set: {0}", continuation.Status)));
+            }
+        }
+
         public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
         {
             _SetResponse resp = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);

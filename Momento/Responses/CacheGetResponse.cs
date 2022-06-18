@@ -17,13 +17,10 @@ namespace MomentoSdk.Responses
             Status = From(response.Result);
         }
 
-        public string? String()
+        public string? String(Encoding? encoding = null)
         {
-            return String(Encoding.UTF8);
-        }
+            encoding ??= Encoding.UTF8;
 
-        public string? String(Encoding encoding)
-        {
             if (Status == CacheGetStatus.HIT)
             {
                 return body.ToString(encoding);

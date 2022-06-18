@@ -307,6 +307,48 @@ namespace MomentoSdk
         }
 
         /// <summary>
+        /// Stores multiple items in the cache. Overwrites existing items.
+        /// </summary>
+        /// <param name="cacheName">Name of the cache to store the items in.</param>
+        /// <param name="items">The items to set.</param>
+        /// <returns>Future with CacheMultiSetResponse containing the data set.</returns>
+        public async Task<CacheMultiSetResponse> MultiSetAsync(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
+        {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (items == null || items.Values.Any(value => value == null))
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            await this.dataClient.MultiSetAsync(cacheName, items, ttlSeconds);
+            return new CacheMultiSetResponse((IDictionary<object, object>)items);
+        }
+
+        /// <summary>
+        /// Stores multiple items in the cache. Overwrites existing items.
+        /// </summary>
+        /// <param name="cacheName">Name of the cache to store the items in.</param>
+        /// <param name="items">The items to set.</param>
+        /// <returns>Future with CacheMultiSetResponse containing the data set.</returns>
+        public async Task<CacheMultiSetResponse> MultiSetAsync(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
+        {
+            if (cacheName == null)
+            {
+                throw new ArgumentNullException(nameof(cacheName));
+            }
+            if (items == null || items.Any(item => item.Value == null))
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            await this.dataClient.MultiSetAsync(cacheName, items, ttlSeconds);
+            return new CacheMultiSetResponse((IDictionary<object, object>)items);
+        }
+
+        /// <summary>
         ///  Sets the value in the cache. If a value for this key is already present it will be replaced by the new value.
         /// </summary>
         /// <param name="cacheName">Name of the cache to store the item in.</param>
