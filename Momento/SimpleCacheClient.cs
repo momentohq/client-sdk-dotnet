@@ -238,9 +238,13 @@ namespace MomentoSdk
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
-            if (keys == null || keys.Any(key => key == null))
+            if (keys == null)
             {
                 throw new ArgumentNullException(nameof(keys));
+            }
+            if (keys.Any(key => key == null))
+            {
+                throw new ArgumentNullException(nameof(keys), "Each key must be non-null");
             }
 
             return await this.dataClient.MultiGetAsync(cacheName, keys);
@@ -258,10 +262,15 @@ namespace MomentoSdk
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
-            if (keys == null || keys.Any(key => key == null))
+            if (keys == null)
             {
                 throw new ArgumentNullException(nameof(keys));
             }
+            if (keys.Any(key => key == null))
+            {
+                throw new ArgumentNullException(nameof(keys), "Each key must be non-null");
+            }
+
 
             return await this.dataClient.MultiGetAsync(cacheName, keys);
         }
@@ -278,9 +287,13 @@ namespace MomentoSdk
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
-            if (keys == null || keys.Any(key => key == null))
+            if (keys == null)
             {
                 throw new ArgumentNullException(nameof(keys));
+            }
+            if (keys.Any(key => key == null))
+            {
+                throw new ArgumentNullException(nameof(keys), "Each key must be non-null");
             }
 
             return await this.dataClient.MultiGetAsync(cacheName, keys);
@@ -302,6 +315,10 @@ namespace MomentoSdk
             {
                 throw new ArgumentNullException(nameof(keys));
             }
+            if (keys.Any(key => key == null))
+            {
+                throw new ArgumentNullException(nameof(keys), "Each key must be non-null");
+            }
 
             return await this.dataClient.MultiGetAsync(cacheName, keys);
         }
@@ -318,9 +335,13 @@ namespace MomentoSdk
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
-            if (items == null || items.Values.Any(value => value == null))
+            if (items == null)
             {
                 throw new ArgumentNullException(nameof(items));
+            }
+            if (items.Values.Any(value => value == null))
+            {
+                throw new ArgumentNullException(nameof(items), "Each key and value must be non-null");
             }
 
             await this.dataClient.MultiSetAsync(cacheName, items, ttlSeconds);
@@ -339,9 +360,13 @@ namespace MomentoSdk
             {
                 throw new ArgumentNullException(nameof(cacheName));
             }
-            if (items == null || items.Any(item => item.Value == null))
+            if (items == null)
             {
                 throw new ArgumentNullException(nameof(items));
+            }
+            if (items.Values.Any(value => value == null))
+            {
+                throw new ArgumentNullException(nameof(items), "Each key and value must be non-null");
             }
 
             await this.dataClient.MultiSetAsync(cacheName, items, ttlSeconds);
