@@ -227,7 +227,7 @@ namespace MomentoSdk
         }
 
         /// <summary>
-        /// Gets a multiple values from the cache.
+        /// Gets multiple values from the cache.
         /// </summary>
         /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
         /// <param name="keys">The keys to get.</param>
@@ -251,7 +251,7 @@ namespace MomentoSdk
         }
 
         /// <summary>
-        /// Gets a multiple values from the cache.
+        /// Gets multiple values from the cache.
         /// </summary>
         /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
         /// <param name="keys">The keys to get.</param>
@@ -276,7 +276,7 @@ namespace MomentoSdk
         }
 
         /// <summary>
-        /// Gets a multiple values from the cache.
+        /// Gets multiple values from the cache.
         /// </summary>
         /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
         /// <param name="keys">The keys to get.</param>
@@ -300,7 +300,7 @@ namespace MomentoSdk
         }
 
         /// <summary>
-        /// Gets a multiple values from the cache.
+        /// Gets multiple values from the cache.
         /// </summary>
         /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
         /// <param name="keys">The keys to get.</param>
@@ -485,7 +485,7 @@ namespace MomentoSdk
         }
 
         /// <summary>
-        /// Gets a multiple values from the cache.
+        /// Gets multiple values from the cache.
         /// </summary>
         /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
         /// <param name="keys">The keys to get.</param>
@@ -503,7 +503,7 @@ namespace MomentoSdk
         }
 
         /// <summary>
-        /// Gets a multiple values from the cache.
+        /// Gets multiple values from the cache.
         /// </summary>
         /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
         /// <param name="keys">The keys to get.</param>
@@ -521,7 +521,7 @@ namespace MomentoSdk
         }
 
         /// <summary>
-        /// Gets a multiple values from the cache.
+        /// Gets multiple values from the cache.
         /// </summary>
         /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
         /// <param name="keys">The keys to get.</param>
