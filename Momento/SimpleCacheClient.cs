@@ -345,7 +345,7 @@ namespace MomentoSdk
             }
 
             await this.dataClient.MultiSetAsync(cacheName, items, ttlSeconds);
-            return new CacheMultiSetResponse((IDictionary<object, object>)items);
+            return new CacheMultiSetResponse(items);
         }
 
         /// <summary>
@@ -370,7 +370,7 @@ namespace MomentoSdk
             }
 
             await this.dataClient.MultiSetAsync(cacheName, items, ttlSeconds);
-            return new CacheMultiSetResponse((IDictionary<object, object>)items);
+            return new CacheMultiSetResponse(items);
         }
 
         /// <summary>

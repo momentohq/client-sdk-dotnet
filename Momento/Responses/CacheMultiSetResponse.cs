@@ -4,11 +4,16 @@ namespace MomentoSdk.Responses
 {
     public class CacheMultiSetResponse
     {
-        private readonly IDictionary<object, object> items;
+        private readonly object items;
 
-        public CacheMultiSetResponse(IDictionary<object, object> items)
+        public CacheMultiSetResponse(IDictionary<byte[], byte[]> items)
         {
-            this.items = items;
+            this.items = (object)items;
+        }
+
+        public CacheMultiSetResponse(IDictionary<string, string> items)
+        {
+            this.items = (object)items;
         }
 
         public IDictionary<string, string> Strings()
