@@ -557,6 +557,42 @@ namespace MomentoSdk
         }
 
         /// <summary>
+        /// Stores multiple items in the cache. Overwrites existing items.
+        /// </summary>
+        /// <param name="cacheName">Name of the cache to store the items in.</param>
+        /// <param name="items">The items to set.</param>
+        /// <returns>Future with CacheMultiSetResponse containing the data set.</returns>
+        public CacheMultiSetResponse MultiSet(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
+        {
+            try
+            {
+                return MultiSetAsync(cacheName, items, ttlSeconds).Result;
+            }
+            catch (AggregateException e)
+            {
+                throw e.GetBaseException();
+            }
+        }
+
+        /// <summary>
+        /// Stores multiple items in the cache. Overwrites existing items.
+        /// </summary>
+        /// <param name="cacheName">Name of the cache to store the items in.</param>
+        /// <param name="items">The items to set.</param>
+        /// <returns>Future with CacheMultiSetResponse containing the data set.</returns>
+        public CacheMultiSetResponse MultiSet(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
+        {
+            try
+            {
+                return MultiSetAsync(cacheName, items, ttlSeconds).Result;
+            }
+            catch (AggregateException e)
+            {
+                throw e.GetBaseException();
+            }
+        }
+
+        /// <summary>
         /// Remove the key from the cache.
         /// </summary>
         /// <param name="cacheName">Name of the cache to delete the key from.</param>
