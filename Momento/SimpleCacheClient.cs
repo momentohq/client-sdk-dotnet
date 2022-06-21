@@ -341,7 +341,7 @@ namespace MomentoSdk
             }
             if (items.Values.Any(value => value == null))
             {
-                throw new ArgumentNullException(nameof(items), "Each key and value must be non-null");
+                throw new ArgumentNullException(nameof(items), "Each value must be non-null");
             }
 
             await this.dataClient.MultiSetAsync(cacheName, items, ttlSeconds);
@@ -366,7 +366,7 @@ namespace MomentoSdk
             }
             if (items.Values.Any(value => value == null))
             {
-                throw new ArgumentNullException(nameof(items), "Each key and value must be non-null");
+                throw new ArgumentNullException(nameof(items), "Each value must be non-null");
             }
 
             await this.dataClient.MultiSetAsync(cacheName, items, ttlSeconds);
