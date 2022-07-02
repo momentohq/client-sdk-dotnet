@@ -24,7 +24,7 @@ class Driver
             key: "my-key", value: "my-value", ttlSeconds: 60, refreshTtl: false);
 
         // Set multiple values
-        scc.DictionaryMultiSet(
+        scc.DictionarySetMulti(
             cacheName: "my-cache",
             dictionaryName: "my-dictionary",
             new Dictionary<string, string>() {
@@ -42,7 +42,7 @@ class Driver
         string value = gr.String(); // "value1"
 
         // Get multiple values
-        CacheDictionaryMultiGetResponse mgr = scc.DictionaryMultiGet(
+        CacheDictionaryGetMultiResponse mgr = scc.DictionaryGetMulti(
             cacheName: "my-cache",
             dictionaryName: "my-dictionary",
             "key1", "key2", "key3", "key4");

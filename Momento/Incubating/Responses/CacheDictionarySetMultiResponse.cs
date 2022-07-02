@@ -5,9 +5,9 @@ using System.Text;
 
 namespace MomentoSdk.Incubating.Responses
 {
-    public class CacheDictionaryMultiSetResponse
+    public class CacheDictionarySetMultiResponse
     {
-        public CacheDictionaryMultiSetResponse()
+        public CacheDictionarySetMultiResponse()
         {
         }
 

@@ -231,8 +231,8 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
         /// <param name="keys">The keys to get.</param>
-        /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data.</returns>
-        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, IEnumerable<byte[]> keys)
+        /// <returns>Future with CacheGetMultiResponse containing the status of the get operation and the associated value data.</returns>
+        public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<byte[]> keys)
         {
             if (cacheName == null)
             {
@@ -247,7 +247,7 @@ namespace MomentoSdk
                 throw new ArgumentNullException(nameof(keys), "Each key must be non-null");
             }
 
-            return await this.dataClient.MultiGetAsync(cacheName, keys);
+            return await this.dataClient.GetMultiAsync(cacheName, keys);
         }
 
         /// <summary>
@@ -255,8 +255,8 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
         /// <param name="keys">The keys to get.</param>
-        /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data.</returns>
-        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, IEnumerable<string> keys)
+        /// <returns>Future with CacheGetMultiResponse containing the status of the get operation and the associated value data.</returns>
+        public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<string> keys)
         {
             if (cacheName == null)
             {
@@ -272,7 +272,7 @@ namespace MomentoSdk
             }
 
 
-            return await this.dataClient.MultiGetAsync(cacheName, keys);
+            return await this.dataClient.GetMultiAsync(cacheName, keys);
         }
 
         /// <summary>
@@ -280,8 +280,8 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
         /// <param name="keys">The keys to get.</param>
-        /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data.</returns>
-        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, params byte[][] keys)
+        /// <returns>Future with CacheGetMultiResponse containing the status of the get operation and the associated value data.</returns>
+        public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, params byte[][] keys)
         {
             if (cacheName == null)
             {
@@ -296,7 +296,7 @@ namespace MomentoSdk
                 throw new ArgumentNullException(nameof(keys), "Each key must be non-null");
             }
 
-            return await this.dataClient.MultiGetAsync(cacheName, keys);
+            return await this.dataClient.GetMultiAsync(cacheName, keys);
         }
 
         /// <summary>
@@ -304,8 +304,8 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
         /// <param name="keys">The keys to get.</param>
-        /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data.</returns>
-        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, params string[] keys)
+        /// <returns>Future with CacheGetMultiResponse containing the status of the get operation and the associated value data.</returns>
+        public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, params string[] keys)
         {
             if (cacheName == null)
             {
@@ -320,7 +320,7 @@ namespace MomentoSdk
                 throw new ArgumentNullException(nameof(keys), "Each key must be non-null");
             }
 
-            return await this.dataClient.MultiGetAsync(cacheName, keys);
+            return await this.dataClient.GetMultiAsync(cacheName, keys);
         }
 
         /// <summary>
@@ -328,8 +328,8 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="cacheName">Name of the cache to store the items in.</param>
         /// <param name="items">The items to set.</param>
-        /// <returns>Future with CacheMultiSetResponse containing the data set.</returns>
-        public async Task<CacheMultiSetResponse> MultiSetAsync(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
+        /// <returns>Future with CacheSetMultiResponse containing the data set.</returns>
+        public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
         {
             if (cacheName == null)
             {
@@ -344,8 +344,8 @@ namespace MomentoSdk
                 throw new ArgumentNullException(nameof(items), "Each value must be non-null");
             }
 
-            await this.dataClient.MultiSetAsync(cacheName, items, ttlSeconds);
-            return new CacheMultiSetResponse(items);
+            await this.dataClient.SetMultiAsync(cacheName, items, ttlSeconds);
+            return new CacheSetMultiResponse(items);
         }
 
         /// <summary>
@@ -353,8 +353,8 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="cacheName">Name of the cache to store the items in.</param>
         /// <param name="items">The items to set.</param>
-        /// <returns>Future with CacheMultiSetResponse containing the data set.</returns>
-        public async Task<CacheMultiSetResponse> MultiSetAsync(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
+        /// <returns>Future with CacheSetMultiResponse containing the data set.</returns>
+        public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
         {
             if (cacheName == null)
             {
@@ -369,8 +369,8 @@ namespace MomentoSdk
                 throw new ArgumentNullException(nameof(items), "Each value must be non-null");
             }
 
-            await this.dataClient.MultiSetAsync(cacheName, items, ttlSeconds);
-            return new CacheMultiSetResponse(items);
+            await this.dataClient.SetMultiAsync(cacheName, items, ttlSeconds);
+            return new CacheSetMultiResponse(items);
         }
 
         /// <summary>
@@ -490,11 +490,11 @@ namespace MomentoSdk
         /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
         /// <param name="keys">The keys to get.</param>
         /// <returns>Response object with the status of the get operation and the associated value data.</returns>
-        public CacheMultiGetResponse MultiGet(string cacheName, IEnumerable<byte[]> keys)
+        public CacheGetMultiResponse GetMulti(string cacheName, IEnumerable<byte[]> keys)
         {
             try
             {
-                return MultiGetAsync(cacheName, keys).Result;
+                return GetMultiAsync(cacheName, keys).Result;
             }
             catch (AggregateException e)
             {
@@ -508,11 +508,11 @@ namespace MomentoSdk
         /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
         /// <param name="keys">The keys to get.</param>
         /// <returns>Response object with the status of the get operation and the associated value data.</returns>
-        public CacheMultiGetResponse MultiGet(string cacheName, IEnumerable<string> keys)
+        public CacheGetMultiResponse GetMulti(string cacheName, IEnumerable<string> keys)
         {
             try
             {
-                return MultiGetAsync(cacheName, keys).Result;
+                return GetMultiAsync(cacheName, keys).Result;
             }
             catch (AggregateException e)
             {
@@ -525,12 +525,12 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
         /// <param name="keys">The keys to get.</param>
-        /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data.</returns>
-        public CacheMultiGetResponse MultiGet(string cacheName, params byte[][] keys)
+        /// <returns>Future with CacheGetMultiResponse containing the status of the get operation and the associated value data.</returns>
+        public CacheGetMultiResponse GetMulti(string cacheName, params byte[][] keys)
         {
             try
             {
-                return MultiGetAsync(cacheName, keys).Result;
+                return GetMultiAsync(cacheName, keys).Result;
             }
             catch (AggregateException e)
             {
@@ -543,12 +543,12 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
         /// <param name="keys">The keys to get.</param>
-        /// <returns>Future with CacheMultiGetResponse containing the status of the get operation and the associated value data.</returns>
-        public CacheMultiGetResponse MultiGet(string cacheName, params string[] keys)
+        /// <returns>Future with CacheGetMultiResponse containing the status of the get operation and the associated value data.</returns>
+        public CacheGetMultiResponse GetMulti(string cacheName, params string[] keys)
         {
             try
             {
-                return MultiGetAsync(cacheName, keys).Result;
+                return GetMultiAsync(cacheName, keys).Result;
             }
             catch (AggregateException e)
             {
@@ -561,12 +561,12 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="cacheName">Name of the cache to store the items in.</param>
         /// <param name="items">The items to set.</param>
-        /// <returns>Future with CacheMultiSetResponse containing the data set.</returns>
-        public CacheMultiSetResponse MultiSet(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
+        /// <returns>Future with CacheSetMultiResponse containing the data set.</returns>
+        public CacheSetMultiResponse SetMulti(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
         {
             try
             {
-                return MultiSetAsync(cacheName, items, ttlSeconds).Result;
+                return SetMultiAsync(cacheName, items, ttlSeconds).Result;
             }
             catch (AggregateException e)
             {
@@ -579,12 +579,12 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="cacheName">Name of the cache to store the items in.</param>
         /// <param name="items">The items to set.</param>
-        /// <returns>Future with CacheMultiSetResponse containing the data set.</returns>
-        public CacheMultiSetResponse MultiSet(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
+        /// <returns>Future with CacheSetMultiResponse containing the data set.</returns>
+        public CacheSetMultiResponse SetMulti(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
         {
             try
             {
-                return MultiSetAsync(cacheName, items, ttlSeconds).Result;
+                return SetMultiAsync(cacheName, items, ttlSeconds).Result;
             }
             catch (AggregateException e)
             {

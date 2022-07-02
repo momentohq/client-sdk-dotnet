@@ -8,9 +8,9 @@ using MomentoSdk.Responses;
 
 namespace MomentoSdk.Incubating.Responses
 {
-    public class CacheDictionaryMultiGetResponse
+    public class CacheDictionaryGetMultiResponse
     {
-        public CacheDictionaryMultiGetResponse()
+        public CacheDictionaryGetMultiResponse()
         {
         }
 
