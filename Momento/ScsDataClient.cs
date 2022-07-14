@@ -66,17 +66,17 @@ namespace MomentoSdk
             return new CacheSetResponse(response);
         }
 
-        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, IEnumerable<string> keys)
+        public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<string> keys)
         {
-            return await MultiGetAsync(cacheName, keys.Select(key => Convert(key)));
+            return await GetMultiAsync(cacheName, keys.Select(key => Convert(key)));
         }
 
-        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, IEnumerable<byte[]> keys)
+        public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<byte[]> keys)
         {
-            return await MultiGetAsync(cacheName, keys.Select(key => Convert(key)));
+            return await GetMultiAsync(cacheName, keys.Select(key => Convert(key)));
         }
 
-        public async Task<CacheMultiGetResponse> MultiGetAsync(string cacheName, IEnumerable<ByteString> keys)
+        public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<ByteString> keys)
         {
             // Gather the tasks
             var tasks = keys.Select(key => SendGetAsync(cacheName, key));
@@ -104,24 +104,24 @@ namespace MomentoSdk
 
             // Package results
             var results = continuation.Result.Select(response => new CacheGetResponse(response));
-            return new CacheMultiGetResponse(results);
+            return new CacheGetMultiResponse(results);
         }
 
-        public async Task MultiSetAsync(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
+        public async Task SetMultiAsync(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
         {
-            await MultiSetAsync(cacheName: cacheName,
+            await SetMultiAsync(cacheName: cacheName,
                 items: items.ToDictionary(item => Convert(item.Key), item => Convert(item.Value)),
                 ttlSeconds: ttlSeconds);
         }
 
-        public async Task MultiSetAsync(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
+        public async Task SetMultiAsync(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
         {
-            await MultiSetAsync(cacheName: cacheName,
+            await SetMultiAsync(cacheName: cacheName,
                 items: items.ToDictionary(item => Convert(item.Key), item => Convert(item.Value)),
                 ttlSeconds: ttlSeconds);
         }
 
-        public async Task MultiSetAsync(string cacheName, IDictionary<ByteString, ByteString> items, uint? ttlSeconds = null)
+        public async Task SetMultiAsync(string cacheName, IDictionary<ByteString, ByteString> items, uint? ttlSeconds = null)
         {
             // Gather the tasks
             var tasks = items.Select(item => SendSetAsync(cacheName, item.Key, item.Value, ttlSeconds));

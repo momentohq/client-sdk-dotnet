@@ -139,19 +139,19 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public async void MultiGetAsync_NullCheckBytes_ThrowsException()
+        public async void GetMultiAsync_NullCheckBytes_ThrowsException()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.MultiGetAsync(null, new List<byte[]>()));
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.MultiGetAsync("cache", (List<byte[]>)null));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetMultiAsync(null, new List<byte[]>()));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetMultiAsync("cache", (List<byte[]>)null));
 
             var badList = new List<byte[]>(new byte[][] { Utf8ToBytes("asdf"), null });
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.MultiGetAsync("cache", badList));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetMultiAsync("cache", badList));
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.MultiGetAsync("cache", Utf8ToBytes("key1"), null));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetMultiAsync("cache", Utf8ToBytes("key1"), null));
         }
 
         [Fact]
-        public async void MultiGetAsync_KeysAreBytes_HappyPath()
+        public async void GetMultiAsync_KeysAreBytes_HappyPath()
         {
             string cacheKey1 = "key1";
             string cacheValue1 = "value1";
@@ -162,7 +162,7 @@ namespace MomentoIntegrationTest
 
             List<byte[]> keys = new() { Utf8ToBytes(cacheKey1), Utf8ToBytes(cacheKey2) };
 
-            CacheMultiGetResponse result = await client.MultiGetAsync(cacheName, keys);
+            CacheGetMultiResponse result = await client.GetMultiAsync(cacheName, keys);
             string stringResult1 = result.Strings()[0];
             string stringResult2 = result.Strings()[1];
             Assert.Equal(cacheValue1, stringResult1);
@@ -170,7 +170,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public async void MultiGetAsync_KeysAreBytes_HappyPath2()
+        public async void GetMultiAsync_KeysAreBytes_HappyPath2()
         {
             string cacheKey1 = "key1";
             string cacheValue1 = "value1";
@@ -179,7 +179,7 @@ namespace MomentoIntegrationTest
             client.Set(cacheName, cacheKey1, cacheValue1);
             client.Set(cacheName, cacheKey2, cacheValue2);
 
-            CacheMultiGetResponse result = await client.MultiGetAsync(cacheName, cacheKey1, cacheKey2);
+            CacheGetMultiResponse result = await client.GetMultiAsync(cacheName, cacheKey1, cacheKey2);
             string stringResult1 = result.Strings()[0];
             string stringResult2 = result.Strings()[1];
             Assert.Equal(cacheValue1, stringResult1);
@@ -187,19 +187,19 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public async void MultiGetAsync_NullCheckString_ThrowsException()
+        public async void GetMultiAsync_NullCheckString_ThrowsException()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.MultiGetAsync(null, new List<string>()));
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.MultiGetAsync("cache", (List<string>)null));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetMultiAsync(null, new List<string>()));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetMultiAsync("cache", (List<string>)null));
 
             List<string> strings = new(new string[] { "key1", "key2", null });
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.MultiGetAsync("cache", strings));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetMultiAsync("cache", strings));
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.MultiGetAsync("cache", "key1", "key2", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetMultiAsync("cache", "key1", "key2", null));
         }
 
         [Fact]
-        public async void MultiGetAsync_KeysAreString_HappyPath()
+        public async void GetMultiAsync_KeysAreString_HappyPath()
         {
             string cacheKey1 = "key1";
             string cacheValue1 = "value1";
@@ -209,39 +209,39 @@ namespace MomentoIntegrationTest
             client.Set(cacheName, cacheKey2, cacheValue2);
 
             List<string> keys = new() { cacheKey1, cacheKey2, "key123123" };
-            CacheMultiGetResponse result = await client.MultiGetAsync(cacheName, keys);
+            CacheGetMultiResponse result = await client.GetMultiAsync(cacheName, keys);
 
             Assert.Equal(result.Strings(), new string[] { cacheValue1, cacheValue2, null });
             Assert.Equal(result.Status(), new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS });
         }
 
         [Fact]
-        public void MultiGetAsync_Failure()
+        public void GetMultiAsync_Failure()
         {
             // Set very small timeout for dataClientOperationTimeoutMilliseconds
             SimpleCacheClient simpleCacheClient = new SimpleCacheClient(authKey, defaultTtlSeconds, 1);
             List<string> keys = new() { "key1", "key2", "key3", "key4" };
-            Assert.ThrowsAsync<MomentoSdk.Exceptions.TimeoutException>(() => simpleCacheClient.MultiGetAsync(cacheName, keys));
+            Assert.ThrowsAsync<MomentoSdk.Exceptions.TimeoutException>(() => simpleCacheClient.GetMultiAsync(cacheName, keys));
         }
 
         [Fact]
-        public async void MultiSetAsync_NullCheckBytes_ThrowsException()
+        public async void SetMultiAsync_NullCheckBytes_ThrowsException()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.MultiSetAsync(null, new Dictionary<byte[], byte[]>()));
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.MultiSetAsync("cache", (Dictionary<byte[], byte[]>)null));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetMultiAsync(null, new Dictionary<byte[], byte[]>()));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetMultiAsync("cache", (Dictionary<byte[], byte[]>)null));
 
             var badDictionary = new Dictionary<byte[], byte[]>() { { Utf8ToBytes("asdf"), null } };
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.MultiSetAsync("cache", badDictionary));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetMultiAsync("cache", badDictionary));
         }
 
         [Fact]
-        public async void MultiSetAsync_ItemsAreBytes_HappyPath()
+        public async void SetMultiAsync_ItemsAreBytes_HappyPath()
         {
             var dictionary = new Dictionary<byte[], byte[]>() {
                 { Utf8ToBytes("key1"), Utf8ToBytes("value1") },
                 { Utf8ToBytes("key2"), Utf8ToBytes("value2") }
             };
-            CacheMultiSetResponse response = await client.MultiSetAsync(cacheName, dictionary);
+            CacheSetMultiResponse response = await client.SetMultiAsync(cacheName, dictionary);
             Assert.Equal(dictionary, response.Bytes());
 
             var getResponse = await client.GetAsync(cacheName, Utf8ToBytes("key1"));
@@ -252,23 +252,23 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public async void MultiSetAsync_NullCheckStrings_ThrowsException()
+        public async void SetMultiAsync_NullCheckStrings_ThrowsException()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.MultiSetAsync(null, new Dictionary<string, string>()));
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.MultiSetAsync("cache", (Dictionary<string, string>)null));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetMultiAsync(null, new Dictionary<string, string>()));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetMultiAsync("cache", (Dictionary<string, string>)null));
 
             var badDictionary = new Dictionary<string, string>() { { "asdf", null } };
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.MultiSetAsync("cache", badDictionary));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetMultiAsync("cache", badDictionary));
         }
 
         [Fact]
-        public async void MultiSetAsync_KeysAreString_HappyPath()
+        public async void SetMultiAsync_KeysAreString_HappyPath()
         {
             var dictionary = new Dictionary<string, string>() {
                 { "key1", "value1" },
                 { "key2", "value2" }
             };
-            CacheMultiSetResponse response = await client.MultiSetAsync(cacheName, dictionary);
+            CacheSetMultiResponse response = await client.SetMultiAsync(cacheName, dictionary);
             Assert.Equal(dictionary, response.Strings());
 
             var getResponse = await client.GetAsync(cacheName, "key1");
@@ -411,19 +411,19 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public void MultiGet_NullCheckBytes_ThrowsException()
+        public void GetMulti_NullCheckBytes_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => client.MultiGet(null, new List<byte[]>()));
-            Assert.Throws<ArgumentNullException>(() => client.MultiGet("cache", (List<byte[]>)null));
+            Assert.Throws<ArgumentNullException>(() => client.GetMulti(null, new List<byte[]>()));
+            Assert.Throws<ArgumentNullException>(() => client.GetMulti("cache", (List<byte[]>)null));
 
             var badList = new List<byte[]>(new byte[][] { Utf8ToBytes("asdf"), null });
-            Assert.Throws<ArgumentNullException>(() => client.MultiGet("cache", badList));
+            Assert.Throws<ArgumentNullException>(() => client.GetMulti("cache", badList));
 
-            Assert.Throws<ArgumentNullException>(() => client.MultiGet("cache", Utf8ToBytes("key1"), null));
+            Assert.Throws<ArgumentNullException>(() => client.GetMulti("cache", Utf8ToBytes("key1"), null));
         }
 
         [Fact]
-        public void MultiGet_KeysAreBytes_HappyPath()
+        public void GetMulti_KeysAreBytes_HappyPath()
         {
             string cacheKey1 = "key1";
             string cacheValue1 = "value1";
@@ -434,7 +434,7 @@ namespace MomentoIntegrationTest
 
             List<byte[]> keys = new() { Utf8ToBytes(cacheKey1), Utf8ToBytes(cacheKey2) };
 
-            CacheMultiGetResponse result = client.MultiGet(cacheName, keys);
+            CacheGetMultiResponse result = client.GetMulti(cacheName, keys);
             string stringResult1 = result.Strings()[0];
             string stringResult2 = result.Strings()[1];
             Assert.Equal(cacheValue1, stringResult1);
@@ -442,7 +442,7 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public void MultiGet_KeysAreBytes_HappyPath2()
+        public void GetMulti_KeysAreBytes_HappyPath2()
         {
             string cacheKey1 = "key1";
             string cacheValue1 = "value1";
@@ -451,7 +451,7 @@ namespace MomentoIntegrationTest
             client.Set(cacheName, cacheKey1, cacheValue1);
             client.Set(cacheName, cacheKey2, cacheValue2);
 
-            CacheMultiGetResponse result = client.MultiGet(cacheName, cacheKey1, cacheKey2);
+            CacheGetMultiResponse result = client.GetMulti(cacheName, cacheKey1, cacheKey2);
             string stringResult1 = result.Strings()[0];
             string stringResult2 = result.Strings()[1];
             Assert.Equal(cacheValue1, stringResult1);
@@ -459,19 +459,19 @@ namespace MomentoIntegrationTest
         }
 
         [Fact]
-        public void MultiGet_NullCheckString_ThrowsException()
+        public void GetMulti_NullCheckString_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => client.MultiGet(null, new List<string>()));
-            Assert.Throws<ArgumentNullException>(() => client.MultiGet("cache", (List<string>)null));
+            Assert.Throws<ArgumentNullException>(() => client.GetMulti(null, new List<string>()));
+            Assert.Throws<ArgumentNullException>(() => client.GetMulti("cache", (List<string>)null));
 
             List<string> strings = new(new string[] { "key1", "key2", null });
-            Assert.Throws<ArgumentNullException>(() => client.MultiGet("cache", strings));
+            Assert.Throws<ArgumentNullException>(() => client.GetMulti("cache", strings));
 
-            Assert.Throws<ArgumentNullException>(() => client.MultiGet("cache", "key1", "key2", null));
+            Assert.Throws<ArgumentNullException>(() => client.GetMulti("cache", "key1", "key2", null));
         }
 
         [Fact]
-        public void MultiGet_KeysAreString_HappyPath()
+        public void GetMulti_KeysAreString_HappyPath()
         {
             string cacheKey1 = "key1";
             string cacheValue1 = "value1";
@@ -481,39 +481,39 @@ namespace MomentoIntegrationTest
             client.Set(cacheName, cacheKey2, cacheValue2);
 
             List<string> keys = new() { cacheKey1, cacheKey2, "key123123" };
-            CacheMultiGetResponse result = client.MultiGet(cacheName, keys);
+            CacheGetMultiResponse result = client.GetMulti(cacheName, keys);
 
             Assert.Equal(result.Strings(), new string[] { cacheValue1, cacheValue2, null });
             Assert.Equal(result.Status(), new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS });
         }
 
         [Fact]
-        public void MultiGet_Failure()
+        public void GetMulti_Failure()
         {
             // Set very small timeout for dataClientOperationTimeoutMilliseconds
             SimpleCacheClient simpleCacheClient = new SimpleCacheClient(authKey, defaultTtlSeconds, 1);
             List<string> keys = new() { "key1", "key2", "key3", "key4" };
-            Assert.Throws<MomentoSdk.Exceptions.TimeoutException>(() => simpleCacheClient.MultiGet(cacheName, keys));
+            Assert.Throws<MomentoSdk.Exceptions.TimeoutException>(() => simpleCacheClient.GetMulti(cacheName, keys));
         }
 
         [Fact]
-        public void MultiSet_NullCheckBytes_ThrowsException()
+        public void SetMulti_NullCheckBytes_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => client.MultiSet(null, new Dictionary<byte[], byte[]>()));
-            Assert.Throws<ArgumentNullException>(() => client.MultiSet("cache", (Dictionary<byte[], byte[]>)null));
+            Assert.Throws<ArgumentNullException>(() => client.SetMulti(null, new Dictionary<byte[], byte[]>()));
+            Assert.Throws<ArgumentNullException>(() => client.SetMulti("cache", (Dictionary<byte[], byte[]>)null));
 
             var badDictionary = new Dictionary<byte[], byte[]>() { { Utf8ToBytes("asdf"), null } };
-            Assert.Throws<ArgumentNullException>(() => client.MultiSet("cache", badDictionary));
+            Assert.Throws<ArgumentNullException>(() => client.SetMulti("cache", badDictionary));
         }
 
         [Fact]
-        public void MultiSet_ItemsAreBytes_HappyPath()
+        public void SetMulti_ItemsAreBytes_HappyPath()
         {
             var dictionary = new Dictionary<byte[], byte[]>() {
                     { Utf8ToBytes("key1"), Utf8ToBytes("value1") },
                     { Utf8ToBytes("key2"), Utf8ToBytes("value2") }
                 };
-            CacheMultiSetResponse response = client.MultiSet(cacheName, dictionary);
+            CacheSetMultiResponse response = client.SetMulti(cacheName, dictionary);
             Assert.Equal(dictionary, response.Bytes());
 
             var getResponse = client.Get(cacheName, Utf8ToBytes("key1"));
@@ -525,23 +525,23 @@ namespace MomentoIntegrationTest
 
 
         [Fact]
-        public void MultiSet_NullCheckString_ThrowsException()
+        public void SetMulti_NullCheckString_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => client.MultiSet(null, new Dictionary<string, string>()));
-            Assert.Throws<ArgumentNullException>(() => client.MultiSet("cache", (Dictionary<string, string>)null));
+            Assert.Throws<ArgumentNullException>(() => client.SetMulti(null, new Dictionary<string, string>()));
+            Assert.Throws<ArgumentNullException>(() => client.SetMulti("cache", (Dictionary<string, string>)null));
 
             var badDictionary = new Dictionary<string, string>() { { "asdf", null } };
-            Assert.Throws<ArgumentNullException>(() => client.MultiSet("cache", badDictionary));
+            Assert.Throws<ArgumentNullException>(() => client.SetMulti("cache", badDictionary));
         }
 
         [Fact]
-        public void MultiSet_KeysAreString_HappyPath()
+        public void SetMulti_KeysAreString_HappyPath()
         {
             var dictionary = new Dictionary<string, string>() {
                     { "key1", "value1" },
                     { "key2", "value2" }
                 };
-            CacheMultiSetResponse response = client.MultiSet(cacheName, dictionary);
+            CacheSetMultiResponse response = client.SetMulti(cacheName, dictionary);
             Assert.Equal(dictionary, response.Strings());
 
             var getResponse = client.Get(cacheName, "key1");

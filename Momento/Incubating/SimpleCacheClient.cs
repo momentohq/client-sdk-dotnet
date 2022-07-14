@@ -51,44 +51,44 @@ namespace MomentoSdk.Incubating
             return await Task.FromException<CacheDictionaryGetResponse>(new NotImplementedException());
         }
 
-        public CacheDictionaryMultiSetResponse DictionaryMultiSet(string cacheName, string dictionaryName, IDictionary<byte[], byte[]> dictionary, bool refreshTtl, uint? ttlSeconds = null)
+        public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IDictionary<byte[], byte[]> dictionary, bool refreshTtl, uint? ttlSeconds = null)
         {
             throw new NotImplementedException();
         }
 
-        public CacheDictionaryMultiSetResponse DictionaryMultiSet(string cacheName, string dictionaryName, IDictionary<string, string> dictionary, bool refreshTtl, uint? ttlSeconds = null)
+        public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IDictionary<string, string> dictionary, bool refreshTtl, uint? ttlSeconds = null)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<CacheDictionaryMultiSetResponse> DictionaryMultiSetAsync(string cacheName, string dictionaryName, IDictionary<string, string> dictionary, bool refreshTtl, uint? ttlSeconds = null)
+        public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IDictionary<string, string> dictionary, bool refreshTtl, uint? ttlSeconds = null)
         {
-            return await Task.FromException<CacheDictionaryMultiSetResponse>(new NotImplementedException());
+            return await Task.FromException<CacheDictionarySetMultiResponse>(new NotImplementedException());
         }
 
-        public async Task<CacheDictionaryMultiSetResponse> DictionaryMultiSetAsync(string cacheName, string dictionaryName, IDictionary<byte[], byte[]> dictionary, bool refreshTtl, uint? ttlSeconds = null)
+        public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IDictionary<byte[], byte[]> dictionary, bool refreshTtl, uint? ttlSeconds = null)
         {
-            return await Task.FromException<CacheDictionaryMultiSetResponse>(new NotImplementedException());
+            return await Task.FromException<CacheDictionarySetMultiResponse>(new NotImplementedException());
         }
 
-        public CacheDictionaryMultiGetResponse DictionaryMultiGet(string cacheName, string dictionaryName, params byte[][] keys)
+        public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, params byte[][] keys)
         {
             throw new NotImplementedException();
         }
 
-        public CacheDictionaryMultiGetResponse DictionaryMultiGet(string cacheName, string dictionaryName, params string[] keys)
+        public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, params string[] keys)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<CacheDictionaryMultiGetResponse> DictionaryMultiGetAsync(string cacheName, string dictionaryName, params byte[][] keys)
+        public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, params byte[][] keys)
         {
-            return await Task.FromException<CacheDictionaryMultiGetResponse>(new NotImplementedException());
+            return await Task.FromException<CacheDictionaryGetMultiResponse>(new NotImplementedException());
         }
 
-        public async Task<CacheDictionaryMultiGetResponse> DictionaryMultiGetAsync(string cacheName, string dictionaryName, params string[] keys)
+        public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, params string[] keys)
         {
-            return await Task.FromException<CacheDictionaryMultiGetResponse>(new NotImplementedException());
+            return await Task.FromException<CacheDictionaryGetMultiResponse>(new NotImplementedException());
         }
 
         public CacheDictionaryGetAllResponse DictionaryGetAll(string cacheName, string dictionaryName)
