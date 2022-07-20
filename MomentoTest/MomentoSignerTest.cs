@@ -24,7 +24,7 @@ namespace MomentoTest
             uint expiryEpochSeconds = uint.MaxValue;
             var url = signer.CreatePresignedUrl("foobar.com", new SigningRequest("testCacheName", "testCacheKey", CacheOperation.GET, expiryEpochSeconds)); ;
 
-            string jwt = HttpUtility.ParseQueryString(new Uri(url).Query).Get("token");
+            string? jwt = HttpUtility.ParseQueryString(new Uri(url).Query).Get("token");
 
             var securityKey = new JsonWebKey(jwk);
             TokenValidationParameters validationParameters = new TokenValidationParameters()
@@ -46,10 +46,10 @@ namespace MomentoTest
             uint expiryEpochSeconds = uint.MaxValue;
             var url = signer.CreatePresignedUrl("foobar.com", new SigningRequest("testCacheName", "testCacheKey", CacheOperation.GET, expiryEpochSeconds));
 
-            Uri uriResult;
+            Uri? uriResult;
             bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult);
             Assert.True(result);
-            Assert.Equal(Uri.UriSchemeHttps, uriResult.Scheme);
+            Assert.Equal(Uri.UriSchemeHttps, uriResult?.Scheme);
             Assert.StartsWith("https://rest.foobar.com/cache/get/testCacheName/testCacheKey?token=", url);
         }
 
@@ -64,10 +64,10 @@ namespace MomentoTest
             };
             var url = signer.CreatePresignedUrl("foobar.com", req);
 
-            Uri uriResult;
+            Uri? uriResult;
             bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult);
             Assert.True(result);
-            Assert.Equal(Uri.UriSchemeHttps, uriResult.Scheme);
+            Assert.Equal(Uri.UriSchemeHttps, uriResult?.Scheme);
             Assert.StartsWith("https://rest.foobar.com/cache/set/testCacheName/testCacheKey?ttl_milliseconds=4294967295000&token=", url);
         }
 
@@ -79,10 +79,10 @@ namespace MomentoTest
             var testCacheKey = "#$&\\'+,/:;=?@[]";
             var url = signer.CreatePresignedUrl("foobar.com", new SigningRequest("testCacheName", testCacheKey, CacheOperation.GET, expiryEpochSeconds));
 
-            Uri uriResult;
+            Uri? uriResult;
             bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult);
             Assert.True(result);
-            Assert.Equal(Uri.UriSchemeHttps, uriResult.Scheme);
+            Assert.Equal(Uri.UriSchemeHttps, uriResult?.Scheme);
             Assert.StartsWith("https://rest.foobar.com/cache/get/testCacheName/%23%24%26%5c%27%2b%2c%2f%3a%3b%3d%3f%40%5b%5d?token=", url);
         }
 

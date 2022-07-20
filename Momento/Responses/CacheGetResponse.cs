@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System.Text;
+﻿using System.Text;
 using CacheClient;
 using Google.Protobuf;
 using MomentoSdk.Exceptions;

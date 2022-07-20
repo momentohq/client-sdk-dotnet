@@ -63,7 +63,7 @@ namespace MomentoSdk
         /// </summary>
         /// <param name="nextPageToken">A token to specify where to start paginating. This is the NextToken from a previous response.</param>
         /// <returns>The result of the list cache operation.</returns>
-        public ListCachesResponse ListCaches(string nextPageToken = null)
+        public ListCachesResponse ListCaches(string? nextPageToken = null)
         {
             return this.controlClient.ListCaches(nextPageToken);
         }
