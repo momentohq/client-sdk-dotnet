@@ -2,25 +2,24 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MomentoSdk.Incubating.Responses
-{
-    public class CacheDictionarySetMultiResponse
-    {
-        public CacheDictionarySetMultiResponse()
-        {
-        }
+namespace MomentoSdk.Incubating.Responses;
 
-        public string DictionaryName()
-        {
-            throw new NotImplementedException();
-        }
-        public Dictionary<byte[], byte>? DictionaryAsBytes()
-        {
-            throw new NotImplementedException();
-        }
-        public Dictionary<string, string>? Dictionary(Encoding? encoding = null)
-        {
-            throw new NotImplementedException();
-        }
+public class CacheDictionarySetMultiResponse
+{
+    public CacheDictionarySetMultiResponse()
+    {
+    }
+
+    public string DictionaryName()
+    {
+        throw new NotImplementedException();
+    }
+    public Dictionary<byte[], byte>? DictionaryAsBytes()
+    {
+        throw new NotImplementedException();
+    }
+    public Dictionary<string, string>? Dictionary(Encoding? encoding = null)
+    {
+        throw new NotImplementedException();
     }
 }

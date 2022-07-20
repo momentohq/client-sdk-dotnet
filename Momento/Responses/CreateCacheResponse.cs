@@ -1,10 +1,8 @@
-﻿using System;
-namespace MomentoSdk.Responses
+﻿namespace MomentoSdk.Responses;
+
+public class CreateCacheResponse
 {
-    public class CreateCacheResponse
+    public CreateCacheResponse()
     {
-        public CreateCacheResponse()
-        {
-        }
     }
 }

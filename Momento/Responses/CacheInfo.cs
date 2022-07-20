@@ -1,44 +1,43 @@
 ﻿using System;
 
-namespace MomentoSdk.Responses
+namespace MomentoSdk.Responses;
+
+public class CacheInfo : IEquatable<CacheInfo>
 {
-    public class CacheInfo : IEquatable<CacheInfo>
+    private readonly string name;
+    public CacheInfo(string cachename)
     {
-        private readonly string name;
-        public CacheInfo(string cachename)
+        name = cachename;
+    }
+
+    public string Name()
+    {
+        return name;
+    }
+
+    // override object.Equals
+    public bool Equals(CacheInfo? other)
+    {
+        if (other == null)
         {
-            name = cachename;
+            return false;
         }
 
-        public string Name()
+        return this.name == other.name;
+    }
+
+    public override bool Equals(Object? obj)
+    {
+        if (obj == null)
         {
-            return name;
+            return false;
         }
 
-        // override object.Equals
-        public bool Equals(CacheInfo? other)
-        {
-            if (other == null)
-            {
-                return false;
-            }
+        return Equals(obj as CacheInfo);
+    }
 
-            return this.name == other.name;
-        }
-
-        public override bool Equals(Object? obj)
-        {
-            if (obj == null)
-            {
-                return false;
-            }
-
-            return Equals(obj as CacheInfo);
-        }
-
-        public override int GetHashCode()
-        {
-            return name.GetHashCode();
-        }
+    public override int GetHashCode()
+    {
+        return name.GetHashCode();
     }
 }

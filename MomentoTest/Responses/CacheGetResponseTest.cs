@@ -1,30 +1,29 @@
-﻿using Xunit;
-using MomentoSdk.Responses;
-using CacheClient;
+﻿using CacheClient;
 using Google.Protobuf;
+using Xunit;
 using MomentoSdk.Exceptions;
+using MomentoSdk.Responses;
 
-namespace MomentoTest.Responses
+namespace MomentoTest.Responses;
+
+public class CacheGetResponseTest
 {
-    public class CacheGetResponseTest
+    [Fact]
+    public void CorrectResultMapping()
     {
-        [Fact]
-        public void CorrectResultMapping()
-        {
-            string cacheBody = "test body";
-            ByteString body = ByteString.CopyFromUtf8(cacheBody);
-            _GetResponse serverResponseHit = new _GetResponse() { CacheBody = body, Result = ECacheResult.Hit };
-            CacheGetResponse responseHit = new CacheGetResponse(serverResponseHit);
-            Assert.Equal(CacheGetStatus.HIT, responseHit.Status);
-            Assert.Equal(cacheBody, responseHit.String());
+        string cacheBody = "test body";
+        ByteString body = ByteString.CopyFromUtf8(cacheBody);
+        _GetResponse serverResponseHit = new _GetResponse() { CacheBody = body, Result = ECacheResult.Hit };
+        CacheGetResponse responseHit = new CacheGetResponse(serverResponseHit);
+        Assert.Equal(CacheGetStatus.HIT, responseHit.Status);
+        Assert.Equal(cacheBody, responseHit.String());
 
-            _GetResponse serverResponseMiss = new _GetResponse() { Result = ECacheResult.Miss };
-            CacheGetResponse responseMiss = new CacheGetResponse(serverResponseMiss);
-            Assert.Equal(CacheGetStatus.MISS, responseMiss.Status);
+        _GetResponse serverResponseMiss = new _GetResponse() { Result = ECacheResult.Miss };
+        CacheGetResponse responseMiss = new CacheGetResponse(serverResponseMiss);
+        Assert.Equal(CacheGetStatus.MISS, responseMiss.Status);
 
-            _GetResponse serverResponseBadRequest = new _GetResponse() { Result = ECacheResult.Invalid };
-            _ = Assert.Throws<InternalServerException>(() => new CacheGetResponse(serverResponseBadRequest));
+        _GetResponse serverResponseBadRequest = new _GetResponse() { Result = ECacheResult.Invalid };
+        _ = Assert.Throws<InternalServerException>(() => new CacheGetResponse(serverResponseBadRequest));
 
-        }
     }
 }

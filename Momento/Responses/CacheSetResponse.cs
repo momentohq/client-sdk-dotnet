@@ -1,13 +1,12 @@
-﻿using System;
-using CacheClient;
-namespace MomentoSdk.Responses
-{
-    public class CacheSetResponse
-    {
-        public CacheSetResponse(_SetResponse response)
-        {
-        }
+﻿using CacheClient;
 
-        // TODO: Add values that were set.
+namespace MomentoSdk.Responses;
+
+public class CacheSetResponse
+{
+    public CacheSetResponse(_SetResponse response)
+    {
     }
+
+    // TODO: Add values that were set.
 }

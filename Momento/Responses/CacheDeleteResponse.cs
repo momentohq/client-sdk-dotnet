@@ -1,10 +1,8 @@
-﻿using System;
-namespace MomentoSdk.Responses
+﻿namespace MomentoSdk.Responses;
+
+public class CacheDeleteResponse
 {
-    public class CacheDeleteResponse
+    public CacheDeleteResponse()
     {
-        public CacheDeleteResponse()
-        {
-        }
     }
 }
