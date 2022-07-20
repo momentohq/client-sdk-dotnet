@@ -1,12 +1,11 @@
-﻿namespace MomentoSdk.Exceptions
+﻿namespace MomentoSdk.Exceptions;
+
+/// <summary>
+/// Insufficient permissions to execute an operation.
+/// </summary>
+public class PermissionDeniedException : MomentoServiceException
 {
-    /// <summary>
-    /// Insufficient permissions to execute an operation.
-    /// </summary>
-    public class PermissionDeniedException : MomentoServiceException
+    public PermissionDeniedException(string message) : base(message)
     {
-        public PermissionDeniedException(string message) : base(message)
-        {
-        }
     }
 }

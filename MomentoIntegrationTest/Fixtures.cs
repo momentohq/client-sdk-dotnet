@@ -1,46 +1,45 @@
-namespace MomentoIntegrationTest
+namespace MomentoIntegrationTest;
+
+/// <summary>
+/// A cache client fixture.
+/// Use this when not testing client-building edge cases:
+/// re-using the client drops overall integration test time down ~5X.
+/// </summary>
+public class SimpleCacheClientFixture : IDisposable
 {
-    /// <summary>
-    /// A cache client fixture.
-    /// Use this when not testing client-building edge cases:
-    /// re-using the client drops overall integration test time down ~5X.
-    /// </summary>
-    public class SimpleCacheClientFixture : IDisposable
+    public SimpleCacheClient Client { get; private set; }
+    public string AuthToken { get; private set; }
+
+    public const string CacheName = "client-sdk-csharp";
+    public const uint DefaultTtlSeconds = 10;
+
+    public SimpleCacheClientFixture()
     {
-        public SimpleCacheClient Client { get; private set; }
-        public string AuthToken { get; private set; }
+        AuthToken = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN") ??
+            throw new NullReferenceException("TEST_AUTH_TOKEN environment variable must be set.");
+        Client = new(AuthToken, defaultTtlSeconds: DefaultTtlSeconds);
 
-        public const string CacheName = "client-sdk-csharp";
-        public const uint DefaultTtlSeconds = 10;
-
-        public SimpleCacheClientFixture()
+        try
         {
-            AuthToken = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN") ??
-                throw new NullReferenceException("TEST_AUTH_TOKEN environment variable must be set.");
-            Client = new(AuthToken, defaultTtlSeconds: DefaultTtlSeconds);
-
-            try
-            {
-                Client.CreateCache(CacheName);
-            }
-            catch (AlreadyExistsException)
-            {
-            }
+            Client.CreateCache(CacheName);
         }
-
-        public void Dispose()
+        catch (AlreadyExistsException)
         {
-            Client.DeleteCache(CacheName);
-            Client.Dispose();
         }
     }
 
-    /// <summary>
-    /// Register the fixture in xUnit.
-    /// </summary>
-    [CollectionDefinition("SimpleCacheClient")]
-    public class SimpleCacheClientCollection : ICollectionFixture<SimpleCacheClientFixture>
+    public void Dispose()
     {
-
+        Client.DeleteCache(CacheName);
+        Client.Dispose();
     }
+}
+
+/// <summary>
+/// Register the fixture in xUnit.
+/// </summary>
+[CollectionDefinition("SimpleCacheClient")]
+public class SimpleCacheClientCollection : ICollectionFixture<SimpleCacheClientFixture>
+{
+
 }

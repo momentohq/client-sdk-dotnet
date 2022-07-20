@@ -8,294 +8,293 @@ using Google.Protobuf;
 using Grpc.Core;
 using System.Collections.Generic;
 
-namespace MomentoSdk
+namespace MomentoSdk;
+
+internal sealed class ScsDataClient : IDisposable
 {
-    internal sealed class ScsDataClient : IDisposable
+    private readonly DataGrpcManager grpcManager;
+    private readonly uint defaultTtlSeconds;
+    private readonly uint dataClientOperationTimeoutMilliseconds;
+    private const uint DEFAULT_DEADLINE_MILLISECONDS = 5000;
+
+    public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
     {
-        private readonly DataGrpcManager grpcManager;
-        private readonly uint defaultTtlSeconds;
-        private readonly uint dataClientOperationTimeoutMilliseconds;
-        private const uint DEFAULT_DEADLINE_MILLISECONDS = 5000;
+        this.grpcManager = new DataGrpcManager(authToken, endpoint);
+        this.defaultTtlSeconds = defaultTtlSeconds;
+        this.dataClientOperationTimeoutMilliseconds = dataClientOperationTimeoutMilliseconds ?? DEFAULT_DEADLINE_MILLISECONDS;
+    }
 
-        public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+    public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
+    {
+        _SetResponse response = await this.SendSetAsync(cacheName, value: Convert(value), key: Convert(key), ttlSeconds: ttlSeconds);
+        return new CacheSetResponse(response);
+    }
+
+    public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
+    {
+        _GetResponse resp = await this.SendGetAsync(cacheName, Convert(key));
+        return new CacheGetResponse(resp);
+    }
+
+    public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, byte[] key)
+    {
+        await this.SendDeleteAsync(cacheName, Convert(key));
+        return new CacheDeleteResponse();
+    }
+
+    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint? ttlSeconds = null)
+    {
+        _SetResponse response = await this.SendSetAsync(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
+        return new CacheSetResponse(response);
+    }
+
+    public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
+    {
+        _GetResponse resp = await this.SendGetAsync(cacheName, Convert(key));
+        return new CacheGetResponse(resp);
+    }
+
+    public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key)
+    {
+        await this.SendDeleteAsync(cacheName, Convert(key));
+        return new CacheDeleteResponse();
+    }
+
+    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
+    {
+        _SetResponse response = await this.SendSetAsync(cacheName, value: Convert(value), key: Convert(key), ttlSeconds: ttlSeconds);
+        return new CacheSetResponse(response);
+    }
+
+    public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<string> keys)
+    {
+        return await GetMultiAsync(cacheName, keys.Select(key => Convert(key)));
+    }
+
+    public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<byte[]> keys)
+    {
+        return await GetMultiAsync(cacheName, keys.Select(key => Convert(key)));
+    }
+
+    public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<ByteString> keys)
+    {
+        // Gather the tasks
+        var tasks = keys.Select(key => SendGetAsync(cacheName, key));
+
+        // Run the tasks
+        var continuation = Task.WhenAll(tasks);
+        try
         {
-            this.grpcManager = new DataGrpcManager(authToken, endpoint);
-            this.defaultTtlSeconds = defaultTtlSeconds;
-            this.dataClientOperationTimeoutMilliseconds = dataClientOperationTimeoutMilliseconds ?? DEFAULT_DEADLINE_MILLISECONDS;
+            await continuation;
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
         }
 
-        public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
+        // Handle failures
+        if (continuation.Status == TaskStatus.Faulted)
         {
-            _SetResponse response = await this.SendSetAsync(cacheName, value: Convert(value), key: Convert(key), ttlSeconds: ttlSeconds);
-            return new CacheSetResponse(response);
+            throw CacheExceptionMapper.Convert(continuation.Exception);
+        }
+        else if (continuation.Status != TaskStatus.RanToCompletion)
+        {
+            throw CacheExceptionMapper.Convert(new Exception(String.Format("Failure issuing multi-get: {0}", continuation.Status)));
         }
 
-        public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
+        // Package results
+        var results = continuation.Result.Select(response => new CacheGetResponse(response));
+        return new CacheGetMultiResponse(results);
+    }
+
+    public async Task SetMultiAsync(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
+    {
+        await SetMultiAsync(cacheName: cacheName,
+            items: items.ToDictionary(item => Convert(item.Key), item => Convert(item.Value)),
+            ttlSeconds: ttlSeconds);
+    }
+
+    public async Task SetMultiAsync(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
+    {
+        await SetMultiAsync(cacheName: cacheName,
+            items: items.ToDictionary(item => Convert(item.Key), item => Convert(item.Value)),
+            ttlSeconds: ttlSeconds);
+    }
+
+    public async Task SetMultiAsync(string cacheName, IDictionary<ByteString, ByteString> items, uint? ttlSeconds = null)
+    {
+        // Gather the tasks
+        var tasks = items.Select(item => SendSetAsync(cacheName, item.Key, item.Value, ttlSeconds));
+
+        // Run the tasks
+        var continuation = Task.WhenAll(tasks);
+        try
         {
-            _GetResponse resp = await this.SendGetAsync(cacheName, Convert(key));
-            return new CacheGetResponse(resp);
+            await continuation;
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
         }
 
-        public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, byte[] key)
+        // Handle failures
+        if (continuation.Status == TaskStatus.Faulted)
         {
-            await this.SendDeleteAsync(cacheName, Convert(key));
-            return new CacheDeleteResponse();
+            throw CacheExceptionMapper.Convert(continuation.Exception);
         }
-
-        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint? ttlSeconds = null)
+        else if (continuation.Status != TaskStatus.RanToCompletion)
         {
-            _SetResponse response = await this.SendSetAsync(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
-            return new CacheSetResponse(response);
+            throw CacheExceptionMapper.Convert(new Exception(String.Format("Failure issuing multi-set: {0}", continuation.Status)));
         }
+    }
 
-        public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
+    public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
+    {
+        _SetResponse resp = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
+        return new CacheSetResponse(resp);
+    }
+
+    public CacheGetResponse Get(string cacheName, byte[] key)
+    {
+        _GetResponse resp = this.SendGet(cacheName, Convert(key));
+        return new CacheGetResponse(resp);
+    }
+
+    public CacheDeleteResponse Delete(string cacheName, byte[] key)
+    {
+        this.SendDelete(cacheName, Convert(key));
+        return new CacheDeleteResponse();
+    }
+
+    public CacheSetResponse Set(string cacheName, string key, string value, uint? ttlSeconds = null)
+    {
+        _SetResponse response = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
+        return new CacheSetResponse(response);
+    }
+
+    public CacheGetResponse Get(string cacheName, string key)
+    {
+        _GetResponse resp = this.SendGet(cacheName, Convert(key));
+        return new CacheGetResponse(resp);
+    }
+
+    public CacheDeleteResponse Delete(string cacheName, string key)
+    {
+        this.SendDelete(cacheName, Convert(key));
+        return new CacheDeleteResponse();
+    }
+
+    public CacheSetResponse Set(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
+    {
+        _SetResponse response = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
+        return new CacheSetResponse(response);
+    }
+
+    private async Task<_SetResponse> SendSetAsync(string cacheName, ByteString key, ByteString value, uint? ttlSeconds = null)
+    {
+        _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds) };
+        try
         {
-            _GetResponse resp = await this.SendGetAsync(cacheName, Convert(key));
-            return new CacheGetResponse(resp);
+            return await this.grpcManager.Client().SetAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
         }
-
-        public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key)
+        catch (Exception e)
         {
-            await this.SendDeleteAsync(cacheName, Convert(key));
-            return new CacheDeleteResponse();
+            throw CacheExceptionMapper.Convert(e);
         }
+    }
 
-        public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
+    private _GetResponse SendGet(string cacheName, ByteString key)
+    {
+        _GetRequest request = new _GetRequest() { CacheKey = key };
+        try
         {
-            _SetResponse response = await this.SendSetAsync(cacheName, value: Convert(value), key: Convert(key), ttlSeconds: ttlSeconds);
-            return new CacheSetResponse(response);
+            return this.grpcManager.Client().Get(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
         }
-
-        public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<string> keys)
+        catch (Exception e)
         {
-            return await GetMultiAsync(cacheName, keys.Select(key => Convert(key)));
+            throw CacheExceptionMapper.Convert(e);
         }
+    }
 
-        public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<byte[]> keys)
+    private async Task<_GetResponse> SendGetAsync(string cacheName, ByteString key)
+    {
+        _GetRequest request = new _GetRequest() { CacheKey = key };
+        try
         {
-            return await GetMultiAsync(cacheName, keys.Select(key => Convert(key)));
+            return await this.grpcManager.Client().GetAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
         }
-
-        public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<ByteString> keys)
+        catch (Exception e)
         {
-            // Gather the tasks
-            var tasks = keys.Select(key => SendGetAsync(cacheName, key));
-
-            // Run the tasks
-            var continuation = Task.WhenAll(tasks);
-            try
-            {
-                await continuation;
-            }
-            catch (Exception e)
-            {
-                throw CacheExceptionMapper.Convert(e);
-            }
-
-            // Handle failures
-            if (continuation.Status == TaskStatus.Faulted)
-            {
-                throw CacheExceptionMapper.Convert(continuation.Exception);
-            }
-            else if (continuation.Status != TaskStatus.RanToCompletion)
-            {
-                throw CacheExceptionMapper.Convert(new Exception(String.Format("Failure issuing multi-get: {0}", continuation.Status)));
-            }
-
-            // Package results
-            var results = continuation.Result.Select(response => new CacheGetResponse(response));
-            return new CacheGetMultiResponse(results);
+            throw CacheExceptionMapper.Convert(e);
         }
+    }
 
-        public async Task SetMultiAsync(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
+    private _SetResponse SendSet(string cacheName, ByteString key, ByteString value, uint? ttlSeconds = null)
+    {
+        _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds) };
+        try
         {
-            await SetMultiAsync(cacheName: cacheName,
-                items: items.ToDictionary(item => Convert(item.Key), item => Convert(item.Value)),
-                ttlSeconds: ttlSeconds);
+            return this.grpcManager.Client().Set(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
         }
-
-        public async Task SetMultiAsync(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
+        catch (Exception e)
         {
-            await SetMultiAsync(cacheName: cacheName,
-                items: items.ToDictionary(item => Convert(item.Key), item => Convert(item.Value)),
-                ttlSeconds: ttlSeconds);
+            throw CacheExceptionMapper.Convert(e);
         }
+    }
 
-        public async Task SetMultiAsync(string cacheName, IDictionary<ByteString, ByteString> items, uint? ttlSeconds = null)
+    private _DeleteResponse SendDelete(string cacheName, ByteString key)
+    {
+        _DeleteRequest request = new _DeleteRequest() { CacheKey = key };
+        try
         {
-            // Gather the tasks
-            var tasks = items.Select(item => SendSetAsync(cacheName, item.Key, item.Value, ttlSeconds));
-
-            // Run the tasks
-            var continuation = Task.WhenAll(tasks);
-            try
-            {
-                await continuation;
-            }
-            catch (Exception e)
-            {
-                throw CacheExceptionMapper.Convert(e);
-            }
-
-            // Handle failures
-            if (continuation.Status == TaskStatus.Faulted)
-            {
-                throw CacheExceptionMapper.Convert(continuation.Exception);
-            }
-            else if (continuation.Status != TaskStatus.RanToCompletion)
-            {
-                throw CacheExceptionMapper.Convert(new Exception(String.Format("Failure issuing multi-set: {0}", continuation.Status)));
-            }
+            return this.grpcManager.Client().Delete(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
         }
-
-        public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
+        catch (Exception e)
         {
-            _SetResponse resp = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
-            return new CacheSetResponse(resp);
+            throw CacheExceptionMapper.Convert(e);
         }
+    }
 
-        public CacheGetResponse Get(string cacheName, byte[] key)
+    private async Task<_DeleteResponse> SendDeleteAsync(string cacheName, ByteString key)
+    {
+        _DeleteRequest request = new _DeleteRequest() { CacheKey = key };
+        try
         {
-            _GetResponse resp = this.SendGet(cacheName, Convert(key));
-            return new CacheGetResponse(resp);
+            return await this.grpcManager.Client().DeleteAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
         }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+    }
 
-        public CacheDeleteResponse Delete(string cacheName, byte[] key)
-        {
-            this.SendDelete(cacheName, Convert(key));
-            return new CacheDeleteResponse();
-        }
+    private ByteString Convert(byte[] bytes)
+    {
+        return ByteString.CopyFrom(bytes);
+    }
 
-        public CacheSetResponse Set(string cacheName, string key, string value, uint? ttlSeconds = null)
-        {
-            _SetResponse response = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
-            return new CacheSetResponse(response);
-        }
+    private ByteString Convert(string s)
+    {
+        return ByteString.CopyFromUtf8(s);
+    }
 
-        public CacheGetResponse Get(string cacheName, string key)
-        {
-            _GetResponse resp = this.SendGet(cacheName, Convert(key));
-            return new CacheGetResponse(resp);
-        }
+    private DateTime CalculateDeadline()
+    {
+        return DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
+    }
 
-        public CacheDeleteResponse Delete(string cacheName, string key)
-        {
-            this.SendDelete(cacheName, Convert(key));
-            return new CacheDeleteResponse();
-        }
+    /// <summary>
+    /// Converts TTL in seconds to milliseconds. Defaults to <c>defaultTtlSeconds</c>.
+    /// </summary>
+    /// <param name="ttlSeconds">The TTL to convert. Defaults to defaultTtlSeconds</param>
+    /// <returns></returns>
+    private uint ttlSecondsToMilliseconds(uint? ttlSeconds = null)
+    {
+        return (ttlSeconds ?? defaultTtlSeconds) * 1000;
+    }
 
-        public CacheSetResponse Set(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
-        {
-            _SetResponse response = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
-            return new CacheSetResponse(response);
-        }
-
-        private async Task<_SetResponse> SendSetAsync(string cacheName, ByteString key, ByteString value, uint? ttlSeconds = null)
-        {
-            _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds) };
-            try
-            {
-                return await this.grpcManager.Client().SetAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
-            }
-            catch (Exception e)
-            {
-                throw CacheExceptionMapper.Convert(e);
-            }
-        }
-
-        private _GetResponse SendGet(string cacheName, ByteString key)
-        {
-            _GetRequest request = new _GetRequest() { CacheKey = key };
-            try
-            {
-                return this.grpcManager.Client().Get(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
-            }
-            catch (Exception e)
-            {
-                throw CacheExceptionMapper.Convert(e);
-            }
-        }
-
-        private async Task<_GetResponse> SendGetAsync(string cacheName, ByteString key)
-        {
-            _GetRequest request = new _GetRequest() { CacheKey = key };
-            try
-            {
-                return await this.grpcManager.Client().GetAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
-            }
-            catch (Exception e)
-            {
-                throw CacheExceptionMapper.Convert(e);
-            }
-        }
-
-        private _SetResponse SendSet(string cacheName, ByteString key, ByteString value, uint? ttlSeconds = null)
-        {
-            _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds) };
-            try
-            {
-                return this.grpcManager.Client().Set(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
-            }
-            catch (Exception e)
-            {
-                throw CacheExceptionMapper.Convert(e);
-            }
-        }
-
-        private _DeleteResponse SendDelete(string cacheName, ByteString key)
-        {
-            _DeleteRequest request = new _DeleteRequest() { CacheKey = key };
-            try
-            {
-                return this.grpcManager.Client().Delete(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
-            }
-            catch (Exception e)
-            {
-                throw CacheExceptionMapper.Convert(e);
-            }
-        }
-
-        private async Task<_DeleteResponse> SendDeleteAsync(string cacheName, ByteString key)
-        {
-            _DeleteRequest request = new _DeleteRequest() { CacheKey = key };
-            try
-            {
-                return await this.grpcManager.Client().DeleteAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
-            }
-            catch (Exception e)
-            {
-                throw CacheExceptionMapper.Convert(e);
-            }
-        }
-
-        private ByteString Convert(byte[] bytes)
-        {
-            return ByteString.CopyFrom(bytes);
-        }
-
-        private ByteString Convert(string s)
-        {
-            return ByteString.CopyFromUtf8(s);
-        }
-
-        private DateTime CalculateDeadline()
-        {
-            return DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
-        }
-
-        /// <summary>
-        /// Converts TTL in seconds to milliseconds. Defaults to <c>defaultTtlSeconds</c>.
-        /// </summary>
-        /// <param name="ttlSeconds">The TTL to convert. Defaults to defaultTtlSeconds</param>
-        /// <returns></returns>
-        private uint ttlSecondsToMilliseconds(uint? ttlSeconds = null)
-        {
-            return (ttlSeconds ?? defaultTtlSeconds) * 1000;
-        }
-
-        public void Dispose()
-        {
-            this.grpcManager.Dispose();
-        }
+    public void Dispose()
+    {
+        this.grpcManager.Dispose();
     }
 }

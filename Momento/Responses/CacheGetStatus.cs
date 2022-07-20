@@ -1,8 +1,7 @@
-﻿namespace MomentoSdk.Responses
+﻿namespace MomentoSdk.Responses;
+
+public enum CacheGetStatus
 {
-    public enum CacheGetStatus
-    {
-        HIT,
-        MISS,
-    }
+    HIT,
+    MISS,
 }
