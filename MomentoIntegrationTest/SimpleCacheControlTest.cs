@@ -1,22 +1,24 @@
-﻿using System;
-using System.Linq;
-using Xunit;
-using MomentoSdk;
-using MomentoSdk.Exceptions;
-using MomentoSdk.Responses;
+﻿using System.Linq;
 using System.Collections.Generic;
 
 namespace MomentoIntegrationTest
 {
+    [Collection("SimpleCacheClient")]
     public class SimpleCacheControlTest
     {
-        private string authKey = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN") ??
-            throw new NullReferenceException("TEST_AUTH_TOKEN environment variable must be set.");
+        private SimpleCacheClient client;
+        private string authToken;
+
+        public SimpleCacheControlTest(SimpleCacheClientFixture fixture)
+        {
+            client = fixture.Client;
+            authToken = fixture.AuthToken;
+        }
 
         [Fact]
         public void SimpleCacheClientConstructor_BadRequestTimeout_ThrowsException()
         {
-            Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(authKey, defaultTtlSeconds: 10, dataClientOperationTimeoutMilliseconds: 0));
+            Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(authToken, defaultTtlSeconds: 10, dataClientOperationTimeoutMilliseconds: 0));
         }
 
         [Fact]
@@ -34,21 +36,18 @@ namespace MomentoIntegrationTest
         [Fact]
         public void DeleteCache_NullCache_ArgumentNullException()
         {
-            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds: 10);
             Assert.Throws<ArgumentNullException>(() => client.DeleteCache(null!));
         }
 
         [Fact]
         public void DeleteCache_CacheDoesntExist_NotFoundException()
         {
-            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds: 10);
-            Assert.Throws<NotFoundException>(() => client.DeleteCache("non existant cache"));
+            Assert.Throws<NotFoundException>(() => client.DeleteCache("non-existent cache"));
         }
 
         [Fact]
         public void CreateCache_NullCache_ArgumentNullException()
         {
-            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds: 10);
             Assert.Throws<ArgumentNullException>(() => client.CreateCache(null!));
         }
 
@@ -57,7 +56,6 @@ namespace MomentoIntegrationTest
         public void ListCaches_OneCache_HappyPath()
         {
             // Create cache
-            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds: 10);
             string cacheName = Guid.NewGuid().ToString();
             client.CreateCache(cacheName);
 
@@ -77,7 +75,6 @@ namespace MomentoIntegrationTest
         public void ListCaches_Iteration_HappyPath()
         {
             // Create caches
-            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds: 10);
             List<String> cacheNames = new List<String>();
 
             // TODO: increase limit after pagination is enabled
@@ -119,7 +116,6 @@ namespace MomentoIntegrationTest
         public void ListCaches_BadNextToken_NoException()
         {
             // A bad next token does not throw an exception
-            SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds: 10);
             client.ListCaches(nextPageToken: "hello world");
         }
     }
