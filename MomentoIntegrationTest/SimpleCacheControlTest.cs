@@ -56,7 +56,7 @@ namespace MomentoIntegrationTest
         public void ListCaches_OneCache_HappyPath()
         {
             // Create cache
-            string cacheName = Guid.NewGuid().ToString();
+            string cacheName = Utils.GuidString();
             client.CreateCache(cacheName);
 
             // Test cache exists
@@ -80,7 +80,7 @@ namespace MomentoIntegrationTest
             // TODO: increase limit after pagination is enabled
             foreach (int val in Enumerable.Range(1, 5))
             {
-                String cacheName = Guid.NewGuid().ToString();
+                String cacheName = Utils.GuidString();
                 cacheNames.Add(cacheName);
                 client.CreateCache(cacheName);
             }
