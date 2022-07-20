@@ -4,7 +4,7 @@ namespace MomentoSdk.Responses
     public class ListCachesResponse
     {
         private readonly List<CacheInfo> caches;
-        private readonly string nextPageToken;
+        private readonly string? nextPageToken;
 
         public ListCachesResponse(ControlClient._ListCachesResponse result)
         {
@@ -21,7 +21,7 @@ namespace MomentoSdk.Responses
             return caches;
         }
 
-        public string NextPageToken()
+        public string? NextPageToken()
         {
             return nextPageToken;
         }

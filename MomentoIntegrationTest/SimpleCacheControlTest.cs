@@ -10,7 +10,8 @@ namespace MomentoIntegrationTest
 {
     public class SimpleCacheControlTest
     {
-        private string authKey = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN");
+        private string authKey = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN") ??
+            throw new NullReferenceException("TEST_AUTH_TOKEN environment variable must be set.");
 
         [Fact]
         public void SimpleCacheClientConstructor_BadRequestTimeout_ThrowsException()
@@ -27,14 +28,14 @@ namespace MomentoIntegrationTest
         [Fact]
         public void SimpleCacheClientConstructor_NullJWT_InvalidJwtException()
         {
-            Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(null, defaultTtlSeconds: 10));
+            Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(null!, defaultTtlSeconds: 10));
         }
 
         [Fact]
         public void DeleteCache_NullCache_ArgumentNullException()
         {
             SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds: 10);
-            Assert.Throws<ArgumentNullException>(() => client.DeleteCache(null));
+            Assert.Throws<ArgumentNullException>(() => client.DeleteCache(null!));
         }
 
         [Fact]
@@ -48,7 +49,7 @@ namespace MomentoIntegrationTest
         public void CreateCache_NullCache_ArgumentNullException()
         {
             SimpleCacheClient client = new SimpleCacheClient(authKey, defaultTtlSeconds: 10);
-            Assert.Throws<ArgumentNullException>(() => client.CreateCache(null));
+            Assert.Throws<ArgumentNullException>(() => client.CreateCache(null!));
         }
 
         // Tests: creating a cache, listing a cache, and deleting a cache.

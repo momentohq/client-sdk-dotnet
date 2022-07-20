@@ -49,7 +49,7 @@ namespace MomentoSdk
             }
         }
 
-        public ListCachesResponse ListCaches(string nextPageToken = null)
+        public ListCachesResponse ListCaches(string? nextPageToken = null)
         {
             _ListCachesRequest request = new _ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
             try

@@ -16,7 +16,7 @@ namespace MomentoSdk.Responses
         }
 
         // override object.Equals
-        public bool Equals(CacheInfo other)
+        public bool Equals(CacheInfo? other)
         {
             if (other == null)
             {
@@ -26,10 +26,12 @@ namespace MomentoSdk.Responses
             return this.name == other.name;
         }
 
-        public override bool Equals(Object obj)
+        public override bool Equals(Object? obj)
         {
             if (obj == null)
+            {
                 return false;
+            }
 
             return Equals(obj as CacheInfo);
         }
