@@ -18,11 +18,11 @@ public class CacheSetMultiResponse
 
     public IDictionary<string, string> Strings
     {
-	get => (IDictionary<string, string>)items;
+        get => (IDictionary<string, string>)items;
     }
 
     public IDictionary<byte[], byte[]> Bytes
     {
-	get => (IDictionary<byte[], byte[]>)items;
+        get => (IDictionary<byte[], byte[]>)items;
     }
 }

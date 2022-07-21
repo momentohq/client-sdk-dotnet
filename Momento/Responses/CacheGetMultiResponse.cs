@@ -19,7 +19,7 @@ public class CacheGetMultiResponse
 
     public List<string?> Strings
     {
-	get => Responses.Select(response => response.String()).ToList();
+        get => Responses.Select(response => response.String()).ToList();
     }
 
     public List<byte[]?> Bytes
