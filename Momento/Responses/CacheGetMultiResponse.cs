@@ -5,30 +5,25 @@ namespace MomentoSdk.Responses;
 
 public class CacheGetMultiResponse
 {
-    private readonly List<CacheGetResponse> responses;
+    public List<CacheGetResponse> Responses { get; }
 
     public CacheGetMultiResponse(IEnumerable<CacheGetResponse> responses)
     {
-        this.responses = new(responses);
+        this.Responses = new(responses);
     }
 
-    public List<CacheGetResponse> ToList()
+    public List<CacheGetStatus> Status
     {
-        return responses;
+        get => Responses.Select(response => response.Status).ToList();
     }
 
-    public List<CacheGetStatus> Status()
+    public List<string?> Strings
     {
-        return responses.Select(response => response.Status).ToList();
+	get => Responses.Select(response => response.String()).ToList();
     }
 
-    public List<string?> Strings()
+    public List<byte[]?> Bytes
     {
-        return responses.Select(response => response.String()).ToList();
-    }
-
-    public List<byte[]?> Bytes()
-    {
-        return responses.Select(response => response.Bytes()).ToList();
+        get => Responses.Select(response => response.Bytes).ToList();
     }
 }

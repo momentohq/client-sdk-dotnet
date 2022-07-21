@@ -35,13 +35,13 @@ public class SimpleCacheDataTest
         byte[] key = Utils.GuidBytes();
         byte[] value = Utils.GuidBytes();
         await client.SetAsync(CacheName, key, value);
-        byte[]? setValue = (await client.GetAsync(CacheName, key)).Bytes();
+        byte[]? setValue = (await client.GetAsync(CacheName, key)).Bytes;
         Assert.Equal(value, setValue);
 
         key = Utils.GuidBytes();
         value = Utils.GuidBytes();
         await client.SetAsync(CacheName, key, value, ttlSeconds: 15);
-        setValue = (await client.GetAsync(CacheName, key)).Bytes();
+        setValue = (await client.GetAsync(CacheName, key)).Bytes;
         Assert.Equal(value, setValue);
     }
 
@@ -105,13 +105,13 @@ public class SimpleCacheDataTest
         string key = Utils.GuidString();
         byte[] value = Utils.GuidBytes();
         await client.SetAsync(CacheName, key, value);
-        byte[]? setValue = (await client.GetAsync(CacheName, key)).Bytes();
+        byte[]? setValue = (await client.GetAsync(CacheName, key)).Bytes;
         Assert.Equal(value, setValue);
 
         key = Utils.GuidString();
         value = Utils.GuidBytes();
         await client.SetAsync(CacheName, key, value, ttlSeconds: 15);
-        setValue = (await client.GetAsync(CacheName, key)).Bytes();
+        setValue = (await client.GetAsync(CacheName, key)).Bytes;
         Assert.Equal(value, setValue);
     }
 
@@ -140,8 +140,8 @@ public class SimpleCacheDataTest
         List<byte[]> keys = new() { Utils.Utf8ToBytes(key1), Utils.Utf8ToBytes(key2) };
 
         CacheGetMultiResponse result = await client.GetMultiAsync(CacheName, keys);
-        string? stringResult1 = result.Strings()[0];
-        string? stringResult2 = result.Strings()[1];
+        string? stringResult1 = result.Strings[0];
+        string? stringResult2 = result.Strings[1];
         Assert.Equal(value1, stringResult1);
         Assert.Equal(value2, stringResult2);
     }
@@ -157,8 +157,8 @@ public class SimpleCacheDataTest
         client.Set(CacheName, key2, value2);
 
         CacheGetMultiResponse result = await client.GetMultiAsync(CacheName, key1, key2);
-        string? stringResult1 = result.Strings()[0];
-        string? stringResult2 = result.Strings()[1];
+        string? stringResult1 = result.Strings[0];
+        string? stringResult2 = result.Strings[1];
         Assert.Equal(value1, stringResult1);
         Assert.Equal(value2, stringResult2);
     }
@@ -188,8 +188,8 @@ public class SimpleCacheDataTest
         List<string> keys = new() { key1, key2, "key123123" };
         CacheGetMultiResponse result = await client.GetMultiAsync(CacheName, keys);
 
-        Assert.Equal(result.Strings(), new string[] { value1, value2, null! });
-        Assert.Equal(result.Status(), new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS });
+        Assert.Equal(result.Strings, new string[] { value1, value2, null! });
+        Assert.Equal(result.Status, new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS });
     }
 
     [Fact]
@@ -224,13 +224,13 @@ public class SimpleCacheDataTest
                 { key2, value2 }
             };
         CacheSetMultiResponse response = await client.SetMultiAsync(CacheName, dictionary);
-        Assert.Equal(dictionary, response.Bytes());
+        Assert.Equal(dictionary, response.Bytes);
 
         var getResponse = await client.GetAsync(CacheName, key1);
-        Assert.Equal(value1, getResponse.Bytes());
+        Assert.Equal(value1, getResponse.Bytes);
 
         getResponse = await client.GetAsync(CacheName, key2);
-        Assert.Equal(value2, getResponse.Bytes());
+        Assert.Equal(value2, getResponse.Bytes);
     }
 
     [Fact]
@@ -256,7 +256,7 @@ public class SimpleCacheDataTest
                 { key2, value2 }
             };
         CacheSetMultiResponse response = await client.SetMultiAsync(CacheName, dictionary);
-        Assert.Equal(dictionary, response.Strings());
+        Assert.Equal(dictionary, response.Strings);
 
         var getResponse = await client.GetAsync(CacheName, key1);
         Assert.Equal(value1, getResponse.String());
@@ -282,13 +282,13 @@ public class SimpleCacheDataTest
         byte[] key = Utils.GuidBytes();
         byte[] value = Utils.GuidBytes();
         client.Set(CacheName, key, value);
-        byte[]? setValue = client.Get(CacheName, key).Bytes();
+        byte[]? setValue = client.Get(CacheName, key).Bytes;
         Assert.Equal(value, setValue);
 
         key = Utils.GuidBytes();
         value = Utils.GuidBytes();
         client.Set(CacheName, key, value, ttlSeconds: 15);
-        setValue = client.Get(CacheName, key).Bytes();
+        setValue = client.Get(CacheName, key).Bytes;
         Assert.Equal(value, setValue);
     }
 
@@ -316,7 +316,7 @@ public class SimpleCacheDataTest
         CacheGetResponse result = client.Get(CacheName, Utils.GuidString());
         Assert.Equal(CacheGetStatus.MISS, result.Status);
         Assert.Null(result.String());
-        Assert.Null(result.Bytes());
+        Assert.Null(result.Bytes);
     }
 
     [Fact]
@@ -385,13 +385,13 @@ public class SimpleCacheDataTest
         string key = Utils.GuidString();
         byte[] value = Utils.GuidBytes();
         client.Set(CacheName, key, value);
-        byte[]? setValue = client.Get(CacheName, key).Bytes();
+        byte[]? setValue = client.Get(CacheName, key).Bytes;
         Assert.Equal(value, setValue);
 
         key = Utils.GuidString();
         value = Utils.GuidBytes();
         client.Set(CacheName, key, value, ttlSeconds: 15);
-        setValue = client.Get(CacheName, key).Bytes();
+        setValue = client.Get(CacheName, key).Bytes;
         Assert.Equal(value, setValue);
     }
 
@@ -420,8 +420,8 @@ public class SimpleCacheDataTest
         List<byte[]> keys = new() { Utils.Utf8ToBytes(key1), Utils.Utf8ToBytes(key2) };
 
         CacheGetMultiResponse result = client.GetMulti(CacheName, keys);
-        string? stringResult1 = result.Strings()[0];
-        string? stringResult2 = result.Strings()[1];
+        string? stringResult1 = result.Strings[0];
+        string? stringResult2 = result.Strings[1];
         Assert.Equal(value1, stringResult1);
         Assert.Equal(value2, stringResult2);
     }
@@ -437,8 +437,8 @@ public class SimpleCacheDataTest
         client.Set(CacheName, key2, value2);
 
         CacheGetMultiResponse result = client.GetMulti(CacheName, key1, key2);
-        string? stringResult1 = result.Strings()[0];
-        string? stringResult2 = result.Strings()[1];
+        string? stringResult1 = result.Strings[0];
+        string? stringResult2 = result.Strings[1];
         Assert.Equal(value1, stringResult1);
         Assert.Equal(value2, stringResult2);
     }
@@ -468,8 +468,8 @@ public class SimpleCacheDataTest
         List<string> keys = new() { key1, key2, "key123123" };
         CacheGetMultiResponse result = client.GetMulti(CacheName, keys);
 
-        Assert.Equal(result.Strings(), new string[] { value1, value2, null! });
-        Assert.Equal(result.Status(), new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS });
+        Assert.Equal(result.Strings, new string[] { value1, value2, null! });
+        Assert.Equal(result.Status, new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS });
     }
 
     [Fact]
@@ -504,13 +504,13 @@ public class SimpleCacheDataTest
                     { key2, value2 }
                 };
         CacheSetMultiResponse response = client.SetMulti(CacheName, dictionary);
-        Assert.Equal(dictionary, response.Bytes());
+        Assert.Equal(dictionary, response.Bytes);
 
         var getResponse = client.Get(CacheName, key1);
-        Assert.Equal(value1, getResponse.Bytes());
+        Assert.Equal(value1, getResponse.Bytes);
 
         getResponse = client.Get(CacheName, key2);
-        Assert.Equal(value2, getResponse.Bytes());
+        Assert.Equal(value2, getResponse.Bytes);
     }
 
 
@@ -537,7 +537,7 @@ public class SimpleCacheDataTest
                     { key2, value2 }
                 };
         CacheSetMultiResponse response = client.SetMulti(CacheName, dictionary);
-        Assert.Equal(dictionary, response.Strings());
+        Assert.Equal(dictionary, response.Strings);
 
         var getResponse = client.Get(CacheName, key1);
         Assert.Equal(value1, getResponse.String());

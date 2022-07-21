@@ -11,7 +11,7 @@ namespace MomentoSdk;
 internal sealed class DataGrpcManager : IDisposable
 {
     private readonly GrpcChannel channel;
-    private readonly Scs.ScsClient client;
+    public Scs.ScsClient Client { get; }
 
     private readonly string version = "csharp:" + GetAssembly(typeof(MomentoSdk.Responses.CacheGetResponse)).GetName().Version.ToString();
 
@@ -20,12 +20,7 @@ internal sealed class DataGrpcManager : IDisposable
         this.channel = GrpcChannel.ForAddress(endpoint, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
         List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version) };
         CallInvoker invoker = this.channel.Intercept(new HeaderInterceptor(headers));
-        this.client = new Scs.ScsClient(invoker);
-    }
-
-    internal Scs.ScsClient Client()
-    {
-        return this.client;
+        Client = new Scs.ScsClient(invoker);
     }
 
     public void Dispose()

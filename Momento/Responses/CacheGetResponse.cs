@@ -7,35 +7,24 @@ namespace MomentoSdk.Responses;
 
 public class CacheGetResponse
 {
-    public CacheGetStatus Status { get; private set; }
-    private readonly ByteString body;
+    public CacheGetStatus Status { get; }
+    public byte[]? Bytes { get; }
 
     public CacheGetResponse(_GetResponse response)
     {
-        body = response.CacheBody;
         Status = From(response.Result);
+        Bytes = (Status == CacheGetStatus.HIT) ? response.CacheBody.ToByteArray() : null;
     }
 
     public string? String(Encoding? encoding = null)
     {
         encoding ??= Encoding.UTF8;
-
-        if (Status == CacheGetStatus.HIT)
+        if (Bytes == null)
         {
-            return body.ToString(encoding);
+            return null;
         }
-        return null;
+        return encoding.GetString(Bytes);
     }
-
-    public byte[]? Bytes()
-    {
-        if (Status == CacheGetStatus.HIT)
-        {
-            return body.ToByteArray();
-        }
-        return null;
-    }
-
 
     private static CacheGetStatus From(ECacheResult result)
     {

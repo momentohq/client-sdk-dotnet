@@ -4,16 +4,9 @@ namespace MomentoSdk.Responses;
 
 public class CacheInfo : IEquatable<CacheInfo>
 {
-    private readonly string name;
-    public CacheInfo(string cachename)
-    {
-        name = cachename;
-    }
+    public string Name { get; }
 
-    public string Name()
-    {
-        return name;
-    }
+    public CacheInfo(string cacheName) => Name = cacheName;
 
     // override object.Equals
     public bool Equals(CacheInfo? other)
@@ -23,7 +16,7 @@ public class CacheInfo : IEquatable<CacheInfo>
             return false;
         }
 
-        return this.name == other.name;
+        return this.Name == other.Name;
     }
 
     public override bool Equals(Object? obj)
@@ -38,6 +31,6 @@ public class CacheInfo : IEquatable<CacheInfo>
 
     public override int GetHashCode()
     {
-        return name.GetHashCode();
+        return Name.GetHashCode();
     }
 }

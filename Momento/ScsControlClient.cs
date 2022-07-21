@@ -26,7 +26,7 @@ internal sealed class ScsControlClient : IDisposable
         try
         {
             _CreateCacheRequest request = new _CreateCacheRequest() { CacheName = cacheName };
-            this.grpcManager.Client().CreateCache(request, deadline: CalculateDeadline());
+            this.grpcManager.Client.CreateCache(request, deadline: CalculateDeadline());
             return new CreateCacheResponse();
         }
         catch (Exception e)
@@ -40,7 +40,7 @@ internal sealed class ScsControlClient : IDisposable
         _DeleteCacheRequest request = new _DeleteCacheRequest() { CacheName = cacheName };
         try
         {
-            this.grpcManager.Client().DeleteCache(request, deadline: CalculateDeadline());
+            this.grpcManager.Client.DeleteCache(request, deadline: CalculateDeadline());
             return new DeleteCacheResponse();
         }
         catch (Exception e)
@@ -54,7 +54,7 @@ internal sealed class ScsControlClient : IDisposable
         _ListCachesRequest request = new _ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
         try
         {
-            ControlClient._ListCachesResponse result = this.grpcManager.Client().ListCaches(request, deadline: CalculateDeadline());
+            ControlClient._ListCachesResponse result = this.grpcManager.Client.ListCaches(request, deadline: CalculateDeadline());
             return new ListCachesResponse(result);
         }
         catch (Exception e)

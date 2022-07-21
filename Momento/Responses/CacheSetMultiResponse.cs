@@ -16,13 +16,13 @@ public class CacheSetMultiResponse
         this.items = (object)items;
     }
 
-    public IDictionary<string, string> Strings()
+    public IDictionary<string, string> Strings
     {
-        return (IDictionary<string, string>)items;
+	get => (IDictionary<string, string>)items;
     }
 
-    public IDictionary<byte[], byte[]> Bytes()
+    public IDictionary<byte[], byte[]> Bytes
     {
-        return (IDictionary<byte[], byte[]>)items;
+	get => (IDictionary<byte[], byte[]>)items;
     }
 }

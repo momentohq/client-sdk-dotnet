@@ -61,13 +61,13 @@ public class SimpleCacheControlTest
 
         // Test cache exists
         ListCachesResponse result = client.ListCaches();
-        List<CacheInfo> caches = result.Caches();
+        List<CacheInfo> caches = result.Caches;
         Assert.Contains(new CacheInfo(cacheName), caches);
 
         // Test deleting cache
         client.DeleteCache(cacheName);
         result = client.ListCaches();
-        caches = result.Caches();
+        caches = result.Caches;
         Assert.DoesNotContain(new CacheInfo(cacheName), caches);
     }
 
@@ -90,15 +90,15 @@ public class SimpleCacheControlTest
         ListCachesResponse result = client.ListCaches();
         while (true)
         {
-            foreach (CacheInfo cache in result.Caches())
+            foreach (CacheInfo cache in result.Caches)
             {
-                retrievedCaches.Add(cache.Name());
+                retrievedCaches.Add(cache.Name);
             }
-            if (result.NextPageToken() == null)
+            if (result.NextPageToken == null)
             {
                 break;
             }
-            result = client.ListCaches(result.NextPageToken());
+            result = client.ListCaches(result.NextPageToken);
         }
 
         int sizeOverlap = cacheNames.Intersect(retrievedCaches).Count();
