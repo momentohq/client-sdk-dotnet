@@ -140,8 +140,8 @@ public class SimpleCacheDataTest
         List<byte[]> keys = new() { Utils.Utf8ToBytes(key1), Utils.Utf8ToBytes(key2) };
 
         CacheGetMultiResponse result = await client.GetMultiAsync(CacheName, keys);
-        string? stringResult1 = result.Strings[0];
-        string? stringResult2 = result.Strings[1];
+        string? stringResult1 = result.Strings()[0];
+        string? stringResult2 = result.Strings()[1];
         Assert.Equal(value1, stringResult1);
         Assert.Equal(value2, stringResult2);
     }
@@ -157,8 +157,8 @@ public class SimpleCacheDataTest
         client.Set(CacheName, key2, value2);
 
         CacheGetMultiResponse result = await client.GetMultiAsync(CacheName, key1, key2);
-        string? stringResult1 = result.Strings[0];
-        string? stringResult2 = result.Strings[1];
+        string? stringResult1 = result.Strings()[0];
+        string? stringResult2 = result.Strings()[1];
         Assert.Equal(value1, stringResult1);
         Assert.Equal(value2, stringResult2);
     }
@@ -188,7 +188,7 @@ public class SimpleCacheDataTest
         List<string> keys = new() { key1, key2, "key123123" };
         CacheGetMultiResponse result = await client.GetMultiAsync(CacheName, keys);
 
-        Assert.Equal(result.Strings, new string[] { value1, value2, null! });
+        Assert.Equal(result.Strings(), new string[] { value1, value2, null! });
         Assert.Equal(result.Status, new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS });
     }
 
@@ -420,8 +420,8 @@ public class SimpleCacheDataTest
         List<byte[]> keys = new() { Utils.Utf8ToBytes(key1), Utils.Utf8ToBytes(key2) };
 
         CacheGetMultiResponse result = client.GetMulti(CacheName, keys);
-        string? stringResult1 = result.Strings[0];
-        string? stringResult2 = result.Strings[1];
+        string? stringResult1 = result.Strings()[0];
+        string? stringResult2 = result.Strings()[1];
         Assert.Equal(value1, stringResult1);
         Assert.Equal(value2, stringResult2);
     }
@@ -437,8 +437,8 @@ public class SimpleCacheDataTest
         client.Set(CacheName, key2, value2);
 
         CacheGetMultiResponse result = client.GetMulti(CacheName, key1, key2);
-        string? stringResult1 = result.Strings[0];
-        string? stringResult2 = result.Strings[1];
+        string? stringResult1 = result.Strings()[0];
+        string? stringResult2 = result.Strings()[1];
         Assert.Equal(value1, stringResult1);
         Assert.Equal(value2, stringResult2);
     }
@@ -468,7 +468,7 @@ public class SimpleCacheDataTest
         List<string> keys = new() { key1, key2, "key123123" };
         CacheGetMultiResponse result = client.GetMulti(CacheName, keys);
 
-        Assert.Equal(result.Strings, new string[] { value1, value2, null! });
+        Assert.Equal(result.Strings(), new string[] { value1, value2, null! });
         Assert.Equal(result.Status, new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS });
     }
 
