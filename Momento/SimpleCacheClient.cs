@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace MomentoSdk;
 
-public class SimpleCacheClient : IDisposable
+public class SimpleCacheClient : ISimpleCacheClient
 {
     private readonly ScsControlClient controlClient;
     private readonly ScsDataClient dataClient;
@@ -27,11 +27,6 @@ public class SimpleCacheClient : IDisposable
         this.dataClient = new(authToken, claims.CacheEndpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds);
     }
 
-    /// <summary>
-    /// Creates a cache if it doesn't exist.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to be created.</param>
-    /// <returns>The result of the create cache operation</returns>
     public CreateCacheResponse CreateCache(string cacheName)
     {
         if (cacheName == null)
@@ -41,11 +36,6 @@ public class SimpleCacheClient : IDisposable
         return this.controlClient.CreateCache(cacheName);
     }
 
-    /// <summary>
-    /// Deletes a cache and all of the items within it.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to be deleted.</param>
-    /// <returns>The result of the delete cache operation.</returns>
     public DeleteCacheResponse DeleteCache(string cacheName)
     {
         if (cacheName == null)
@@ -55,24 +45,11 @@ public class SimpleCacheClient : IDisposable
         return this.controlClient.DeleteCache(cacheName);
     }
 
-    /// <summary>
-    /// List all caches.
-    /// </summary>
-    /// <param name="nextPageToken">A token to specify where to start paginating. This is the NextToken from a previous response.</param>
-    /// <returns>The result of the list cache operation.</returns>
     public ListCachesResponse ListCaches(string? nextPageToken = null)
     {
         return this.controlClient.ListCaches(nextPageToken);
     }
 
-    /// <summary>
-    /// Sets the value in cache with a given time to live (TTL) seconds.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to store the item in.</param>
-    /// <param name="key">The key to set.</param>
-    /// <param name="value">The value to be stored.</param>
-    /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
-    /// <returns>Future containing the result of the set operation.</returns>
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
     {
         if (cacheName == null)
@@ -91,12 +68,6 @@ public class SimpleCacheClient : IDisposable
         return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
     }
 
-    /// <summary>
-    /// Get the cache value stored for the given key.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-    /// <param name="key">The key to lookup.</param>
-    /// <returns>Future with CacheGetResponse containing the status of the get operation and the associated value data.</returns>
     public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
     {
         if (cacheName == null)
@@ -111,12 +82,6 @@ public class SimpleCacheClient : IDisposable
         return await this.dataClient.GetAsync(cacheName, key);
     }
 
-    /// <summary>
-    /// Remove the key from the cache.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to delete the key from.</param>
-    /// <param name="key">The key to delete.</param>
-    /// <returns>Future containing the result of the delete operation.</returns>
     public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, byte[] key)
     {
         if (cacheName == null)
@@ -131,14 +96,6 @@ public class SimpleCacheClient : IDisposable
         return await this.dataClient.DeleteAsync(cacheName, key);
     }
 
-    /// <summary>
-    /// Sets the value in cache with a given time to live (TTL) seconds.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to store the item in.</param>
-    /// <param name="key">The key to set.</param>
-    /// <param name="value">The value to be stored.</param>
-    /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
-    /// <returns>Future containing the result of the set operation</returns>
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint? ttlSeconds = null)
     {
         if (cacheName == null)
@@ -157,12 +114,6 @@ public class SimpleCacheClient : IDisposable
         return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
     }
 
-    /// <summary>
-    /// Get the cache value stored for the given key.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-    /// <param name="key">The key to lookup.</param>
-    /// <returns>Future with CacheGetResponse containing the status of the get operation and the associated value data</returns>
     public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
     {
         if (cacheName == null)
@@ -177,12 +128,6 @@ public class SimpleCacheClient : IDisposable
         return await this.dataClient.GetAsync(cacheName, key);
     }
 
-    /// <summary>
-    /// Remove the key from the cache.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to delete the key from.</param>
-    /// <param name="key">The key to delete.</param>
-    /// <returns>Future containing the result of the delete operation.</returns>
     public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key)
     {
         if (cacheName == null)
@@ -223,12 +168,6 @@ public class SimpleCacheClient : IDisposable
         return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
     }
 
-    /// <summary>
-    /// Gets multiple values from the cache.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-    /// <param name="keys">The keys to get.</param>
-    /// <returns>Future with CacheGetMultiResponse containing the status of the get operation and the associated value data.</returns>
     public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<byte[]> keys)
     {
         if (cacheName == null)
@@ -247,12 +186,6 @@ public class SimpleCacheClient : IDisposable
         return await this.dataClient.GetMultiAsync(cacheName, keys);
     }
 
-    /// <summary>
-    /// Gets multiple values from the cache.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-    /// <param name="keys">The keys to get.</param>
-    /// <returns>Future with CacheGetMultiResponse containing the status of the get operation and the associated value data.</returns>
     public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<string> keys)
     {
         if (cacheName == null)
@@ -272,12 +205,6 @@ public class SimpleCacheClient : IDisposable
         return await this.dataClient.GetMultiAsync(cacheName, keys);
     }
 
-    /// <summary>
-    /// Gets multiple values from the cache.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-    /// <param name="keys">The keys to get.</param>
-    /// <returns>Future with CacheGetMultiResponse containing the status of the get operation and the associated value data.</returns>
     public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, params byte[][] keys)
     {
         if (cacheName == null)
@@ -296,12 +223,6 @@ public class SimpleCacheClient : IDisposable
         return await this.dataClient.GetMultiAsync(cacheName, keys);
     }
 
-    /// <summary>
-    /// Gets multiple values from the cache.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-    /// <param name="keys">The keys to get.</param>
-    /// <returns>Future with CacheGetMultiResponse containing the status of the get operation and the associated value data.</returns>
     public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, params string[] keys)
     {
         if (cacheName == null)
@@ -320,12 +241,6 @@ public class SimpleCacheClient : IDisposable
         return await this.dataClient.GetMultiAsync(cacheName, keys);
     }
 
-    /// <summary>
-    /// Stores multiple items in the cache. Overwrites existing items.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to store the items in.</param>
-    /// <param name="items">The items to set.</param>
-    /// <returns>Future with CacheSetMultiResponse containing the data set.</returns>
     public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
     {
         if (cacheName == null)
@@ -345,12 +260,6 @@ public class SimpleCacheClient : IDisposable
         return new CacheSetMultiResponse(items);
     }
 
-    /// <summary>
-    /// Stores multiple items in the cache. Overwrites existing items.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to store the items in.</param>
-    /// <param name="items">The items to set.</param>
-    /// <returns>Future with CacheSetMultiResponse containing the data set.</returns>
     public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
     {
         if (cacheName == null)
@@ -396,12 +305,6 @@ public class SimpleCacheClient : IDisposable
         return this.dataClient.Set(cacheName, key, value, ttlSeconds);
     }
 
-    /// <summary>
-    /// Get the cache value stored for the given key.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-    /// <param name="key">The key to lookup.</param>
-    /// <returns>CacheGetResponse containing the status of the get operation and the associated value data.</returns>
     public CacheGetResponse Get(string cacheName, byte[] key)
     {
         if (cacheName == null)
@@ -416,12 +319,6 @@ public class SimpleCacheClient : IDisposable
         return this.dataClient.Get(cacheName, key);
     }
 
-    /// <summary>
-    /// Remove the key from the cache.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to delete the key from.</param>
-    /// <param name="key">The key to delete.</param>
-    /// <returns>Future containing the result of the delete operation.</returns>
     public CacheDeleteResponse Delete(string cacheName, byte[] key)
     {
         if (cacheName == null)
@@ -436,13 +333,6 @@ public class SimpleCacheClient : IDisposable
         return this.dataClient.Delete(cacheName, key);
     }
 
-    /// <summary>
-    /// Sets the value in cache with a given time to live (TTL) seconds. If a value for this key is already present it will be replaced by the new value.
-    /// </summary>
-    /// <param name="key">The key to set.</param>
-    /// <param name="value">The value to be stored.</param>
-    /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
-    /// <returns>Result of the set operation.</returns>
     public CacheSetResponse Set(string cacheName, string key, string value, uint? ttlSeconds = null)
     {
         if (cacheName == null)
@@ -461,12 +351,6 @@ public class SimpleCacheClient : IDisposable
         return this.dataClient.Set(cacheName, key, value, ttlSeconds);
     }
 
-    /// <summary>
-    /// Get the cache value stored for the given key.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-    /// <param name="key">The key to lookup.</param>
-    /// <returns>CacheGetResponse containing the status of the get operation and the associated value data.</returns>
     public CacheGetResponse Get(string cacheName, string key)
     {
         if (cacheName == null)
@@ -481,12 +365,6 @@ public class SimpleCacheClient : IDisposable
         return this.dataClient.Get(cacheName, key);
     }
 
-    /// <summary>
-    /// Gets multiple values from the cache.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-    /// <param name="keys">The keys to get.</param>
-    /// <returns>Response object with the status of the get operation and the associated value data.</returns>
     public CacheGetMultiResponse GetMulti(string cacheName, IEnumerable<byte[]> keys)
     {
         try
@@ -499,12 +377,6 @@ public class SimpleCacheClient : IDisposable
         }
     }
 
-    /// <summary>
-    /// Gets multiple values from the cache.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-    /// <param name="keys">The keys to get.</param>
-    /// <returns>Response object with the status of the get operation and the associated value data.</returns>
     public CacheGetMultiResponse GetMulti(string cacheName, IEnumerable<string> keys)
     {
         try
@@ -517,12 +389,6 @@ public class SimpleCacheClient : IDisposable
         }
     }
 
-    /// <summary>
-    /// Gets multiple values from the cache.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-    /// <param name="keys">The keys to get.</param>
-    /// <returns>Future with CacheGetMultiResponse containing the status of the get operation and the associated value data.</returns>
     public CacheGetMultiResponse GetMulti(string cacheName, params byte[][] keys)
     {
         try
@@ -535,12 +401,6 @@ public class SimpleCacheClient : IDisposable
         }
     }
 
-    /// <summary>
-    /// Gets multiple values from the cache.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-    /// <param name="keys">The keys to get.</param>
-    /// <returns>Future with CacheGetMultiResponse containing the status of the get operation and the associated value data.</returns>
     public CacheGetMultiResponse GetMulti(string cacheName, params string[] keys)
     {
         try
@@ -553,12 +413,6 @@ public class SimpleCacheClient : IDisposable
         }
     }
 
-    /// <summary>
-    /// Stores multiple items in the cache. Overwrites existing items.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to store the items in.</param>
-    /// <param name="items">The items to set.</param>
-    /// <returns>Future with CacheSetMultiResponse containing the data set.</returns>
     public CacheSetMultiResponse SetMulti(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
     {
         try
@@ -571,12 +425,6 @@ public class SimpleCacheClient : IDisposable
         }
     }
 
-    /// <summary>
-    /// Stores multiple items in the cache. Overwrites existing items.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to store the items in.</param>
-    /// <param name="items">The items to set.</param>
-    /// <returns>Future with CacheSetMultiResponse containing the data set.</returns>
     public CacheSetMultiResponse SetMulti(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
     {
         try
@@ -589,12 +437,6 @@ public class SimpleCacheClient : IDisposable
         }
     }
 
-    /// <summary>
-    /// Remove the key from the cache.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to delete the key from.</param>
-    /// <param name="key">The key to delete.</param>
-    /// <returns>Future containing the result of the delete operation.</returns>
     public CacheDeleteResponse Delete(string cacheName, string key)
     {
         if (cacheName == null)
@@ -609,14 +451,6 @@ public class SimpleCacheClient : IDisposable
         return this.dataClient.Delete(cacheName, key);
     }
 
-    /// <summary>
-    /// Sets the value in cache with a given time to live (TTL) seconds. If a value for this key is already present it will be replaced by the new value.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to store the item in.</param>
-    /// <param name="key">The key to set.</param>
-    /// <param name="value">The value to be stored.</param>
-    /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
-    /// <returns>Result of the set operation</returns>
     public CacheSetResponse Set(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
     {
         if (cacheName == null)
