@@ -17,9 +17,9 @@ internal sealed class ScsDataClient : IDisposable
     private readonly uint dataClientOperationTimeoutMilliseconds;
     private const uint DEFAULT_DEADLINE_MILLISECONDS = 5000;
 
-    public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+    public ScsDataClient(string authToken, string host, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
     {
-        this.grpcManager = new DataGrpcManager(authToken, endpoint);
+        this.grpcManager = new DataGrpcManager(authToken, host);
         this.defaultTtlSeconds = defaultTtlSeconds;
         this.dataClientOperationTimeoutMilliseconds = dataClientOperationTimeoutMilliseconds ?? DEFAULT_DEADLINE_MILLISECONDS;
     }

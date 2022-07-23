@@ -14,9 +14,10 @@ internal sealed class ControlGrpcManager : IDisposable
     public ScsControl.ScsControlClient Client { get; }
     private readonly string version = "csharp:" + GetAssembly(typeof(MomentoSdk.Responses.CacheGetResponse)).GetName().Version.ToString();
 
-    public ControlGrpcManager(string authToken, string endpoint)
+    public ControlGrpcManager(string authToken, string host)
     {
-        this.channel = GrpcChannel.ForAddress(endpoint, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
+        var url = $"https://{host}";
+        this.channel = GrpcChannel.ForAddress(url, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
         List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version) };
         CallInvoker invoker = channel.Intercept(new HeaderInterceptor(headers));
         Client = new ScsControl.ScsControlClient(invoker);

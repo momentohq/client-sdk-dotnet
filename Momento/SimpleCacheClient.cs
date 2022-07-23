@@ -22,12 +22,9 @@ public class SimpleCacheClient : IDisposable
     {
         ValidateRequestTimeout(dataClientOperationTimeoutMilliseconds);
         Claims claims = JwtUtils.DecodeJwt(authToken);
-        string controlEndpoint = "https://" + claims.ControlEndpoint + ":443";
-        string cacheEndpoint = "https://" + claims.CacheEndpoint + ":443";
-        ScsControlClient controlClient = new ScsControlClient(authToken, controlEndpoint);
-        ScsDataClient dataClient = new ScsDataClient(authToken, cacheEndpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds);
-        this.controlClient = controlClient;
-        this.dataClient = dataClient;
+
+        this.controlClient = new(authToken, claims.ControlEndpoint);
+        this.dataClient = new(authToken, claims.CacheEndpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds);
     }
 
     /// <summary>

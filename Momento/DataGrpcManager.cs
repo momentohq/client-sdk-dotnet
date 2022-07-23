@@ -15,9 +15,10 @@ internal sealed class DataGrpcManager : IDisposable
 
     private readonly string version = "csharp:" + GetAssembly(typeof(MomentoSdk.Responses.CacheGetResponse)).GetName().Version.ToString();
 
-    internal DataGrpcManager(string authToken, string endpoint)
+    internal DataGrpcManager(string authToken, string host)
     {
-        this.channel = GrpcChannel.ForAddress(endpoint, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
+        var url = $"https://{host}";
+        this.channel = GrpcChannel.ForAddress(url, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
         List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version) };
         CallInvoker invoker = this.channel.Intercept(new HeaderInterceptor(headers));
         Client = new Scs.ScsClient(invoker);
