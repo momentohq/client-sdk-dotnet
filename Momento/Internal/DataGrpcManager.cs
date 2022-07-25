@@ -6,9 +6,9 @@ using Grpc.Net.Client;
 using System.Collections.Generic;
 using static System.Reflection.Assembly;
 
-namespace MomentoSdk;
+namespace MomentoSdk.Internal;
 
-internal sealed class DataGrpcManager : IDisposable
+public class DataGrpcManager : IDisposable
 {
     private readonly GrpcChannel channel;
     public Scs.ScsClient Client { get; }

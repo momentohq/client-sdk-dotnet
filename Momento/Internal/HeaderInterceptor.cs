@@ -4,7 +4,7 @@ using Grpc.Core.Interceptors;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MomentoSdk;
+namespace MomentoSdk.Internal;
 
 class Header
 {

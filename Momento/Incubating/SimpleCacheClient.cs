@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MomentoSdk.Responses;
+using MomentoSdk.Incubating.Internal;
 using MomentoSdk.Incubating.Responses;
 
 namespace MomentoSdk.Incubating;
@@ -9,10 +10,14 @@ namespace MomentoSdk.Incubating;
 public class SimpleCacheClient : ISimpleCacheClient
 {
     private readonly ISimpleCacheClient simpleCacheClient;
+    private readonly ScsDataClient dataClient;
 
-    public SimpleCacheClient(ISimpleCacheClient simpleCacheClient)
+    public SimpleCacheClient(ISimpleCacheClient simpleCacheClient, string authToken, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
     {
         this.simpleCacheClient = simpleCacheClient;
+
+        var claims = JwtUtils.DecodeJwt(authToken);
+        this.dataClient = new(authToken, claims.CacheEndpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds);
     }
 
     public CreateCacheResponse CreateCache(string cacheName)
@@ -167,7 +172,7 @@ public class SimpleCacheClient : ISimpleCacheClient
 
     public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, string key, string value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        throw new NotImplementedException();
+        return this.dataClient.DictionarySet(cacheName, dictionaryName, key, value, refreshTtl, ttlSeconds);
     }
 
     public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, byte[] key, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
@@ -187,7 +192,7 @@ public class SimpleCacheClient : ISimpleCacheClient
 
     public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, string key)
     {
-        throw new NotImplementedException();
+        return this.dataClient.DictionaryGet(cacheName, dictionaryName, key);
     }
 
     public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, byte[] key)
@@ -253,5 +258,6 @@ public class SimpleCacheClient : ISimpleCacheClient
     public void Dispose()
     {
         this.simpleCacheClient.Dispose();
+        this.dataClient.Dispose();
     }
 }

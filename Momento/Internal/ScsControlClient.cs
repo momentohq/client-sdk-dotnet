@@ -2,9 +2,8 @@
 using MomentoSdk.Responses;
 using MomentoSdk.Exceptions;
 using ControlClient;
-using System.Threading.Tasks;
 
-namespace MomentoSdk;
+namespace MomentoSdk.Internal;
 
 internal sealed class ScsControlClient : IDisposable
 {

@@ -34,5 +34,4 @@ public class CacheGetResponse
             default: throw new InternalServerException("Invalid Cache Status.");
         }
     }
-
 }

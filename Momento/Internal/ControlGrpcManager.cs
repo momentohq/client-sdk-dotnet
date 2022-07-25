@@ -6,7 +6,7 @@ using ControlClient;
 using System.Collections.Generic;
 using static System.Reflection.Assembly;
 
-namespace MomentoSdk;
+namespace MomentoSdk.Internal;
 
 internal sealed class ControlGrpcManager : IDisposable
 {

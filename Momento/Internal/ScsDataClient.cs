@@ -8,20 +8,58 @@ using Google.Protobuf;
 using Grpc.Core;
 using System.Collections.Generic;
 
-namespace MomentoSdk;
+namespace MomentoSdk.Internal;
 
-internal sealed class ScsDataClient : IDisposable
+public class ScsDataClientBase : IDisposable
 {
-    private readonly DataGrpcManager grpcManager;
-    private readonly uint defaultTtlSeconds;
-    private readonly uint dataClientOperationTimeoutMilliseconds;
-    private const uint DEFAULT_DEADLINE_MILLISECONDS = 5000;
+    protected readonly DataGrpcManager grpcManager;
+    protected readonly uint defaultTtlSeconds;
+    protected readonly uint dataClientOperationTimeoutMilliseconds;
+    protected const uint DEFAULT_DEADLINE_MILLISECONDS = 5000;
 
-    public ScsDataClient(string authToken, string host, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+    public ScsDataClientBase(string authToken, string host, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
     {
-        this.grpcManager = new DataGrpcManager(authToken, host);
+        this.grpcManager = new(authToken, host);
         this.defaultTtlSeconds = defaultTtlSeconds;
         this.dataClientOperationTimeoutMilliseconds = dataClientOperationTimeoutMilliseconds ?? DEFAULT_DEADLINE_MILLISECONDS;
+    }
+
+    protected ByteString Convert(byte[] bytes)
+    {
+        return ByteString.CopyFrom(bytes);
+    }
+
+    protected ByteString Convert(string s)
+    {
+        return ByteString.CopyFromUtf8(s);
+    }
+
+    protected DateTime CalculateDeadline()
+    {
+        return DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
+    }
+
+    /// <summary>
+    /// Converts TTL in seconds to milliseconds. Defaults to <c>defaultTtlSeconds</c>.
+    /// </summary>
+    /// <param name="ttlSeconds">The TTL to convert. Defaults to defaultTtlSeconds</param>
+    /// <returns></returns>
+    protected uint ttlSecondsToMilliseconds(uint? ttlSeconds = null)
+    {
+        return (ttlSeconds ?? defaultTtlSeconds) * 1000;
+    }
+
+    public void Dispose()
+    {
+        this.grpcManager.Dispose();
+    }
+}
+
+internal sealed class ScsDataClient : ScsDataClientBase
+{
+    public ScsDataClient(string authToken, string host, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+        : base(authToken, host, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds)
+    {
     }
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
@@ -266,35 +304,5 @@ internal sealed class ScsDataClient : IDisposable
         {
             throw CacheExceptionMapper.Convert(e);
         }
-    }
-
-    private ByteString Convert(byte[] bytes)
-    {
-        return ByteString.CopyFrom(bytes);
-    }
-
-    private ByteString Convert(string s)
-    {
-        return ByteString.CopyFromUtf8(s);
-    }
-
-    private DateTime CalculateDeadline()
-    {
-        return DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
-    }
-
-    /// <summary>
-    /// Converts TTL in seconds to milliseconds. Defaults to <c>defaultTtlSeconds</c>.
-    /// </summary>
-    /// <param name="ttlSeconds">The TTL to convert. Defaults to defaultTtlSeconds</param>
-    /// <returns></returns>
-    private uint ttlSecondsToMilliseconds(uint? ttlSeconds = null)
-    {
-        return (ttlSeconds ?? defaultTtlSeconds) * 1000;
-    }
-
-    public void Dispose()
-    {
-        this.grpcManager.Dispose();
     }
 }

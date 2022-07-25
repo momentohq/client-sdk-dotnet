@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace MomentoSdk;
 
-class JwtUtils
+public class JwtUtils
 {
     /// <summary>
     /// extracts the controlEndpoint and cacheEndpoint
@@ -32,7 +32,7 @@ class JwtUtils
     }
 }
 
-class Claims
+public class Claims
 {
     [JsonProperty(PropertyName = "cp", Required = Required.Always)]
     public string ControlEndpoint { get; private set; }
