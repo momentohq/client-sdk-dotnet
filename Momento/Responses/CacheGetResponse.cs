@@ -16,14 +16,13 @@ public class CacheGetResponse
         Bytes = (Status == CacheGetStatus.HIT) ? response.CacheBody.ToByteArray() : null;
     }
 
-    public string? String(Encoding? encoding = null)
+    public string? String()
     {
-        encoding ??= Encoding.UTF8;
         if (Bytes == null)
         {
             return null;
         }
-        return encoding.GetString(Bytes);
+        return Encoding.UTF8.GetString(Bytes);
     }
 
     private static CacheGetStatus From(ECacheResult result)

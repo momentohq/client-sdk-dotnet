@@ -17,9 +17,9 @@ public class CacheGetMultiResponse
         get => Responses.Select(response => response.Status).ToList();
     }
 
-    public List<string?> Strings
+    public List<string?> Strings()
     {
-        get => Responses.Select(response => response.String()).ToList();
+        return Responses.Select(response => response.String()).ToList();
     }
 
     public List<byte[]?> Bytes
