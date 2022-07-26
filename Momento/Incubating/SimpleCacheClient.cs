@@ -165,42 +165,42 @@ public class SimpleCacheClient : ISimpleCacheClient
         return this.simpleCacheClient.Set(cacheName, key, value, ttlSeconds);
     }
 
-    public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, byte[] key, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
+    public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, byte[] field, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        throw new NotImplementedException();
+        return this.dataClient.DictionarySet(cacheName, dictionaryName, field, value, refreshTtl, ttlSeconds);
     }
 
-    public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, string key, string value, bool refreshTtl, uint? ttlSeconds = null)
+    public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, string field, string value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        return this.dataClient.DictionarySet(cacheName, dictionaryName, key, value, refreshTtl, ttlSeconds);
+        return this.dataClient.DictionarySet(cacheName, dictionaryName, field, value, refreshTtl, ttlSeconds);
     }
 
-    public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, byte[] key, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
-    {
-        return await Task.FromException<CacheDictionarySetResponse>(new NotImplementedException());
-    }
-
-    public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, string key, string value, bool refreshTtl, uint? ttlSeconds = null)
+    public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, byte[] field, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
         return await Task.FromException<CacheDictionarySetResponse>(new NotImplementedException());
     }
 
-    public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, byte[] key)
+    public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, string field, string value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        throw new NotImplementedException();
+        return await Task.FromException<CacheDictionarySetResponse>(new NotImplementedException());
     }
 
-    public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, string key)
+    public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, byte[] field)
     {
-        return this.dataClient.DictionaryGet(cacheName, dictionaryName, key);
+        return this.dataClient.DictionaryGet(cacheName, dictionaryName, field);
     }
 
-    public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, byte[] key)
+    public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, string field)
+    {
+        return this.dataClient.DictionaryGet(cacheName, dictionaryName, field);
+    }
+
+    public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, byte[] field)
     {
         return await Task.FromException<CacheDictionaryGetResponse>(new NotImplementedException());
     }
 
-    public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, string key)
+    public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, string field)
     {
         return await Task.FromException<CacheDictionaryGetResponse>(new NotImplementedException());
     }
@@ -225,22 +225,22 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await Task.FromException<CacheDictionarySetMultiResponse>(new NotImplementedException());
     }
 
-    public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, params byte[][] keys)
+    public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, params byte[][] fields)
     {
         throw new NotImplementedException();
     }
 
-    public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, params string[] keys)
+    public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, params string[] fields)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, params byte[][] keys)
+    public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, params byte[][] fields)
     {
         return await Task.FromException<CacheDictionaryGetMultiResponse>(new NotImplementedException());
     }
 
-    public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, params string[] keys)
+    public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, params string[] fields)
     {
         return await Task.FromException<CacheDictionaryGetMultiResponse>(new NotImplementedException());
     }

@@ -5,32 +5,34 @@ namespace MomentoSdk.Incubating.Responses;
 
 public class CacheDictionarySetResponse
 {
-    public CacheDictionarySetResponse()
+    public string DictionaryName { get; private set; }
+    private readonly object field;
+    private readonly object value;
+
+    public CacheDictionarySetResponse(string dictionaryName, object field, object value)
     {
+        DictionaryName = dictionaryName;
+        this.field = field;
+        this.value = value;
     }
 
-    public string DictionaryName()
+    public byte[] FieldToByteArray()
     {
-        throw new NotImplementedException();
+        return (byte[])field;
     }
 
-    public byte[] KeyAsBytes()
+    public string FieldToString()
     {
-        throw new NotImplementedException();
+        return (string)field;
     }
 
-    public string Key(Encoding? encoding = null)
+    public byte[] ValueToByteArray()
     {
-        throw new NotImplementedException();
+        return (byte[])value;
     }
 
-    public byte[] ValueAsBytes()
+    public string ValueToString()
     {
-        throw new NotImplementedException();
-    }
-
-    public string Value(Encoding? encoding = null)
-    {
-        throw new NotImplementedException();
+        return (string)value;
     }
 }

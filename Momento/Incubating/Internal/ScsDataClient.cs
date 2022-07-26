@@ -15,14 +15,20 @@ internal sealed class ScsDataClient : ScsDataClientBase
     {
     }
 
-    public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, string key, string value, bool refreshTtl, uint? ttlSeconds = null)
+    public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, byte[] field, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        var response = SendDictionarySet(cacheName, dictionaryName, Convert(key), Convert(value), refreshTtl, ttlSeconds);
-        return new CacheDictionarySetResponse();
+        var response = SendDictionarySet(cacheName, dictionaryName, Convert(field), Convert(value), refreshTtl, ttlSeconds);
+        return new CacheDictionarySetResponse(dictionaryName, field, value);
+    }
+
+    public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, string field, string value, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        var response = SendDictionarySet(cacheName, dictionaryName, Convert(field), Convert(value), refreshTtl, ttlSeconds);
+        return new CacheDictionarySetResponse(dictionaryName, field, value);
     }
 
 
-    private _DictionarySetResponse SendDictionarySet(string cacheName, string dictionaryName, ByteString key, ByteString value, bool refreshTtl, uint? ttlSeconds = null)
+    private _DictionarySetResponse SendDictionarySet(string cacheName, string dictionaryName, ByteString field, ByteString value, bool refreshTtl, uint? ttlSeconds = null)
     {
         _DictionarySetRequest request = new()
         {
@@ -30,7 +36,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
             RefreshTtl = refreshTtl,
             TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds)
         };
-        request.DictionaryBody.Add(new _DictionaryKeyValuePair() { Key = key, Value = value });
+        request.DictionaryBody.Add(new _DictionaryKeyValuePair() { Key = field, Value = value });
 
         try
         {
@@ -42,21 +48,28 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
     }
 
-    public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, string key)
+    public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, byte[] field)
     {
-        var response = SendDictionaryGet(cacheName, dictionaryName, Convert(key));
+        var response = SendDictionaryGet(cacheName, dictionaryName, Convert(field));
+        var responseAtom = response.DictionaryBody[0];
+        return new CacheDictionaryGetResponse(responseAtom);
+    }
+
+    public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, string field)
+    {
+        var response = SendDictionaryGet(cacheName, dictionaryName, Convert(field));
         var responseAtom = response.DictionaryBody[0];
         return new CacheDictionaryGetResponse(responseAtom);
     }
 
 
-    private _DictionaryGetResponse SendDictionaryGet(string cacheName, string dictionaryName, ByteString key)
+    private _DictionaryGetResponse SendDictionaryGet(string cacheName, string dictionaryName, ByteString field)
     {
         _DictionaryGetRequest request = new()
         {
             DictionaryName = Convert(dictionaryName),
         };
-        request.DictionaryKeys.Add(key);
+        request.DictionaryKeys.Add(field);
 
         try
         {
