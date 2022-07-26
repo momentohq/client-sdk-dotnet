@@ -1,9 +1,10 @@
+using System;
 using System.Text;
 
-namespace IncubatingIntegrationTest;
+namespace MomentoSdk.Internal;
 
 /// <summary>
-/// Ad-hoc utility methods used in tests.
+/// Ad-hoc utility methods.
 /// </summary>
 public class Utils
 {
@@ -11,7 +12,7 @@ public class Utils
     /// Make a globally unique ID as a string.
     /// </summary>
     /// <returns>A GUID as a string.</returns>
-    public static String GuidString() => Guid.NewGuid().ToString();
+    public static string GuidString() => Guid.NewGuid().ToString();
 
     /// <summary>
     /// Make a globally unique ID as a byte array.
