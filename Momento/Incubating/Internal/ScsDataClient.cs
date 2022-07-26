@@ -41,7 +41,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
         try
         {
-            return this.grpcManager.Client.DictionarySet(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
+            return this.grpcManager.Client.DictionarySet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
@@ -74,7 +74,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
         try
         {
-            return await this.grpcManager.Client.DictionarySetAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
+            return await this.grpcManager.Client.DictionarySetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
@@ -98,15 +98,12 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     private _DictionaryGetResponse SendDictionaryGet(string cacheName, string dictionaryName, ByteString field)
     {
-        _DictionaryGetRequest request = new()
-        {
-            DictionaryName = Convert(dictionaryName),
-        };
+        _DictionaryGetRequest request = new() { DictionaryName = Convert(dictionaryName) };
         request.DictionaryKeys.Add(field);
 
         try
         {
-            return this.grpcManager.Client.DictionaryGet(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
+            return this.grpcManager.Client.DictionaryGet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
@@ -130,15 +127,12 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     private async Task<_DictionaryGetResponse> SendDictionaryGetAsync(string cacheName, string dictionaryName, ByteString field)
     {
-        _DictionaryGetRequest request = new()
-        {
-            DictionaryName = Convert(dictionaryName),
-        };
+        _DictionaryGetRequest request = new() { DictionaryName = Convert(dictionaryName) };
         request.DictionaryKeys.Add(field);
 
         try
         {
-            return await this.grpcManager.Client.DictionaryGetAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
+            return await this.grpcManager.Client.DictionaryGetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {

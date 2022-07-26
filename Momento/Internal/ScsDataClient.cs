@@ -34,6 +34,10 @@ public class ScsDataClientBase : IDisposable
         return ByteString.CopyFromUtf8(s);
     }
 
+    protected Metadata MetadataWithCache(string cacheName)
+    {
+        return new Metadata() { { "cache", cacheName } };
+    }
     protected DateTime CalculateDeadline()
     {
         return DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
@@ -233,7 +237,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds) };
         try
         {
-            return await this.grpcManager.Client.SetAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
+            return await this.grpcManager.Client.SetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
@@ -259,7 +263,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _GetRequest request = new _GetRequest() { CacheKey = key };
         try
         {
-            return await this.grpcManager.Client.GetAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
+            return await this.grpcManager.Client.GetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
@@ -272,7 +276,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds) };
         try
         {
-            return this.grpcManager.Client.Set(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
+            return this.grpcManager.Client.Set(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
@@ -285,7 +289,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _DeleteRequest request = new _DeleteRequest() { CacheKey = key };
         try
         {
-            return this.grpcManager.Client.Delete(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
+            return this.grpcManager.Client.Delete(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
@@ -298,7 +302,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _DeleteRequest request = new _DeleteRequest() { CacheKey = key };
         try
         {
-            return await this.grpcManager.Client.DeleteAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
+            return await this.grpcManager.Client.DeleteAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
