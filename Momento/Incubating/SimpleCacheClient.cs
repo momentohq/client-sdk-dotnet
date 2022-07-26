@@ -347,22 +347,42 @@ public class SimpleCacheClient : ISimpleCacheClient
 
     public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, params byte[][] fields)
     {
-        throw new NotImplementedException();
+        return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
     }
 
     public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, params string[] fields)
     {
-        throw new NotImplementedException();
+        return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
+    }
+
+    public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
+    {
+        return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
+    }
+
+    public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, IEnumerable<string> fields)
+    {
+        return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
     }
 
     public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, params byte[][] fields)
     {
-        return await Task.FromException<CacheDictionaryGetMultiResponse>(new NotImplementedException());
+        return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
     }
 
     public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, params string[] fields)
     {
-        return await Task.FromException<CacheDictionaryGetMultiResponse>(new NotImplementedException());
+        return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
+    }
+
+    public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
+    {
+        return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
+    }
+
+    public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, IEnumerable<string> fields)
+    {
+        return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
     }
 
     public CacheDictionaryGetAllResponse DictionaryGetAll(string cacheName, string dictionaryName)

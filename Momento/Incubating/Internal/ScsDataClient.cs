@@ -19,13 +19,13 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, byte[] field, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        var response = SendDictionarySet(cacheName, dictionaryName, Convert(field), Convert(value), refreshTtl, ttlSeconds);
+        SendDictionarySet(cacheName, dictionaryName, Convert(field), Convert(value), refreshTtl, ttlSeconds);
         return new CacheDictionarySetResponse(dictionaryName, field, value);
     }
 
     public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, string field, string value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        var response = SendDictionarySet(cacheName, dictionaryName, Convert(field), Convert(value), refreshTtl, ttlSeconds);
+        SendDictionarySet(cacheName, dictionaryName, Convert(field), Convert(value), refreshTtl, ttlSeconds);
         return new CacheDictionarySetResponse(dictionaryName, field, value);
     }
 
@@ -52,13 +52,13 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, byte[] field, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        var response = await SendDictionarySetAsync(cacheName, dictionaryName, Convert(field), Convert(value), refreshTtl, ttlSeconds);
+        await SendDictionarySetAsync(cacheName, dictionaryName, Convert(field), Convert(value), refreshTtl, ttlSeconds);
         return new CacheDictionarySetResponse(dictionaryName, field, value);
     }
 
     public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, string field, string value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        var response = await SendDictionarySetAsync(cacheName, dictionaryName, Convert(field), Convert(value), refreshTtl, ttlSeconds);
+        await SendDictionarySetAsync(cacheName, dictionaryName, Convert(field), Convert(value), refreshTtl, ttlSeconds);
         return new CacheDictionarySetResponse(dictionaryName, field, value);
     }
 
@@ -144,14 +144,14 @@ internal sealed class ScsDataClient : ScsDataClientBase
     public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
         var protoItems = items.Select(kv => new _DictionaryKeyValuePair() { Key = Convert(kv.Key), Value = Convert(kv.Value) });
-        var response = SendDictionarySetMulti(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
+        SendDictionarySetMulti(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
         return new CacheDictionarySetMultiResponse(dictionaryName, items);
     }
 
     public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
         var protoItems = items.Select(kv => new _DictionaryKeyValuePair() { Key = Convert(kv.Key), Value = Convert(kv.Value) });
-        var response = SendDictionarySetMulti(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
+        SendDictionarySetMulti(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
         return new CacheDictionarySetMultiResponse(dictionaryName, items);
     }
 
@@ -178,14 +178,14 @@ internal sealed class ScsDataClient : ScsDataClientBase
     public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
         var protoItems = items.Select(kv => new _DictionaryKeyValuePair() { Key = Convert(kv.Key), Value = Convert(kv.Value) });
-        var response = await SendDictionarySetMultiAsync(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
+        await SendDictionarySetMultiAsync(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
         return new CacheDictionarySetMultiResponse(dictionaryName, items);
     }
 
     public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
         var protoItems = items.Select(kv => new _DictionaryKeyValuePair() { Key = Convert(kv.Key), Value = Convert(kv.Value) });
-        var response = await SendDictionarySetMultiAsync(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
+        await SendDictionarySetMultiAsync(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
         return new CacheDictionarySetMultiResponse(dictionaryName, items);
     }
 
@@ -209,7 +209,77 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
     }
 
-    // Get multi
+    public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, params byte[][] fields)
+    {
+        return SendDictionaryGetMulti(cacheName, dictionaryName, fields.Select(field => Convert(field)));
+    }
+
+    public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, params string[] fields)
+    {
+        return SendDictionaryGetMulti(cacheName, dictionaryName, fields.Select(field => Convert(field)));
+    }
+
+    public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
+    {
+        return SendDictionaryGetMulti(cacheName, dictionaryName, fields.Select(field => Convert(field)));
+    }
+
+    public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, IEnumerable<string> fields)
+    {
+        return SendDictionaryGetMulti(cacheName, dictionaryName, fields.Select(field => Convert(field)));
+    }
+
+    private CacheDictionaryGetMultiResponse SendDictionaryGetMulti(string cacheName, string dictionaryName, IEnumerable<ByteString> fields)
+    {
+        _DictionaryGetRequest request = new() { DictionaryName = Convert(dictionaryName) };
+        request.DictionaryKeys.Add(fields);
+
+        try
+        {
+            var response = this.grpcManager.Client.DictionaryGet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            return new CacheDictionaryGetMultiResponse(response);
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+    }
+
+    public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, params byte[][] fields)
+    {
+        return await SendDictionaryGetMultiAsync(cacheName, dictionaryName, fields.Select(field => Convert(field)));
+    }
+
+    public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, params string[] fields)
+    {
+        return await SendDictionaryGetMultiAsync(cacheName, dictionaryName, fields.Select(field => Convert(field)));
+    }
+
+    public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
+    {
+        return await SendDictionaryGetMultiAsync(cacheName, dictionaryName, fields.Select(field => Convert(field)));
+    }
+
+    public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, IEnumerable<string> fields)
+    {
+        return await SendDictionaryGetMultiAsync(cacheName, dictionaryName, fields.Select(field => Convert(field)));
+    }
+
+    private async Task<CacheDictionaryGetMultiResponse> SendDictionaryGetMultiAsync(string cacheName, string dictionaryName, IEnumerable<ByteString> fields)
+    {
+        _DictionaryGetRequest request = new() { DictionaryName = Convert(dictionaryName) };
+        request.DictionaryKeys.Add(fields);
+
+        try
+        {
+            var response = await this.grpcManager.Client.DictionaryGetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            return new CacheDictionaryGetMultiResponse(response);
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+    }
 
     public CacheDictionaryGetAllResponse DictionaryGetAll(string cacheName, string dictionaryName)
     {

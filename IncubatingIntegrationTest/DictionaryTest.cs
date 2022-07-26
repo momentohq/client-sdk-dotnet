@@ -643,6 +643,102 @@ public class DictionaryTest
         Assert.Equal(value, response.String());
     }
 
+    [Fact]
+    public void DictionaryGetMulti_FieldsAreBytes_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field1 = Utils.GuidBytes();
+        var value1 = Utils.GuidBytes();
+        var field2 = Utils.GuidBytes();
+        var value2 = Utils.GuidBytes();
+        var field3 = Utils.GuidBytes();
+
+        this.client.DictionarySet(cacheName, dictionaryName, field1, value1, false, 10);
+        this.client.DictionarySet(cacheName, dictionaryName, field2, value2, false, 10);
+
+        var response1 = this.client.DictionaryGetMulti(cacheName, dictionaryName, field1, field2, field3);
+        var response2 = this.client.DictionaryGetMulti(cacheName, dictionaryName, new byte[][] { field1, field2, field3 });
+
+        var status = new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS };
+        var values = new byte[]?[] { value1, value2, null };
+        Assert.Equal(status, response1.Status);
+        Assert.Equal(status, response2.Status);
+        Assert.Equal(values, response1.Bytes);
+        Assert.Equal(values, response2.Bytes);
+    }
+
+    [Fact]
+    public void DictionaryGetMulti_FieldsAreStrings_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field1 = Utils.GuidString();
+        var value1 = Utils.GuidString();
+        var field2 = Utils.GuidString();
+        var value2 = Utils.GuidString();
+        var field3 = Utils.GuidString();
+
+        this.client.DictionarySet(cacheName, dictionaryName, field1, value1, false, 10);
+        this.client.DictionarySet(cacheName, dictionaryName, field2, value2, false, 10);
+
+        var response1 = this.client.DictionaryGetMulti(cacheName, dictionaryName, field1, field2, field3);
+        var response2 = this.client.DictionaryGetMulti(cacheName, dictionaryName, new string[] { field1, field2, field3 });
+
+        var status = new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS };
+        var values = new string?[] { value1, value2, null };
+        Assert.Equal(status, response1.Status);
+        Assert.Equal(status, response2.Status);
+        Assert.Equal(values, response1.Strings());
+        Assert.Equal(values, response2.Strings());
+    }
+
+    [Fact]
+    public async void DictionaryGetMultiAsync_FieldsAreBytes_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field1 = Utils.GuidBytes();
+        var value1 = Utils.GuidBytes();
+        var field2 = Utils.GuidBytes();
+        var value2 = Utils.GuidBytes();
+        var field3 = Utils.GuidBytes();
+
+        await this.client.DictionarySetAsync(cacheName, dictionaryName, field1, value1, false, 10);
+        await this.client.DictionarySetAsync(cacheName, dictionaryName, field2, value2, false, 10);
+
+        var response1 = await this.client.DictionaryGetMultiAsync(cacheName, dictionaryName, field1, field2, field3);
+        var response2 = await this.client.DictionaryGetMultiAsync(cacheName, dictionaryName, new byte[][] { field1, field2, field3 });
+
+        var status = new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS };
+        var values = new byte[]?[] { value1, value2, null };
+        Assert.Equal(status, response1.Status);
+        Assert.Equal(status, response2.Status);
+        Assert.Equal(values, response1.Bytes);
+        Assert.Equal(values, response2.Bytes);
+    }
+
+    [Fact]
+    public async void DictionaryGetMultiAsync_FieldsAreStrings_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field1 = Utils.GuidString();
+        var value1 = Utils.GuidString();
+        var field2 = Utils.GuidString();
+        var value2 = Utils.GuidString();
+        var field3 = Utils.GuidString();
+
+        await this.client.DictionarySetAsync(cacheName, dictionaryName, field1, value1, false, 10);
+        await this.client.DictionarySetAsync(cacheName, dictionaryName, field2, value2, false, 10);
+
+        var response1 = await this.client.DictionaryGetMultiAsync(cacheName, dictionaryName, field1, field2, field3);
+        var response2 = await this.client.DictionaryGetMultiAsync(cacheName, dictionaryName, new string[] { field1, field2, field3 });
+
+        var status = new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS };
+        var values = new string?[] { value1, value2, null };
+        Assert.Equal(status, response1.Status);
+        Assert.Equal(status, response2.Status);
+        Assert.Equal(values, response1.Strings());
+        Assert.Equal(values, response2.Strings());
+    }
+
     [Theory]
     [InlineData(null, "my-dictionary")]
     [InlineData("cache", null)]

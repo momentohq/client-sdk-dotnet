@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using CacheClient;
+using Google.Protobuf.Collections;
 using MomentoSdk.Responses;
 
 
@@ -8,27 +10,25 @@ namespace MomentoSdk.Incubating.Responses;
 
 public class CacheDictionaryGetMultiResponse
 {
-    public CacheDictionaryGetMultiResponse()
+    private readonly IEnumerable<CacheDictionaryGetResponse> responses;
+
+    public CacheDictionaryGetMultiResponse(_DictionaryGetResponse responses)
     {
+        this.responses = responses.DictionaryBody.Select(response => new CacheDictionaryGetResponse(response));
     }
 
-    public List<CacheGetStatus> Status()
+    public List<CacheGetStatus> Status
     {
-        throw new NotImplementedException();
+        get => responses.Select(response => response.Status).ToList();
     }
 
-    public List<string?> Values(Encoding? encoding = null)
+    public List<string?> Strings()
     {
-        throw new NotImplementedException();
+        return responses.Select(response => response.String()).ToList();
     }
 
-    public List<byte[]?> ValuesAsBytes()
+    public List<byte[]?> Bytes
     {
-        throw new NotImplementedException();
-    }
-
-    public List<CacheGetResponse> ToList()
-    {
-        throw new NotImplementedException();
+        get => responses.Select(response => response.Bytes).ToList();
     }
 }
