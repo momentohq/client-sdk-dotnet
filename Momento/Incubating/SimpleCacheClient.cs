@@ -167,41 +167,161 @@ public class SimpleCacheClient : ISimpleCacheClient
 
     public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, byte[] field, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (field == null)
+        {
+            throw new ArgumentNullException(nameof(field));
+        }
+        if (value == null)
+        {
+            throw new ArgumentNullException(nameof(value));
+        }
+
         return this.dataClient.DictionarySet(cacheName, dictionaryName, field, value, refreshTtl, ttlSeconds);
     }
 
     public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, string field, string value, bool refreshTtl, uint? ttlSeconds = null)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (field == null)
+        {
+            throw new ArgumentNullException(nameof(field));
+        }
+        if (value == null)
+        {
+            throw new ArgumentNullException(nameof(value));
+        }
+
         return this.dataClient.DictionarySet(cacheName, dictionaryName, field, value, refreshTtl, ttlSeconds);
     }
 
     public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, byte[] field, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (field == null)
+        {
+            throw new ArgumentNullException(nameof(field));
+        }
+        if (value == null)
+        {
+            throw new ArgumentNullException(nameof(value));
+        }
+
         return await this.dataClient.DictionarySetAsync(cacheName, dictionaryName, field, value, refreshTtl, ttlSeconds);
     }
 
     public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, string field, string value, bool refreshTtl, uint? ttlSeconds = null)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (field == null)
+        {
+            throw new ArgumentNullException(nameof(field));
+        }
+        if (value == null)
+        {
+            throw new ArgumentNullException(nameof(value));
+        }
+
         return await this.dataClient.DictionarySetAsync(cacheName, dictionaryName, field, value, refreshTtl, ttlSeconds);
     }
 
     public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, byte[] field)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (field == null)
+        {
+            throw new ArgumentNullException(nameof(field));
+        }
+
         return this.dataClient.DictionaryGet(cacheName, dictionaryName, field);
     }
 
     public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, string field)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (field == null)
+        {
+            throw new ArgumentNullException(nameof(field));
+        }
+
         return this.dataClient.DictionaryGet(cacheName, dictionaryName, field);
     }
 
     public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, byte[] field)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (field == null)
+        {
+            throw new ArgumentNullException(nameof(field));
+        }
+
         return await this.dataClient.DictionaryGetAsync(cacheName, dictionaryName, field);
     }
 
     public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, string field)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (field == null)
+        {
+            throw new ArgumentNullException(nameof(field));
+        }
+
         return await this.dataClient.DictionaryGetAsync(cacheName, dictionaryName, field);
     }
 

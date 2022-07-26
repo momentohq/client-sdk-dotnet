@@ -14,6 +14,25 @@ public class DictionaryTest
         this.client = fixture.Client;
     }
 
+    [Theory]
+    [InlineData(null, "my-dictionary", new byte[] { 0x00 })]
+    [InlineData("cache", null, new byte[] { 0x00 })]
+    [InlineData("cache", "my-dictionary", null)]
+    public void DictionaryGet_NullChecksBytes_ThrowsException(string cacheName, string dictionaryName, byte[] field)
+    {
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGet(cacheName, dictionaryName, field));
+    }
+
+    [Theory]
+    [InlineData(null, "my-dictionary", new byte[] { 0x00 }, new byte[] { 0x00 })]
+    [InlineData("cache", null, new byte[] { 0x00 }, new byte[] { 0x00 })]
+    [InlineData("cache", "my-dictionary", null, new byte[] { 0x00 })]
+    [InlineData("cache", "my-dictionary", new byte[] { 0x00 }, null)]
+    public void DictionarySet_NullChecksBytes_ThrowsException(string cacheName, string dictionaryName, byte[] field, byte[] value)
+    {
+        Assert.Throws<ArgumentNullException>(() => client.DictionarySet(cacheName, dictionaryName, field, value, false));
+    }
+
     [Fact]
     public void DictionaryGet_FieldIsBytes_DictionaryIsMissing()
     {
@@ -88,6 +107,25 @@ public class DictionaryTest
         var response = this.client.DictionaryGet(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
         Assert.Equal(value, response.Bytes);
+    }
+
+    [Theory]
+    [InlineData(null, "my-dictionary", "my-field")]
+    [InlineData("cache", null, "my-field")]
+    [InlineData("cache", "my-dictionary", null)]
+    public void DictionaryGet_NullChecksString_ThrowsException(string cacheName, string dictionaryName, string field)
+    {
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGet(cacheName, dictionaryName, field));
+    }
+
+    [Theory]
+    [InlineData(null, "my-dictionary", "my-field", "my-value")]
+    [InlineData("cache", null, "my-field", "my-value")]
+    [InlineData("cache", "my-dictionary", null, "my-value")]
+    [InlineData("cache", "my-dictionary", "my-field", null)]
+    public void DictionarySet_NullChecksString_ThrowsException(string cacheName, string dictionaryName, string field, string value)
+    {
+        Assert.Throws<ArgumentNullException>(() => client.DictionarySet(cacheName, dictionaryName, field, value, false));
     }
 
     [Fact]
@@ -166,6 +204,25 @@ public class DictionaryTest
         Assert.Equal(value, response.String());
     }
 
+    [Theory]
+    [InlineData(null, "my-dictionary", new byte[] { 0x00 })]
+    [InlineData("cache", null, new byte[] { 0x00 })]
+    [InlineData("cache", "my-dictionary", null)]
+    public async void DictionaryGetAsync_NullChecksBytes_ThrowsException(string cacheName, string dictionaryName, byte[] field)
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetAsync(cacheName, dictionaryName, field));
+    }
+
+    [Theory]
+    [InlineData(null, "my-dictionary", new byte[] { 0x00 }, new byte[] { 0x00 })]
+    [InlineData("cache", null, new byte[] { 0x00 }, new byte[] { 0x00 })]
+    [InlineData("cache", "my-dictionary", null, new byte[] { 0x00 })]
+    [InlineData("cache", "my-dictionary", new byte[] { 0x00 }, null)]
+    public async void DictionarySetAsync_NullChecksBytes_ThrowsException(string cacheName, string dictionaryName, byte[] field, byte[] value)
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetAsync(cacheName, dictionaryName, field, value, false));
+    }
+
     [Fact]
     public async void DictionaryGetAsync_FieldIsBytes_DictionaryIsMissing()
     {
@@ -240,6 +297,25 @@ public class DictionaryTest
         var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
         Assert.Equal(value, response.Bytes);
+    }
+
+    [Theory]
+    [InlineData(null, "my-dictionary", "my-field")]
+    [InlineData("cache", null, "my-field")]
+    [InlineData("cache", "my-dictionary", null)]
+    public async void DictionaryGetAsync_NullChecksString_ThrowsException(string cacheName, string dictionaryName, string field)
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetAsync(cacheName, dictionaryName, field));
+    }
+
+    [Theory]
+    [InlineData(null, "my-dictionary", "my-field", "my-value")]
+    [InlineData("cache", null, "my-field", "my-value")]
+    [InlineData("cache", "my-dictionary", null, "my-value")]
+    [InlineData("cache", "my-dictionary", "my-field", null)]
+    public async void DictionarySetAsync_NullChecksString_ThrowsException(string cacheName, string dictionaryName, string field, string value)
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetAsync(cacheName, dictionaryName, field, value, false));
     }
 
     [Fact]
