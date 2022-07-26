@@ -12,7 +12,7 @@ public class SimpleCacheClientFixture : IDisposable
 
     // TODO: this cache was specially created for this.
     // We will not programmatically create integration test cache for now.
-    public const string CacheName = "client-sdk-csharp";
+    public const string CacheName = "client-sdk-csharp-incubating";
     public const uint DefaultTtlSeconds = 10;
 
     public SimpleCacheClientFixture()
