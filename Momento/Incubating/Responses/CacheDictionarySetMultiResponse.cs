@@ -6,20 +6,22 @@ namespace MomentoSdk.Incubating.Responses;
 
 public class CacheDictionarySetMultiResponse
 {
-    public CacheDictionarySetMultiResponse()
+    public string DictionaryName { get; private set; }
+    private readonly object items;
+
+    public CacheDictionarySetMultiResponse(string dictionaryName, object items)
     {
+        DictionaryName = dictionaryName;
+        this.items = items;
     }
 
-    public string DictionaryName()
+    public IEnumerable<KeyValuePair<byte[], byte[]>> ItemsAsByteArrays()
     {
-        throw new NotImplementedException();
+        return (IEnumerable<KeyValuePair<byte[], byte[]>>)items;
     }
-    public Dictionary<byte[], byte>? DictionaryAsBytes()
+
+    public IEnumerable<KeyValuePair<string, string>> ItemsAsStrings()
     {
-        throw new NotImplementedException();
-    }
-    public Dictionary<string, string>? Dictionary(Encoding? encoding = null)
-    {
-        throw new NotImplementedException();
+        return (IEnumerable<KeyValuePair<string, string>>)items;
     }
 }

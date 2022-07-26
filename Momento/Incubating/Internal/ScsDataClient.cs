@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CacheClient;
 using Google.Protobuf;
-using Grpc.Core;
 using MomentoSdk.Internal;
 using MomentoSdk.Incubating.Responses;
 using MomentoSdk.Exceptions;
@@ -139,6 +140,76 @@ internal sealed class ScsDataClient : ScsDataClientBase
             throw CacheExceptionMapper.Convert(e);
         }
     }
+
+    public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        var protoItems = items.Select(kv => new _DictionaryKeyValuePair() { Key = Convert(kv.Key), Value = Convert(kv.Value) });
+        var response = SendDictionarySetMulti(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
+        return new CacheDictionarySetMultiResponse(dictionaryName, items);
+    }
+
+    public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        var protoItems = items.Select(kv => new _DictionaryKeyValuePair() { Key = Convert(kv.Key), Value = Convert(kv.Value) });
+        var response = SendDictionarySetMulti(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
+        return new CacheDictionarySetMultiResponse(dictionaryName, items);
+    }
+
+    public _DictionarySetResponse SendDictionarySetMulti(string cacheName, string dictionaryName, IEnumerable<_DictionaryKeyValuePair> items, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        _DictionarySetRequest request = new()
+        {
+            DictionaryName = Convert(dictionaryName),
+            RefreshTtl = refreshTtl,
+            TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds)
+        };
+        request.DictionaryBody.Add(items);
+
+        try
+        {
+            return this.grpcManager.Client.DictionarySet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+    }
+
+    public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        var protoItems = items.Select(kv => new _DictionaryKeyValuePair() { Key = Convert(kv.Key), Value = Convert(kv.Value) });
+        var response = await SendDictionarySetMultiAsync(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
+        return new CacheDictionarySetMultiResponse(dictionaryName, items);
+    }
+
+    public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        var protoItems = items.Select(kv => new _DictionaryKeyValuePair() { Key = Convert(kv.Key), Value = Convert(kv.Value) });
+        var response = await SendDictionarySetMultiAsync(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
+        return new CacheDictionarySetMultiResponse(dictionaryName, items);
+    }
+
+    public async Task<_DictionarySetResponse> SendDictionarySetMultiAsync(string cacheName, string dictionaryName, IEnumerable<_DictionaryKeyValuePair> items, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        _DictionarySetRequest request = new()
+        {
+            DictionaryName = Convert(dictionaryName),
+            RefreshTtl = refreshTtl,
+            TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds)
+        };
+        request.DictionaryBody.Add(items);
+
+        try
+        {
+            return await this.grpcManager.Client.DictionarySetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+    }
+
+    // Get multi
 
     public CacheDictionaryGetAllResponse DictionaryGetAll(string cacheName, string dictionaryName)
     {
