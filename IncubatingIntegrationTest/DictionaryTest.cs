@@ -393,4 +393,124 @@ public class DictionaryTest
         Assert.Equal(CacheGetStatus.HIT, response.Status);
         Assert.Equal(value, response.String());
     }
+
+    [Theory]
+    [InlineData(null, "my-dictionary")]
+    [InlineData("cache", null)]
+    public void DictionaryGetAll_NullChecks_ThrowsException(string cacheName, string dictionaryName)
+    {
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetAll(cacheName, dictionaryName));
+    }
+
+    [Fact]
+    public void DictionaryGetAll_Missing_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var response = this.client.DictionaryGetAll(cacheName, dictionaryName);
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+    }
+
+    [Fact]
+    public void DictionaryGetAll_HasContentString_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field1 = Utils.GuidString();
+        var value1 = Utils.GuidString();
+        var field2 = Utils.GuidString();
+        var value2 = Utils.GuidString();
+        var contentDictionary = new Dictionary<string, string>() {
+            {field1, value1},
+            {field2, value2}
+        };
+
+        this.client.DictionarySet(cacheName, dictionaryName, field1, value1, true, ttlSeconds: 10);
+        this.client.DictionarySet(cacheName, dictionaryName, field2, value2, true, ttlSeconds: 10);
+
+        var getAllResponse = client.DictionaryGetAll(cacheName, dictionaryName);
+
+        Assert.Equal(CacheGetStatus.HIT, getAllResponse.Status);
+        Assert.Equal(getAllResponse.StringDictionary(), contentDictionary);
+    }
+
+    [Fact]
+    public void DictionaryGetAll_HasContentBytes_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field1 = Utils.GuidString();
+        var value1 = Utils.GuidString();
+        var field2 = Utils.GuidString();
+        var value2 = Utils.GuidString();
+        var contentDictionary = new Dictionary<string, string>() {
+            {field1, value1},
+            {field2, value2}
+        };
+
+        this.client.DictionarySet(cacheName, dictionaryName, Utils.Utf8ToBytes(field1), Utils.Utf8ToBytes(value1), true, ttlSeconds: 10);
+        this.client.DictionarySet(cacheName, dictionaryName, Utils.Utf8ToBytes(field2), Utils.Utf8ToBytes(value2), true, ttlSeconds: 10);
+
+        var getAllResponse = client.DictionaryGetAll(cacheName, dictionaryName);
+
+        Assert.Equal(CacheGetStatus.HIT, getAllResponse.Status);
+        Assert.Equal(getAllResponse.StringDictionary(), contentDictionary);
+    }
+
+    [Theory]
+    [InlineData(null, "my-dictionary")]
+    [InlineData("cache", null)]
+    public async void DictionaryGetAllAsync_NullChecks_ThrowsException(string cacheName, string dictionaryName)
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetAllAsync(cacheName, dictionaryName));
+    }
+
+    [Fact]
+    public async void DictionaryGetAllAsync_Missing_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var response = await this.client.DictionaryGetAllAsync(cacheName, dictionaryName);
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+    }
+
+    [Fact]
+    public async void DictionaryGetAllAsync_HasContentString_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field1 = Utils.GuidString();
+        var value1 = Utils.GuidString();
+        var field2 = Utils.GuidString();
+        var value2 = Utils.GuidString();
+        var contentDictionary = new Dictionary<string, string>() {
+            {field1, value1},
+            {field2, value2}
+        };
+
+        await this.client.DictionarySetAsync(cacheName, dictionaryName, field1, value1, true, ttlSeconds: 10);
+        await this.client.DictionarySetAsync(cacheName, dictionaryName, field2, value2, true, ttlSeconds: 10);
+
+        var getAllResponse = await client.DictionaryGetAllAsync(cacheName, dictionaryName);
+
+        Assert.Equal(CacheGetStatus.HIT, getAllResponse.Status);
+        Assert.Equal(getAllResponse.StringDictionary(), contentDictionary);
+    }
+
+    [Fact]
+    public async void DictionaryGetAllAsync_HasContentBytes_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field1 = Utils.GuidString();
+        var value1 = Utils.GuidString();
+        var field2 = Utils.GuidString();
+        var value2 = Utils.GuidString();
+        var contentDictionary = new Dictionary<string, string>() {
+            {field1, value1},
+            {field2, value2}
+        };
+
+        await this.client.DictionarySetAsync(cacheName, dictionaryName, Utils.Utf8ToBytes(field1), Utils.Utf8ToBytes(value1), true, ttlSeconds: 10);
+        await this.client.DictionarySetAsync(cacheName, dictionaryName, Utils.Utf8ToBytes(field2), Utils.Utf8ToBytes(value2), true, ttlSeconds: 10);
+
+        var getAllResponse = await client.DictionaryGetAllAsync(cacheName, dictionaryName);
+
+        Assert.Equal(CacheGetStatus.HIT, getAllResponse.Status);
+        Assert.Equal(getAllResponse.StringDictionary(), contentDictionary);
+    }
 }

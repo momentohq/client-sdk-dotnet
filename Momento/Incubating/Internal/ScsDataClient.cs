@@ -139,4 +139,34 @@ internal sealed class ScsDataClient : ScsDataClientBase
             throw CacheExceptionMapper.Convert(e);
         }
     }
+
+    public CacheDictionaryGetAllResponse DictionaryGetAll(string cacheName, string dictionaryName)
+    {
+        _DictionaryGetAllRequest request = new() { DictionaryName = Convert(dictionaryName) };
+        _DictionaryGetAllResponse response;
+        try
+        {
+            response = this.grpcManager.Client.DictionaryGetAll(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+        return new CacheDictionaryGetAllResponse(response);
+    }
+
+    public async Task<CacheDictionaryGetAllResponse> DictionaryGetAllAsync(string cacheName, string dictionaryName)
+    {
+        _DictionaryGetAllRequest request = new() { DictionaryName = Convert(dictionaryName) };
+        _DictionaryGetAllResponse response;
+        try
+        {
+            response = await this.grpcManager.Client.DictionaryGetAllAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+        return new CacheDictionaryGetAllResponse(response);
+    }
 }

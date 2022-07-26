@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text;
-
-namespace MomentoSdk.Incubating.Responses;
+﻿namespace MomentoSdk.Incubating.Responses;
 
 public class CacheDictionarySetResponse
 {

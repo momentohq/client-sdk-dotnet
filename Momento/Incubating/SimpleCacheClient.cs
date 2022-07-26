@@ -367,12 +367,30 @@ public class SimpleCacheClient : ISimpleCacheClient
 
     public CacheDictionaryGetAllResponse DictionaryGetAll(string cacheName, string dictionaryName)
     {
-        throw new NotImplementedException();
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+
+        return this.dataClient.DictionaryGetAll(cacheName, dictionaryName);
     }
 
     public async Task<CacheDictionaryGetAllResponse> DictionaryGetAllAsync(string cacheName, string dictionaryName)
     {
-        return await Task.FromException<CacheDictionaryGetAllResponse>(new NotImplementedException());
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+
+        return await this.dataClient.DictionaryGetAllAsync(cacheName, dictionaryName);
     }
 
     public void Dispose()
