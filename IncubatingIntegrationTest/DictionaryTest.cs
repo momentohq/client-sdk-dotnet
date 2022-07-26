@@ -166,7 +166,155 @@ public class DictionaryTest
         Assert.Equal(value, response.String());
     }
 
-    // String Async
+    [Fact]
+    public async void DictionaryGetAsync_FieldIsBytes_DictionaryIsMissing()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field = Utils.GuidBytes();
+        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+    }
 
-    // Bytes Async
+    [Fact]
+    public async void DictionarySetGetAsync_FieldIsBytesValueIsBytes_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field = Utils.GuidBytes();
+        var value = Utils.GuidBytes();
+
+        var setResponse = await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false);
+        Assert.Equal(setResponse.DictionaryName, dictionaryName);
+        Assert.Equal(setResponse.FieldToByteArray(), field);
+        Assert.Equal(setResponse.ValueToByteArray(), value);
+
+        var getResponse = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+
+        Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
+    }
+
+    [Fact]
+    public async void DictionarySetGetAsync_FieldIsBytesDictionaryIsPresent_FieldIsMissing()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field = Utils.GuidBytes();
+        var value = Utils.GuidBytes();
+
+        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false);
+
+        var otherField = Utils.GuidBytes();
+        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, otherField);
+
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+    }
+
+    [Fact]
+    public async void DictionarySetGetAsync_FieldIsBytes_NoRefreshTtl()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field = Utils.GuidBytes();
+        var value = Utils.GuidBytes();
+
+        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false, ttlSeconds: 1);
+        Thread.Sleep(200);
+
+        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false);
+        Thread.Sleep(1000);
+
+        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+    }
+
+    [Fact]
+    public async void DictionarySetGetAsync_FieldIsBytes_RefreshTtl()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field = Utils.GuidBytes();
+        var value = Utils.GuidBytes();
+
+        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false, ttlSeconds: 1);
+        Thread.Sleep(500);
+
+        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, true, ttlSeconds: 1);
+        Thread.Sleep(600);
+
+        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        Assert.Equal(CacheGetStatus.HIT, response.Status);
+        Assert.Equal(value, response.Bytes);
+    }
+
+    [Fact]
+    public async void DictionaryGetAsync_FieldIsString_DictionaryIsMissing()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field = Utils.GuidString();
+        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+    }
+
+    [Fact]
+    public async void DictionarySetGetAsync_FieldIsStringValueIsString_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field = Utils.GuidString();
+        var value = Utils.GuidString();
+
+        var setResponse = await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false);
+        Assert.Equal(setResponse.DictionaryName, dictionaryName);
+        Assert.Equal(setResponse.FieldToString(), field);
+        Assert.Equal(setResponse.ValueToString(), value);
+
+        var getResponse = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+
+        Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
+    }
+
+    [Fact]
+    public async void DictionarySetGetAsync_DictionaryIsPresent_FieldIsMissing()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field = Utils.GuidString();
+        var value = Utils.GuidString();
+
+        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false);
+
+        var otherField = Utils.GuidString();
+        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, otherField);
+
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+    }
+
+    [Fact]
+    public async void DictionarySetGetAsync_FieldIsString_NoRefreshTtl()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field = Utils.GuidString();
+        var value = Utils.GuidString();
+
+        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false, ttlSeconds: 1);
+        Thread.Sleep(200);
+
+        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false);
+        Thread.Sleep(1000);
+
+        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+    }
+
+    [Fact]
+    public async void DictionarySetGetAsync_FieldIsString_RefreshTtl()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field = Utils.GuidString();
+        var value = Utils.GuidString();
+
+        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false, ttlSeconds: 1);
+        Thread.Sleep(500);
+
+        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, true, ttlSeconds: 1);
+        Thread.Sleep(600);
+
+        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        Assert.Equal(CacheGetStatus.HIT, response.Status);
+        Assert.Equal(value, response.String());
+    }
 }

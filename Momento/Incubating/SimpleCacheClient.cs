@@ -177,12 +177,12 @@ public class SimpleCacheClient : ISimpleCacheClient
 
     public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, byte[] field, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        return await Task.FromException<CacheDictionarySetResponse>(new NotImplementedException());
+        return await this.dataClient.DictionarySetAsync(cacheName, dictionaryName, field, value, refreshTtl, ttlSeconds);
     }
 
     public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, string field, string value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        return await Task.FromException<CacheDictionarySetResponse>(new NotImplementedException());
+        return await this.dataClient.DictionarySetAsync(cacheName, dictionaryName, field, value, refreshTtl, ttlSeconds);
     }
 
     public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, byte[] field)
@@ -197,12 +197,12 @@ public class SimpleCacheClient : ISimpleCacheClient
 
     public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, byte[] field)
     {
-        return await Task.FromException<CacheDictionaryGetResponse>(new NotImplementedException());
+        return await this.dataClient.DictionaryGetAsync(cacheName, dictionaryName, field);
     }
 
     public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, string field)
     {
-        return await Task.FromException<CacheDictionaryGetResponse>(new NotImplementedException());
+        return await this.dataClient.DictionaryGetAsync(cacheName, dictionaryName, field);
     }
 
     public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IDictionary<byte[], byte[]> dictionary, bool refreshTtl, uint? ttlSeconds = null)
