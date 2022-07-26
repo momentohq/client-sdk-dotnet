@@ -85,26 +85,24 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, byte[] field)
     {
-        var response = SendDictionaryGet(cacheName, dictionaryName, Convert(field));
-        var responseAtom = response.DictionaryBody[0];
-        return new CacheDictionaryGetResponse(responseAtom);
+        return SendDictionaryGet(cacheName, dictionaryName, Convert(field));
     }
 
     public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, string field)
     {
-        var response = SendDictionaryGet(cacheName, dictionaryName, Convert(field));
-        var responseAtom = response.DictionaryBody[0];
-        return new CacheDictionaryGetResponse(responseAtom);
+        return SendDictionaryGet(cacheName, dictionaryName, Convert(field));
     }
 
-    private _DictionaryGetResponse SendDictionaryGet(string cacheName, string dictionaryName, ByteString field)
+    private CacheDictionaryGetResponse SendDictionaryGet(string cacheName, string dictionaryName, ByteString field)
     {
         _DictionaryGetRequest request = new() { DictionaryName = Convert(dictionaryName) };
         request.DictionaryKeys.Add(field);
 
         try
         {
-            return this.grpcManager.Client.DictionaryGet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            var response = this.grpcManager.Client.DictionaryGet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            return new CacheDictionaryGetResponse(response.DictionaryBody[0]);
+
         }
         catch (Exception e)
         {
@@ -114,26 +112,23 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, byte[] field)
     {
-        var response = await SendDictionaryGetAsync(cacheName, dictionaryName, Convert(field));
-        var responseAtom = response.DictionaryBody[0];
-        return new CacheDictionaryGetResponse(responseAtom);
+        return await SendDictionaryGetAsync(cacheName, dictionaryName, Convert(field));
     }
 
     public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, string field)
     {
-        var response = await SendDictionaryGetAsync(cacheName, dictionaryName, Convert(field));
-        var responseAtom = response.DictionaryBody[0];
-        return new CacheDictionaryGetResponse(responseAtom);
+        return await SendDictionaryGetAsync(cacheName, dictionaryName, Convert(field));
     }
 
-    private async Task<_DictionaryGetResponse> SendDictionaryGetAsync(string cacheName, string dictionaryName, ByteString field)
+    private async Task<CacheDictionaryGetResponse> SendDictionaryGetAsync(string cacheName, string dictionaryName, ByteString field)
     {
         _DictionaryGetRequest request = new() { DictionaryName = Convert(dictionaryName) };
         request.DictionaryKeys.Add(field);
 
         try
         {
-            return await this.grpcManager.Client.DictionaryGetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            var response = await this.grpcManager.Client.DictionaryGetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            return new CacheDictionaryGetResponse(response.DictionaryBody[0]);
         }
         catch (Exception e)
         {
