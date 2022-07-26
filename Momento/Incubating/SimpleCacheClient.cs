@@ -205,22 +205,22 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.DictionaryGetAsync(cacheName, dictionaryName, field);
     }
 
-    public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IDictionary<byte[], byte[]> dictionary, bool refreshTtl, uint? ttlSeconds = null)
+    public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> dictionary, bool refreshTtl, uint? ttlSeconds = null)
     {
         throw new NotImplementedException();
     }
 
-    public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IDictionary<string, string> dictionary, bool refreshTtl, uint? ttlSeconds = null)
+    public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> dictionary, bool refreshTtl, uint? ttlSeconds = null)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IDictionary<string, string> dictionary, bool refreshTtl, uint? ttlSeconds = null)
+    public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> dictionary, bool refreshTtl, uint? ttlSeconds = null)
     {
         return await Task.FromException<CacheDictionarySetMultiResponse>(new NotImplementedException());
     }
 
-    public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IDictionary<byte[], byte[]> dictionary, bool refreshTtl, uint? ttlSeconds = null)
+    public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> dictionary, bool refreshTtl, uint? ttlSeconds = null)
     {
         return await Task.FromException<CacheDictionarySetMultiResponse>(new NotImplementedException());
     }
