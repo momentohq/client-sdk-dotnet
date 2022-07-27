@@ -311,7 +311,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _DictionaryDeleteRequest request = new()
         {
             DictionaryName = Convert(dictionaryName),
-            All = new _DictionaryDeleteRequest.Types.All()
+            All = new()
         };
         try
         {
@@ -329,7 +329,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _DictionaryDeleteRequest request = new()
         {
             DictionaryName = Convert(dictionaryName),
-            All = new _DictionaryDeleteRequest.Types.All()
+            All = new()
         };
         try
         {
@@ -357,7 +357,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _DictionaryDeleteRequest request = new()
         {
             DictionaryName = Convert(dictionaryName),
-            Some = new _DictionaryDeleteRequest.Types.Some()
+            Some = new()
         };
         request.Some.Keys.Add(field);
 
@@ -387,7 +387,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _DictionaryDeleteRequest request = new()
         {
             DictionaryName = Convert(dictionaryName),
-            Some = new _DictionaryDeleteRequest.Types.Some()
+            Some = new()
         };
         request.Some.Keys.Add(field);
 
@@ -427,7 +427,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _DictionaryDeleteRequest request = new()
         {
             DictionaryName = Convert(dictionaryName),
-            Some = new _DictionaryDeleteRequest.Types.Some()
+            Some = new()
         };
         request.Some.Keys.Add(fields);
 
@@ -467,7 +467,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _DictionaryDeleteRequest request = new()
         {
             DictionaryName = Convert(dictionaryName),
-            Some = new _DictionaryDeleteRequest.Types.Some()
+            Some = new()
         };
         request.Some.Keys.Add(fields);
 
