@@ -327,61 +327,217 @@ public class SimpleCacheClient : ISimpleCacheClient
 
     public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (items == null)
+        {
+            throw new ArgumentNullException(nameof(items));
+        }
+
         return this.dataClient.DictionarySetMulti(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
 
     public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (items == null)
+        {
+            throw new ArgumentNullException(nameof(items));
+        }
+
         return this.dataClient.DictionarySetMulti(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
 
     public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (items == null)
+        {
+            throw new ArgumentNullException(nameof(items));
+        }
+
         return await this.dataClient.DictionarySetMultiAsync(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
 
     public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (items == null)
+        {
+            throw new ArgumentNullException(nameof(items));
+        }
+
         return await this.dataClient.DictionarySetMultiAsync(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
 
     public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, params byte[][] fields)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (fields == null)
+        {
+            throw new ArgumentNullException(nameof(fields));
+        }
+
         return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
     }
 
     public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, params string[] fields)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (fields == null)
+        {
+            throw new ArgumentNullException(nameof(fields));
+        }
+
         return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
     }
 
     public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (fields == null)
+        {
+            throw new ArgumentNullException(nameof(fields));
+        }
+
         return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
     }
 
     public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, IEnumerable<string> fields)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (fields == null)
+        {
+            throw new ArgumentNullException(nameof(fields));
+        }
+
         return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
     }
 
     public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, params byte[][] fields)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (fields == null)
+        {
+            throw new ArgumentNullException(nameof(fields));
+        }
+
         return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
     }
 
     public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, params string[] fields)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (fields == null)
+        {
+            throw new ArgumentNullException(nameof(fields));
+        }
+
         return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
     }
 
     public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (fields == null)
+        {
+            throw new ArgumentNullException(nameof(fields));
+        }
+
         return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
     }
 
     public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, IEnumerable<string> fields)
     {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (fields == null)
+        {
+            throw new ArgumentNullException(nameof(fields));
+        }
+
         return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
     }
 
