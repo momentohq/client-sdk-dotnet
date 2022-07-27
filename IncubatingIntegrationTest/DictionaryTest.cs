@@ -953,4 +953,64 @@ public class DictionaryTest
         Assert.Equal(CacheGetStatus.HIT, getAllResponse.Status);
         Assert.Equal(getAllResponse.StringDictionary(), contentDictionary);
     }
+
+    [Theory]
+    [InlineData(null, "my-dictionary")]
+    [InlineData("my-cache", null)]
+    public void DictionaryDelete_NullChecks_ThrowsException(string cacheName, string dictionaryName)
+    {
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryDelete(cacheName, dictionaryName));
+    }
+
+    [Fact]
+    public void DictionaryDelete_DictionaryDoesNotExist_Noop()
+    {
+        var dictionaryName = Utils.GuidString();
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGetAll(cacheName, dictionaryName).Status);
+        client.DictionaryDelete(cacheName, dictionaryName);
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGetAll(cacheName, dictionaryName).Status);
+    }
+
+    [Fact]
+    public void DictionaryDelete_DictionaryExists_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        client.DictionarySet(cacheName, dictionaryName, Utils.GuidString(), Utils.GuidString(), false);
+        client.DictionarySet(cacheName, dictionaryName, Utils.GuidString(), Utils.GuidString(), false);
+        client.DictionarySet(cacheName, dictionaryName, Utils.GuidString(), Utils.GuidString(), false);
+
+        Assert.Equal(CacheGetStatus.HIT, client.DictionaryGetAll(cacheName, dictionaryName).Status);
+        client.DictionaryDelete(cacheName, dictionaryName);
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGetAll(cacheName, dictionaryName).Status);
+    }
+
+    [Theory]
+    [InlineData(null, "my-dictionary")]
+    [InlineData("my-cache", null)]
+    public async void DictionaryDeleteAsync_NullChecks_ThrowsException(string cacheName, string dictionaryName)
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryDeleteAsync(cacheName, dictionaryName));
+    }
+
+    [Fact]
+    public async void DictionaryDeleteAsync_DictionaryDoesNotExist_Noop()
+    {
+        var dictionaryName = Utils.GuidString();
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAllAsync(cacheName, dictionaryName)).Status);
+        await client.DictionaryDeleteAsync(cacheName, dictionaryName);
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAllAsync(cacheName, dictionaryName)).Status);
+    }
+
+    [Fact]
+    public async void DictionaryDeleteAsync_DictionaryExists_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        await client.DictionarySetAsync(cacheName, dictionaryName, Utils.GuidString(), Utils.GuidString(), false);
+        await client.DictionarySetAsync(cacheName, dictionaryName, Utils.GuidString(), Utils.GuidString(), false);
+        await client.DictionarySetAsync(cacheName, dictionaryName, Utils.GuidString(), Utils.GuidString(), false);
+
+        Assert.Equal(CacheGetStatus.HIT, (await client.DictionaryGetAllAsync(cacheName, dictionaryName)).Status);
+        await client.DictionaryDeleteAsync(cacheName, dictionaryName);
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAllAsync(cacheName, dictionaryName)).Status);
+    }
 }

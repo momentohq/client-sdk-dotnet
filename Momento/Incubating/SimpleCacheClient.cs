@@ -569,6 +569,34 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.DictionaryGetAllAsync(cacheName, dictionaryName);
     }
 
+    public CacheDictionaryDeleteResponse DictionaryDelete(string cacheName, string dictionaryName)
+    {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+
+        return this.dataClient.DictionaryDelete(cacheName, dictionaryName);
+    }
+
+    public async Task<CacheDictionaryDeleteResponse> DictionaryDeleteAsync(string cacheName, string dictionaryName)
+    {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+
+        return await this.dataClient.DictionaryDeleteAsync(cacheName, dictionaryName);
+    }
+
     public void Dispose()
     {
         this.simpleCacheClient.Dispose();

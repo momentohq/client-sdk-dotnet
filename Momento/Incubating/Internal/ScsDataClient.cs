@@ -305,4 +305,40 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         return new CacheDictionaryGetAllResponse(response);
     }
+
+    public CacheDictionaryDeleteResponse DictionaryDelete(string cacheName, string dictionaryName)
+    {
+        _DictionaryDeleteRequest request = new()
+        {
+            DictionaryName = Convert(dictionaryName),
+            All = new _DictionaryDeleteRequest.Types.All()
+        };
+        try
+        {
+            this.grpcManager.Client.DictionaryDelete(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+        return new CacheDictionaryDeleteResponse();
+    }
+
+    public async Task<CacheDictionaryDeleteResponse> DictionaryDeleteAsync(string cacheName, string dictionaryName)
+    {
+        _DictionaryDeleteRequest request = new()
+        {
+            DictionaryName = Convert(dictionaryName),
+            All = new _DictionaryDeleteRequest.Types.All()
+        };
+        try
+        {
+            await this.grpcManager.Client.DictionaryDeleteAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+        return new CacheDictionaryDeleteResponse();
+    }
 }
