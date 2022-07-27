@@ -59,6 +59,14 @@ public class Utils
         }
     }
 
+    public static void ValuesNotNull<_, TValue>(IEnumerable<KeyValuePair<_, TValue>> argument, string paramName)
+    {
+        if (argument.Any(kv => kv.Value == null))
+        {
+            throw new ArgumentNullException(paramName, "Each value must be non-null");
+        }
+    }
+
     /// <summary>
     /// Throw an exception if any of the elements of the enumerable is null.
     /// </summary>

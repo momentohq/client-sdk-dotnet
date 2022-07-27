@@ -270,6 +270,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(items, nameof(items));
+        Utils.ValuesNotNull(items, nameof(items));
 
         return this.dataClient.DictionarySetMulti(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
@@ -279,6 +280,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(items, nameof(items));
+        Utils.ValuesNotNull(items, nameof(items));
 
         return this.dataClient.DictionarySetMulti(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
@@ -288,6 +290,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(items, nameof(items));
+        Utils.ValuesNotNull(items, nameof(items));
 
         return await this.dataClient.DictionarySetMultiAsync(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
@@ -297,6 +300,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(items, nameof(items));
+        Utils.ValuesNotNull(items, nameof(items));
 
         return await this.dataClient.DictionarySetMultiAsync(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
@@ -306,6 +310,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
+        Utils.ElementsNotNull(fields, nameof(fields));
 
         return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
     }
@@ -315,6 +320,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
+        Utils.ElementsNotNull(fields, nameof(fields));
 
         return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
     }
@@ -324,6 +330,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
+        Utils.ElementsNotNull(fields, nameof(fields));
 
         return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
     }
@@ -333,6 +340,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
+        Utils.ElementsNotNull(fields, nameof(fields));
 
         return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
     }
@@ -342,6 +350,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
+        Utils.ElementsNotNull(fields, nameof(fields));
 
         return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
     }
@@ -351,6 +360,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
+        Utils.ElementsNotNull(fields, nameof(fields));
 
         return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
     }
@@ -360,6 +370,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
+        Utils.ElementsNotNull(fields, nameof(fields));
 
         return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
     }
@@ -369,6 +380,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
+        Utils.ElementsNotNull(fields, nameof(fields));
 
         return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
     }
@@ -465,6 +477,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
+        Utils.ElementsNotNull(fields, nameof(fields));
 
         return this.dataClient.DictionaryRemoveFields(cacheName, dictionaryName, fields);
     }
@@ -483,6 +496,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
+        Utils.ElementsNotNull(fields, nameof(fields));
 
         return this.dataClient.DictionaryRemoveFields(cacheName, dictionaryName, fields);
     }
@@ -492,6 +506,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
+        Utils.ElementsNotNull(fields, nameof(fields));
 
         return this.dataClient.DictionaryRemoveFields(cacheName, dictionaryName, fields);
     }
@@ -501,6 +516,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
+        Utils.ElementsNotNull(fields, nameof(fields));
 
         return await this.dataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
     }
@@ -510,6 +526,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
+        Utils.ElementsNotNull(fields, nameof(fields));
 
         return await this.dataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
     }
@@ -519,6 +536,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
+        Utils.ElementsNotNull(fields, nameof(fields));
 
         return await this.dataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
     }
@@ -528,6 +546,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
+        Utils.ElementsNotNull(fields, nameof(fields));
 
         return await this.dataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
     }
