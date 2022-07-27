@@ -30,19 +30,13 @@ public class SimpleCacheClient : ISimpleCacheClient
 
     public CreateCacheResponse CreateCache(string cacheName)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         return this.controlClient.CreateCache(cacheName);
     }
 
     public DeleteCacheResponse DeleteCache(string cacheName)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         return this.controlClient.DeleteCache(cacheName);
     }
 
@@ -53,201 +47,104 @@ public class SimpleCacheClient : ISimpleCacheClient
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (key == null)
-        {
-            throw new ArgumentNullException(nameof(key));
-        }
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(key, nameof(key));
+        Utils.ArgumentNotNull(value, nameof(value));
 
         return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
     }
 
     public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (key == null)
-        {
-            throw new ArgumentNullException(nameof(key));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(key, nameof(key));
 
         return await this.dataClient.GetAsync(cacheName, key);
     }
 
     public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, byte[] key)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (key == null)
-        {
-            throw new ArgumentNullException(nameof(key));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(key, nameof(key));
 
         return await this.dataClient.DeleteAsync(cacheName, key);
     }
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint? ttlSeconds = null)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (key == null)
-        {
-            throw new ArgumentNullException(nameof(key));
-        }
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(key, nameof(key));
+        Utils.ArgumentNotNull(value, nameof(value));
 
         return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
     }
 
     public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (key == null)
-        {
-            throw new ArgumentNullException(nameof(key));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(key, nameof(key));
 
         return await this.dataClient.GetAsync(cacheName, key);
     }
 
     public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (key == null)
-        {
-            throw new ArgumentNullException(nameof(key));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(key, nameof(key));
 
         return await this.dataClient.DeleteAsync(cacheName, key);
     }
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (key == null)
-        {
-            throw new ArgumentNullException(nameof(key));
-        }
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(key, nameof(key));
+        Utils.ArgumentNotNull(value, nameof(value));
 
         return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
     }
 
     public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<byte[]> keys)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (keys == null)
-        {
-            throw new ArgumentNullException(nameof(keys));
-        }
-        if (keys.Any(key => key == null))
-        {
-            throw new ArgumentNullException(nameof(keys), "Each key must be non-null");
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(keys, nameof(keys));
+        Utils.ElementsNotNull(keys, nameof(keys));
 
         return await this.dataClient.GetMultiAsync(cacheName, keys);
     }
 
     public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<string> keys)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (keys == null)
-        {
-            throw new ArgumentNullException(nameof(keys));
-        }
-        if (keys.Any(key => key == null))
-        {
-            throw new ArgumentNullException(nameof(keys), "Each key must be non-null");
-        }
-
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(keys, nameof(keys));
+        Utils.ElementsNotNull(keys, nameof(keys));
 
         return await this.dataClient.GetMultiAsync(cacheName, keys);
     }
 
     public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, params byte[][] keys)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (keys == null)
-        {
-            throw new ArgumentNullException(nameof(keys));
-        }
-        if (keys.Any(key => key == null))
-        {
-            throw new ArgumentNullException(nameof(keys), "Each key must be non-null");
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(keys, nameof(keys));
+        Utils.ElementsNotNull(keys, nameof(keys));
 
         return await this.dataClient.GetMultiAsync(cacheName, keys);
     }
 
     public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, params string[] keys)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (keys == null || keys.Any(key => key == null))
-        {
-            throw new ArgumentNullException(nameof(keys));
-        }
-        if (keys.Any(key => key == null))
-        {
-            throw new ArgumentNullException(nameof(keys), "Each key must be non-null");
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(keys, nameof(keys));
+        Utils.ElementsNotNull(keys, nameof(keys));
 
         return await this.dataClient.GetMultiAsync(cacheName, keys);
     }
 
     public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (items == null)
-        {
-            throw new ArgumentNullException(nameof(items));
-        }
-        if (items.Values.Any(value => value == null))
-        {
-            throw new ArgumentNullException(nameof(items), "Each value must be non-null");
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(items, nameof(items));
+        Utils.DictionaryValuesNotNull(items, nameof(items));
 
         await this.dataClient.SetMultiAsync(cacheName, items, ttlSeconds);
         return new CacheSetMultiResponse(items);
@@ -255,18 +152,9 @@ public class SimpleCacheClient : ISimpleCacheClient
 
     public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (items == null)
-        {
-            throw new ArgumentNullException(nameof(items));
-        }
-        if (items.Values.Any(value => value == null))
-        {
-            throw new ArgumentNullException(nameof(items), "Each value must be non-null");
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(items, nameof(items));
+        Utils.DictionaryValuesNotNull(items, nameof(items));
 
         await this.dataClient.SetMultiAsync(cacheName, items, ttlSeconds);
         return new CacheSetMultiResponse(items);
@@ -282,78 +170,42 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <returns>Result of the set operation</returns>
     public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (key == null)
-        {
-            throw new ArgumentNullException(nameof(key));
-        }
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(key, nameof(key));
+        Utils.ArgumentNotNull(value, nameof(value));
 
         return this.dataClient.Set(cacheName, key, value, ttlSeconds);
     }
 
     public CacheGetResponse Get(string cacheName, byte[] key)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (key == null)
-        {
-            throw new ArgumentNullException(nameof(key));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(key, nameof(key));
 
         return this.dataClient.Get(cacheName, key);
     }
 
     public CacheDeleteResponse Delete(string cacheName, byte[] key)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (key == null)
-        {
-            throw new ArgumentNullException(nameof(key));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(key, nameof(key));
 
         return this.dataClient.Delete(cacheName, key);
     }
 
     public CacheSetResponse Set(string cacheName, string key, string value, uint? ttlSeconds = null)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (key == null)
-        {
-            throw new ArgumentNullException(nameof(key));
-        }
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(key, nameof(key));
+        Utils.ArgumentNotNull(value, nameof(value));
 
         return this.dataClient.Set(cacheName, key, value, ttlSeconds);
     }
 
     public CacheGetResponse Get(string cacheName, string key)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (key == null)
-        {
-            throw new ArgumentNullException(nameof(key));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(key, nameof(key));
 
         return this.dataClient.Get(cacheName, key);
     }
@@ -432,32 +284,17 @@ public class SimpleCacheClient : ISimpleCacheClient
 
     public CacheDeleteResponse Delete(string cacheName, string key)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (key == null)
-        {
-            throw new ArgumentNullException(nameof(key));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(key, nameof(key));
 
         return this.dataClient.Delete(cacheName, key);
     }
 
     public CacheSetResponse Set(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (key == null)
-        {
-            throw new ArgumentNullException(nameof(key));
-        }
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(key));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(key, nameof(key));
+        Utils.ArgumentNotNull(value, nameof(value));
 
         return this.dataClient.Set(cacheName, key, value, ttlSeconds);
     }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MomentoSdk.Responses;
+using Utils = MomentoSdk.Internal.Utils;
 using MomentoSdk.Incubating.Internal;
 using MomentoSdk.Incubating.Responses;
 
@@ -182,88 +183,40 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `field`, `value` is `null`.</exception>
     public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, byte[] field, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (field == null)
-        {
-            throw new ArgumentNullException(nameof(field));
-        }
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(field, nameof(field));
+        Utils.ArgumentNotNull(value, nameof(value));
 
         return this.dataClient.DictionarySet(cacheName, dictionaryName, field, value, refreshTtl, ttlSeconds);
     }
 
     public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, string field, string value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (field == null)
-        {
-            throw new ArgumentNullException(nameof(field));
-        }
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(field, nameof(field));
+        Utils.ArgumentNotNull(value, nameof(value));
 
         return this.dataClient.DictionarySet(cacheName, dictionaryName, field, value, refreshTtl, ttlSeconds);
     }
 
     public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, byte[] field, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (field == null)
-        {
-            throw new ArgumentNullException(nameof(field));
-        }
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(field, nameof(field));
+        Utils.ArgumentNotNull(value, nameof(value));
 
         return await this.dataClient.DictionarySetAsync(cacheName, dictionaryName, field, value, refreshTtl, ttlSeconds);
     }
 
     public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, string field, string value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (field == null)
-        {
-            throw new ArgumentNullException(nameof(field));
-        }
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(field, nameof(field));
+        Utils.ArgumentNotNull(value, nameof(value));
 
         return await this.dataClient.DictionarySetAsync(cacheName, dictionaryName, field, value, refreshTtl, ttlSeconds);
     }
@@ -278,316 +231,160 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `field` is `null`.</exception>
     public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, byte[] field)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (field == null)
-        {
-            throw new ArgumentNullException(nameof(field));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(field, nameof(field));
 
         return this.dataClient.DictionaryGet(cacheName, dictionaryName, field);
     }
 
     public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, string field)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (field == null)
-        {
-            throw new ArgumentNullException(nameof(field));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(field, nameof(field));
 
         return this.dataClient.DictionaryGet(cacheName, dictionaryName, field);
     }
 
     public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, byte[] field)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (field == null)
-        {
-            throw new ArgumentNullException(nameof(field));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(field, nameof(field));
 
         return await this.dataClient.DictionaryGetAsync(cacheName, dictionaryName, field);
     }
 
     public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, string field)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (field == null)
-        {
-            throw new ArgumentNullException(nameof(field));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(field, nameof(field));
 
         return await this.dataClient.DictionaryGetAsync(cacheName, dictionaryName, field);
     }
 
     public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (items == null)
-        {
-            throw new ArgumentNullException(nameof(items));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(items, nameof(items));
 
         return this.dataClient.DictionarySetMulti(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
 
     public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (items == null)
-        {
-            throw new ArgumentNullException(nameof(items));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(items, nameof(items));
 
         return this.dataClient.DictionarySetMulti(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
 
     public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (items == null)
-        {
-            throw new ArgumentNullException(nameof(items));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(items, nameof(items));
 
         return await this.dataClient.DictionarySetMultiAsync(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
 
     public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (items == null)
-        {
-            throw new ArgumentNullException(nameof(items));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(items, nameof(items));
 
         return await this.dataClient.DictionarySetMultiAsync(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
 
     public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, params byte[][] fields)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (fields == null)
-        {
-            throw new ArgumentNullException(nameof(fields));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(fields, nameof(fields));
 
         return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
     }
 
     public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, params string[] fields)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (fields == null)
-        {
-            throw new ArgumentNullException(nameof(fields));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(fields, nameof(fields));
 
         return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
     }
 
     public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (fields == null)
-        {
-            throw new ArgumentNullException(nameof(fields));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(fields, nameof(fields));
 
         return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
     }
 
     public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, IEnumerable<string> fields)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (fields == null)
-        {
-            throw new ArgumentNullException(nameof(fields));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(fields, nameof(fields));
 
         return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
     }
 
     public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, params byte[][] fields)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (fields == null)
-        {
-            throw new ArgumentNullException(nameof(fields));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(fields, nameof(fields));
 
         return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
     }
 
     public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, params string[] fields)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (fields == null)
-        {
-            throw new ArgumentNullException(nameof(fields));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(fields, nameof(fields));
 
         return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
     }
 
     public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (fields == null)
-        {
-            throw new ArgumentNullException(nameof(fields));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(fields, nameof(fields));
 
         return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
     }
 
     public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, IEnumerable<string> fields)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (fields == null)
-        {
-            throw new ArgumentNullException(nameof(fields));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(fields, nameof(fields));
 
         return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
     }
 
     public CacheDictionaryGetAllResponse DictionaryGetAll(string cacheName, string dictionaryName)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
 
         return this.dataClient.DictionaryGetAll(cacheName, dictionaryName);
     }
 
     public async Task<CacheDictionaryGetAllResponse> DictionaryGetAllAsync(string cacheName, string dictionaryName)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
 
         return await this.dataClient.DictionaryGetAllAsync(cacheName, dictionaryName);
     }
@@ -603,28 +400,16 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <exception cref="ArgumentNullException">Any of `cacheName` or `dictionaryName` is `null`.</exception>
     public CacheDictionaryDeleteResponse DictionaryDelete(string cacheName, string dictionaryName)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
 
         return this.dataClient.DictionaryDelete(cacheName, dictionaryName);
     }
 
     public async Task<CacheDictionaryDeleteResponse> DictionaryDeleteAsync(string cacheName, string dictionaryName)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
 
         return await this.dataClient.DictionaryDeleteAsync(cacheName, dictionaryName);
     }
@@ -641,216 +426,108 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `field` is `null`.</exception>
     public CacheDictionaryRemoveFieldResponse DictionaryRemoveField(string cacheName, string dictionaryName, byte[] field)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (field == null)
-        {
-            throw new ArgumentNullException(nameof(field));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(field, nameof(field));
 
         return this.dataClient.DictionaryRemoveField(cacheName, dictionaryName, field);
     }
 
     public CacheDictionaryRemoveFieldResponse DictionaryRemoveField(string cacheName, string dictionaryName, string field)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (field == null)
-        {
-            throw new ArgumentNullException(nameof(field));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(field, nameof(field));
 
         return this.dataClient.DictionaryRemoveField(cacheName, dictionaryName, field);
     }
 
     public async Task<CacheDictionaryRemoveFieldResponse> DictionaryRemoveFieldAsync(string cacheName, string dictionaryName, byte[] field)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (field == null)
-        {
-            throw new ArgumentNullException(nameof(field));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(field, nameof(field));
 
         return await this.dataClient.DictionaryRemoveFieldAsync(cacheName, dictionaryName, field);
     }
 
     public async Task<CacheDictionaryRemoveFieldResponse> DictionaryRemoveFieldAsync(string cacheName, string dictionaryName, string field)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (field == null)
-        {
-            throw new ArgumentNullException(nameof(field));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(field, nameof(field));
 
         return await this.dataClient.DictionaryRemoveFieldAsync(cacheName, dictionaryName, field);
     }
 
     public CacheDictionaryRemoveFieldsResponse DictionaryRemoveFields(string cacheName, string dictionaryName, params byte[][] fields)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (fields == null)
-        {
-            throw new ArgumentNullException(nameof(fields));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(fields, nameof(fields));
 
         return this.dataClient.DictionaryRemoveFields(cacheName, dictionaryName, fields);
     }
 
     public CacheDictionaryRemoveFieldsResponse DictionaryRemoveFields(string cacheName, string dictionaryName, params string[] fields)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (fields == null)
-        {
-            throw new ArgumentNullException(nameof(fields));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(fields, nameof(fields));
 
         return this.dataClient.DictionaryRemoveFields(cacheName, dictionaryName, fields);
     }
 
     public CacheDictionaryRemoveFieldsResponse DictionaryRemoveFields(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (fields == null)
-        {
-            throw new ArgumentNullException(nameof(fields));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(fields, nameof(fields));
 
         return this.dataClient.DictionaryRemoveFields(cacheName, dictionaryName, fields);
     }
 
     public CacheDictionaryRemoveFieldsResponse DictionaryRemoveFields(string cacheName, string dictionaryName, IEnumerable<string> fields)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (fields == null)
-        {
-            throw new ArgumentNullException(nameof(fields));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(fields, nameof(fields));
 
         return this.dataClient.DictionaryRemoveFields(cacheName, dictionaryName, fields);
     }
 
     public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, params byte[][] fields)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (fields == null)
-        {
-            throw new ArgumentNullException(nameof(fields));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(fields, nameof(fields));
 
         return await this.dataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
     }
 
     public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, params string[] fields)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (fields == null)
-        {
-            throw new ArgumentNullException(nameof(fields));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(fields, nameof(fields));
 
         return await this.dataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
     }
 
     public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (fields == null)
-        {
-            throw new ArgumentNullException(nameof(fields));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(fields, nameof(fields));
 
         return await this.dataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
     }
 
     public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, IEnumerable<string> fields)
     {
-        if (cacheName == null)
-        {
-            throw new ArgumentNullException(nameof(cacheName));
-        }
-        if (dictionaryName == null)
-        {
-            throw new ArgumentNullException(nameof(dictionaryName));
-        }
-        if (fields == null)
-        {
-            throw new ArgumentNullException(nameof(fields));
-        }
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(fields, nameof(fields));
 
         return await this.dataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
     }
