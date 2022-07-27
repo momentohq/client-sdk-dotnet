@@ -16,7 +16,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     {
         this.simpleCacheClient = simpleCacheClient;
 
-        var claims = JwtUtils.DecodeJwt(authToken);
+        var claims = MomentoSdk.Internal.JwtUtils.DecodeJwt(authToken);
         this.dataClient = new(authToken, claims.CacheEndpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds);
     }
 
