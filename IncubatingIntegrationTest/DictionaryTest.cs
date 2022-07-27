@@ -1013,4 +1013,128 @@ public class DictionaryTest
         await client.DictionaryDeleteAsync(cacheName, dictionaryName);
         Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAllAsync(cacheName, dictionaryName)).Status);
     }
+
+    [Theory]
+    [InlineData(null, "my-dictionary", new byte[] { 0x00 })]
+    [InlineData("my-cache", null, new byte[] { 0x00 })]
+    [InlineData("my-cache", "my-dictionary", null)]
+    public void DictionaryRemoveField_NullChecksByte_ThrowsException(string cacheName, string dictionaryName, byte[] field)
+    {
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryRemoveField(cacheName, dictionaryName, field));
+    }
+
+    [Theory]
+    [InlineData(null, "my-dictionary", "my-field")]
+    [InlineData("my-cache", null, "my-field")]
+    [InlineData("my-cache", "my-dictionary", null)]
+    public void DictionaryRemoveField_NullChecksString_ThrowsException(string cacheName, string dictionaryName, string field)
+    {
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryRemoveField(cacheName, dictionaryName, field));
+    }
+
+    [Fact]
+    public void DictionaryRemoveField_FieldIsByteArray_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field1 = Utils.GuidBytes();
+        var value1 = Utils.GuidBytes();
+        var field2 = Utils.GuidBytes();
+
+        // Add a field then delete it
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, field1).Status);
+        client.DictionarySet(cacheName, dictionaryName, field1, value1, false);
+        Assert.Equal(CacheGetStatus.HIT, client.DictionaryGet(cacheName, dictionaryName, field1).Status);
+
+        client.DictionaryRemoveField(cacheName, dictionaryName, field1);
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, field1).Status);
+
+        // Test no-op
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, field2).Status);
+        client.DictionaryRemoveField(cacheName, dictionaryName, field2);
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, field2).Status);
+    }
+
+    [Fact]
+    public void DictionaryRemoveField_FieldIsString_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field1 = Utils.GuidString();
+        var value1 = Utils.GuidString();
+        var field2 = Utils.GuidString();
+
+        // Add a field then delete it
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, field1).Status);
+        client.DictionarySet(cacheName, dictionaryName, field1, value1, false);
+        Assert.Equal(CacheGetStatus.HIT, client.DictionaryGet(cacheName, dictionaryName, field1).Status);
+
+        client.DictionaryRemoveField(cacheName, dictionaryName, field1);
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, field1).Status);
+
+        // Test no-op
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, field2).Status);
+        client.DictionaryRemoveField(cacheName, dictionaryName, field2);
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, field2).Status);
+    }
+
+    [Theory]
+    [InlineData(null, "my-dictionary", new byte[] { 0x00 })]
+    [InlineData("my-cache", null, new byte[] { 0x00 })]
+    [InlineData("my-cache", "my-dictionary", null)]
+    public async void DictionaryRemoveFieldAsync_NullChecksByte_ThrowsException(string cacheName, string dictionaryName, byte[] field)
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryRemoveFieldAsync(cacheName, dictionaryName, field));
+    }
+
+    [Theory]
+    [InlineData(null, "my-dictionary", "my-field")]
+    [InlineData("my-cache", null, "my-field")]
+    [InlineData("my-cache", "my-dictionary", null)]
+    public async void DictionaryRemoveFieldAsync_NullChecksString_ThrowsException(string cacheName, string dictionaryName, string field)
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryRemoveFieldAsync(cacheName, dictionaryName, field));
+    }
+
+    [Fact]
+    public async void DictionaryRemoveFieldAsync_FieldIsByteArray_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field1 = Utils.GuidBytes();
+        var value1 = Utils.GuidBytes();
+        var field2 = Utils.GuidBytes();
+
+        // Add a field then delete it
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAsync(cacheName, dictionaryName, field1)).Status);
+        client.DictionarySet(cacheName, dictionaryName, field1, value1, false);
+        Assert.Equal(CacheGetStatus.HIT, (await client.DictionaryGetAsync(cacheName, dictionaryName, field1)).Status);
+
+        client.DictionaryRemoveField(cacheName, dictionaryName, field1);
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAsync(cacheName, dictionaryName, field1)).Status);
+
+        // Test no-op
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAsync(cacheName, dictionaryName, field2)).Status);
+        client.DictionaryRemoveField(cacheName, dictionaryName, field2);
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAsync(cacheName, dictionaryName, field2)).Status);
+    }
+
+    [Fact]
+    public async void DictionaryRemoveFieldAsync_FieldIsString_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var field1 = Utils.GuidString();
+        var value1 = Utils.GuidString();
+        var field2 = Utils.GuidString();
+
+        // Add a field then delete it
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAsync(cacheName, dictionaryName, field1)).Status);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field1, value1, false);
+        Assert.Equal(CacheGetStatus.HIT, (await client.DictionaryGetAsync(cacheName, dictionaryName, field1)).Status);
+
+        await client.DictionaryRemoveFieldAsync(cacheName, dictionaryName, field1);
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAsync(cacheName, dictionaryName, field1)).Status);
+
+        // Test no-op
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, field2).Status);
+        client.DictionaryRemoveField(cacheName, dictionaryName, field2);
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, field2).Status);
+    }
 }

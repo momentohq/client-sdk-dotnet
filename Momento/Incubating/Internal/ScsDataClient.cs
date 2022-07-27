@@ -341,4 +341,64 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         return new CacheDictionaryDeleteResponse();
     }
+
+    public CacheDictionaryRemoveFieldResponse DictionaryRemoveField(string cacheName, string dictionaryName, byte[] field)
+    {
+        return DictionaryRemoveField(cacheName, dictionaryName, Convert(field));
+    }
+
+    public CacheDictionaryRemoveFieldResponse DictionaryRemoveField(string cacheName, string dictionaryName, string field)
+    {
+        return DictionaryRemoveField(cacheName, dictionaryName, Convert(field));
+    }
+
+    public CacheDictionaryRemoveFieldResponse DictionaryRemoveField(string cacheName, string dictionaryName, ByteString field)
+    {
+        _DictionaryDeleteRequest request = new()
+        {
+            DictionaryName = Convert(dictionaryName),
+            Some = new _DictionaryDeleteRequest.Types.Some()
+        };
+        request.Some.Keys.Add(field);
+
+        try
+        {
+            this.grpcManager.Client.DictionaryDelete(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+        return new CacheDictionaryRemoveFieldResponse();
+    }
+
+    public async Task<CacheDictionaryRemoveFieldResponse> DictionaryRemoveFieldAsync(string cacheName, string dictionaryName, byte[] field)
+    {
+        return await DictionaryRemoveFieldAsync(cacheName, dictionaryName, Convert(field));
+    }
+
+    public async Task<CacheDictionaryRemoveFieldResponse> DictionaryRemoveFieldAsync(string cacheName, string dictionaryName, string field)
+    {
+        return await DictionaryRemoveFieldAsync(cacheName, dictionaryName, Convert(field));
+    }
+
+    public async Task<CacheDictionaryRemoveFieldResponse> DictionaryRemoveFieldAsync(string cacheName, string dictionaryName, ByteString field)
+    {
+        _DictionaryDeleteRequest request = new()
+        {
+            DictionaryName = Convert(dictionaryName),
+            Some = new _DictionaryDeleteRequest.Types.Some()
+        };
+        request.Some.Keys.Add(field);
+
+        try
+        {
+            await this.grpcManager.Client.DictionaryDeleteAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+        return new CacheDictionaryRemoveFieldResponse();
+    }
 }
