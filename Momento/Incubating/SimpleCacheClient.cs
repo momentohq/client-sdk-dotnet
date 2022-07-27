@@ -669,6 +669,150 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.DictionaryRemoveFieldAsync(cacheName, dictionaryName, field);
     }
 
+    public CacheDictionaryRemoveFieldsResponse DictionaryRemoveFields(string cacheName, string dictionaryName, params byte[][] fields)
+    {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (fields == null)
+        {
+            throw new ArgumentNullException(nameof(fields));
+        }
+
+        return this.dataClient.DictionaryRemoveFields(cacheName, dictionaryName, fields);
+    }
+
+    public CacheDictionaryRemoveFieldsResponse DictionaryRemoveFields(string cacheName, string dictionaryName, params string[] fields)
+    {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (fields == null)
+        {
+            throw new ArgumentNullException(nameof(fields));
+        }
+
+        return this.dataClient.DictionaryRemoveFields(cacheName, dictionaryName, fields);
+    }
+
+    public CacheDictionaryRemoveFieldsResponse DictionaryRemoveFields(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
+    {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (fields == null)
+        {
+            throw new ArgumentNullException(nameof(fields));
+        }
+
+        return this.dataClient.DictionaryRemoveFields(cacheName, dictionaryName, fields);
+    }
+
+    public CacheDictionaryRemoveFieldsResponse DictionaryRemoveFields(string cacheName, string dictionaryName, IEnumerable<string> fields)
+    {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (fields == null)
+        {
+            throw new ArgumentNullException(nameof(fields));
+        }
+
+        return this.dataClient.DictionaryRemoveFields(cacheName, dictionaryName, fields);
+    }
+
+    public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, params byte[][] fields)
+    {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (fields == null)
+        {
+            throw new ArgumentNullException(nameof(fields));
+        }
+
+        return await this.dataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
+    }
+
+    public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, params string[] fields)
+    {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (fields == null)
+        {
+            throw new ArgumentNullException(nameof(fields));
+        }
+
+        return await this.dataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
+    }
+
+    public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
+    {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (fields == null)
+        {
+            throw new ArgumentNullException(nameof(fields));
+        }
+
+        return await this.dataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
+    }
+
+    public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, IEnumerable<string> fields)
+    {
+        if (cacheName == null)
+        {
+            throw new ArgumentNullException(nameof(cacheName));
+        }
+        if (dictionaryName == null)
+        {
+            throw new ArgumentNullException(nameof(dictionaryName));
+        }
+        if (fields == null)
+        {
+            throw new ArgumentNullException(nameof(fields));
+        }
+
+        return await this.dataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
+    }
+
     public void Dispose()
     {
         this.simpleCacheClient.Dispose();

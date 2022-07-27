@@ -686,7 +686,7 @@ public class DictionaryTest
     public void DictionaryGetMulti_NullChecksByteArrayParams_ThrowsException()
     {
         var dictionaryName = Utils.GuidString();
-        var fields = new byte[][] { new byte[] { 0x00 }, new byte[] { 0x00 } };
+        var fields = new byte[][] { Utils.GuidBytes(), Utils.GuidBytes() };
         Assert.Throws<ArgumentNullException>(() => client.DictionaryGetMulti(null!, dictionaryName, fields));
         Assert.Throws<ArgumentNullException>(() => client.DictionaryGetMulti(cacheName, null!, fields));
 
@@ -762,7 +762,7 @@ public class DictionaryTest
     public async void DictionaryGetMultiAsync_NullChecksByteArrayParams_ThrowsException()
     {
         var dictionaryName = Utils.GuidString();
-        var fields = new byte[][] { new byte[] { 0x00 }, new byte[] { 0x00 } };
+        var fields = new byte[][] { Utils.GuidBytes(), Utils.GuidBytes() };
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetMultiAsync(null!, dictionaryName, fields));
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetMultiAsync(cacheName, null!, fields));
 
@@ -1136,5 +1136,185 @@ public class DictionaryTest
         Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, field2).Status);
         client.DictionaryRemoveField(cacheName, dictionaryName, field2);
         Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, field2).Status);
+    }
+
+    [Fact]
+    public void DictionaryRemoveFields_NullChecksByteArrayParams_ThrowsException()
+    {
+        var dictionaryName = Utils.GuidString();
+        var fields = new byte[][] { Utils.GuidBytes(), Utils.GuidBytes() };
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryRemoveFields(null!, dictionaryName, fields));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryRemoveFields(cacheName, null!, fields));
+
+        var fieldsList = new List<byte[]>(fields);
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryRemoveFields(null!, dictionaryName, fieldsList));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryRemoveFields(cacheName, null!, fieldsList));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryRemoveFields(cacheName, null!, (List<byte[]>)null!));
+    }
+
+    [Fact]
+    public void DictionaryRemoveFields_ByteArrayParams_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var fields = new byte[][] { Utils.GuidBytes(), Utils.GuidBytes() };
+        var otherField = Utils.GuidBytes();
+
+        // Test variadic args
+        client.DictionarySet(cacheName, dictionaryName, fields[0], Utils.GuidBytes(), false);
+        client.DictionarySet(cacheName, dictionaryName, fields[1], Utils.GuidBytes(), false);
+        client.DictionarySet(cacheName, dictionaryName, otherField, Utils.GuidBytes(), false);
+
+
+        client.DictionaryRemoveFields(cacheName, dictionaryName, fields[0], fields[1]);
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, fields[0]).Status);
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, fields[1]).Status);
+        Assert.Equal(CacheGetStatus.HIT, client.DictionaryGet(cacheName, dictionaryName, otherField).Status);
+
+        // Test enumerable
+        dictionaryName = Utils.GuidString();
+        client.DictionarySet(cacheName, dictionaryName, fields[0], Utils.GuidBytes(), false);
+        client.DictionarySet(cacheName, dictionaryName, fields[1], Utils.GuidBytes(), false);
+        client.DictionarySet(cacheName, dictionaryName, otherField, Utils.GuidBytes(), false);
+
+        var fieldsList = new List<byte[]>(fields);
+        client.DictionaryRemoveFields(cacheName, dictionaryName, fieldsList);
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, fields[0]).Status);
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, fields[1]).Status);
+        Assert.Equal(CacheGetStatus.HIT, client.DictionaryGet(cacheName, dictionaryName, otherField).Status);
+    }
+
+    [Fact]
+    public void DictionaryRemoveFields_NullChecksStringParams_ThrowsException()
+    {
+        var dictionaryName = Utils.GuidString();
+        var fields = new string[] { Utils.GuidString(), Utils.GuidString() };
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryRemoveFields(null!, dictionaryName, fields));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryRemoveFields(cacheName, null!, fields));
+
+        var fieldsList = new List<string>(fields);
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryRemoveFields(null!, dictionaryName, fieldsList));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryRemoveFields(cacheName, null!, fieldsList));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryRemoveFields(cacheName, null!, (List<string>)null!));
+    }
+
+    [Fact]
+    public void DictionaryRemoveFields_StringParams_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var fields = new string[] { Utils.GuidString(), Utils.GuidString() };
+        var otherField = Utils.GuidString();
+
+        // Test variadic args
+        client.DictionarySet(cacheName, dictionaryName, fields[0], Utils.GuidString(), false);
+        client.DictionarySet(cacheName, dictionaryName, fields[1], Utils.GuidString(), false);
+        client.DictionarySet(cacheName, dictionaryName, otherField, Utils.GuidString(), false);
+
+
+        client.DictionaryRemoveFields(cacheName, dictionaryName, fields[0], fields[1]);
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, fields[0]).Status);
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, fields[1]).Status);
+        Assert.Equal(CacheGetStatus.HIT, client.DictionaryGet(cacheName, dictionaryName, otherField).Status);
+
+        // Test enumerable
+        dictionaryName = Utils.GuidString();
+        client.DictionarySet(cacheName, dictionaryName, fields[0], Utils.GuidString(), false);
+        client.DictionarySet(cacheName, dictionaryName, fields[1], Utils.GuidString(), false);
+        client.DictionarySet(cacheName, dictionaryName, otherField, Utils.GuidString(), false);
+
+        var fieldsList = new List<string>(fields);
+        client.DictionaryRemoveFields(cacheName, dictionaryName, fieldsList);
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, fields[0]).Status);
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGet(cacheName, dictionaryName, fields[1]).Status);
+        Assert.Equal(CacheGetStatus.HIT, client.DictionaryGet(cacheName, dictionaryName, otherField).Status);
+    }
+
+    [Fact]
+    public async void DictionaryRemoveFieldsAsync_NullChecksByteArrayParams_ThrowsException()
+    {
+        var dictionaryName = Utils.GuidString();
+        var fields = new byte[][] { Utils.GuidBytes(), Utils.GuidBytes() };
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryRemoveFieldsAsync(null!, dictionaryName, fields));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryRemoveFieldsAsync(cacheName, null!, fields));
+
+        var fieldsList = new List<byte[]>(fields);
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryRemoveFieldsAsync(null!, dictionaryName, fieldsList));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryRemoveFieldsAsync(cacheName, null!, fieldsList));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryRemoveFieldsAsync(cacheName, null!, (List<byte[]>)null!));
+    }
+
+    [Fact]
+    public async void DictionaryRemoveFieldsAsync_ByteArrayParams_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var fields = new byte[][] { Utils.GuidBytes(), Utils.GuidBytes() };
+        var otherField = Utils.GuidBytes();
+
+        // Test variadic args
+        await client.DictionarySetAsync(cacheName, dictionaryName, fields[0], Utils.GuidBytes(), false);
+        await client.DictionarySetAsync(cacheName, dictionaryName, fields[1], Utils.GuidBytes(), false);
+        await client.DictionarySetAsync(cacheName, dictionaryName, otherField, Utils.GuidBytes(), false);
+
+
+        await client.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields[0], fields[1]);
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAsync(cacheName, dictionaryName, fields[0])).Status);
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAsync(cacheName, dictionaryName, fields[1])).Status);
+        Assert.Equal(CacheGetStatus.HIT, (await client.DictionaryGetAsync(cacheName, dictionaryName, otherField)).Status);
+
+        // Test enumerable
+        dictionaryName = Utils.GuidString();
+        await client.DictionarySetAsync(cacheName, dictionaryName, fields[0], Utils.GuidBytes(), false);
+        await client.DictionarySetAsync(cacheName, dictionaryName, fields[1], Utils.GuidBytes(), false);
+        await client.DictionarySetAsync(cacheName, dictionaryName, otherField, Utils.GuidBytes(), false);
+
+        var fieldsList = new List<byte[]>(fields);
+        await client.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fieldsList);
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAsync(cacheName, dictionaryName, fields[0])).Status);
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAsync(cacheName, dictionaryName, fields[1])).Status);
+        Assert.Equal(CacheGetStatus.HIT, (await client.DictionaryGetAsync(cacheName, dictionaryName, otherField)).Status);
+    }
+
+    [Fact]
+    public async void DictionaryRemoveFieldsAsync_NullChecksStringParams_ThrowsException()
+    {
+        var dictionaryName = Utils.GuidString();
+        var fields = new string[] { Utils.GuidString(), Utils.GuidString() };
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryRemoveFieldsAsync(null!, dictionaryName, fields));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryRemoveFieldsAsync(cacheName, null!, fields));
+
+        var fieldsList = new List<string>(fields);
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryRemoveFieldsAsync(null!, dictionaryName, fieldsList));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryRemoveFieldsAsync(cacheName, null!, fieldsList));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryRemoveFieldsAsync(cacheName, null!, (List<string>)null!));
+    }
+
+    [Fact]
+    public async void DictionaryRemoveFieldsAsync_StringParams_HappyPath()
+    {
+        var dictionaryName = Utils.GuidString();
+        var fields = new string[] { Utils.GuidString(), Utils.GuidString() };
+        var otherField = Utils.GuidString();
+
+        // Test variadic args
+        await client.DictionarySetAsync(cacheName, dictionaryName, fields[0], Utils.GuidString(), false);
+        await client.DictionarySetAsync(cacheName, dictionaryName, fields[1], Utils.GuidString(), false);
+        await client.DictionarySetAsync(cacheName, dictionaryName, otherField, Utils.GuidString(), false);
+
+
+        await client.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields[0], fields[1]);
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAsync(cacheName, dictionaryName, fields[0])).Status);
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAsync(cacheName, dictionaryName, fields[1])).Status);
+        Assert.Equal(CacheGetStatus.HIT, (await client.DictionaryGetAsync(cacheName, dictionaryName, otherField)).Status);
+
+        // Test enumerable
+        dictionaryName = Utils.GuidString();
+        await client.DictionarySetAsync(cacheName, dictionaryName, fields[0], Utils.GuidString(), false);
+        await client.DictionarySetAsync(cacheName, dictionaryName, fields[1], Utils.GuidString(), false);
+        await client.DictionarySetAsync(cacheName, dictionaryName, otherField, Utils.GuidString(), false);
+
+        var fieldsList = new List<string>(fields);
+        await client.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fieldsList);
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAsync(cacheName, dictionaryName, fields[0])).Status);
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAsync(cacheName, dictionaryName, fields[1])).Status);
+        Assert.Equal(CacheGetStatus.HIT, (await client.DictionaryGetAsync(cacheName, dictionaryName, otherField)).Status);
     }
 }
