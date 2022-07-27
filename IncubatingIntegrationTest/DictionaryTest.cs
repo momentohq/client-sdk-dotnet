@@ -38,7 +38,7 @@ public class DictionaryTest
     {
         var dictionaryName = Utils.GuidString();
         var field = Utils.GuidBytes();
-        var response = this.client.DictionaryGet(cacheName, dictionaryName, field);
+        var response = client.DictionaryGet(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
 
@@ -49,12 +49,12 @@ public class DictionaryTest
         var field = Utils.GuidBytes();
         var value = Utils.GuidBytes();
 
-        var setResponse = this.client.DictionarySet(cacheName, dictionaryName, field, value, false);
+        var setResponse = client.DictionarySet(cacheName, dictionaryName, field, value, false);
         Assert.Equal(setResponse.DictionaryName, dictionaryName);
         Assert.Equal(setResponse.FieldToByteArray(), field);
         Assert.Equal(setResponse.ValueToByteArray(), value);
 
-        var getResponse = this.client.DictionaryGet(cacheName, dictionaryName, field);
+        var getResponse = client.DictionaryGet(cacheName, dictionaryName, field);
 
         Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
     }
@@ -66,10 +66,10 @@ public class DictionaryTest
         var field = Utils.GuidBytes();
         var value = Utils.GuidBytes();
 
-        this.client.DictionarySet(cacheName, dictionaryName, field, value, false);
+        client.DictionarySet(cacheName, dictionaryName, field, value, false);
 
         var otherField = Utils.GuidBytes();
-        var response = this.client.DictionaryGet(cacheName, dictionaryName, otherField);
+        var response = client.DictionaryGet(cacheName, dictionaryName, otherField);
 
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
@@ -81,13 +81,13 @@ public class DictionaryTest
         var field = Utils.GuidBytes();
         var value = Utils.GuidBytes();
 
-        this.client.DictionarySet(cacheName, dictionaryName, field, value, false, ttlSeconds: 5);
+        client.DictionarySet(cacheName, dictionaryName, field, value, false, ttlSeconds: 5);
         Thread.Sleep(100);
 
-        this.client.DictionarySet(cacheName, dictionaryName, field, value, false, ttlSeconds: 10);
+        client.DictionarySet(cacheName, dictionaryName, field, value, false, ttlSeconds: 10);
         Thread.Sleep(4900);
 
-        var response = this.client.DictionaryGet(cacheName, dictionaryName, field);
+        var response = client.DictionaryGet(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
 
@@ -98,13 +98,13 @@ public class DictionaryTest
         var field = Utils.GuidBytes();
         var value = Utils.GuidBytes();
 
-        this.client.DictionarySet(cacheName, dictionaryName, field, value, false, ttlSeconds: 1);
+        client.DictionarySet(cacheName, dictionaryName, field, value, false, ttlSeconds: 1);
         Thread.Sleep(100);
 
-        this.client.DictionarySet(cacheName, dictionaryName, field, value, true, ttlSeconds: 10);
+        client.DictionarySet(cacheName, dictionaryName, field, value, true, ttlSeconds: 10);
         Thread.Sleep(1000);
 
-        var response = this.client.DictionaryGet(cacheName, dictionaryName, field);
+        var response = client.DictionaryGet(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
         Assert.Equal(value, response.Bytes);
     }
@@ -133,7 +133,7 @@ public class DictionaryTest
     {
         var dictionaryName = Utils.GuidString();
         var field = Utils.GuidString();
-        var response = this.client.DictionaryGet(cacheName, dictionaryName, field);
+        var response = client.DictionaryGet(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
 
@@ -144,12 +144,12 @@ public class DictionaryTest
         var field = Utils.GuidString();
         var value = Utils.GuidString();
 
-        var setResponse = this.client.DictionarySet(cacheName, dictionaryName, field, value, false);
+        var setResponse = client.DictionarySet(cacheName, dictionaryName, field, value, false);
         Assert.Equal(setResponse.DictionaryName, dictionaryName);
         Assert.Equal(setResponse.FieldToString(), field);
         Assert.Equal(setResponse.ValueToString(), value);
 
-        var getResponse = this.client.DictionaryGet(cacheName, dictionaryName, field);
+        var getResponse = client.DictionaryGet(cacheName, dictionaryName, field);
 
         Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
     }
@@ -161,10 +161,10 @@ public class DictionaryTest
         var field = Utils.GuidString();
         var value = Utils.GuidString();
 
-        this.client.DictionarySet(cacheName, dictionaryName, field, value, false);
+        client.DictionarySet(cacheName, dictionaryName, field, value, false);
 
         var otherField = Utils.GuidString();
-        var response = this.client.DictionaryGet(cacheName, dictionaryName, otherField);
+        var response = client.DictionaryGet(cacheName, dictionaryName, otherField);
 
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
@@ -176,13 +176,13 @@ public class DictionaryTest
         var field = Utils.GuidString();
         var value = Utils.GuidString();
 
-        this.client.DictionarySet(cacheName, dictionaryName, field, value, false, ttlSeconds: 5);
+        client.DictionarySet(cacheName, dictionaryName, field, value, false, ttlSeconds: 5);
         Thread.Sleep(100);
 
-        this.client.DictionarySet(cacheName, dictionaryName, field, value, false, ttlSeconds: 10);
+        client.DictionarySet(cacheName, dictionaryName, field, value, false, ttlSeconds: 10);
         Thread.Sleep(4900);
 
-        var response = this.client.DictionaryGet(cacheName, dictionaryName, field);
+        var response = client.DictionaryGet(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
 
@@ -193,13 +193,13 @@ public class DictionaryTest
         var field = Utils.GuidString();
         var value = Utils.GuidString();
 
-        this.client.DictionarySet(cacheName, dictionaryName, field, value, false, ttlSeconds: 1);
+        client.DictionarySet(cacheName, dictionaryName, field, value, false, ttlSeconds: 1);
         Thread.Sleep(100);
 
-        this.client.DictionarySet(cacheName, dictionaryName, field, value, true, ttlSeconds: 10);
+        client.DictionarySet(cacheName, dictionaryName, field, value, true, ttlSeconds: 10);
         Thread.Sleep(1000);
 
-        var response = this.client.DictionaryGet(cacheName, dictionaryName, field);
+        var response = client.DictionaryGet(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
         Assert.Equal(value, response.String());
     }
@@ -228,7 +228,7 @@ public class DictionaryTest
     {
         var dictionaryName = Utils.GuidString();
         var field = Utils.GuidBytes();
-        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
 
@@ -239,12 +239,12 @@ public class DictionaryTest
         var field = Utils.GuidBytes();
         var value = Utils.GuidBytes();
 
-        var setResponse = await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false);
+        var setResponse = await client.DictionarySetAsync(cacheName, dictionaryName, field, value, false);
         Assert.Equal(setResponse.DictionaryName, dictionaryName);
         Assert.Equal(setResponse.FieldToByteArray(), field);
         Assert.Equal(setResponse.ValueToByteArray(), value);
 
-        var getResponse = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        var getResponse = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
 
         Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
     }
@@ -256,10 +256,10 @@ public class DictionaryTest
         var field = Utils.GuidBytes();
         var value = Utils.GuidBytes();
 
-        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field, value, false);
 
         var otherField = Utils.GuidBytes();
-        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, otherField);
+        var response = await client.DictionaryGetAsync(cacheName, dictionaryName, otherField);
 
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
@@ -271,13 +271,13 @@ public class DictionaryTest
         var field = Utils.GuidBytes();
         var value = Utils.GuidBytes();
 
-        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false, ttlSeconds: 5);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field, value, false, ttlSeconds: 5);
         Thread.Sleep(100);
 
-        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false, ttlSeconds: 10);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field, value, false, ttlSeconds: 10);
         Thread.Sleep(4900);
 
-        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
 
@@ -288,13 +288,13 @@ public class DictionaryTest
         var field = Utils.GuidBytes();
         var value = Utils.GuidBytes();
 
-        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false, ttlSeconds: 1);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field, value, false, ttlSeconds: 1);
         Thread.Sleep(100);
 
-        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, true, ttlSeconds: 10);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field, value, true, ttlSeconds: 10);
         Thread.Sleep(1000);
 
-        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
         Assert.Equal(value, response.Bytes);
     }
@@ -323,7 +323,7 @@ public class DictionaryTest
     {
         var dictionaryName = Utils.GuidString();
         var field = Utils.GuidString();
-        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
 
@@ -334,12 +334,12 @@ public class DictionaryTest
         var field = Utils.GuidString();
         var value = Utils.GuidString();
 
-        var setResponse = await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false);
+        var setResponse = await client.DictionarySetAsync(cacheName, dictionaryName, field, value, false);
         Assert.Equal(setResponse.DictionaryName, dictionaryName);
         Assert.Equal(setResponse.FieldToString(), field);
         Assert.Equal(setResponse.ValueToString(), value);
 
-        var getResponse = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        var getResponse = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
 
         Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
     }
@@ -351,10 +351,10 @@ public class DictionaryTest
         var field = Utils.GuidString();
         var value = Utils.GuidString();
 
-        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field, value, false);
 
         var otherField = Utils.GuidString();
-        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, otherField);
+        var response = await client.DictionaryGetAsync(cacheName, dictionaryName, otherField);
 
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
@@ -366,13 +366,13 @@ public class DictionaryTest
         var field = Utils.GuidString();
         var value = Utils.GuidString();
 
-        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false, ttlSeconds: 5);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field, value, false, ttlSeconds: 5);
         Thread.Sleep(100);
 
-        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false, ttlSeconds: 10);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field, value, false, ttlSeconds: 10);
         Thread.Sleep(4900);
 
-        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
 
@@ -383,13 +383,13 @@ public class DictionaryTest
         var field = Utils.GuidString();
         var value = Utils.GuidString();
 
-        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, false, ttlSeconds: 1);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field, value, false, ttlSeconds: 1);
         Thread.Sleep(100);
 
-        await this.client.DictionarySetAsync(cacheName, dictionaryName, field, value, true, ttlSeconds: 10);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field, value, true, ttlSeconds: 10);
         Thread.Sleep(1000);
 
-        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
         Assert.Equal(value, response.String());
     }
@@ -415,16 +415,16 @@ public class DictionaryTest
 
         var items = new Dictionary<byte[], byte[]>() { { field1, value1 }, { field2, value2 } };
 
-        var setResponse = this.client.DictionarySetMulti(cacheName, dictionaryName, items, false, 10);
+        var setResponse = client.DictionarySetMulti(cacheName, dictionaryName, items, false, 10);
 
         Assert.Equal(dictionaryName, setResponse.DictionaryName);
         Assert.Equal(items, setResponse.ItemsAsByteArrays());
 
-        var response = this.client.DictionaryGet(cacheName, dictionaryName, field1);
+        var response = client.DictionaryGet(cacheName, dictionaryName, field1);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
         Assert.Equal(value1, response.Bytes);
 
-        response = this.client.DictionaryGet(cacheName, dictionaryName, field2);
+        response = client.DictionaryGet(cacheName, dictionaryName, field2);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
         Assert.Equal(value2, response.Bytes);
     }
@@ -437,13 +437,13 @@ public class DictionaryTest
         var value = Utils.GuidBytes();
         var content = new Dictionary<byte[], byte[]>() { { field, value } };
 
-        this.client.DictionarySetMulti(cacheName, dictionaryName, content, false, ttlSeconds: 5);
+        client.DictionarySetMulti(cacheName, dictionaryName, content, false, ttlSeconds: 5);
         Thread.Sleep(100);
 
-        this.client.DictionarySetMulti(cacheName, dictionaryName, content, false, ttlSeconds: 10);
+        client.DictionarySetMulti(cacheName, dictionaryName, content, false, ttlSeconds: 10);
         Thread.Sleep(4900);
 
-        var response = this.client.DictionaryGet(cacheName, dictionaryName, field);
+        var response = client.DictionaryGet(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
 
@@ -455,13 +455,13 @@ public class DictionaryTest
         var value = Utils.GuidBytes();
         var content = new Dictionary<byte[], byte[]>() { { field, value } };
 
-        this.client.DictionarySetMulti(cacheName, dictionaryName, content, false, ttlSeconds: 1);
+        client.DictionarySetMulti(cacheName, dictionaryName, content, false, ttlSeconds: 1);
         Thread.Sleep(100);
 
-        this.client.DictionarySetMulti(cacheName, dictionaryName, content, true, ttlSeconds: 10);
+        client.DictionarySetMulti(cacheName, dictionaryName, content, true, ttlSeconds: 10);
         Thread.Sleep(1000);
 
-        var response = this.client.DictionaryGet(cacheName, dictionaryName, field);
+        var response = client.DictionaryGet(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
         Assert.Equal(value, response.Bytes);
     }
@@ -487,16 +487,16 @@ public class DictionaryTest
 
         var items = new Dictionary<string, string>() { { field1, value1 }, { field2, value2 } };
 
-        var setResponse = this.client.DictionarySetMulti(cacheName, dictionaryName, items, false, 10);
+        var setResponse = client.DictionarySetMulti(cacheName, dictionaryName, items, false, 10);
 
         Assert.Equal(dictionaryName, setResponse.DictionaryName);
         Assert.Equal(items, setResponse.ItemsAsStrings());
 
-        var getResponse = this.client.DictionaryGet(cacheName, dictionaryName, field1);
+        var getResponse = client.DictionaryGet(cacheName, dictionaryName, field1);
         Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
         Assert.Equal(value1, getResponse.String());
 
-        getResponse = this.client.DictionaryGet(cacheName, dictionaryName, field2);
+        getResponse = client.DictionaryGet(cacheName, dictionaryName, field2);
         Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
         Assert.Equal(value2, getResponse.String());
     }
@@ -509,13 +509,13 @@ public class DictionaryTest
         var value = Utils.GuidString();
         var content = new Dictionary<string, string>() { { field, value } };
 
-        this.client.DictionarySetMulti(cacheName, dictionaryName, content, false, ttlSeconds: 5);
+        client.DictionarySetMulti(cacheName, dictionaryName, content, false, ttlSeconds: 5);
         Thread.Sleep(100);
 
-        this.client.DictionarySetMulti(cacheName, dictionaryName, content, false, ttlSeconds: 10);
+        client.DictionarySetMulti(cacheName, dictionaryName, content, false, ttlSeconds: 10);
         Thread.Sleep(4900);
 
-        var response = this.client.DictionaryGet(cacheName, dictionaryName, field);
+        var response = client.DictionaryGet(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
 
@@ -527,13 +527,13 @@ public class DictionaryTest
         var value = Utils.GuidString();
         var content = new Dictionary<string, string>() { { field, value } };
 
-        this.client.DictionarySetMulti(cacheName, dictionaryName, content, false, ttlSeconds: 1);
+        client.DictionarySetMulti(cacheName, dictionaryName, content, false, ttlSeconds: 1);
         Thread.Sleep(100);
 
-        this.client.DictionarySetMulti(cacheName, dictionaryName, content, true, ttlSeconds: 10);
+        client.DictionarySetMulti(cacheName, dictionaryName, content, true, ttlSeconds: 10);
         Thread.Sleep(1000);
 
-        var response = this.client.DictionaryGet(cacheName, dictionaryName, field);
+        var response = client.DictionaryGet(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
         Assert.Equal(value, response.String());
     }
@@ -559,16 +559,16 @@ public class DictionaryTest
 
         var items = new Dictionary<byte[], byte[]>() { { field1, value1 }, { field2, value2 } };
 
-        var setResponse = await this.client.DictionarySetMultiAsync(cacheName, dictionaryName, items, false, 10);
+        var setResponse = await client.DictionarySetMultiAsync(cacheName, dictionaryName, items, false, 10);
 
         Assert.Equal(dictionaryName, setResponse.DictionaryName);
         Assert.Equal(items, setResponse.ItemsAsByteArrays());
 
-        var getResponse = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field1);
+        var getResponse = await client.DictionaryGetAsync(cacheName, dictionaryName, field1);
         Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
         Assert.Equal(value1, getResponse.Bytes);
 
-        getResponse = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field2);
+        getResponse = await client.DictionaryGetAsync(cacheName, dictionaryName, field2);
         Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
         Assert.Equal(value2, getResponse.Bytes);
     }
@@ -581,13 +581,13 @@ public class DictionaryTest
         var value = Utils.GuidBytes();
         var content = new Dictionary<byte[], byte[]>() { { field, value } };
 
-        await this.client.DictionarySetMultiAsync(cacheName, dictionaryName, content, false, ttlSeconds: 5);
+        await client.DictionarySetMultiAsync(cacheName, dictionaryName, content, false, ttlSeconds: 5);
         Thread.Sleep(100);
 
-        await this.client.DictionarySetMultiAsync(cacheName, dictionaryName, content, false, ttlSeconds: 10);
+        await client.DictionarySetMultiAsync(cacheName, dictionaryName, content, false, ttlSeconds: 10);
         Thread.Sleep(4900);
 
-        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
 
@@ -599,13 +599,13 @@ public class DictionaryTest
         var value = Utils.GuidBytes();
         var content = new Dictionary<byte[], byte[]>() { { field, value } };
 
-        await this.client.DictionarySetMultiAsync(cacheName, dictionaryName, content, false, ttlSeconds: 1);
+        await client.DictionarySetMultiAsync(cacheName, dictionaryName, content, false, ttlSeconds: 1);
         Thread.Sleep(100);
 
-        await this.client.DictionarySetMultiAsync(cacheName, dictionaryName, content, true, ttlSeconds: 10);
+        await client.DictionarySetMultiAsync(cacheName, dictionaryName, content, true, ttlSeconds: 10);
         Thread.Sleep(1000);
 
-        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
         Assert.Equal(value, response.Bytes);
     }
@@ -631,16 +631,16 @@ public class DictionaryTest
 
         var items = new Dictionary<string, string>() { { field1, value1 }, { field2, value2 } };
 
-        var setResponse = await this.client.DictionarySetMultiAsync(cacheName, dictionaryName, items, false, 10);
+        var setResponse = await client.DictionarySetMultiAsync(cacheName, dictionaryName, items, false, 10);
 
         Assert.Equal(dictionaryName, setResponse.DictionaryName);
         Assert.Equal(items, setResponse.ItemsAsStrings());
 
-        var getResponse = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field1);
+        var getResponse = await client.DictionaryGetAsync(cacheName, dictionaryName, field1);
         Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
         Assert.Equal(value1, getResponse.String());
 
-        getResponse = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field2);
+        getResponse = await client.DictionaryGetAsync(cacheName, dictionaryName, field2);
         Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
         Assert.Equal(value2, getResponse.String());
     }
@@ -653,13 +653,13 @@ public class DictionaryTest
         var value = Utils.GuidString();
         var content = new Dictionary<string, string>() { { field, value } };
 
-        await this.client.DictionarySetMultiAsync(cacheName, dictionaryName, content, false, ttlSeconds: 5);
+        await client.DictionarySetMultiAsync(cacheName, dictionaryName, content, false, ttlSeconds: 5);
         Thread.Sleep(100);
 
-        await this.client.DictionarySetMultiAsync(cacheName, dictionaryName, content, false, ttlSeconds: 10);
+        await client.DictionarySetMultiAsync(cacheName, dictionaryName, content, false, ttlSeconds: 10);
         Thread.Sleep(4900);
 
-        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
 
@@ -671,13 +671,13 @@ public class DictionaryTest
         var value = Utils.GuidString();
         var content = new Dictionary<string, string>() { { field, value } };
 
-        await this.client.DictionarySetMultiAsync(cacheName, dictionaryName, content, false, ttlSeconds: 1);
+        await client.DictionarySetMultiAsync(cacheName, dictionaryName, content, false, ttlSeconds: 1);
         Thread.Sleep(100);
 
-        await this.client.DictionarySetMultiAsync(cacheName, dictionaryName, content, true, ttlSeconds: 10);
+        await client.DictionarySetMultiAsync(cacheName, dictionaryName, content, true, ttlSeconds: 10);
         Thread.Sleep(1000);
 
-        var response = await this.client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
         Assert.Equal(value, response.String());
     }
@@ -706,11 +706,11 @@ public class DictionaryTest
         var value2 = Utils.GuidBytes();
         var field3 = Utils.GuidBytes();
 
-        this.client.DictionarySet(cacheName, dictionaryName, field1, value1, false, 10);
-        this.client.DictionarySet(cacheName, dictionaryName, field2, value2, false, 10);
+        client.DictionarySet(cacheName, dictionaryName, field1, value1, false, 10);
+        client.DictionarySet(cacheName, dictionaryName, field2, value2, false, 10);
 
-        var response1 = this.client.DictionaryGetMulti(cacheName, dictionaryName, field1, field2, field3);
-        var response2 = this.client.DictionaryGetMulti(cacheName, dictionaryName, new List<byte[]>() { field1, field2, field3 });
+        var response1 = client.DictionaryGetMulti(cacheName, dictionaryName, field1, field2, field3);
+        var response2 = client.DictionaryGetMulti(cacheName, dictionaryName, new List<byte[]>() { field1, field2, field3 });
 
         var status = new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS };
         var values = new byte[]?[] { value1, value2, null };
@@ -744,11 +744,11 @@ public class DictionaryTest
         var value2 = Utils.GuidString();
         var field3 = Utils.GuidString();
 
-        this.client.DictionarySet(cacheName, dictionaryName, field1, value1, false, 10);
-        this.client.DictionarySet(cacheName, dictionaryName, field2, value2, false, 10);
+        client.DictionarySet(cacheName, dictionaryName, field1, value1, false, 10);
+        client.DictionarySet(cacheName, dictionaryName, field2, value2, false, 10);
 
-        var response1 = this.client.DictionaryGetMulti(cacheName, dictionaryName, field1, field2, field3);
-        var response2 = this.client.DictionaryGetMulti(cacheName, dictionaryName, new string[] { field1, field2, field3 });
+        var response1 = client.DictionaryGetMulti(cacheName, dictionaryName, field1, field2, field3);
+        var response2 = client.DictionaryGetMulti(cacheName, dictionaryName, new string[] { field1, field2, field3 });
 
         var status = new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS };
         var values = new string?[] { value1, value2, null };
@@ -782,11 +782,11 @@ public class DictionaryTest
         var value2 = Utils.GuidBytes();
         var field3 = Utils.GuidBytes();
 
-        await this.client.DictionarySetAsync(cacheName, dictionaryName, field1, value1, false, 10);
-        await this.client.DictionarySetAsync(cacheName, dictionaryName, field2, value2, false, 10);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field1, value1, false, 10);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field2, value2, false, 10);
 
-        var response1 = await this.client.DictionaryGetMultiAsync(cacheName, dictionaryName, field1, field2, field3);
-        var response2 = await this.client.DictionaryGetMultiAsync(cacheName, dictionaryName, new byte[][] { field1, field2, field3 });
+        var response1 = await client.DictionaryGetMultiAsync(cacheName, dictionaryName, field1, field2, field3);
+        var response2 = await client.DictionaryGetMultiAsync(cacheName, dictionaryName, new byte[][] { field1, field2, field3 });
 
         var status = new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS };
         var values = new byte[]?[] { value1, value2, null };
@@ -820,11 +820,11 @@ public class DictionaryTest
         var value2 = Utils.GuidString();
         var field3 = Utils.GuidString();
 
-        await this.client.DictionarySetAsync(cacheName, dictionaryName, field1, value1, false, 10);
-        await this.client.DictionarySetAsync(cacheName, dictionaryName, field2, value2, false, 10);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field1, value1, false, 10);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field2, value2, false, 10);
 
-        var response1 = await this.client.DictionaryGetMultiAsync(cacheName, dictionaryName, field1, field2, field3);
-        var response2 = await this.client.DictionaryGetMultiAsync(cacheName, dictionaryName, new string[] { field1, field2, field3 });
+        var response1 = await client.DictionaryGetMultiAsync(cacheName, dictionaryName, field1, field2, field3);
+        var response2 = await client.DictionaryGetMultiAsync(cacheName, dictionaryName, new string[] { field1, field2, field3 });
 
         var status = new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS };
         var values = new string?[] { value1, value2, null };
@@ -846,7 +846,7 @@ public class DictionaryTest
     public void DictionaryGetAll_Missing_HappyPath()
     {
         var dictionaryName = Utils.GuidString();
-        var response = this.client.DictionaryGetAll(cacheName, dictionaryName);
+        var response = client.DictionaryGetAll(cacheName, dictionaryName);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
 
@@ -863,8 +863,8 @@ public class DictionaryTest
             {field2, value2}
         };
 
-        this.client.DictionarySet(cacheName, dictionaryName, field1, value1, true, ttlSeconds: 10);
-        this.client.DictionarySet(cacheName, dictionaryName, field2, value2, true, ttlSeconds: 10);
+        client.DictionarySet(cacheName, dictionaryName, field1, value1, true, ttlSeconds: 10);
+        client.DictionarySet(cacheName, dictionaryName, field2, value2, true, ttlSeconds: 10);
 
         var getAllResponse = client.DictionaryGetAll(cacheName, dictionaryName);
 
@@ -885,8 +885,8 @@ public class DictionaryTest
             {field2, value2}
         };
 
-        this.client.DictionarySet(cacheName, dictionaryName, Utils.Utf8ToBytes(field1), Utils.Utf8ToBytes(value1), true, ttlSeconds: 10);
-        this.client.DictionarySet(cacheName, dictionaryName, Utils.Utf8ToBytes(field2), Utils.Utf8ToBytes(value2), true, ttlSeconds: 10);
+        client.DictionarySet(cacheName, dictionaryName, Utils.Utf8ToBytes(field1), Utils.Utf8ToBytes(value1), true, ttlSeconds: 10);
+        client.DictionarySet(cacheName, dictionaryName, Utils.Utf8ToBytes(field2), Utils.Utf8ToBytes(value2), true, ttlSeconds: 10);
 
         var getAllResponse = client.DictionaryGetAll(cacheName, dictionaryName);
 
@@ -906,7 +906,7 @@ public class DictionaryTest
     public async void DictionaryGetAllAsync_Missing_HappyPath()
     {
         var dictionaryName = Utils.GuidString();
-        var response = await this.client.DictionaryGetAllAsync(cacheName, dictionaryName);
+        var response = await client.DictionaryGetAllAsync(cacheName, dictionaryName);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
 
@@ -923,8 +923,8 @@ public class DictionaryTest
             {field2, value2}
         };
 
-        await this.client.DictionarySetAsync(cacheName, dictionaryName, field1, value1, true, ttlSeconds: 10);
-        await this.client.DictionarySetAsync(cacheName, dictionaryName, field2, value2, true, ttlSeconds: 10);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field1, value1, true, ttlSeconds: 10);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field2, value2, true, ttlSeconds: 10);
 
         var getAllResponse = await client.DictionaryGetAllAsync(cacheName, dictionaryName);
 
@@ -945,8 +945,8 @@ public class DictionaryTest
             {field2, value2}
         };
 
-        await this.client.DictionarySetAsync(cacheName, dictionaryName, Utils.Utf8ToBytes(field1), Utils.Utf8ToBytes(value1), true, ttlSeconds: 10);
-        await this.client.DictionarySetAsync(cacheName, dictionaryName, Utils.Utf8ToBytes(field2), Utils.Utf8ToBytes(value2), true, ttlSeconds: 10);
+        await client.DictionarySetAsync(cacheName, dictionaryName, Utils.Utf8ToBytes(field1), Utils.Utf8ToBytes(value1), true, ttlSeconds: 10);
+        await client.DictionarySetAsync(cacheName, dictionaryName, Utils.Utf8ToBytes(field2), Utils.Utf8ToBytes(value2), true, ttlSeconds: 10);
 
         var getAllResponse = await client.DictionaryGetAllAsync(cacheName, dictionaryName);
 
