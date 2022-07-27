@@ -143,14 +143,6 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.DeleteAsync(cacheName, key);
     }
 
-    /// <summary>
-    /// Sets the value in cache with a given time to live (TTL) seconds.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to store the item in.</param>
-    /// <param name="key">The key to set.</param>
-    /// <param name="value">The value to be stored.</param>
-    /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
-    /// <returns>Future containing the result of the set operation</returns>
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
     {
         if (cacheName == null)

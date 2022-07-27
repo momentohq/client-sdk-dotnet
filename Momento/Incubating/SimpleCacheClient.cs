@@ -165,6 +165,21 @@ public class SimpleCacheClient : ISimpleCacheClient
         return this.simpleCacheClient.Set(cacheName, key, value, ttlSeconds);
     }
 
+    /// <summary>
+    /// Set the dictionary field to a value with a given time to live (TTL) seconds.
+    ///
+    /// Creates the dictionary if it does not exist and sets the TTL.
+    /// If the dictionary already exists and `refreshTtl` is `true`, then update the
+    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to store the dictionary in.</param>
+    /// <param name="dictionaryName">The dictionary to set.</param>
+    /// <param name="field">The field in the dictionary to set.</param>
+    /// <param name="value">The value to be stored.</param>
+    /// <param name="refreshTtl">Update the dictionary TTL if the dictionary already exists.</param>
+    /// <param name="ttlSeconds">TTL for the dictionary in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
+    /// <returns>The result of the cache operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `field`, `value` is `null`.</exception>
     public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, byte[] field, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
         if (cacheName == null)
@@ -253,6 +268,14 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.DictionarySetAsync(cacheName, dictionaryName, field, value, refreshTtl, ttlSeconds);
     }
 
+    /// <summary>
+    /// Get the cache value stored for the given dictionary and field.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+    /// <param name="dictionaryName">The dictionary to lookup.</param>
+    /// <param name="field">The field in the dictionary to lookup.</param>
+    /// <returns>CacheDictionaryGetResponse containing the status of the get operation and the associated value.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `field` is `null`.</exception>
     public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, byte[] field)
     {
         if (cacheName == null)
@@ -569,6 +592,15 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.DictionaryGetAllAsync(cacheName, dictionaryName);
     }
 
+    /// <summary>
+    /// Remove the dictionary from the cache.
+    ///
+    /// Performs a no-op if `dictionaryName` does not exist.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to delete the dictionary from.</param>
+    /// <param name="dictionaryName">Name of the dictionary to delete.</param>
+    /// <returns>Result of the delete operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName` or `dictionaryName` is `null`.</exception>
     public CacheDictionaryDeleteResponse DictionaryDelete(string cacheName, string dictionaryName)
     {
         if (cacheName == null)
@@ -597,6 +629,16 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.DictionaryDeleteAsync(cacheName, dictionaryName);
     }
 
+    /// <summary>
+    /// Remove a field from a particular dictionary.
+    ///
+    /// Performs a no-op if `dictionaryName` or `field` does not exist.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to lookup the dictionary in.</param>
+    /// <param name="dictionaryName">Name of the dictionary to remove the field from.</param>
+    /// <param name="field">Name of the field to remove from the dictionary.</param>
+    /// <returns>The result of the cache operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `field` is `null`.</exception>
     public CacheDictionaryRemoveFieldResponse DictionaryRemoveField(string cacheName, string dictionaryName, byte[] field)
     {
         if (cacheName == null)
