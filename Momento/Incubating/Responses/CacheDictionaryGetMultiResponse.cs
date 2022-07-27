@@ -17,18 +17,18 @@ public class CacheDictionaryGetMultiResponse
         this.responses = responses.DictionaryBody.Select(response => new CacheDictionaryGetResponse(response));
     }
 
-    public List<CacheGetStatus> Status
+    public IEnumerable<CacheGetStatus> Status
     {
-        get => responses.Select(response => response.Status).ToList();
+        get => responses.Select(response => response.Status);
     }
 
-    public List<string?> Strings()
+    public IEnumerable<string?> Strings()
     {
-        return responses.Select(response => response.String()).ToList();
+        return responses.Select(response => response.String());
     }
 
-    public List<byte[]?> Bytes
+    public IEnumerable<byte[]?> Bytes
     {
-        get => responses.Select(response => response.Bytes).ToList();
+        get => responses.Select(response => response.Bytes);
     }
 }
