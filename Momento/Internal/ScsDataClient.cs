@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using MomentoSdk.Internal.ExtensionMethods;
 using MomentoSdk.Responses;
 using MomentoSdk.Exceptions;
 using CacheClient;
@@ -22,16 +23,6 @@ public class ScsDataClientBase : IDisposable
         this.grpcManager = new(authToken, host);
         this.defaultTtlSeconds = defaultTtlSeconds;
         this.dataClientOperationTimeoutMilliseconds = dataClientOperationTimeoutMilliseconds ?? DEFAULT_DEADLINE_MILLISECONDS;
-    }
-
-    protected ByteString Convert(byte[] bytes)
-    {
-        return ByteString.CopyFrom(bytes);
-    }
-
-    protected ByteString Convert(string s)
-    {
-        return ByteString.CopyFromUtf8(s);
     }
 
     protected Metadata MetadataWithCache(string cacheName)
@@ -68,54 +59,54 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
     {
-        _SetResponse response = await this.SendSetAsync(cacheName, value: Convert(value), key: Convert(key), ttlSeconds: ttlSeconds);
+        _SetResponse response = await this.SendSetAsync(cacheName, value: value.ToByteString(), key: key.ToByteString(), ttlSeconds: ttlSeconds);
         return new CacheSetResponse(response);
     }
 
     public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
     {
-        _GetResponse resp = await this.SendGetAsync(cacheName, Convert(key));
+        _GetResponse resp = await this.SendGetAsync(cacheName, key.ToByteString());
         return new CacheGetResponse(resp);
     }
 
     public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, byte[] key)
     {
-        await this.SendDeleteAsync(cacheName, Convert(key));
+        await this.SendDeleteAsync(cacheName, key.ToByteString());
         return new CacheDeleteResponse();
     }
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint? ttlSeconds = null)
     {
-        _SetResponse response = await this.SendSetAsync(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
+        _SetResponse response = await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
         return new CacheSetResponse(response);
     }
 
     public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
     {
-        _GetResponse resp = await this.SendGetAsync(cacheName, Convert(key));
+        _GetResponse resp = await this.SendGetAsync(cacheName, key.ToByteString());
         return new CacheGetResponse(resp);
     }
 
     public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key)
     {
-        await this.SendDeleteAsync(cacheName, Convert(key));
+        await this.SendDeleteAsync(cacheName, key.ToByteString());
         return new CacheDeleteResponse();
     }
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
     {
-        _SetResponse response = await this.SendSetAsync(cacheName, value: Convert(value), key: Convert(key), ttlSeconds: ttlSeconds);
+        _SetResponse response = await this.SendSetAsync(cacheName, value: value.ToByteString(), key: key.ToByteString(), ttlSeconds: ttlSeconds);
         return new CacheSetResponse(response);
     }
 
     public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<string> keys)
     {
-        return await GetMultiAsync(cacheName, keys.Select(key => Convert(key)));
+        return await GetMultiAsync(cacheName, keys.Select(key => key.ToByteString()));
     }
 
     public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<byte[]> keys)
     {
-        return await GetMultiAsync(cacheName, keys.Select(key => Convert(key)));
+        return await GetMultiAsync(cacheName, keys.Select(key => key.ToByteString()));
     }
 
     public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<ByteString> keys)
@@ -152,14 +143,14 @@ internal sealed class ScsDataClient : ScsDataClientBase
     public async Task SetMultiAsync(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
     {
         await SetMultiAsync(cacheName: cacheName,
-            items: items.ToDictionary(item => Convert(item.Key), item => Convert(item.Value)),
+            items: items.ToDictionary(item => item.Key.ToByteString(), item => item.Value.ToByteString()),
             ttlSeconds: ttlSeconds);
     }
 
     public async Task SetMultiAsync(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
     {
         await SetMultiAsync(cacheName: cacheName,
-            items: items.ToDictionary(item => Convert(item.Key), item => Convert(item.Value)),
+            items: items.ToDictionary(item => item.Key.ToByteString(), item => item.Value.ToByteString()),
             ttlSeconds: ttlSeconds);
     }
 
@@ -192,43 +183,43 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
     {
-        _SetResponse resp = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
+        _SetResponse resp = this.SendSet(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
         return new CacheSetResponse(resp);
     }
 
     public CacheGetResponse Get(string cacheName, byte[] key)
     {
-        _GetResponse resp = this.SendGet(cacheName, Convert(key));
+        _GetResponse resp = this.SendGet(cacheName, key.ToByteString());
         return new CacheGetResponse(resp);
     }
 
     public CacheDeleteResponse Delete(string cacheName, byte[] key)
     {
-        this.SendDelete(cacheName, Convert(key));
+        this.SendDelete(cacheName, key.ToByteString());
         return new CacheDeleteResponse();
     }
 
     public CacheSetResponse Set(string cacheName, string key, string value, uint? ttlSeconds = null)
     {
-        _SetResponse response = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
+        _SetResponse response = this.SendSet(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
         return new CacheSetResponse(response);
     }
 
     public CacheGetResponse Get(string cacheName, string key)
     {
-        _GetResponse resp = this.SendGet(cacheName, Convert(key));
+        _GetResponse resp = this.SendGet(cacheName, key.ToByteString());
         return new CacheGetResponse(resp);
     }
 
     public CacheDeleteResponse Delete(string cacheName, string key)
     {
-        this.SendDelete(cacheName, Convert(key));
+        this.SendDelete(cacheName, key.ToByteString());
         return new CacheDeleteResponse();
     }
 
     public CacheSetResponse Set(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
     {
-        _SetResponse response = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
+        _SetResponse response = this.SendSet(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
         return new CacheSetResponse(response);
     }
 
