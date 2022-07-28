@@ -138,7 +138,7 @@ namespace MomentoSdk.Internal
             /// <summary>
             /// DWIM equality implementation for dictionaries. cf `SetEquals`.
             /// https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1.setequals?view=net-6.0
-	        ///
+            ///
             /// Tests whether the dictionaries contain the same content as opposed to the same
             /// references.
             /// </summary>
