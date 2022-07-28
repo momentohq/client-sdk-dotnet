@@ -122,7 +122,7 @@ public interface ISimpleCacheClient : IDisposable
     public Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, params string[] keys);
 
     /// <summary>
-    /// Stores multiple items in the cache. Overwrites existing items.
+    /// Sets multiple items in the cache. Overwrites existing items.
     /// </summary>
     /// <param name="cacheName">Name of the cache to store the items in.</param>
     /// <param name="items">The items to set.</param>
@@ -130,7 +130,7 @@ public interface ISimpleCacheClient : IDisposable
     public Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null);
 
     /// <summary>
-    /// Stores multiple items in the cache. Overwrites existing items.
+    /// Sets multiple items in the cache. Overwrites existing items.
     /// </summary>
     /// <param name="cacheName">Name of the cache to store the items in.</param>
     /// <param name="items">The items to set.</param>
@@ -213,7 +213,7 @@ public interface ISimpleCacheClient : IDisposable
     public CacheGetMultiResponse GetMulti(string cacheName, params string[] keys);
 
     /// <summary>
-    /// Stores multiple items in the cache. Overwrites existing items.
+    /// Sets multiple items in the cache. Overwrites existing items.
     /// </summary>
     /// <param name="cacheName">Name of the cache to store the items in.</param>
     /// <param name="items">The items to set.</param>
@@ -221,7 +221,7 @@ public interface ISimpleCacheClient : IDisposable
     public CacheSetMultiResponse SetMulti(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null);
 
     /// <summary>
-    /// Stores multiple items in the cache. Overwrites existing items.
+    /// Sets multiple items in the cache. Overwrites existing items.
     /// </summary>
     /// <param name="cacheName">Name of the cache to store the items in.</param>
     /// <param name="items">The items to set.</param>

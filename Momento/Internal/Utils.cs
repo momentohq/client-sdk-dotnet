@@ -151,13 +151,11 @@ namespace MomentoSdk.Internal
                 {
                     return true;
                 }
-
-                if (dictionary == null || other == null)
+                else if (dictionary == null || other == null)
                 {
                     return false;
                 }
-
-                if (dictionary.Count != other.Count)
+                else if (dictionary.Count != other.Count)
                 {
                     return false;
                 }
