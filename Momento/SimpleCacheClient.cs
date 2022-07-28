@@ -160,14 +160,6 @@ public class SimpleCacheClient : ISimpleCacheClient
         return new CacheSetMultiResponse(items);
     }
 
-    /// <summary>
-    ///  Sets the value in the cache. If a value for this key is already present it will be replaced by the new value.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to store the item in.</param>
-    /// <param name="key">The key to set.</param>
-    /// <param name="value">The value to be stored.</param>
-    /// <param name="ttlSeconds">Time to live (TTL) for the item in Cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
-    /// <returns>Result of the set operation</returns>
     public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));

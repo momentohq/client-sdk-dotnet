@@ -179,7 +179,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="value">The value to be stored.</param>
     /// <param name="refreshTtl">Update the dictionary TTL if the dictionary already exists.</param>
     /// <param name="ttlSeconds">TTL for the dictionary in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
-    /// <returns>The result of the cache operation.</returns>
+    /// <returns>Result of the cache operation.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `field`, `value` is `null`.</exception>
     public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, byte[] field, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
@@ -227,7 +227,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
     /// <param name="dictionaryName">The dictionary to lookup.</param>
     /// <param name="field">The field in the dictionary to lookup.</param>
-    /// <returns>CacheDictionaryGetResponse containing the status of the get operation and the associated value.</returns>
+    /// <returns>Object with the status of the get operation and the associated value.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `field` is `null`.</exception>
     public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, byte[] field)
     {
