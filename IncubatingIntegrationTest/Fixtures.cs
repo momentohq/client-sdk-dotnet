@@ -19,7 +19,7 @@ public class SimpleCacheClientFixture : IDisposable
     {
         AuthToken = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN") ??
             throw new NullReferenceException("TEST_AUTH_TOKEN environment variable must be set.");
-        Client = SimpleCacheClientFactory.Get(AuthToken, defaultTtlSeconds: DefaultTtlSeconds);
+        Client = SimpleCacheClientFactory.CreateClient(AuthToken, defaultTtlSeconds: DefaultTtlSeconds);
 
         /*
         try
