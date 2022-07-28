@@ -18,9 +18,9 @@ public class ScsDataClientBase : IDisposable
     protected readonly uint dataClientOperationTimeoutMilliseconds;
     protected const uint DEFAULT_DEADLINE_MILLISECONDS = 5000;
 
-    public ScsDataClientBase(string authToken, string host, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+    public ScsDataClientBase(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
     {
-        this.grpcManager = new(authToken, host);
+        this.grpcManager = new(authToken, endpoint);
         this.defaultTtlSeconds = defaultTtlSeconds;
         this.dataClientOperationTimeoutMilliseconds = dataClientOperationTimeoutMilliseconds ?? DEFAULT_DEADLINE_MILLISECONDS;
     }
@@ -52,8 +52,8 @@ public class ScsDataClientBase : IDisposable
 
 internal sealed class ScsDataClient : ScsDataClientBase
 {
-    public ScsDataClient(string authToken, string host, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
-        : base(authToken, host, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds)
+    public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+        : base(authToken, endpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds)
     {
     }
 

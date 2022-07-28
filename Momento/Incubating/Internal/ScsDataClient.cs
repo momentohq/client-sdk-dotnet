@@ -13,8 +13,8 @@ namespace MomentoSdk.Incubating.Internal;
 
 internal sealed class ScsDataClient : ScsDataClientBase
 {
-    public ScsDataClient(string authToken, string host, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
-        : base(authToken, host, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds)
+    public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+        : base(authToken, endpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds)
     {
     }
 

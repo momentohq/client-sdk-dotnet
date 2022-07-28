@@ -11,9 +11,9 @@ internal sealed class ScsControlClient : IDisposable
     private readonly string authToken;
     private const uint DEADLINE_SECONDS = 60;
 
-    public ScsControlClient(string authToken, string host)
+    public ScsControlClient(string authToken, string endpoint)
     {
-        this.grpcManager = new ControlGrpcManager(authToken, host);
+        this.grpcManager = new ControlGrpcManager(authToken, endpoint);
         this.authToken = authToken;
     }
 
