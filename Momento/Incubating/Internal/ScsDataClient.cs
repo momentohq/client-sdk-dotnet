@@ -20,18 +20,16 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, byte[] field, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        SendDictionarySet(cacheName, dictionaryName, field.ToByteString(), value.ToByteString(), refreshTtl, ttlSeconds);
-        return new CacheDictionarySetResponse(dictionaryName, field, value);
+        return SendDictionarySet(cacheName, dictionaryName, field.ToByteString(), value.ToByteString(), refreshTtl, ttlSeconds);
     }
 
     public CacheDictionarySetResponse DictionarySet(string cacheName, string dictionaryName, string field, string value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        SendDictionarySet(cacheName, dictionaryName, field.ToByteString(), value.ToByteString(), refreshTtl, ttlSeconds);
-        return new CacheDictionarySetResponse(dictionaryName, field, value);
+        return SendDictionarySet(cacheName, dictionaryName, field.ToByteString(), value.ToByteString(), refreshTtl, ttlSeconds);
     }
 
 
-    private _DictionarySetResponse SendDictionarySet(string cacheName, string dictionaryName, ByteString field, ByteString value, bool refreshTtl, uint? ttlSeconds = null)
+    private CacheDictionarySetResponse SendDictionarySet(string cacheName, string dictionaryName, ByteString field, ByteString value, bool refreshTtl, uint? ttlSeconds = null)
     {
         _DictionarySetRequest request = new()
         {
@@ -43,7 +41,8 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
         try
         {
-            return this.grpcManager.Client.DictionarySet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            this.grpcManager.Client.DictionarySet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            return new CacheDictionarySetResponse();
         }
         catch (Exception e)
         {
@@ -53,18 +52,16 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, byte[] field, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        await SendDictionarySetAsync(cacheName, dictionaryName, field.ToByteString(), value.ToByteString(), refreshTtl, ttlSeconds);
-        return new CacheDictionarySetResponse(dictionaryName, field, value);
+        return await SendDictionarySetAsync(cacheName, dictionaryName, field.ToByteString(), value.ToByteString(), refreshTtl, ttlSeconds);
     }
 
     public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, string field, string value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        await SendDictionarySetAsync(cacheName, dictionaryName, field.ToByteString(), value.ToByteString(), refreshTtl, ttlSeconds);
-        return new CacheDictionarySetResponse(dictionaryName, field, value);
+        return await SendDictionarySetAsync(cacheName, dictionaryName, field.ToByteString(), value.ToByteString(), refreshTtl, ttlSeconds);
     }
 
 
-    private async Task<_DictionarySetResponse> SendDictionarySetAsync(string cacheName, string dictionaryName, ByteString field, ByteString value, bool refreshTtl, uint? ttlSeconds = null)
+    private async Task<CacheDictionarySetResponse> SendDictionarySetAsync(string cacheName, string dictionaryName, ByteString field, ByteString value, bool refreshTtl, uint? ttlSeconds = null)
     {
         _DictionarySetRequest request = new()
         {
@@ -76,7 +73,8 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
         try
         {
-            return await this.grpcManager.Client.DictionarySetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            await this.grpcManager.Client.DictionarySetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            return new CacheDictionarySetResponse();
         }
         catch (Exception e)
         {
@@ -140,18 +138,16 @@ internal sealed class ScsDataClient : ScsDataClientBase
     public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
         var protoItems = items.Select(kv => new _DictionaryKeyValuePair() { Key = kv.Key.ToByteString(), Value = kv.Value.ToByteString() });
-        SendDictionarySetMulti(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
-        return new CacheDictionarySetMultiResponse(dictionaryName, items);
+        return SendDictionarySetMulti(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
     }
 
     public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
         var protoItems = items.Select(kv => new _DictionaryKeyValuePair() { Key = kv.Key.ToByteString(), Value = kv.Value.ToByteString() });
-        SendDictionarySetMulti(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
-        return new CacheDictionarySetMultiResponse(dictionaryName, items);
+        return SendDictionarySetMulti(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
     }
 
-    public _DictionarySetResponse SendDictionarySetMulti(string cacheName, string dictionaryName, IEnumerable<_DictionaryKeyValuePair> items, bool refreshTtl, uint? ttlSeconds = null)
+    public CacheDictionarySetMultiResponse SendDictionarySetMulti(string cacheName, string dictionaryName, IEnumerable<_DictionaryKeyValuePair> items, bool refreshTtl, uint? ttlSeconds = null)
     {
         _DictionarySetRequest request = new()
         {
@@ -163,7 +159,8 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
         try
         {
-            return this.grpcManager.Client.DictionarySet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            this.grpcManager.Client.DictionarySet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            return new CacheDictionarySetMultiResponse();
         }
         catch (Exception e)
         {
@@ -174,18 +171,16 @@ internal sealed class ScsDataClient : ScsDataClientBase
     public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
         var protoItems = items.Select(kv => new _DictionaryKeyValuePair() { Key = kv.Key.ToByteString(), Value = kv.Value.ToByteString() });
-        await SendDictionarySetMultiAsync(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
-        return new CacheDictionarySetMultiResponse(dictionaryName, items);
+        return await SendDictionarySetMultiAsync(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
     }
 
     public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
         var protoItems = items.Select(kv => new _DictionaryKeyValuePair() { Key = kv.Key.ToByteString(), Value = kv.Value.ToByteString() });
-        await SendDictionarySetMultiAsync(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
-        return new CacheDictionarySetMultiResponse(dictionaryName, items);
+        return await SendDictionarySetMultiAsync(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
     }
 
-    public async Task<_DictionarySetResponse> SendDictionarySetMultiAsync(string cacheName, string dictionaryName, IEnumerable<_DictionaryKeyValuePair> items, bool refreshTtl, uint? ttlSeconds = null)
+    public async Task<CacheDictionarySetMultiResponse> SendDictionarySetMultiAsync(string cacheName, string dictionaryName, IEnumerable<_DictionaryKeyValuePair> items, bool refreshTtl, uint? ttlSeconds = null)
     {
         _DictionarySetRequest request = new()
         {
@@ -197,7 +192,8 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
         try
         {
-            return await this.grpcManager.Client.DictionarySetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            await this.grpcManager.Client.DictionarySetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            return new CacheDictionarySetMultiResponse();
         }
         catch (Exception e)
         {
