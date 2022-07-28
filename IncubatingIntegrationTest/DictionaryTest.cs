@@ -1,3 +1,4 @@
+using MomentoSdk.Internal.ExtensionMethods;
 using MomentoSdk.Responses;
 
 namespace IncubatingIntegrationTest;
@@ -874,22 +875,29 @@ public class DictionaryTest
     public void DictionaryGetAll_HasContentBytes_HappyPath()
     {
         var dictionaryName = Utils.GuidString();
-        var field1 = Utils.GuidString();
-        var value1 = Utils.GuidString();
-        var field2 = Utils.GuidString();
-        var value2 = Utils.GuidString();
-        var contentDictionary = new Dictionary<string, string>() {
+        var field1 = Utils.GuidBytes();
+        var value1 = Utils.GuidBytes();
+        var field2 = Utils.GuidBytes();
+        var value2 = Utils.GuidBytes();
+        var contentDictionary = new Dictionary<byte[], byte[]>() {
             {field1, value1},
             {field2, value2}
         };
 
-        client.DictionarySet(cacheName, dictionaryName, Utils.Utf8ToBytes(field1), Utils.Utf8ToBytes(value1), true, ttlSeconds: 10);
-        client.DictionarySet(cacheName, dictionaryName, Utils.Utf8ToBytes(field2), Utils.Utf8ToBytes(value2), true, ttlSeconds: 10);
+        client.DictionarySet(cacheName, dictionaryName, field1, value1, true, ttlSeconds: 10);
+        client.DictionarySet(cacheName, dictionaryName, field2, value2, true, ttlSeconds: 10);
 
         var getAllResponse = client.DictionaryGetAll(cacheName, dictionaryName);
 
         Assert.Equal(CacheGetStatus.HIT, getAllResponse.Status);
-        Assert.Equal(getAllResponse.StringDictionary(), contentDictionary);
+
+        // Exercise byte array dictionary structural equality comparer
+        Assert.True(getAllResponse.ByteArrayDictionary!.ContainsKey(field1));
+        Assert.True(getAllResponse.ByteArrayDictionary!.ContainsKey(field2));
+        Assert.Equal(2, getAllResponse.ByteArrayDictionary!.Count);
+
+        // Exercise DictionaryEquals extension
+        Assert.True(getAllResponse.ByteArrayDictionary!.DictionaryEquals(contentDictionary));
     }
 
     [Theory]
@@ -934,22 +942,29 @@ public class DictionaryTest
     public async void DictionaryGetAllAsync_HasContentBytes_HappyPath()
     {
         var dictionaryName = Utils.GuidString();
-        var field1 = Utils.GuidString();
-        var value1 = Utils.GuidString();
-        var field2 = Utils.GuidString();
-        var value2 = Utils.GuidString();
-        var contentDictionary = new Dictionary<string, string>() {
+        var field1 = Utils.GuidBytes();
+        var value1 = Utils.GuidBytes();
+        var field2 = Utils.GuidBytes();
+        var value2 = Utils.GuidBytes();
+        var contentDictionary = new Dictionary<byte[], byte[]>() {
             {field1, value1},
             {field2, value2}
         };
 
-        await client.DictionarySetAsync(cacheName, dictionaryName, Utils.Utf8ToBytes(field1), Utils.Utf8ToBytes(value1), true, ttlSeconds: 10);
-        await client.DictionarySetAsync(cacheName, dictionaryName, Utils.Utf8ToBytes(field2), Utils.Utf8ToBytes(value2), true, ttlSeconds: 10);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field1, value1, true, ttlSeconds: 10);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field2, value2, true, ttlSeconds: 10);
 
         var getAllResponse = await client.DictionaryGetAllAsync(cacheName, dictionaryName);
 
         Assert.Equal(CacheGetStatus.HIT, getAllResponse.Status);
-        Assert.Equal(getAllResponse.StringDictionary(), contentDictionary);
+
+        // Exercise byte array dictionary structural equality comparer
+        Assert.True(getAllResponse.ByteArrayDictionary!.ContainsKey(field1));
+        Assert.True(getAllResponse.ByteArrayDictionary!.ContainsKey(field2));
+        Assert.Equal(2, getAllResponse.ByteArrayDictionary!.Count);
+
+        // Exercise DictionaryEquals extension
+        Assert.True(getAllResponse.ByteArrayDictionary!.DictionaryEquals(contentDictionary));
     }
 
     [Theory]

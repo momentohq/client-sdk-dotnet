@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Google.Protobuf;
@@ -82,6 +83,29 @@ namespace MomentoSdk.Internal
                 throw new ArgumentNullException(paramName, "Each value must be non-null");
             }
         }
+
+        /// <summary>
+        /// Defines methods to support comparing containers of reference items by their
+        /// contents (structure) instead of by reference.
+        /// </summary>
+        public class StructuralEqualityComparer<T> : IEqualityComparer<T>
+        {
+            public bool Equals(T x, T y)
+            {
+                return StructuralComparisons.StructuralEqualityComparer.Equals(x, y);
+            }
+
+            public int GetHashCode(T obj)
+            {
+                return StructuralComparisons.StructuralEqualityComparer.GetHashCode(obj);
+            }
+        }
+
+        /// <summary>
+        /// Comprarer to use in byte array containers (Set, Dictionary, List)
+        /// so comparisons operate on byte-array content instead of reference.
+        /// </summary>
+        public static StructuralEqualityComparer<byte[]> ByteArrayComparer = new();
     }
 
     namespace ExtensionMethods
@@ -106,6 +130,40 @@ namespace MomentoSdk.Internal
             public static ByteString ToByteString(this string str)
             {
                 return ByteString.CopyFromUtf8(str);
+            }
+        }
+
+        public static class ByteArrayDictionaryExtensions
+        {
+            /// <summary>
+            /// DWIM equality implementation for dictionaries. cf `SetEquals`.
+            /// https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1.setequals?view=net-6.0
+	        ///
+            /// Tests whether the dictionaries contain the same content as opposed to the same
+            /// references.
+            /// </summary>
+            /// <param name="dictionary">LHS to compare</param>
+            /// <param name="other">RHS to compare</param>
+            /// <returns>`true` if the dictionaries contain the same content.</returns>
+            public static bool DictionaryEquals(this Dictionary<byte[], byte[]> dictionary, Dictionary<byte[], byte[]> other)
+            {
+                if (dictionary == null && other == null)
+                {
+                    return true;
+                }
+
+                if (dictionary == null || other == null)
+                {
+                    return false;
+                }
+
+                if (dictionary.Count != other.Count)
+                {
+                    return false;
+                }
+
+                var keySet = new HashSet<byte[]>(dictionary.Keys, Utils.ByteArrayComparer);
+                return other.All(kv => keySet.Contains(kv.Key) && dictionary[kv.Key].SequenceEqual(kv.Value));
             }
         }
     }

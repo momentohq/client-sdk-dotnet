@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using CacheClient;
 using MomentoSdk.Responses;
+using MomentoSdk.Internal;
 
 namespace MomentoSdk.Incubating.Responses;
 
@@ -23,7 +24,8 @@ public class CacheDictionaryGetAllResponse
             ByteArrayDictionary = new Dictionary<byte[], byte[]>(
                 response.DictionaryBody.Select(
                     kv => new KeyValuePair<byte[], byte[]>(
-                        kv.Key.ToByteArray(), kv.Value.ToByteArray())));
+                        kv.Key.ToByteArray(), kv.Value.ToByteArray())),
+                Utils.ByteArrayComparer);
         }
     }
 
