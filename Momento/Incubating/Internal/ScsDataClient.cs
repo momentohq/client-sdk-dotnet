@@ -100,6 +100,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             var response = this.grpcManager.Client.DictionaryGet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            // TODO: report specific case of unexpected zero-length dictionary body
             return new CacheDictionaryGetResponse(response.DictionaryBody[0]);
 
         }
@@ -127,6 +128,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             var response = await this.grpcManager.Client.DictionaryGetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            // TODO: report specific case of unexpected zero-length dictionary body
             return new CacheDictionaryGetResponse(response.DictionaryBody[0]);
         }
         catch (Exception e)
