@@ -127,7 +127,7 @@ public interface ISimpleCacheClient : IDisposable
     /// <param name="cacheName">Name of the cache to store the items in.</param>
     /// <param name="items">The items to set.</param>
     /// <returns>Task object representing the result of the set operation.</returns>
-    public Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null);
+    public Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null);
 
     /// <summary>
     /// Sets multiple items in the cache. Overwrites existing items.
@@ -135,7 +135,7 @@ public interface ISimpleCacheClient : IDisposable
     /// <param name="cacheName">Name of the cache to store the items in.</param>
     /// <param name="items">The items to set.</param>
     /// <returns>Task object representing the result of the set operation.</returns>
-    public Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null);
+    public Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null);
 
     /// <summary>
     ///  Set the value in the cache. If a value for this key is already present it will be replaced by the new value.
@@ -218,7 +218,7 @@ public interface ISimpleCacheClient : IDisposable
     /// <param name="cacheName">Name of the cache to store the items in.</param>
     /// <param name="items">The items to set.</param>
     /// <returns>Result of the set operation.</returns>
-    public CacheSetMultiResponse SetMulti(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null);
+    public CacheSetMultiResponse SetMulti(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null);
 
     /// <summary>
     /// Sets multiple items in the cache. Overwrites existing items.
@@ -226,7 +226,7 @@ public interface ISimpleCacheClient : IDisposable
     /// <param name="cacheName">Name of the cache to store the items in.</param>
     /// <param name="items">The items to set.</param>
     /// <returns>Result of the set operation.</returns>
-    public CacheSetMultiResponse SetMulti(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null);
+    public CacheSetMultiResponse SetMulti(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null);
 
     /// <summary>
     /// Remove the key from the cache.

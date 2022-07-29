@@ -140,24 +140,22 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.GetMultiAsync(cacheName, keys);
     }
 
-    public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
+    public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(items, nameof(items));
-        Utils.DictionaryValuesNotNull(items, nameof(items));
+        Utils.KeysAndValuesNotNull(items, nameof(items));
 
-        await this.dataClient.SetMultiAsync(cacheName, items, ttlSeconds);
-        return new CacheSetMultiResponse(items);
+        return await this.dataClient.SetMultiAsync(cacheName, items, ttlSeconds);
     }
 
-    public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
+    public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(items, nameof(items));
-        Utils.DictionaryValuesNotNull(items, nameof(items));
+        Utils.KeysAndValuesNotNull(items, nameof(items));
 
-        await this.dataClient.SetMultiAsync(cacheName, items, ttlSeconds);
-        return new CacheSetMultiResponse(items);
+        return await this.dataClient.SetMultiAsync(cacheName, items, ttlSeconds);
     }
 
     public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
@@ -250,7 +248,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         }
     }
 
-    public CacheSetMultiResponse SetMulti(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
+    public CacheSetMultiResponse SetMulti(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
     {
         try
         {
@@ -262,7 +260,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         }
     }
 
-    public CacheSetMultiResponse SetMulti(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
+    public CacheSetMultiResponse SetMulti(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
     {
         try
         {
