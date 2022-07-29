@@ -6,7 +6,7 @@ using ControlClient;
 using System.Collections.Generic;
 using static System.Reflection.Assembly;
 
-namespace MomentoSdk;
+namespace MomentoSdk.Internal;
 
 internal sealed class ControlGrpcManager : IDisposable
 {
@@ -16,7 +16,8 @@ internal sealed class ControlGrpcManager : IDisposable
 
     public ControlGrpcManager(string authToken, string endpoint)
     {
-        this.channel = GrpcChannel.ForAddress(endpoint, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
+        var uri = $"https://{endpoint}";
+        this.channel = GrpcChannel.ForAddress(uri, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
         List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version) };
         CallInvoker invoker = channel.Intercept(new HeaderInterceptor(headers));
         Client = new ScsControl.ScsControlClient(invoker);

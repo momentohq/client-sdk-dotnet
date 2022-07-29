@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using MomentoSdk.Internal.ExtensionMethods;
 using MomentoSdk.Responses;
 using MomentoSdk.Exceptions;
 using CacheClient;
@@ -8,72 +9,104 @@ using Google.Protobuf;
 using Grpc.Core;
 using System.Collections.Generic;
 
-namespace MomentoSdk;
+namespace MomentoSdk.Internal;
 
-internal sealed class ScsDataClient : IDisposable
+public class ScsDataClientBase : IDisposable
 {
-    private readonly DataGrpcManager grpcManager;
-    private readonly uint defaultTtlSeconds;
-    private readonly uint dataClientOperationTimeoutMilliseconds;
-    private const uint DEFAULT_DEADLINE_MILLISECONDS = 5000;
+    protected readonly DataGrpcManager grpcManager;
+    protected readonly uint defaultTtlSeconds;
+    protected readonly uint dataClientOperationTimeoutMilliseconds;
+    protected const uint DEFAULT_DEADLINE_MILLISECONDS = 5000;
 
-    public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+    public ScsDataClientBase(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
     {
-        this.grpcManager = new DataGrpcManager(authToken, endpoint);
+        this.grpcManager = new(authToken, endpoint);
         this.defaultTtlSeconds = defaultTtlSeconds;
         this.dataClientOperationTimeoutMilliseconds = dataClientOperationTimeoutMilliseconds ?? DEFAULT_DEADLINE_MILLISECONDS;
     }
 
+    protected Metadata MetadataWithCache(string cacheName)
+    {
+        return new Metadata() { { "cache", cacheName } };
+    }
+    protected DateTime CalculateDeadline()
+    {
+        return DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
+    }
+
+    /// <summary>
+    /// Converts TTL in seconds to milliseconds. Defaults to <c>defaultTtlSeconds</c>.
+    /// </summary>
+    /// <param name="ttlSeconds">The TTL to convert. Defaults to defaultTtlSeconds</param>
+    /// <returns></returns>
+    protected uint ttlSecondsToMilliseconds(uint? ttlSeconds = null)
+    {
+        return (ttlSeconds ?? defaultTtlSeconds) * 1000;
+    }
+
+    public void Dispose()
+    {
+        this.grpcManager.Dispose();
+    }
+}
+
+internal sealed class ScsDataClient : ScsDataClientBase
+{
+    public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+        : base(authToken, endpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds)
+    {
+    }
+
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
     {
-        _SetResponse response = await this.SendSetAsync(cacheName, value: Convert(value), key: Convert(key), ttlSeconds: ttlSeconds);
+        _SetResponse response = await this.SendSetAsync(cacheName, value: value.ToByteString(), key: key.ToByteString(), ttlSeconds: ttlSeconds);
         return new CacheSetResponse(response);
     }
 
     public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
     {
-        _GetResponse resp = await this.SendGetAsync(cacheName, Convert(key));
+        _GetResponse resp = await this.SendGetAsync(cacheName, key.ToByteString());
         return new CacheGetResponse(resp);
     }
 
     public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, byte[] key)
     {
-        await this.SendDeleteAsync(cacheName, Convert(key));
+        await this.SendDeleteAsync(cacheName, key.ToByteString());
         return new CacheDeleteResponse();
     }
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint? ttlSeconds = null)
     {
-        _SetResponse response = await this.SendSetAsync(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
+        _SetResponse response = await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
         return new CacheSetResponse(response);
     }
 
     public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
     {
-        _GetResponse resp = await this.SendGetAsync(cacheName, Convert(key));
+        _GetResponse resp = await this.SendGetAsync(cacheName, key.ToByteString());
         return new CacheGetResponse(resp);
     }
 
     public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key)
     {
-        await this.SendDeleteAsync(cacheName, Convert(key));
+        await this.SendDeleteAsync(cacheName, key.ToByteString());
         return new CacheDeleteResponse();
     }
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
     {
-        _SetResponse response = await this.SendSetAsync(cacheName, value: Convert(value), key: Convert(key), ttlSeconds: ttlSeconds);
+        _SetResponse response = await this.SendSetAsync(cacheName, value: value.ToByteString(), key: key.ToByteString(), ttlSeconds: ttlSeconds);
         return new CacheSetResponse(response);
     }
 
     public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<string> keys)
     {
-        return await GetMultiAsync(cacheName, keys.Select(key => Convert(key)));
+        return await GetMultiAsync(cacheName, keys.Select(key => key.ToByteString()));
     }
 
     public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<byte[]> keys)
     {
-        return await GetMultiAsync(cacheName, keys.Select(key => Convert(key)));
+        return await GetMultiAsync(cacheName, keys.Select(key => key.ToByteString()));
     }
 
     public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<ByteString> keys)
@@ -110,14 +143,14 @@ internal sealed class ScsDataClient : IDisposable
     public async Task SetMultiAsync(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
     {
         await SetMultiAsync(cacheName: cacheName,
-            items: items.ToDictionary(item => Convert(item.Key), item => Convert(item.Value)),
+            items: items.ToDictionary(item => item.Key.ToByteString(), item => item.Value.ToByteString()),
             ttlSeconds: ttlSeconds);
     }
 
     public async Task SetMultiAsync(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
     {
         await SetMultiAsync(cacheName: cacheName,
-            items: items.ToDictionary(item => Convert(item.Key), item => Convert(item.Value)),
+            items: items.ToDictionary(item => item.Key.ToByteString(), item => item.Value.ToByteString()),
             ttlSeconds: ttlSeconds);
     }
 
@@ -150,43 +183,43 @@ internal sealed class ScsDataClient : IDisposable
 
     public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
     {
-        _SetResponse resp = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
+        _SetResponse resp = this.SendSet(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
         return new CacheSetResponse(resp);
     }
 
     public CacheGetResponse Get(string cacheName, byte[] key)
     {
-        _GetResponse resp = this.SendGet(cacheName, Convert(key));
+        _GetResponse resp = this.SendGet(cacheName, key.ToByteString());
         return new CacheGetResponse(resp);
     }
 
     public CacheDeleteResponse Delete(string cacheName, byte[] key)
     {
-        this.SendDelete(cacheName, Convert(key));
+        this.SendDelete(cacheName, key.ToByteString());
         return new CacheDeleteResponse();
     }
 
     public CacheSetResponse Set(string cacheName, string key, string value, uint? ttlSeconds = null)
     {
-        _SetResponse response = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
+        _SetResponse response = this.SendSet(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
         return new CacheSetResponse(response);
     }
 
     public CacheGetResponse Get(string cacheName, string key)
     {
-        _GetResponse resp = this.SendGet(cacheName, Convert(key));
+        _GetResponse resp = this.SendGet(cacheName, key.ToByteString());
         return new CacheGetResponse(resp);
     }
 
     public CacheDeleteResponse Delete(string cacheName, string key)
     {
-        this.SendDelete(cacheName, Convert(key));
+        this.SendDelete(cacheName, key.ToByteString());
         return new CacheDeleteResponse();
     }
 
     public CacheSetResponse Set(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
     {
-        _SetResponse response = this.SendSet(cacheName, key: Convert(key), value: Convert(value), ttlSeconds: ttlSeconds);
+        _SetResponse response = this.SendSet(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
         return new CacheSetResponse(response);
     }
 
@@ -195,7 +228,7 @@ internal sealed class ScsDataClient : IDisposable
         _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds) };
         try
         {
-            return await this.grpcManager.Client.SetAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
+            return await this.grpcManager.Client.SetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
@@ -221,7 +254,7 @@ internal sealed class ScsDataClient : IDisposable
         _GetRequest request = new _GetRequest() { CacheKey = key };
         try
         {
-            return await this.grpcManager.Client.GetAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
+            return await this.grpcManager.Client.GetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
@@ -234,7 +267,7 @@ internal sealed class ScsDataClient : IDisposable
         _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds) };
         try
         {
-            return this.grpcManager.Client.Set(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
+            return this.grpcManager.Client.Set(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
@@ -247,7 +280,7 @@ internal sealed class ScsDataClient : IDisposable
         _DeleteRequest request = new _DeleteRequest() { CacheKey = key };
         try
         {
-            return this.grpcManager.Client.Delete(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
+            return this.grpcManager.Client.Delete(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
@@ -260,41 +293,11 @@ internal sealed class ScsDataClient : IDisposable
         _DeleteRequest request = new _DeleteRequest() { CacheKey = key };
         try
         {
-            return await this.grpcManager.Client.DeleteAsync(request, new Metadata { { "cache", cacheName } }, deadline: CalculateDeadline());
+            return await this.grpcManager.Client.DeleteAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
             throw CacheExceptionMapper.Convert(e);
         }
-    }
-
-    private ByteString Convert(byte[] bytes)
-    {
-        return ByteString.CopyFrom(bytes);
-    }
-
-    private ByteString Convert(string s)
-    {
-        return ByteString.CopyFromUtf8(s);
-    }
-
-    private DateTime CalculateDeadline()
-    {
-        return DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
-    }
-
-    /// <summary>
-    /// Converts TTL in seconds to milliseconds. Defaults to <c>defaultTtlSeconds</c>.
-    /// </summary>
-    /// <param name="ttlSeconds">The TTL to convert. Defaults to defaultTtlSeconds</param>
-    /// <returns></returns>
-    private uint ttlSecondsToMilliseconds(uint? ttlSeconds = null)
-    {
-        return (ttlSeconds ?? defaultTtlSeconds) * 1000;
-    }
-
-    public void Dispose()
-    {
-        this.grpcManager.Dispose();
     }
 }

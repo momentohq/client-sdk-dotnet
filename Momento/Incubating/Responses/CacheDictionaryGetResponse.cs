@@ -1,5 +1,5 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
+using CacheClient;
 using MomentoSdk.Responses;
 
 
@@ -7,22 +7,21 @@ namespace MomentoSdk.Incubating.Responses;
 
 public class CacheDictionaryGetResponse
 {
-    public CacheDictionaryGetResponse()
+    public CacheGetStatus Status { get; private set; }
+    public byte[]? Bytes { get; private set; }
+
+    public CacheDictionaryGetResponse(_DictionaryGetResponse.Types._DictionaryGetResponsePart response)
     {
+        this.Status = CacheGetStatusUtil.From(response.Result);
+        this.Bytes = (Status == CacheGetStatus.HIT) ? response.CacheBody.ToByteArray() : null;
     }
 
-    public CacheGetStatus Status()
+    public string? String()
     {
-        throw new NotImplementedException();
-    }
-
-    public string? String(Encoding? encoding = null)
-    {
-        throw new NotImplementedException();
-    }
-
-    public byte[]? Bytes()
-    {
-        throw new NotImplementedException();
+        if (Bytes == null)
+        {
+            return null;
+        }
+        return Encoding.UTF8.GetString(Bytes);
     }
 }

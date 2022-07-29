@@ -2,22 +2,19 @@
 using MomentoSdk.Responses;
 using MomentoSdk.Exceptions;
 using ControlClient;
-using System.Threading.Tasks;
 
-namespace MomentoSdk;
+namespace MomentoSdk.Internal;
 
 internal sealed class ScsControlClient : IDisposable
 {
     private readonly ControlGrpcManager grpcManager;
     private readonly string authToken;
-    private readonly string endpoint;
     private const uint DEADLINE_SECONDS = 60;
 
     public ScsControlClient(string authToken, string endpoint)
     {
         this.grpcManager = new ControlGrpcManager(authToken, endpoint);
         this.authToken = authToken;
-        this.endpoint = endpoint;
     }
 
     public CreateCacheResponse CreateCache(string cacheName)
