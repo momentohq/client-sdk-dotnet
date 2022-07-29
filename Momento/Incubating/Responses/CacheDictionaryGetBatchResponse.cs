@@ -8,11 +8,11 @@ using MomentoSdk.Responses;
 
 namespace MomentoSdk.Incubating.Responses;
 
-public class CacheDictionaryGetMultiResponse
+public class CacheDictionaryGetBatchResponse
 {
     public IEnumerable<CacheDictionaryGetResponse> Responses { get; private set; }
 
-    public CacheDictionaryGetMultiResponse(_DictionaryGetResponse responses)
+    public CacheDictionaryGetBatchResponse(_DictionaryGetResponse responses)
     {
         this.Responses = responses.DictionaryBody.Select(response => new CacheDictionaryGetResponse(response));
     }

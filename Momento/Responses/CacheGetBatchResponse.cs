@@ -3,11 +3,11 @@ using System.Linq;
 
 namespace MomentoSdk.Responses;
 
-public class CacheGetMultiResponse
+public class CacheGetBatchResponse
 {
     public List<CacheGetResponse> Responses { get; }
 
-    public CacheGetMultiResponse(IEnumerable<CacheGetResponse> responses)
+    public CacheGetBatchResponse(IEnumerable<CacheGetResponse> responses)
     {
         this.Responses = new(responses);
     }

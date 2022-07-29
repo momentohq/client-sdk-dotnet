@@ -380,20 +380,20 @@ public class DictionaryTest
     }
 
     [Fact]
-    public void DictionarySetMulti_NullChecksBytes_ThrowsException()
+    public void DictionarySetBatch_NullChecksBytes_ThrowsException()
     {
         var dictionaryName = Utils.GuidString();
         var dictionary = new Dictionary<byte[], byte[]>();
-        Assert.Throws<ArgumentNullException>(() => client.DictionarySetMulti(null!, dictionaryName, dictionary, false));
-        Assert.Throws<ArgumentNullException>(() => client.DictionarySetMulti(cacheName, null!, dictionary, false));
-        Assert.Throws<ArgumentNullException>(() => client.DictionarySetMulti(cacheName, dictionaryName, (IEnumerable<KeyValuePair<byte[], byte[]>>)null!, false));
+        Assert.Throws<ArgumentNullException>(() => client.DictionarySetBatch(null!, dictionaryName, dictionary, false));
+        Assert.Throws<ArgumentNullException>(() => client.DictionarySetBatch(cacheName, null!, dictionary, false));
+        Assert.Throws<ArgumentNullException>(() => client.DictionarySetBatch(cacheName, dictionaryName, (IEnumerable<KeyValuePair<byte[], byte[]>>)null!, false));
 
         dictionary[Utils.GuidBytes()] = null!;
-        Assert.Throws<ArgumentNullException>(() => client.DictionarySetMulti(cacheName, dictionaryName, dictionary, false));
+        Assert.Throws<ArgumentNullException>(() => client.DictionarySetBatch(cacheName, dictionaryName, dictionary, false));
     }
 
     [Fact]
-    public void DictionarySetMulti_FieldsAreBytes_HappyPath()
+    public void DictionarySetBatch_FieldsAreBytes_HappyPath()
     {
         var dictionaryName = Utils.GuidString();
         var field1 = Utils.GuidBytes();
@@ -403,7 +403,7 @@ public class DictionaryTest
 
         var items = new Dictionary<byte[], byte[]>() { { field1, value1 }, { field2, value2 } };
 
-        client.DictionarySetMulti(cacheName, dictionaryName, items, false, 10);
+        client.DictionarySetBatch(cacheName, dictionaryName, items, false, 10);
 
         var response = client.DictionaryGet(cacheName, dictionaryName, field1);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
@@ -415,17 +415,17 @@ public class DictionaryTest
     }
 
     [Fact]
-    public void DictionarySetMulti_FieldsAreBytes_NoRefreshTtl()
+    public void DictionarySetBatch_FieldsAreBytes_NoRefreshTtl()
     {
         var dictionaryName = Utils.GuidString();
         var field = Utils.GuidBytes();
         var value = Utils.GuidBytes();
         var content = new Dictionary<byte[], byte[]>() { { field, value } };
 
-        client.DictionarySetMulti(cacheName, dictionaryName, content, false, ttlSeconds: 5);
+        client.DictionarySetBatch(cacheName, dictionaryName, content, false, ttlSeconds: 5);
         Thread.Sleep(100);
 
-        client.DictionarySetMulti(cacheName, dictionaryName, content, false, ttlSeconds: 10);
+        client.DictionarySetBatch(cacheName, dictionaryName, content, false, ttlSeconds: 10);
         Thread.Sleep(4900);
 
         var response = client.DictionaryGet(cacheName, dictionaryName, field);
@@ -433,17 +433,17 @@ public class DictionaryTest
     }
 
     [Fact]
-    public void DictionarySetMulti_FieldsAreBytes_RefreshTtl()
+    public void DictionarySetBatch_FieldsAreBytes_RefreshTtl()
     {
         var dictionaryName = Utils.GuidString();
         var field = Utils.GuidBytes();
         var value = Utils.GuidBytes();
         var content = new Dictionary<byte[], byte[]>() { { field, value } };
 
-        client.DictionarySetMulti(cacheName, dictionaryName, content, false, ttlSeconds: 1);
+        client.DictionarySetBatch(cacheName, dictionaryName, content, false, ttlSeconds: 1);
         Thread.Sleep(100);
 
-        client.DictionarySetMulti(cacheName, dictionaryName, content, true, ttlSeconds: 10);
+        client.DictionarySetBatch(cacheName, dictionaryName, content, true, ttlSeconds: 10);
         Thread.Sleep(1000);
 
         var response = client.DictionaryGet(cacheName, dictionaryName, field);
@@ -452,20 +452,20 @@ public class DictionaryTest
     }
 
     [Fact]
-    public void DictionarySetMulti_NullChecksStrings_ThrowsException()
+    public void DictionarySetBatch_NullChecksStrings_ThrowsException()
     {
         var dictionaryName = Utils.GuidString();
         var dictionary = new Dictionary<string, string>();
-        Assert.Throws<ArgumentNullException>(() => client.DictionarySetMulti(null!, dictionaryName, dictionary, false));
-        Assert.Throws<ArgumentNullException>(() => client.DictionarySetMulti(cacheName, null!, dictionary, false));
-        Assert.Throws<ArgumentNullException>(() => client.DictionarySetMulti(cacheName, dictionaryName, (IEnumerable<KeyValuePair<string, string>>)null!, false));
+        Assert.Throws<ArgumentNullException>(() => client.DictionarySetBatch(null!, dictionaryName, dictionary, false));
+        Assert.Throws<ArgumentNullException>(() => client.DictionarySetBatch(cacheName, null!, dictionary, false));
+        Assert.Throws<ArgumentNullException>(() => client.DictionarySetBatch(cacheName, dictionaryName, (IEnumerable<KeyValuePair<string, string>>)null!, false));
 
         dictionary[Utils.GuidString()] = null!;
-        Assert.Throws<ArgumentNullException>(() => client.DictionarySetMulti(cacheName, dictionaryName, dictionary, false));
+        Assert.Throws<ArgumentNullException>(() => client.DictionarySetBatch(cacheName, dictionaryName, dictionary, false));
     }
 
     [Fact]
-    public void DictionarySetMulti_FieldsAreStrings_HappyPath()
+    public void DictionarySetBatch_FieldsAreStrings_HappyPath()
     {
         var dictionaryName = Utils.GuidString();
         var field1 = Utils.GuidString();
@@ -475,7 +475,7 @@ public class DictionaryTest
 
         var items = new Dictionary<string, string>() { { field1, value1 }, { field2, value2 } };
 
-        client.DictionarySetMulti(cacheName, dictionaryName, items, false, 10);
+        client.DictionarySetBatch(cacheName, dictionaryName, items, false, 10);
 
         var getResponse = client.DictionaryGet(cacheName, dictionaryName, field1);
         Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
@@ -487,17 +487,17 @@ public class DictionaryTest
     }
 
     [Fact]
-    public void DictionarySetMulti_FieldsAreStrings_NoRefreshTtl()
+    public void DictionarySetBatch_FieldsAreStrings_NoRefreshTtl()
     {
         var dictionaryName = Utils.GuidString();
         var field = Utils.GuidString();
         var value = Utils.GuidString();
         var content = new Dictionary<string, string>() { { field, value } };
 
-        client.DictionarySetMulti(cacheName, dictionaryName, content, false, ttlSeconds: 5);
+        client.DictionarySetBatch(cacheName, dictionaryName, content, false, ttlSeconds: 5);
         Thread.Sleep(100);
 
-        client.DictionarySetMulti(cacheName, dictionaryName, content, false, ttlSeconds: 10);
+        client.DictionarySetBatch(cacheName, dictionaryName, content, false, ttlSeconds: 10);
         Thread.Sleep(4900);
 
         var response = client.DictionaryGet(cacheName, dictionaryName, field);
@@ -505,17 +505,17 @@ public class DictionaryTest
     }
 
     [Fact]
-    public void DictionarySetMulti_FieldsAreStrings_RefreshTtl()
+    public void DictionarySetBatch_FieldsAreStrings_RefreshTtl()
     {
         var dictionaryName = Utils.GuidString();
         var field = Utils.GuidString();
         var value = Utils.GuidString();
         var content = new Dictionary<string, string>() { { field, value } };
 
-        client.DictionarySetMulti(cacheName, dictionaryName, content, false, ttlSeconds: 1);
+        client.DictionarySetBatch(cacheName, dictionaryName, content, false, ttlSeconds: 1);
         Thread.Sleep(100);
 
-        client.DictionarySetMulti(cacheName, dictionaryName, content, true, ttlSeconds: 10);
+        client.DictionarySetBatch(cacheName, dictionaryName, content, true, ttlSeconds: 10);
         Thread.Sleep(1000);
 
         var response = client.DictionaryGet(cacheName, dictionaryName, field);
@@ -524,20 +524,20 @@ public class DictionaryTest
     }
 
     [Fact]
-    public async void DictionarySetMultiAsync_NullChecksBytes_ThrowsException()
+    public async void DictionarySetBatchAsync_NullChecksBytes_ThrowsException()
     {
         var dictionaryName = Utils.GuidString();
         var dictionary = new Dictionary<byte[], byte[]>();
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetMultiAsync(null!, dictionaryName, dictionary, false));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetMultiAsync(cacheName, null!, dictionary, false));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetMultiAsync(cacheName, dictionaryName, (IEnumerable<KeyValuePair<byte[], byte[]>>)null!, false));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetBatchAsync(null!, dictionaryName, dictionary, false));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetBatchAsync(cacheName, null!, dictionary, false));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetBatchAsync(cacheName, dictionaryName, (IEnumerable<KeyValuePair<byte[], byte[]>>)null!, false));
 
         dictionary[Utils.GuidBytes()] = null!;
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetMultiAsync(cacheName, dictionaryName, dictionary, false));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetBatchAsync(cacheName, dictionaryName, dictionary, false));
     }
 
     [Fact]
-    public async void DictionarySetMultiAsync_FieldsAreBytes_HappyPath()
+    public async void DictionarySetBatchAsync_FieldsAreBytes_HappyPath()
     {
         var dictionaryName = Utils.GuidString();
         var field1 = Utils.GuidBytes();
@@ -547,7 +547,7 @@ public class DictionaryTest
 
         var items = new Dictionary<byte[], byte[]>() { { field1, value1 }, { field2, value2 } };
 
-        await client.DictionarySetMultiAsync(cacheName, dictionaryName, items, false, 10);
+        await client.DictionarySetBatchAsync(cacheName, dictionaryName, items, false, 10);
 
         var getResponse = await client.DictionaryGetAsync(cacheName, dictionaryName, field1);
         Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
@@ -559,17 +559,17 @@ public class DictionaryTest
     }
 
     [Fact]
-    public async void DictionarySetMultiAsync_FieldsAreBytes_NoRefreshTtl()
+    public async void DictionarySetBatchAsync_FieldsAreBytes_NoRefreshTtl()
     {
         var dictionaryName = Utils.GuidString();
         var field = Utils.GuidBytes();
         var value = Utils.GuidBytes();
         var content = new Dictionary<byte[], byte[]>() { { field, value } };
 
-        await client.DictionarySetMultiAsync(cacheName, dictionaryName, content, false, ttlSeconds: 5);
+        await client.DictionarySetBatchAsync(cacheName, dictionaryName, content, false, ttlSeconds: 5);
         Thread.Sleep(100);
 
-        await client.DictionarySetMultiAsync(cacheName, dictionaryName, content, false, ttlSeconds: 10);
+        await client.DictionarySetBatchAsync(cacheName, dictionaryName, content, false, ttlSeconds: 10);
         Thread.Sleep(4900);
 
         var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
@@ -577,17 +577,17 @@ public class DictionaryTest
     }
 
     [Fact]
-    public async void DictionarySetMultiAsync_FieldsAreBytes_RefreshTtl()
+    public async void DictionarySetBatchAsync_FieldsAreBytes_RefreshTtl()
     {
         var dictionaryName = Utils.GuidString();
         var field = Utils.GuidBytes();
         var value = Utils.GuidBytes();
         var content = new Dictionary<byte[], byte[]>() { { field, value } };
 
-        await client.DictionarySetMultiAsync(cacheName, dictionaryName, content, false, ttlSeconds: 1);
+        await client.DictionarySetBatchAsync(cacheName, dictionaryName, content, false, ttlSeconds: 1);
         Thread.Sleep(100);
 
-        await client.DictionarySetMultiAsync(cacheName, dictionaryName, content, true, ttlSeconds: 10);
+        await client.DictionarySetBatchAsync(cacheName, dictionaryName, content, true, ttlSeconds: 10);
         Thread.Sleep(1000);
 
         var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
@@ -596,20 +596,20 @@ public class DictionaryTest
     }
 
     [Fact]
-    public async void DictionarySetMultiAsync_NullChecksStrings_ThrowsException()
+    public async void DictionarySetBatchAsync_NullChecksStrings_ThrowsException()
     {
         var dictionaryName = Utils.GuidString();
         var dictionary = new Dictionary<string, string>();
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetMultiAsync(null!, dictionaryName, dictionary, false));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetMultiAsync(cacheName, null!, dictionary, false));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetMultiAsync(cacheName, dictionaryName, (IEnumerable<KeyValuePair<string, string>>)null!, false));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetBatchAsync(null!, dictionaryName, dictionary, false));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetBatchAsync(cacheName, null!, dictionary, false));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetBatchAsync(cacheName, dictionaryName, (IEnumerable<KeyValuePair<string, string>>)null!, false));
 
         dictionary[Utils.GuidString()] = null!;
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetMultiAsync(cacheName, dictionaryName, dictionary, false));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetBatchAsync(cacheName, dictionaryName, dictionary, false));
     }
 
     [Fact]
-    public async void DictionarySetMultiAsync_FieldsAreStrings_HappyPath()
+    public async void DictionarySetBatchAsync_FieldsAreStrings_HappyPath()
     {
         var dictionaryName = Utils.GuidString();
         var field1 = Utils.GuidString();
@@ -619,7 +619,7 @@ public class DictionaryTest
 
         var items = new Dictionary<string, string>() { { field1, value1 }, { field2, value2 } };
 
-        await client.DictionarySetMultiAsync(cacheName, dictionaryName, items, false, 10);
+        await client.DictionarySetBatchAsync(cacheName, dictionaryName, items, false, 10);
 
         var getResponse = await client.DictionaryGetAsync(cacheName, dictionaryName, field1);
         Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
@@ -631,17 +631,17 @@ public class DictionaryTest
     }
 
     [Fact]
-    public async void DictionarySetMultiAsync_FieldsAreStrings_NoRefreshTtl()
+    public async void DictionarySetBatchAsync_FieldsAreStrings_NoRefreshTtl()
     {
         var dictionaryName = Utils.GuidString();
         var field = Utils.GuidString();
         var value = Utils.GuidString();
         var content = new Dictionary<string, string>() { { field, value } };
 
-        await client.DictionarySetMultiAsync(cacheName, dictionaryName, content, false, ttlSeconds: 5);
+        await client.DictionarySetBatchAsync(cacheName, dictionaryName, content, false, ttlSeconds: 5);
         Thread.Sleep(100);
 
-        await client.DictionarySetMultiAsync(cacheName, dictionaryName, content, false, ttlSeconds: 10);
+        await client.DictionarySetBatchAsync(cacheName, dictionaryName, content, false, ttlSeconds: 10);
         Thread.Sleep(4900);
 
         var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
@@ -649,17 +649,17 @@ public class DictionaryTest
     }
 
     [Fact]
-    public async void DictionarySetMultiAsync_FieldsAreStrings_RefreshTtl()
+    public async void DictionarySetBatchAsync_FieldsAreStrings_RefreshTtl()
     {
         var dictionaryName = Utils.GuidString();
         var field = Utils.GuidString();
         var value = Utils.GuidString();
         var content = new Dictionary<string, string>() { { field, value } };
 
-        await client.DictionarySetMultiAsync(cacheName, dictionaryName, content, false, ttlSeconds: 1);
+        await client.DictionarySetBatchAsync(cacheName, dictionaryName, content, false, ttlSeconds: 1);
         Thread.Sleep(100);
 
-        await client.DictionarySetMultiAsync(cacheName, dictionaryName, content, true, ttlSeconds: 10);
+        await client.DictionarySetBatchAsync(cacheName, dictionaryName, content, true, ttlSeconds: 10);
         Thread.Sleep(1000);
 
         var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
@@ -668,25 +668,25 @@ public class DictionaryTest
     }
 
     [Fact]
-    public void DictionaryGetMulti_NullChecksByteArrayParams_ThrowsException()
+    public void DictionaryGetBatch_NullChecksByteArrayParams_ThrowsException()
     {
         var dictionaryName = Utils.GuidString();
         var testData = new byte[][][] { new byte[][] { Utils.GuidBytes(), Utils.GuidBytes() }, new byte[][] { Utils.GuidBytes(), null! } };
 
-        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetMulti(null!, dictionaryName, testData[0]));
-        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetMulti(cacheName, null!, testData[0]));
-        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetMulti(cacheName, dictionaryName, (byte[][])null!));
-        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetMulti(cacheName, dictionaryName, testData[1]));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetBatch(null!, dictionaryName, testData[0]));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetBatch(cacheName, null!, testData[0]));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetBatch(cacheName, dictionaryName, (byte[][])null!));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetBatch(cacheName, dictionaryName, testData[1]));
 
         var fieldsList = new List<byte[]>(testData[0]);
-        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetMulti(null!, dictionaryName, fieldsList));
-        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetMulti(cacheName, null!, fieldsList));
-        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetMulti(cacheName, dictionaryName, (List<byte[]>)null!));
-        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetMulti(cacheName, dictionaryName, new List<byte[]>(testData[1])));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetBatch(null!, dictionaryName, fieldsList));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetBatch(cacheName, null!, fieldsList));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetBatch(cacheName, dictionaryName, (List<byte[]>)null!));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetBatch(cacheName, dictionaryName, new List<byte[]>(testData[1])));
     }
 
     [Fact]
-    public void DictionaryGetMulti_FieldsAreBytes_HappyPath()
+    public void DictionaryGetBatch_FieldsAreBytes_HappyPath()
     {
         var dictionaryName = Utils.GuidString();
         var field1 = Utils.GuidBytes();
@@ -698,8 +698,8 @@ public class DictionaryTest
         client.DictionarySet(cacheName, dictionaryName, field1, value1, false, 10);
         client.DictionarySet(cacheName, dictionaryName, field2, value2, false, 10);
 
-        var response1 = client.DictionaryGetMulti(cacheName, dictionaryName, field1, field2, field3);
-        var response2 = client.DictionaryGetMulti(cacheName, dictionaryName, new List<byte[]>() { field1, field2, field3 });
+        var response1 = client.DictionaryGetBatch(cacheName, dictionaryName, field1, field2, field3);
+        var response2 = client.DictionaryGetBatch(cacheName, dictionaryName, new List<byte[]>() { field1, field2, field3 });
 
         var status = new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS };
         var values = new byte[]?[] { value1, value2, null };
@@ -710,24 +710,24 @@ public class DictionaryTest
     }
 
     [Fact]
-    public void DictionaryGetMulti_NullChecksStringParams_ThrowsException()
+    public void DictionaryGetBatch_NullChecksStringParams_ThrowsException()
     {
         var dictionaryName = Utils.GuidString();
         var testData = new string[][] { new string[] { Utils.GuidString(), Utils.GuidString() }, new string[] { Utils.GuidString(), null! } };
-        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetMulti(null!, dictionaryName, testData[0]));
-        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetMulti(cacheName, null!, testData[0]));
-        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetMulti(cacheName, dictionaryName, (string[])null!));
-        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetMulti(cacheName, dictionaryName, testData[1]));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetBatch(null!, dictionaryName, testData[0]));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetBatch(cacheName, null!, testData[0]));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetBatch(cacheName, dictionaryName, (string[])null!));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetBatch(cacheName, dictionaryName, testData[1]));
 
         var fieldsList = new List<string>(testData[0]);
-        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetMulti(null!, dictionaryName, fieldsList));
-        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetMulti(cacheName, null!, fieldsList));
-        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetMulti(cacheName, dictionaryName, (List<string>)null!));
-        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetMulti(cacheName, dictionaryName, new List<string>(testData[1])));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetBatch(null!, dictionaryName, fieldsList));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetBatch(cacheName, null!, fieldsList));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetBatch(cacheName, dictionaryName, (List<string>)null!));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetBatch(cacheName, dictionaryName, new List<string>(testData[1])));
     }
 
     [Fact]
-    public void DictionaryGetMulti_FieldsAreStrings_HappyPath()
+    public void DictionaryGetBatch_FieldsAreStrings_HappyPath()
     {
         var dictionaryName = Utils.GuidString();
         var field1 = Utils.GuidString();
@@ -739,8 +739,8 @@ public class DictionaryTest
         client.DictionarySet(cacheName, dictionaryName, field1, value1, false, 10);
         client.DictionarySet(cacheName, dictionaryName, field2, value2, false, 10);
 
-        var response1 = client.DictionaryGetMulti(cacheName, dictionaryName, field1, field2, field3);
-        var response2 = client.DictionaryGetMulti(cacheName, dictionaryName, new string[] { field1, field2, field3 });
+        var response1 = client.DictionaryGetBatch(cacheName, dictionaryName, field1, field2, field3);
+        var response2 = client.DictionaryGetBatch(cacheName, dictionaryName, new string[] { field1, field2, field3 });
 
         var status = new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS };
         var values = new string?[] { value1, value2, null };
@@ -751,25 +751,25 @@ public class DictionaryTest
     }
 
     [Fact]
-    public async void DictionaryGetMultiAsync_NullChecksByteArrayParams_ThrowsException()
+    public async void DictionaryGetBatchAsync_NullChecksByteArrayParams_ThrowsException()
     {
         var dictionaryName = Utils.GuidString();
         var testData = new byte[][][] { new byte[][] { Utils.GuidBytes(), Utils.GuidBytes() }, new byte[][] { Utils.GuidBytes(), null! } };
 
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetMultiAsync(null!, dictionaryName, testData[0]));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetMultiAsync(cacheName, null!, testData[0]));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetMultiAsync(cacheName, dictionaryName, (byte[][])null!));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetMultiAsync(cacheName, dictionaryName, testData[1]));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetBatchAsync(null!, dictionaryName, testData[0]));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetBatchAsync(cacheName, null!, testData[0]));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetBatchAsync(cacheName, dictionaryName, (byte[][])null!));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetBatchAsync(cacheName, dictionaryName, testData[1]));
 
         var fieldsList = new List<byte[]>(testData[0]);
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetMultiAsync(null!, dictionaryName, fieldsList));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetMultiAsync(cacheName, null!, fieldsList));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetMultiAsync(cacheName, dictionaryName, (List<byte[]>)null!));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetMultiAsync(cacheName, dictionaryName, new List<byte[]>(testData[1])));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetBatchAsync(null!, dictionaryName, fieldsList));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetBatchAsync(cacheName, null!, fieldsList));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetBatchAsync(cacheName, dictionaryName, (List<byte[]>)null!));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetBatchAsync(cacheName, dictionaryName, new List<byte[]>(testData[1])));
     }
 
     [Fact]
-    public async void DictionaryGetMultiAsync_FieldsAreBytes_HappyPath()
+    public async void DictionaryGetBatchAsync_FieldsAreBytes_HappyPath()
     {
         var dictionaryName = Utils.GuidString();
         var field1 = Utils.GuidBytes();
@@ -781,8 +781,8 @@ public class DictionaryTest
         await client.DictionarySetAsync(cacheName, dictionaryName, field1, value1, false, 10);
         await client.DictionarySetAsync(cacheName, dictionaryName, field2, value2, false, 10);
 
-        var response1 = await client.DictionaryGetMultiAsync(cacheName, dictionaryName, field1, field2, field3);
-        var response2 = await client.DictionaryGetMultiAsync(cacheName, dictionaryName, new byte[][] { field1, field2, field3 });
+        var response1 = await client.DictionaryGetBatchAsync(cacheName, dictionaryName, field1, field2, field3);
+        var response2 = await client.DictionaryGetBatchAsync(cacheName, dictionaryName, new byte[][] { field1, field2, field3 });
 
         var status = new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS };
         var values = new byte[]?[] { value1, value2, null };
@@ -793,24 +793,24 @@ public class DictionaryTest
     }
 
     [Fact]
-    public async void DictionaryGetMultiAsync_NullChecksStringParams_ThrowsException()
+    public async void DictionaryGetBatchAsync_NullChecksStringParams_ThrowsException()
     {
         var dictionaryName = Utils.GuidString();
         var testData = new string[][] { new string[] { Utils.GuidString(), Utils.GuidString() }, new string[] { Utils.GuidString(), null! } };
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetMultiAsync(null!, dictionaryName, testData[0]));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetMultiAsync(cacheName, null!, testData[0]));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetMultiAsync(cacheName, dictionaryName, (string[])null!));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetMultiAsync(cacheName, dictionaryName, testData[1]));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetBatchAsync(null!, dictionaryName, testData[0]));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetBatchAsync(cacheName, null!, testData[0]));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetBatchAsync(cacheName, dictionaryName, (string[])null!));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetBatchAsync(cacheName, dictionaryName, testData[1]));
 
         var fieldsList = new List<string>(testData[0]);
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetMultiAsync(null!, dictionaryName, fieldsList));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetMultiAsync(cacheName, null!, fieldsList));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetMultiAsync(cacheName, dictionaryName, (List<string>)null!));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetMultiAsync(cacheName, dictionaryName, new List<string>(testData[1])));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetBatchAsync(null!, dictionaryName, fieldsList));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetBatchAsync(cacheName, null!, fieldsList));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetBatchAsync(cacheName, dictionaryName, (List<string>)null!));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetBatchAsync(cacheName, dictionaryName, new List<string>(testData[1])));
     }
 
     [Fact]
-    public async void DictionaryGetMultiAsync_FieldsAreStrings_HappyPath()
+    public async void DictionaryGetBatchAsync_FieldsAreStrings_HappyPath()
     {
         var dictionaryName = Utils.GuidString();
         var field1 = Utils.GuidString();
@@ -822,8 +822,8 @@ public class DictionaryTest
         await client.DictionarySetAsync(cacheName, dictionaryName, field1, value1, false, 10);
         await client.DictionarySetAsync(cacheName, dictionaryName, field2, value2, false, 10);
 
-        var response1 = await client.DictionaryGetMultiAsync(cacheName, dictionaryName, field1, field2, field3);
-        var response2 = await client.DictionaryGetMultiAsync(cacheName, dictionaryName, new string[] { field1, field2, field3 });
+        var response1 = await client.DictionaryGetBatchAsync(cacheName, dictionaryName, field1, field2, field3);
+        var response2 = await client.DictionaryGetBatchAsync(cacheName, dictionaryName, new string[] { field1, field2, field3 });
 
         var status = new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS };
         var values = new string?[] { value1, value2, null };
@@ -836,21 +836,21 @@ public class DictionaryTest
     [Theory]
     [InlineData(null, "my-dictionary")]
     [InlineData("cache", null)]
-    public void DictionaryGetAll_NullChecks_ThrowsException(string cacheName, string dictionaryName)
+    public void DictionaryFetch_NullChecks_ThrowsException(string cacheName, string dictionaryName)
     {
-        Assert.Throws<ArgumentNullException>(() => client.DictionaryGetAll(cacheName, dictionaryName));
+        Assert.Throws<ArgumentNullException>(() => client.DictionaryFetch(cacheName, dictionaryName));
     }
 
     [Fact]
-    public void DictionaryGetAll_Missing_HappyPath()
+    public void DictionaryFetch_Missing_HappyPath()
     {
         var dictionaryName = Utils.GuidString();
-        var response = client.DictionaryGetAll(cacheName, dictionaryName);
+        var response = client.DictionaryFetch(cacheName, dictionaryName);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
 
     [Fact]
-    public void DictionaryGetAll_HasContentString_HappyPath()
+    public void DictionaryFetch_HasContentString_HappyPath()
     {
         var dictionaryName = Utils.GuidString();
         var field1 = Utils.GuidString();
@@ -865,14 +865,14 @@ public class DictionaryTest
         client.DictionarySet(cacheName, dictionaryName, field1, value1, true, ttlSeconds: 10);
         client.DictionarySet(cacheName, dictionaryName, field2, value2, true, ttlSeconds: 10);
 
-        var getAllResponse = client.DictionaryGetAll(cacheName, dictionaryName);
+        var getAllResponse = client.DictionaryFetch(cacheName, dictionaryName);
 
         Assert.Equal(CacheGetStatus.HIT, getAllResponse.Status);
         Assert.Equal(getAllResponse.StringDictionary(), contentDictionary);
     }
 
     [Fact]
-    public void DictionaryGetAll_HasContentBytes_HappyPath()
+    public void DictionaryFetch_HasContentBytes_HappyPath()
     {
         var dictionaryName = Utils.GuidString();
         var field1 = Utils.GuidBytes();
@@ -887,7 +887,7 @@ public class DictionaryTest
         client.DictionarySet(cacheName, dictionaryName, field1, value1, true, ttlSeconds: 10);
         client.DictionarySet(cacheName, dictionaryName, field2, value2, true, ttlSeconds: 10);
 
-        var getAllResponse = client.DictionaryGetAll(cacheName, dictionaryName);
+        var getAllResponse = client.DictionaryFetch(cacheName, dictionaryName);
 
         Assert.Equal(CacheGetStatus.HIT, getAllResponse.Status);
 
@@ -903,21 +903,21 @@ public class DictionaryTest
     [Theory]
     [InlineData(null, "my-dictionary")]
     [InlineData("cache", null)]
-    public async void DictionaryGetAllAsync_NullChecks_ThrowsException(string cacheName, string dictionaryName)
+    public async void DictionaryFetchAsync_NullChecks_ThrowsException(string cacheName, string dictionaryName)
     {
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryGetAllAsync(cacheName, dictionaryName));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryFetchAsync(cacheName, dictionaryName));
     }
 
     [Fact]
-    public async void DictionaryGetAllAsync_Missing_HappyPath()
+    public async void DictionaryFetchAsync_Missing_HappyPath()
     {
         var dictionaryName = Utils.GuidString();
-        var response = await client.DictionaryGetAllAsync(cacheName, dictionaryName);
+        var response = await client.DictionaryFetchAsync(cacheName, dictionaryName);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
     }
 
     [Fact]
-    public async void DictionaryGetAllAsync_HasContentString_HappyPath()
+    public async void DictionaryFetchAsync_HasContentString_HappyPath()
     {
         var dictionaryName = Utils.GuidString();
         var field1 = Utils.GuidString();
@@ -932,14 +932,14 @@ public class DictionaryTest
         await client.DictionarySetAsync(cacheName, dictionaryName, field1, value1, true, ttlSeconds: 10);
         await client.DictionarySetAsync(cacheName, dictionaryName, field2, value2, true, ttlSeconds: 10);
 
-        var getAllResponse = await client.DictionaryGetAllAsync(cacheName, dictionaryName);
+        var getAllResponse = await client.DictionaryFetchAsync(cacheName, dictionaryName);
 
         Assert.Equal(CacheGetStatus.HIT, getAllResponse.Status);
         Assert.Equal(getAllResponse.StringDictionary(), contentDictionary);
     }
 
     [Fact]
-    public async void DictionaryGetAllAsync_HasContentBytes_HappyPath()
+    public async void DictionaryFetchAsync_HasContentBytes_HappyPath()
     {
         var dictionaryName = Utils.GuidString();
         var field1 = Utils.GuidBytes();
@@ -954,7 +954,7 @@ public class DictionaryTest
         await client.DictionarySetAsync(cacheName, dictionaryName, field1, value1, true, ttlSeconds: 10);
         await client.DictionarySetAsync(cacheName, dictionaryName, field2, value2, true, ttlSeconds: 10);
 
-        var getAllResponse = await client.DictionaryGetAllAsync(cacheName, dictionaryName);
+        var getAllResponse = await client.DictionaryFetchAsync(cacheName, dictionaryName);
 
         Assert.Equal(CacheGetStatus.HIT, getAllResponse.Status);
 
@@ -979,9 +979,9 @@ public class DictionaryTest
     public void DictionaryDelete_DictionaryDoesNotExist_Noop()
     {
         var dictionaryName = Utils.GuidString();
-        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGetAll(cacheName, dictionaryName).Status);
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryFetch(cacheName, dictionaryName).Status);
         client.DictionaryDelete(cacheName, dictionaryName);
-        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGetAll(cacheName, dictionaryName).Status);
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryFetch(cacheName, dictionaryName).Status);
     }
 
     [Fact]
@@ -992,9 +992,9 @@ public class DictionaryTest
         client.DictionarySet(cacheName, dictionaryName, Utils.GuidString(), Utils.GuidString(), false);
         client.DictionarySet(cacheName, dictionaryName, Utils.GuidString(), Utils.GuidString(), false);
 
-        Assert.Equal(CacheGetStatus.HIT, client.DictionaryGetAll(cacheName, dictionaryName).Status);
+        Assert.Equal(CacheGetStatus.HIT, client.DictionaryFetch(cacheName, dictionaryName).Status);
         client.DictionaryDelete(cacheName, dictionaryName);
-        Assert.Equal(CacheGetStatus.MISS, client.DictionaryGetAll(cacheName, dictionaryName).Status);
+        Assert.Equal(CacheGetStatus.MISS, client.DictionaryFetch(cacheName, dictionaryName).Status);
     }
 
     [Theory]
@@ -1009,9 +1009,9 @@ public class DictionaryTest
     public async void DictionaryDeleteAsync_DictionaryDoesNotExist_Noop()
     {
         var dictionaryName = Utils.GuidString();
-        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAllAsync(cacheName, dictionaryName)).Status);
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryFetchAsync(cacheName, dictionaryName)).Status);
         await client.DictionaryDeleteAsync(cacheName, dictionaryName);
-        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAllAsync(cacheName, dictionaryName)).Status);
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryFetchAsync(cacheName, dictionaryName)).Status);
     }
 
     [Fact]
@@ -1022,9 +1022,9 @@ public class DictionaryTest
         await client.DictionarySetAsync(cacheName, dictionaryName, Utils.GuidString(), Utils.GuidString(), false);
         await client.DictionarySetAsync(cacheName, dictionaryName, Utils.GuidString(), Utils.GuidString(), false);
 
-        Assert.Equal(CacheGetStatus.HIT, (await client.DictionaryGetAllAsync(cacheName, dictionaryName)).Status);
+        Assert.Equal(CacheGetStatus.HIT, (await client.DictionaryFetchAsync(cacheName, dictionaryName)).Status);
         await client.DictionaryDeleteAsync(cacheName, dictionaryName);
-        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryGetAllAsync(cacheName, dictionaryName)).Status);
+        Assert.Equal(CacheGetStatus.MISS, (await client.DictionaryFetchAsync(cacheName, dictionaryName)).Status);
     }
 
     [Theory]

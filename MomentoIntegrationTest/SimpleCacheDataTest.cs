@@ -116,19 +116,19 @@ public class SimpleCacheDataTest
     }
 
     [Fact]
-    public async void GetMultiAsync_NullCheckBytes_ThrowsException()
+    public async void GetBatchAsync_NullCheckBytes_ThrowsException()
     {
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetMultiAsync(null!, new List<byte[]>()));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetMultiAsync("cache", (List<byte[]>)null!));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetBatchAsync(null!, new List<byte[]>()));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetBatchAsync("cache", (List<byte[]>)null!));
 
         var badList = new List<byte[]>(new byte[][] { Utils.GuidBytes(), null! });
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetMultiAsync("cache", badList));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetBatchAsync("cache", badList));
 
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetMultiAsync("cache", Utils.GuidBytes(), null!));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetBatchAsync("cache", Utils.GuidBytes(), null!));
     }
 
     [Fact]
-    public async void GetMultiAsync_KeysAreBytes_HappyPath()
+    public async void GetBatchAsync_KeysAreBytes_HappyPath()
     {
         string key1 = Utils.GuidString();
         string value1 = Utils.GuidString();
@@ -139,7 +139,7 @@ public class SimpleCacheDataTest
 
         List<byte[]> keys = new() { Utils.Utf8ToBytes(key1), Utils.Utf8ToBytes(key2) };
 
-        CacheGetMultiResponse result = await client.GetMultiAsync(CacheName, keys);
+        CacheGetBatchResponse result = await client.GetBatchAsync(CacheName, keys);
         string? stringResult1 = result.Strings()[0];
         string? stringResult2 = result.Strings()[1];
         Assert.Equal(value1, stringResult1);
@@ -147,7 +147,7 @@ public class SimpleCacheDataTest
     }
 
     [Fact]
-    public async void GetMultiAsync_KeysAreBytes_HappyPath2()
+    public async void GetBatchAsync_KeysAreBytes_HappyPath2()
     {
         string key1 = Utils.GuidString();
         string value1 = Utils.GuidString();
@@ -156,7 +156,7 @@ public class SimpleCacheDataTest
         client.Set(CacheName, key1, value1);
         client.Set(CacheName, key2, value2);
 
-        CacheGetMultiResponse result = await client.GetMultiAsync(CacheName, key1, key2);
+        CacheGetBatchResponse result = await client.GetBatchAsync(CacheName, key1, key2);
         string? stringResult1 = result.Strings()[0];
         string? stringResult2 = result.Strings()[1];
         Assert.Equal(value1, stringResult1);
@@ -164,19 +164,19 @@ public class SimpleCacheDataTest
     }
 
     [Fact]
-    public async void GetMultiAsync_NullCheckString_ThrowsException()
+    public async void GetBatchAsync_NullCheckString_ThrowsException()
     {
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetMultiAsync(null!, new List<string>()));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetMultiAsync("cache", (List<string>)null!));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetBatchAsync(null!, new List<string>()));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetBatchAsync("cache", (List<string>)null!));
 
         List<string> strings = new(new string[] { "key1", "key2", null! });
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetMultiAsync("cache", strings));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetBatchAsync("cache", strings));
 
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetMultiAsync("cache", "key1", "key2", null!));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetBatchAsync("cache", "key1", "key2", null!));
     }
 
     [Fact]
-    public async void GetMultiAsync_KeysAreString_HappyPath()
+    public async void GetBatchAsync_KeysAreString_HappyPath()
     {
         string key1 = Utils.GuidString();
         string value1 = Utils.GuidString();
@@ -186,33 +186,33 @@ public class SimpleCacheDataTest
         client.Set(CacheName, key2, value2);
 
         List<string> keys = new() { key1, key2, "key123123" };
-        CacheGetMultiResponse result = await client.GetMultiAsync(CacheName, keys);
+        CacheGetBatchResponse result = await client.GetBatchAsync(CacheName, keys);
 
         Assert.Equal(result.Strings(), new string[] { value1, value2, null! });
         Assert.Equal(result.Status, new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS });
     }
 
     [Fact]
-    public void GetMultiAsync_Failure()
+    public void GetBatchAsync_Failure()
     {
         // Set very small timeout for dataClientOperationTimeoutMilliseconds
         SimpleCacheClient simpleCacheClient = new SimpleCacheClient(authToken, DefaultTtlSeconds, 1);
         List<string> keys = new() { Utils.GuidString(), Utils.GuidString(), Utils.GuidString(), Utils.GuidString() };
-        Assert.ThrowsAsync<MomentoSdk.Exceptions.TimeoutException>(() => simpleCacheClient.GetMultiAsync(CacheName, keys));
+        Assert.ThrowsAsync<MomentoSdk.Exceptions.TimeoutException>(() => simpleCacheClient.GetBatchAsync(CacheName, keys));
     }
 
     [Fact]
-    public async void SetMultiAsync_NullCheckBytes_ThrowsException()
+    public async void SetBatchAsync_NullCheckBytes_ThrowsException()
     {
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetMultiAsync(null!, new Dictionary<byte[], byte[]>()));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetMultiAsync("cache", (Dictionary<byte[], byte[]>)null!));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetBatchAsync(null!, new Dictionary<byte[], byte[]>()));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetBatchAsync("cache", (Dictionary<byte[], byte[]>)null!));
 
         var badDictionary = new Dictionary<byte[], byte[]>() { { Utils.Utf8ToBytes("asdf"), null! } };
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetMultiAsync("cache", badDictionary));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetBatchAsync("cache", badDictionary));
     }
 
     [Fact]
-    public async void SetMultiAsync_ItemsAreBytes_HappyPath()
+    public async void SetBatchAsync_ItemsAreBytes_HappyPath()
     {
         var key1 = Utils.GuidBytes();
         var key2 = Utils.GuidBytes();
@@ -223,7 +223,7 @@ public class SimpleCacheDataTest
                 { key1, value1 },
                 { key2, value2 }
             };
-        await client.SetMultiAsync(CacheName, dictionary);
+        await client.SetBatchAsync(CacheName, dictionary);
 
         var getResponse = await client.GetAsync(CacheName, key1);
         Assert.Equal(value1, getResponse.Bytes);
@@ -233,17 +233,17 @@ public class SimpleCacheDataTest
     }
 
     [Fact]
-    public async void SetMultiAsync_NullCheckStrings_ThrowsException()
+    public async void SetBatchAsync_NullCheckStrings_ThrowsException()
     {
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetMultiAsync(null!, new Dictionary<string, string>()));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetMultiAsync("cache", (Dictionary<string, string>)null!));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetBatchAsync(null!, new Dictionary<string, string>()));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetBatchAsync("cache", (Dictionary<string, string>)null!));
 
         var badDictionary = new Dictionary<string, string>() { { "asdf", null! } };
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetMultiAsync("cache", badDictionary));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetBatchAsync("cache", badDictionary));
     }
 
     [Fact]
-    public async void SetMultiAsync_KeysAreString_HappyPath()
+    public async void SetBatchAsync_KeysAreString_HappyPath()
     {
         var key1 = Utils.GuidString();
         var key2 = Utils.GuidString();
@@ -254,7 +254,7 @@ public class SimpleCacheDataTest
                 { key1, value1 },
                 { key2, value2 }
             };
-        await client.SetMultiAsync(CacheName, dictionary);
+        await client.SetBatchAsync(CacheName, dictionary);
 
         var getResponse = await client.GetAsync(CacheName, key1);
         Assert.Equal(value1, getResponse.String());
@@ -394,19 +394,19 @@ public class SimpleCacheDataTest
     }
 
     [Fact]
-    public void GetMulti_NullCheckBytes_ThrowsException()
+    public void GetBatch_NullCheckBytes_ThrowsException()
     {
-        Assert.Throws<ArgumentNullException>(() => client.GetMulti(null!, new List<byte[]>()));
-        Assert.Throws<ArgumentNullException>(() => client.GetMulti("cache", (List<byte[]>)null!));
+        Assert.Throws<ArgumentNullException>(() => client.GetBatch(null!, new List<byte[]>()));
+        Assert.Throws<ArgumentNullException>(() => client.GetBatch("cache", (List<byte[]>)null!));
 
         var badList = new List<byte[]>(new byte[][] { Utils.GuidBytes(), null! });
-        Assert.Throws<ArgumentNullException>(() => client.GetMulti("cache", badList));
+        Assert.Throws<ArgumentNullException>(() => client.GetBatch("cache", badList));
 
-        Assert.Throws<ArgumentNullException>(() => client.GetMulti("cache", Utils.GuidBytes(), null!));
+        Assert.Throws<ArgumentNullException>(() => client.GetBatch("cache", Utils.GuidBytes(), null!));
     }
 
     [Fact]
-    public void GetMulti_KeysAreBytes_HappyPath()
+    public void GetBatch_KeysAreBytes_HappyPath()
     {
         string key1 = Utils.GuidString();
         string value1 = Utils.GuidString();
@@ -417,7 +417,7 @@ public class SimpleCacheDataTest
 
         List<byte[]> keys = new() { Utils.Utf8ToBytes(key1), Utils.Utf8ToBytes(key2) };
 
-        CacheGetMultiResponse result = client.GetMulti(CacheName, keys);
+        CacheGetBatchResponse result = client.GetBatch(CacheName, keys);
         string? stringResult1 = result.Strings()[0];
         string? stringResult2 = result.Strings()[1];
         Assert.Equal(value1, stringResult1);
@@ -425,7 +425,7 @@ public class SimpleCacheDataTest
     }
 
     [Fact]
-    public void GetMulti_KeysAreBytes_HappyPath2()
+    public void GetBatch_KeysAreBytes_HappyPath2()
     {
         string key1 = Utils.GuidString();
         string value1 = Utils.GuidString();
@@ -434,7 +434,7 @@ public class SimpleCacheDataTest
         client.Set(CacheName, key1, value1);
         client.Set(CacheName, key2, value2);
 
-        CacheGetMultiResponse result = client.GetMulti(CacheName, key1, key2);
+        CacheGetBatchResponse result = client.GetBatch(CacheName, key1, key2);
         string? stringResult1 = result.Strings()[0];
         string? stringResult2 = result.Strings()[1];
         Assert.Equal(value1, stringResult1);
@@ -442,19 +442,19 @@ public class SimpleCacheDataTest
     }
 
     [Fact]
-    public void GetMulti_NullCheckString_ThrowsException()
+    public void GetBatch_NullCheckString_ThrowsException()
     {
-        Assert.Throws<ArgumentNullException>(() => client.GetMulti(null!, new List<string>()));
-        Assert.Throws<ArgumentNullException>(() => client.GetMulti("cache", (List<string>)null!));
+        Assert.Throws<ArgumentNullException>(() => client.GetBatch(null!, new List<string>()));
+        Assert.Throws<ArgumentNullException>(() => client.GetBatch("cache", (List<string>)null!));
 
         List<string> strings = new(new string[] { Utils.GuidString(), Utils.GuidString(), null! });
-        Assert.Throws<ArgumentNullException>(() => client.GetMulti("cache", strings));
+        Assert.Throws<ArgumentNullException>(() => client.GetBatch("cache", strings));
 
-        Assert.Throws<ArgumentNullException>(() => client.GetMulti("cache", Utils.GuidString(), Utils.GuidString(), null!));
+        Assert.Throws<ArgumentNullException>(() => client.GetBatch("cache", Utils.GuidString(), Utils.GuidString(), null!));
     }
 
     [Fact]
-    public void GetMulti_KeysAreString_HappyPath()
+    public void GetBatch_KeysAreString_HappyPath()
     {
         string key1 = Utils.GuidString();
         string value1 = Utils.GuidString();
@@ -464,33 +464,33 @@ public class SimpleCacheDataTest
         client.Set(CacheName, key2, value2);
 
         List<string> keys = new() { key1, key2, "key123123" };
-        CacheGetMultiResponse result = client.GetMulti(CacheName, keys);
+        CacheGetBatchResponse result = client.GetBatch(CacheName, keys);
 
         Assert.Equal(result.Strings(), new string[] { value1, value2, null! });
         Assert.Equal(result.Status, new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS });
     }
 
     [Fact]
-    public void GetMulti_Failure()
+    public void GetBatch_Failure()
     {
         // Set very small timeout for dataClientOperationTimeoutMilliseconds
         SimpleCacheClient simpleCacheClient = new SimpleCacheClient(authToken, DefaultTtlSeconds, 1);
         List<string> keys = new() { Utils.GuidString(), Utils.GuidString(), Utils.GuidString(), Utils.GuidString() };
-        Assert.Throws<MomentoSdk.Exceptions.TimeoutException>(() => simpleCacheClient.GetMulti(CacheName, keys));
+        Assert.Throws<MomentoSdk.Exceptions.TimeoutException>(() => simpleCacheClient.GetBatch(CacheName, keys));
     }
 
     [Fact]
-    public void SetMulti_NullCheckBytes_ThrowsException()
+    public void SetBatch_NullCheckBytes_ThrowsException()
     {
-        Assert.Throws<ArgumentNullException>(() => client.SetMulti(null!, new Dictionary<byte[], byte[]>()));
-        Assert.Throws<ArgumentNullException>(() => client.SetMulti("cache", (Dictionary<byte[], byte[]>)null!));
+        Assert.Throws<ArgumentNullException>(() => client.SetBatch(null!, new Dictionary<byte[], byte[]>()));
+        Assert.Throws<ArgumentNullException>(() => client.SetBatch("cache", (Dictionary<byte[], byte[]>)null!));
 
         var badDictionary = new Dictionary<byte[], byte[]>() { { Utils.GuidBytes(), null! } };
-        Assert.Throws<ArgumentNullException>(() => client.SetMulti("cache", badDictionary));
+        Assert.Throws<ArgumentNullException>(() => client.SetBatch("cache", badDictionary));
     }
 
     [Fact]
-    public void SetMulti_ItemsAreBytes_HappyPath()
+    public void SetBatch_ItemsAreBytes_HappyPath()
     {
         var key1 = Utils.GuidBytes();
         var key2 = Utils.GuidBytes();
@@ -501,7 +501,7 @@ public class SimpleCacheDataTest
                     { key1, value1 },
                     { key2, value2 }
                 };
-        client.SetMulti(CacheName, dictionary);
+        client.SetBatch(CacheName, dictionary);
 
         var getResponse = client.Get(CacheName, key1);
         Assert.Equal(value1, getResponse.Bytes);
@@ -512,17 +512,17 @@ public class SimpleCacheDataTest
 
 
     [Fact]
-    public void SetMulti_NullCheckString_ThrowsException()
+    public void SetBatch_NullCheckString_ThrowsException()
     {
-        Assert.Throws<ArgumentNullException>(() => client.SetMulti(null!, new Dictionary<string, string>()));
-        Assert.Throws<ArgumentNullException>(() => client.SetMulti("cache", (Dictionary<string, string>)null!));
+        Assert.Throws<ArgumentNullException>(() => client.SetBatch(null!, new Dictionary<string, string>()));
+        Assert.Throws<ArgumentNullException>(() => client.SetBatch("cache", (Dictionary<string, string>)null!));
 
         var badDictionary = new Dictionary<string, string>() { { "asdf", null! } };
-        Assert.Throws<ArgumentNullException>(() => client.SetMulti("cache", badDictionary));
+        Assert.Throws<ArgumentNullException>(() => client.SetBatch("cache", badDictionary));
     }
 
     [Fact]
-    public void SetMulti_KeysAreString_HappyPath()
+    public void SetBatch_KeysAreString_HappyPath()
     {
         var key1 = Utils.GuidString();
         var key2 = Utils.GuidString();
@@ -533,7 +533,7 @@ public class SimpleCacheDataTest
                     { key1, value1 },
                     { key2, value2 }
                 };
-        client.SetMulti(CacheName, dictionary);
+        client.SetBatch(CacheName, dictionary);
 
         var getResponse = client.Get(CacheName, key1);
         Assert.Equal(value1, getResponse.String());
