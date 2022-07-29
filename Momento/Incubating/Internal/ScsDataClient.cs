@@ -42,12 +42,12 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this.grpcManager.Client.DictionarySet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
-            return new CacheDictionarySetResponse();
         }
         catch (Exception e)
         {
             throw CacheExceptionMapper.Convert(e);
         }
+        return new CacheDictionarySetResponse();
     }
 
     public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, byte[] field, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
@@ -74,12 +74,12 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             await this.grpcManager.Client.DictionarySetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
-            return new CacheDictionarySetResponse();
         }
         catch (Exception e)
         {
             throw CacheExceptionMapper.Convert(e);
         }
+        return new CacheDictionarySetResponse();
     }
 
     public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, byte[] field)
@@ -162,12 +162,12 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this.grpcManager.Client.DictionarySet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
-            return new CacheDictionarySetMultiResponse();
         }
         catch (Exception e)
         {
             throw CacheExceptionMapper.Convert(e);
         }
+        return new CacheDictionarySetMultiResponse();
     }
 
     public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
@@ -195,12 +195,12 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             await this.grpcManager.Client.DictionarySetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
-            return new CacheDictionarySetMultiResponse();
         }
         catch (Exception e)
         {
             throw CacheExceptionMapper.Convert(e);
         }
+        return new CacheDictionarySetMultiResponse();
     }
 
     public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, params byte[][] fields)
@@ -228,15 +228,16 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _DictionaryGetRequest request = new() { DictionaryName = dictionaryName.ToByteString() };
         request.DictionaryKeys.Add(fields);
 
+        _DictionaryGetResponse response;
         try
         {
-            var response = this.grpcManager.Client.DictionaryGet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
-            return new CacheDictionaryGetMultiResponse(response);
+            response = this.grpcManager.Client.DictionaryGet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
             throw CacheExceptionMapper.Convert(e);
         }
+        return new CacheDictionaryGetMultiResponse(response);
     }
 
     public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, params byte[][] fields)
@@ -264,15 +265,16 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _DictionaryGetRequest request = new() { DictionaryName = dictionaryName.ToByteString() };
         request.DictionaryKeys.Add(fields);
 
+        _DictionaryGetResponse response;
         try
         {
-            var response = await this.grpcManager.Client.DictionaryGetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
-            return new CacheDictionaryGetMultiResponse(response);
+            response = await this.grpcManager.Client.DictionaryGetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
             throw CacheExceptionMapper.Convert(e);
         }
+        return new CacheDictionaryGetMultiResponse(response);
     }
 
     public CacheDictionaryGetAllResponse DictionaryGetAll(string cacheName, string dictionaryName)
