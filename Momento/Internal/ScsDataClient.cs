@@ -59,8 +59,8 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
     {
-        _SetResponse response = await this.SendSetAsync(cacheName, value: value.ToByteString(), key: key.ToByteString(), ttlSeconds: ttlSeconds);
-        return new CacheSetResponse(response);
+        await this.SendSetAsync(cacheName, value: value.ToByteString(), key: key.ToByteString(), ttlSeconds: ttlSeconds);
+        return new CacheSetResponse();
     }
 
     public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
@@ -77,8 +77,8 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint? ttlSeconds = null)
     {
-        _SetResponse response = await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
-        return new CacheSetResponse(response);
+        await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
+        return new CacheSetResponse();
     }
 
     public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
@@ -95,8 +95,8 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
     {
-        _SetResponse response = await this.SendSetAsync(cacheName, value: value.ToByteString(), key: key.ToByteString(), ttlSeconds: ttlSeconds);
-        return new CacheSetResponse(response);
+        await this.SendSetAsync(cacheName, value: value.ToByteString(), key: key.ToByteString(), ttlSeconds: ttlSeconds);
+        return new CacheSetResponse();
     }
 
     public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<string> keys)
@@ -140,21 +140,23 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return new CacheGetMultiResponse(results);
     }
 
-    public async Task SetMultiAsync(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
+    public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
     {
-        await SetMultiAsync(cacheName: cacheName,
-            items: items.ToDictionary(item => item.Key.ToByteString(), item => item.Value.ToByteString()),
+        await SendSetMultiAsync(cacheName: cacheName,
+            items: items.Select(item => new KeyValuePair<ByteString, ByteString>(item.Key.ToByteString(), item.Value.ToByteString())),
             ttlSeconds: ttlSeconds);
+        return new CacheSetMultiResponse();
     }
 
-    public async Task SetMultiAsync(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
+    public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
     {
-        await SetMultiAsync(cacheName: cacheName,
-            items: items.ToDictionary(item => item.Key.ToByteString(), item => item.Value.ToByteString()),
+        await SendSetMultiAsync(cacheName: cacheName,
+            items: items.Select(item => new KeyValuePair<ByteString, ByteString>(item.Key.ToByteString(), item.Value.ToByteString())),
             ttlSeconds: ttlSeconds);
+        return new CacheSetMultiResponse();
     }
 
-    public async Task SetMultiAsync(string cacheName, IDictionary<ByteString, ByteString> items, uint? ttlSeconds = null)
+    public async Task SendSetMultiAsync(string cacheName, IEnumerable<KeyValuePair<ByteString, ByteString>> items, uint? ttlSeconds = null)
     {
         // Gather the tasks
         var tasks = items.Select(item => SendSetAsync(cacheName, item.Key, item.Value, ttlSeconds));
@@ -183,8 +185,8 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
     {
-        _SetResponse resp = this.SendSet(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
-        return new CacheSetResponse(resp);
+        this.SendSet(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
+        return new CacheSetResponse();
     }
 
     public CacheGetResponse Get(string cacheName, byte[] key)
@@ -201,8 +203,8 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public CacheSetResponse Set(string cacheName, string key, string value, uint? ttlSeconds = null)
     {
-        _SetResponse response = this.SendSet(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
-        return new CacheSetResponse(response);
+        this.SendSet(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
+        return new CacheSetResponse();
     }
 
     public CacheGetResponse Get(string cacheName, string key)
@@ -219,8 +221,8 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public CacheSetResponse Set(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
     {
-        _SetResponse response = this.SendSet(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
-        return new CacheSetResponse(response);
+        this.SendSet(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
+        return new CacheSetResponse();
     }
 
     private async Task<_SetResponse> SendSetAsync(string cacheName, ByteString key, ByteString value, uint? ttlSeconds = null)

@@ -46,26 +46,18 @@ namespace MomentoSdk.Internal
         }
 
         /// <summary>
-        /// Throw an exception if any of the dictionary values is null.
+        /// Throw an exception if any of the keys or values is null.
         /// </summary>
-        /// <typeparam name="TKey">Dictionary key type.</typeparam>
-        /// <typeparam name="TValue">Dictionary value type.</typeparam>
-        /// <param name="argument">Dictionary to check for null values.</param>
-        /// <param name="paramName">Name of the dictionary to propagate to the exception.</param>
-        /// <exception cref="ArgumentNullException">Any of `argument` values is `null`.</exception>
-        public static void DictionaryValuesNotNull<TKey, TValue>(IDictionary<TKey, TValue> argument, string paramName)
+        /// <typeparam name="TKey">Key type.</typeparam>
+        /// <typeparam name="TValue">Value type.</typeparam>
+        /// <param name="argument">Enumerable to check for null keys/values.</param>
+        /// <param name="paramName">Name of the enumerable to propagate to the exception.</param>
+        /// <exception cref="ArgumentNullException">Any of `argument` keys or values is `null`.</exception>
+        public static void KeysAndValuesNotNull<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> argument, string paramName)
         {
-            if (argument.Values.Any(value => value == null))
+            if (argument.Any(kv => kv.Key == null || kv.Value == null))
             {
-                throw new ArgumentNullException(paramName, "Each value must be non-null");
-            }
-        }
-
-        public static void ValuesNotNull<_, TValue>(IEnumerable<KeyValuePair<_, TValue>> argument, string paramName)
-        {
-            if (argument.Any(kv => kv.Value == null))
-            {
-                throw new ArgumentNullException(paramName, "Each value must be non-null");
+                throw new ArgumentNullException(paramName, "Each key and value must be non-null");
             }
         }
 

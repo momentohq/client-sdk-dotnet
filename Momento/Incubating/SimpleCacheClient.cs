@@ -91,12 +91,12 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.simpleCacheClient.GetMultiAsync(cacheName, keys);
     }
 
-    public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
+    public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
     {
         return await this.simpleCacheClient.SetMultiAsync(cacheName, items, ttlSeconds);
     }
 
-    public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
+    public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
     {
         return await this.simpleCacheClient.SetMultiAsync(cacheName, items, ttlSeconds);
     }
@@ -146,12 +146,12 @@ public class SimpleCacheClient : ISimpleCacheClient
         return this.simpleCacheClient.GetMulti(cacheName, keys);
     }
 
-    public CacheSetMultiResponse SetMulti(string cacheName, IDictionary<byte[], byte[]> items, uint? ttlSeconds = null)
+    public CacheSetMultiResponse SetMulti(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
     {
         return this.simpleCacheClient.SetMulti(cacheName, items, ttlSeconds);
     }
 
-    public CacheSetMultiResponse SetMulti(string cacheName, IDictionary<string, string> items, uint? ttlSeconds = null)
+    public CacheSetMultiResponse SetMulti(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
     {
         return this.simpleCacheClient.SetMulti(cacheName, items, ttlSeconds);
     }
@@ -353,7 +353,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(items, nameof(items));
-        Utils.ValuesNotNull(items, nameof(items));
+        Utils.KeysAndValuesNotNull(items, nameof(items));
 
         return this.dataClient.DictionarySetMulti(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
@@ -377,7 +377,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(items, nameof(items));
-        Utils.ValuesNotNull(items, nameof(items));
+        Utils.KeysAndValuesNotNull(items, nameof(items));
 
         return this.dataClient.DictionarySetMulti(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
@@ -401,7 +401,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(items, nameof(items));
-        Utils.ValuesNotNull(items, nameof(items));
+        Utils.KeysAndValuesNotNull(items, nameof(items));
 
         return await this.dataClient.DictionarySetMultiAsync(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
@@ -425,7 +425,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(items, nameof(items));
-        Utils.ValuesNotNull(items, nameof(items));
+        Utils.KeysAndValuesNotNull(items, nameof(items));
 
         return await this.dataClient.DictionarySetMultiAsync(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
