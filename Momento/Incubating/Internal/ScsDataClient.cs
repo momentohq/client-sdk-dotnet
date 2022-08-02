@@ -528,4 +528,23 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         return new CacheSetFetchResponse(response);
     }
+
+    public async Task<CacheSetDeleteResponse> SetDeleteAsync(string cacheName, string setName)
+    {
+        _SetDifferenceRequest request = new()
+        {
+            SetName = setName.ToByteString(),
+            Subtrahend = new() { Identity = new() }
+        };
+
+        try
+        {
+            await this.grpcManager.Client.SetDifferenceAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+        return new CacheSetDeleteResponse();
+    }
 }

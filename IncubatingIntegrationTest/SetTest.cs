@@ -188,4 +188,26 @@ public class SetTest : TestBase
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetDeleteAsync(cacheName, setName));
     }
+
+    [Fact]
+    public async void SetDeleteAsync_SetDoesNotExist_Noop()
+    {
+        var setName = Utils.GuidString();
+        Assert.Equal(CacheGetStatus.MISS, (await client.SetFetchAsync(cacheName, setName)).Status);
+        await client.SetDeleteAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.MISS, (await client.SetFetchAsync(cacheName, setName)).Status);
+    }
+
+    [Fact]
+    public async void SetDeleteAsync_SetExists_HappyPath()
+    {
+        var setName = Utils.GuidString();
+        await client.SetAddAsync(cacheName, setName, Utils.GuidString(), false);
+        await client.SetAddAsync(cacheName, setName, Utils.GuidString(), false);
+        await client.SetAddAsync(cacheName, setName, Utils.GuidString(), false);
+
+        Assert.Equal(CacheGetStatus.HIT, (await client.SetFetchAsync(cacheName, setName)).Status);
+        await client.SetDeleteAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.MISS, (await client.SetFetchAsync(cacheName, setName)).Status);
+    }
 }

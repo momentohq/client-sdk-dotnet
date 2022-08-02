@@ -944,7 +944,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(setName, nameof(setName));
 
-        return new CacheSetDeleteResponse();
+        return await this.dataClient.SetDeleteAsync(cacheName, setName);
     }
 
     public void Dispose()
