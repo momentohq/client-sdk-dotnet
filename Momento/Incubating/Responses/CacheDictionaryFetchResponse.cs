@@ -7,12 +7,12 @@ using MomentoSdk.Internal;
 
 namespace MomentoSdk.Incubating.Responses;
 
-public class CacheDictionaryGetAllResponse
+public class CacheDictionaryFetchResponse
 {
     public CacheGetStatus Status { get; private set; }
     public Dictionary<byte[], byte[]>? ByteArrayDictionary { get; private set; }
 
-    public CacheDictionaryGetAllResponse(_DictionaryGetAllResponse response)
+    public CacheDictionaryFetchResponse(_DictionaryGetAllResponse response)
     {
         Status = CacheGetStatusUtil.From(response.Result);
         if (Status == CacheGetStatus.MISS)

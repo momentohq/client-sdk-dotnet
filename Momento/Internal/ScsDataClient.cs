@@ -92,17 +92,17 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return await this.SendSetAsync(cacheName, value: value.ToByteString(), key: key.ToByteString(), ttlSeconds: ttlSeconds);
     }
 
-    public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<string> keys)
+    public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<string> keys)
     {
-        return await GetMultiAsync(cacheName, keys.Select(key => key.ToByteString()));
+        return await GetBatchAsync(cacheName, keys.Select(key => key.ToByteString()));
     }
 
-    public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<byte[]> keys)
+    public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<byte[]> keys)
     {
-        return await GetMultiAsync(cacheName, keys.Select(key => key.ToByteString()));
+        return await GetBatchAsync(cacheName, keys.Select(key => key.ToByteString()));
     }
 
-    public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<ByteString> keys)
+    public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<ByteString> keys)
     {
         // Gather the tasks
         var tasks = keys.Select(key => SendGetAsync(cacheName, key));
@@ -129,24 +129,24 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
 
         // Package results
-        return new CacheGetMultiResponse(continuation.Result);
+        return new CacheGetBatchResponse(continuation.Result);
     }
 
-    public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
+    public async Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
     {
-        return await SendSetMultiAsync(cacheName: cacheName,
+        return await SendSetBatchAsync(cacheName: cacheName,
             items: items.Select(item => new KeyValuePair<ByteString, ByteString>(item.Key.ToByteString(), item.Value.ToByteString())),
             ttlSeconds: ttlSeconds);
     }
 
-    public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
+    public async Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
     {
-        return await SendSetMultiAsync(cacheName: cacheName,
+        return await SendSetBatchAsync(cacheName: cacheName,
             items: items.Select(item => new KeyValuePair<ByteString, ByteString>(item.Key.ToByteString(), item.Value.ToByteString())),
             ttlSeconds: ttlSeconds);
     }
 
-    public async Task<CacheSetMultiResponse> SendSetMultiAsync(string cacheName, IEnumerable<KeyValuePair<ByteString, ByteString>> items, uint? ttlSeconds = null)
+    public async Task<CacheSetBatchResponse> SendSetBatchAsync(string cacheName, IEnumerable<KeyValuePair<ByteString, ByteString>> items, uint? ttlSeconds = null)
     {
         // Gather the tasks
         var tasks = items.Select(item => SendSetAsync(cacheName, item.Key, item.Value, ttlSeconds));
@@ -171,7 +171,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         {
             throw CacheExceptionMapper.Convert(new Exception(String.Format("Failure issuing multi-set: {0}", continuation.Status)));
         }
-        return new CacheSetMultiResponse();
+        return new CacheSetBatchResponse();
     }
 
     public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)

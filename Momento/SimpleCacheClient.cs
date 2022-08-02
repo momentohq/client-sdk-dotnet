@@ -104,58 +104,58 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
     }
 
-    public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<byte[]> keys)
+    public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<byte[]> keys)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(keys, nameof(keys));
         Utils.ElementsNotNull(keys, nameof(keys));
 
-        return await this.dataClient.GetMultiAsync(cacheName, keys);
+        return await this.dataClient.GetBatchAsync(cacheName, keys);
     }
 
-    public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<string> keys)
+    public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<string> keys)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(keys, nameof(keys));
         Utils.ElementsNotNull(keys, nameof(keys));
 
-        return await this.dataClient.GetMultiAsync(cacheName, keys);
+        return await this.dataClient.GetBatchAsync(cacheName, keys);
     }
 
-    public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, params byte[][] keys)
+    public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, params byte[][] keys)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(keys, nameof(keys));
         Utils.ElementsNotNull(keys, nameof(keys));
 
-        return await this.dataClient.GetMultiAsync(cacheName, keys);
+        return await this.dataClient.GetBatchAsync(cacheName, keys);
     }
 
-    public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, params string[] keys)
+    public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, params string[] keys)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(keys, nameof(keys));
         Utils.ElementsNotNull(keys, nameof(keys));
 
-        return await this.dataClient.GetMultiAsync(cacheName, keys);
+        return await this.dataClient.GetBatchAsync(cacheName, keys);
     }
 
-    public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
+    public async Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(items, nameof(items));
         Utils.KeysAndValuesNotNull(items, nameof(items));
 
-        return await this.dataClient.SetMultiAsync(cacheName, items, ttlSeconds);
+        return await this.dataClient.SetBatchAsync(cacheName, items, ttlSeconds);
     }
 
-    public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
+    public async Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(items, nameof(items));
         Utils.KeysAndValuesNotNull(items, nameof(items));
 
-        return await this.dataClient.SetMultiAsync(cacheName, items, ttlSeconds);
+        return await this.dataClient.SetBatchAsync(cacheName, items, ttlSeconds);
     }
 
     public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
@@ -200,11 +200,11 @@ public class SimpleCacheClient : ISimpleCacheClient
         return this.dataClient.Get(cacheName, key);
     }
 
-    public CacheGetMultiResponse GetMulti(string cacheName, IEnumerable<byte[]> keys)
+    public CacheGetBatchResponse GetBatch(string cacheName, IEnumerable<byte[]> keys)
     {
         try
         {
-            return GetMultiAsync(cacheName, keys).Result;
+            return GetBatchAsync(cacheName, keys).Result;
         }
         catch (AggregateException e)
         {
@@ -212,11 +212,11 @@ public class SimpleCacheClient : ISimpleCacheClient
         }
     }
 
-    public CacheGetMultiResponse GetMulti(string cacheName, IEnumerable<string> keys)
+    public CacheGetBatchResponse GetBatch(string cacheName, IEnumerable<string> keys)
     {
         try
         {
-            return GetMultiAsync(cacheName, keys).Result;
+            return GetBatchAsync(cacheName, keys).Result;
         }
         catch (AggregateException e)
         {
@@ -224,11 +224,11 @@ public class SimpleCacheClient : ISimpleCacheClient
         }
     }
 
-    public CacheGetMultiResponse GetMulti(string cacheName, params byte[][] keys)
+    public CacheGetBatchResponse GetBatch(string cacheName, params byte[][] keys)
     {
         try
         {
-            return GetMultiAsync(cacheName, keys).Result;
+            return GetBatchAsync(cacheName, keys).Result;
         }
         catch (AggregateException e)
         {
@@ -236,11 +236,11 @@ public class SimpleCacheClient : ISimpleCacheClient
         }
     }
 
-    public CacheGetMultiResponse GetMulti(string cacheName, params string[] keys)
+    public CacheGetBatchResponse GetBatch(string cacheName, params string[] keys)
     {
         try
         {
-            return GetMultiAsync(cacheName, keys).Result;
+            return GetBatchAsync(cacheName, keys).Result;
         }
         catch (AggregateException e)
         {
@@ -248,11 +248,11 @@ public class SimpleCacheClient : ISimpleCacheClient
         }
     }
 
-    public CacheSetMultiResponse SetMulti(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
+    public CacheSetBatchResponse SetBatch(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
     {
         try
         {
-            return SetMultiAsync(cacheName, items, ttlSeconds).Result;
+            return SetBatchAsync(cacheName, items, ttlSeconds).Result;
         }
         catch (AggregateException e)
         {
@@ -260,11 +260,11 @@ public class SimpleCacheClient : ISimpleCacheClient
         }
     }
 
-    public CacheSetMultiResponse SetMulti(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
+    public CacheSetBatchResponse SetBatch(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
     {
         try
         {
-            return SetMultiAsync(cacheName, items, ttlSeconds).Result;
+            return SetBatchAsync(cacheName, items, ttlSeconds).Result;
         }
         catch (AggregateException e)
         {

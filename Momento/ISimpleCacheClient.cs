@@ -95,7 +95,7 @@ public interface ISimpleCacheClient : IDisposable
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
     /// <param name="keys">The keys to get.</param>
     /// <returns>Task object representing the statuses of the get operation and the associated values.</returns>
-    public Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<byte[]> keys);
+    public Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<byte[]> keys);
 
     /// <summary>
     /// Gets multiple values from the cache.
@@ -103,7 +103,7 @@ public interface ISimpleCacheClient : IDisposable
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
     /// <param name="keys">The keys to get.</param>
     /// <returns>Task object representing the statuses of the get operation and the associated values.</returns>
-    public Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<string> keys);
+    public Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<string> keys);
 
     /// <summary>
     /// Gets multiple values from the cache.
@@ -111,7 +111,7 @@ public interface ISimpleCacheClient : IDisposable
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
     /// <param name="keys">The keys to get.</param>
     /// <returns>Task object representing the statuses of the get operation and the associated values.</returns>
-    public Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, params byte[][] keys);
+    public Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, params byte[][] keys);
 
     /// <summary>
     /// Gets multiple values from the cache.
@@ -119,7 +119,7 @@ public interface ISimpleCacheClient : IDisposable
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
     /// <param name="keys">The keys to get.</param>
     /// <returns>Task object representing the statuses of the get operation and the associated values.</returns>
-    public Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, params string[] keys);
+    public Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, params string[] keys);
 
     /// <summary>
     /// Sets multiple items in the cache. Overwrites existing items.
@@ -127,7 +127,7 @@ public interface ISimpleCacheClient : IDisposable
     /// <param name="cacheName">Name of the cache to store the items in.</param>
     /// <param name="items">The items to set.</param>
     /// <returns>Task object representing the result of the set operation.</returns>
-    public Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null);
+    public Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null);
 
     /// <summary>
     /// Sets multiple items in the cache. Overwrites existing items.
@@ -135,7 +135,7 @@ public interface ISimpleCacheClient : IDisposable
     /// <param name="cacheName">Name of the cache to store the items in.</param>
     /// <param name="items">The items to set.</param>
     /// <returns>Task object representing the result of the set operation.</returns>
-    public Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null);
+    public Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null);
 
     /// <summary>
     ///  Set the value in the cache. If a value for this key is already present it will be replaced by the new value.
@@ -186,7 +186,7 @@ public interface ISimpleCacheClient : IDisposable
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
     /// <param name="keys">The keys to get.</param>
     /// <returns>Object with the statuses of the get operation and the associated values.</returns>
-    public CacheGetMultiResponse GetMulti(string cacheName, IEnumerable<byte[]> keys);
+    public CacheGetBatchResponse GetBatch(string cacheName, IEnumerable<byte[]> keys);
 
     /// <summary>
     /// Gets multiple values from the cache.
@@ -194,7 +194,7 @@ public interface ISimpleCacheClient : IDisposable
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
     /// <param name="keys">The keys to get.</param>
     /// <returns>Object with the statuses of the get operation and the associated values.</returns>
-    public CacheGetMultiResponse GetMulti(string cacheName, IEnumerable<string> keys);
+    public CacheGetBatchResponse GetBatch(string cacheName, IEnumerable<string> keys);
 
     /// <summary>
     /// Gets multiple values from the cache.
@@ -202,7 +202,7 @@ public interface ISimpleCacheClient : IDisposable
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
     /// <param name="keys">The keys to get.</param>
     /// <returns>Object with the statuses of the get operation and the associated values.</returns>
-    public CacheGetMultiResponse GetMulti(string cacheName, params byte[][] keys);
+    public CacheGetBatchResponse GetBatch(string cacheName, params byte[][] keys);
 
     /// <summary>
     /// Gets multiple values from the cache.
@@ -210,7 +210,7 @@ public interface ISimpleCacheClient : IDisposable
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
     /// <param name="keys">The keys to get.</param>
     /// <returns>Object with the statuses of the get operation and the associated values.</returns>
-    public CacheGetMultiResponse GetMulti(string cacheName, params string[] keys);
+    public CacheGetBatchResponse GetBatch(string cacheName, params string[] keys);
 
     /// <summary>
     /// Sets multiple items in the cache. Overwrites existing items.
@@ -218,7 +218,7 @@ public interface ISimpleCacheClient : IDisposable
     /// <param name="cacheName">Name of the cache to store the items in.</param>
     /// <param name="items">The items to set.</param>
     /// <returns>Result of the set operation.</returns>
-    public CacheSetMultiResponse SetMulti(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null);
+    public CacheSetBatchResponse SetBatch(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null);
 
     /// <summary>
     /// Sets multiple items in the cache. Overwrites existing items.
@@ -226,7 +226,7 @@ public interface ISimpleCacheClient : IDisposable
     /// <param name="cacheName">Name of the cache to store the items in.</param>
     /// <param name="items">The items to set.</param>
     /// <returns>Result of the set operation.</returns>
-    public CacheSetMultiResponse SetMulti(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null);
+    public CacheSetBatchResponse SetBatch(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null);
 
     /// <summary>
     /// Remove the key from the cache.

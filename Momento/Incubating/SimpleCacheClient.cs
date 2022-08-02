@@ -71,34 +71,34 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.simpleCacheClient.SetAsync(cacheName, key, value, ttlSeconds);
     }
 
-    public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<byte[]> keys)
+    public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<byte[]> keys)
     {
-        return await this.simpleCacheClient.GetMultiAsync(cacheName, keys);
+        return await this.simpleCacheClient.GetBatchAsync(cacheName, keys);
     }
 
-    public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, IEnumerable<string> keys)
+    public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<string> keys)
     {
-        return await this.simpleCacheClient.GetMultiAsync(cacheName, keys);
+        return await this.simpleCacheClient.GetBatchAsync(cacheName, keys);
     }
 
-    public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, params byte[][] keys)
+    public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, params byte[][] keys)
     {
-        return await this.simpleCacheClient.GetMultiAsync(cacheName, keys);
+        return await this.simpleCacheClient.GetBatchAsync(cacheName, keys);
     }
 
-    public async Task<CacheGetMultiResponse> GetMultiAsync(string cacheName, params string[] keys)
+    public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, params string[] keys)
     {
-        return await this.simpleCacheClient.GetMultiAsync(cacheName, keys);
+        return await this.simpleCacheClient.GetBatchAsync(cacheName, keys);
     }
 
-    public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
+    public async Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
     {
-        return await this.simpleCacheClient.SetMultiAsync(cacheName, items, ttlSeconds);
+        return await this.simpleCacheClient.SetBatchAsync(cacheName, items, ttlSeconds);
     }
 
-    public async Task<CacheSetMultiResponse> SetMultiAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
+    public async Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
     {
-        return await this.simpleCacheClient.SetMultiAsync(cacheName, items, ttlSeconds);
+        return await this.simpleCacheClient.SetBatchAsync(cacheName, items, ttlSeconds);
     }
 
     public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
@@ -126,34 +126,34 @@ public class SimpleCacheClient : ISimpleCacheClient
         return this.simpleCacheClient.Get(cacheName, key);
     }
 
-    public CacheGetMultiResponse GetMulti(string cacheName, IEnumerable<byte[]> keys)
+    public CacheGetBatchResponse GetBatch(string cacheName, IEnumerable<byte[]> keys)
     {
-        return this.simpleCacheClient.GetMulti(cacheName, keys);
+        return this.simpleCacheClient.GetBatch(cacheName, keys);
     }
 
-    public CacheGetMultiResponse GetMulti(string cacheName, IEnumerable<string> keys)
+    public CacheGetBatchResponse GetBatch(string cacheName, IEnumerable<string> keys)
     {
-        return this.simpleCacheClient.GetMulti(cacheName, keys);
+        return this.simpleCacheClient.GetBatch(cacheName, keys);
     }
 
-    public CacheGetMultiResponse GetMulti(string cacheName, params byte[][] keys)
+    public CacheGetBatchResponse GetBatch(string cacheName, params byte[][] keys)
     {
-        return this.simpleCacheClient.GetMulti(cacheName, keys);
+        return this.simpleCacheClient.GetBatch(cacheName, keys);
     }
 
-    public CacheGetMultiResponse GetMulti(string cacheName, params string[] keys)
+    public CacheGetBatchResponse GetBatch(string cacheName, params string[] keys)
     {
-        return this.simpleCacheClient.GetMulti(cacheName, keys);
+        return this.simpleCacheClient.GetBatch(cacheName, keys);
     }
 
-    public CacheSetMultiResponse SetMulti(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
+    public CacheSetBatchResponse SetBatch(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
     {
-        return this.simpleCacheClient.SetMulti(cacheName, items, ttlSeconds);
+        return this.simpleCacheClient.SetBatch(cacheName, items, ttlSeconds);
     }
 
-    public CacheSetMultiResponse SetMulti(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
+    public CacheSetBatchResponse SetBatch(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
     {
-        return this.simpleCacheClient.SetMulti(cacheName, items, ttlSeconds);
+        return this.simpleCacheClient.SetBatch(cacheName, items, ttlSeconds);
     }
 
     public CacheDeleteResponse Delete(string cacheName, string key)
@@ -348,14 +348,14 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="ttlSeconds">TTL for the dictionary in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
     /// <returns>Result of the cache operation.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `items` is `null`.</exception>
-    public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
+    public CacheDictionarySetBatchResponse DictionarySetBatch(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(items, nameof(items));
         Utils.KeysAndValuesNotNull(items, nameof(items));
 
-        return this.dataClient.DictionarySetMulti(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
+        return this.dataClient.DictionarySetBatch(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
 
     /// <summary>
@@ -372,14 +372,14 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="ttlSeconds">TTL for the dictionary in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
     /// <returns>Result of the cache operation.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `items` is `null`.</exception>
-    public CacheDictionarySetMultiResponse DictionarySetMulti(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, bool refreshTtl, uint? ttlSeconds = null)
+    public CacheDictionarySetBatchResponse DictionarySetBatch(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(items, nameof(items));
         Utils.KeysAndValuesNotNull(items, nameof(items));
 
-        return this.dataClient.DictionarySetMulti(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
+        return this.dataClient.DictionarySetBatch(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
 
     /// <summary>
@@ -396,14 +396,14 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="ttlSeconds">TTL for the dictionary in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
     /// <returns>Task representing the result of the cache operation.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `items` is `null`.</exception>
-    public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
+    public async Task<CacheDictionarySetBatchResponse> DictionarySetBatchAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(items, nameof(items));
         Utils.KeysAndValuesNotNull(items, nameof(items));
 
-        return await this.dataClient.DictionarySetMultiAsync(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
+        return await this.dataClient.DictionarySetBatchAsync(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
 
     /// <summary>
@@ -420,14 +420,14 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="ttlSeconds">TTL for the dictionary in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
     /// <returns>Task representing the result of the cache operation.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `items` is `null`.</exception>
-    public async Task<CacheDictionarySetMultiResponse> DictionarySetMultiAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, bool refreshTtl, uint? ttlSeconds = null)
+    public async Task<CacheDictionarySetBatchResponse> DictionarySetBatchAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(items, nameof(items));
         Utils.KeysAndValuesNotNull(items, nameof(items));
 
-        return await this.dataClient.DictionarySetMultiAsync(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
+        return await this.dataClient.DictionarySetBatchAsync(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
     }
 
     /// <summary>
@@ -438,14 +438,14 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="fields">The fields in the dictionary to lookup.</param>
     /// <returns>Object with the status and associated value for each field.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `fields` is `null`.</exception>
-    public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, params byte[][] fields)
+    public CacheDictionaryGetBatchResponse DictionaryGetBatch(string cacheName, string dictionaryName, params byte[][] fields)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
         Utils.ElementsNotNull(fields, nameof(fields));
 
-        return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
+        return this.dataClient.DictionaryGetBatch(cacheName, dictionaryName, fields);
     }
 
     /// <summary>
@@ -456,14 +456,14 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="fields">The fields in the dictionary to lookup.</param>
     /// <returns>Object with the status and associated value for each field.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `fields` is `null`.</exception>
-    public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, params string[] fields)
+    public CacheDictionaryGetBatchResponse DictionaryGetBatch(string cacheName, string dictionaryName, params string[] fields)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
         Utils.ElementsNotNull(fields, nameof(fields));
 
-        return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
+        return this.dataClient.DictionaryGetBatch(cacheName, dictionaryName, fields);
     }
 
     /// <summary>
@@ -474,14 +474,14 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="fields">The fields in the dictionary to lookup.</param>
     /// <returns>Object with the status and associated value for each field.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `fields` is `null`.</exception>
-    public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
+    public CacheDictionaryGetBatchResponse DictionaryGetBatch(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
         Utils.ElementsNotNull(fields, nameof(fields));
 
-        return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
+        return this.dataClient.DictionaryGetBatch(cacheName, dictionaryName, fields);
     }
 
     /// <summary>
@@ -492,14 +492,14 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="fields">The fields in the dictionary to lookup.</param>
     /// <returns>Object with the status and associated value for each field.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `fields` is `null`.</exception>
-    public CacheDictionaryGetMultiResponse DictionaryGetMulti(string cacheName, string dictionaryName, IEnumerable<string> fields)
+    public CacheDictionaryGetBatchResponse DictionaryGetBatch(string cacheName, string dictionaryName, IEnumerable<string> fields)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
         Utils.ElementsNotNull(fields, nameof(fields));
 
-        return this.dataClient.DictionaryGetMulti(cacheName, dictionaryName, fields);
+        return this.dataClient.DictionaryGetBatch(cacheName, dictionaryName, fields);
     }
 
     /// <summary>
@@ -510,14 +510,14 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="fields">The fields in the dictionary to lookup.</param>
     /// <returns>Task representing the status and associated value for each field.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `fields` is `null`.</exception>
-    public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, params byte[][] fields)
+    public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, params byte[][] fields)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
         Utils.ElementsNotNull(fields, nameof(fields));
 
-        return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
+        return await this.dataClient.DictionaryGetBatchAsync(cacheName, dictionaryName, fields);
     }
 
     /// <summary>
@@ -528,14 +528,14 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="fields">The fields in the dictionary to lookup.</param>
     /// <returns>Task representing the status and associated value for each field.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `fields` is `null`.</exception>
-    public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, params string[] fields)
+    public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, params string[] fields)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
         Utils.ElementsNotNull(fields, nameof(fields));
 
-        return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
+        return await this.dataClient.DictionaryGetBatchAsync(cacheName, dictionaryName, fields);
     }
 
     /// <summary>
@@ -546,14 +546,14 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="fields">The fields in the dictionary to lookup.</param>
     /// <returns>Task representing the status and associated value for each field.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `fields` is `null`.</exception>
-    public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
+    public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
         Utils.ElementsNotNull(fields, nameof(fields));
 
-        return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
+        return await this.dataClient.DictionaryGetBatchAsync(cacheName, dictionaryName, fields);
     }
 
     /// <summary>
@@ -564,14 +564,14 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="fields">The fields in the dictionary to lookup.</param>
     /// <returns>Task representing the status and associated value for each field.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `fields` is `null`.</exception>
-    public async Task<CacheDictionaryGetMultiResponse> DictionaryGetMultiAsync(string cacheName, string dictionaryName, IEnumerable<string> fields)
+    public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, IEnumerable<string> fields)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(fields, nameof(fields));
         Utils.ElementsNotNull(fields, nameof(fields));
 
-        return await this.dataClient.DictionaryGetMultiAsync(cacheName, dictionaryName, fields);
+        return await this.dataClient.DictionaryGetBatchAsync(cacheName, dictionaryName, fields);
     }
 
     /// <summary>
@@ -581,12 +581,12 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="dictionaryName">The dictionary to fetch.</param>
     /// <returns>Object with the status of the fetch operation and the associated dictionary.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName` is `null`.</exception>
-    public CacheDictionaryGetAllResponse DictionaryGetAll(string cacheName, string dictionaryName)
+    public CacheDictionaryFetchResponse DictionaryFetch(string cacheName, string dictionaryName)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
 
-        return this.dataClient.DictionaryGetAll(cacheName, dictionaryName);
+        return this.dataClient.DictionaryFetch(cacheName, dictionaryName);
     }
 
     /// <summary>
@@ -596,12 +596,12 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="dictionaryName">The dictionary to fetch.</param>
     /// <returns>Task representing with the status of the fetch operation and the associated dictionary.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName` is `null`.</exception>
-    public async Task<CacheDictionaryGetAllResponse> DictionaryGetAllAsync(string cacheName, string dictionaryName)
+    public async Task<CacheDictionaryFetchResponse> DictionaryFetchAsync(string cacheName, string dictionaryName)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
 
-        return await this.dataClient.DictionaryGetAllAsync(cacheName, dictionaryName);
+        return await this.dataClient.DictionaryFetchAsync(cacheName, dictionaryName);
     }
 
     /// <summary>

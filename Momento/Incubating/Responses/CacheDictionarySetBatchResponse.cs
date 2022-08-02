@@ -4,6 +4,6 @@ using System.Text;
 
 namespace MomentoSdk.Incubating.Responses;
 
-public class CacheDictionarySetMultiResponse
+public class CacheDictionarySetBatchResponse
 {
 }
