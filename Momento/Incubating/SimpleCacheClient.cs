@@ -936,7 +936,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(setName, nameof(setName));
 
-        return await this.dataClient.SetFetch(cacheName, setName);
+        return await this.dataClient.SetFetchAsync(cacheName, setName);
     }
 
     public async Task<CacheSetDeleteResponse> SetDeleteAsync(string cacheName, string setName)

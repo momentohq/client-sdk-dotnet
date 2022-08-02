@@ -513,7 +513,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return new CacheSetAddResponse();
     }
 
-    public async Task<CacheSetFetchResponse> SetFetch(string cacheName, string setName)
+    public async Task<CacheSetFetchResponse> SetFetchAsync(string cacheName, string setName)
     {
         _SetFetchRequest request = new() { SetName = setName.ToByteString() };
         _SetFetchResponse response;
