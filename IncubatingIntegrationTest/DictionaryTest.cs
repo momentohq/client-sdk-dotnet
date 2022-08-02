@@ -4,15 +4,10 @@ using MomentoSdk.Responses;
 namespace IncubatingIntegrationTest;
 
 [Collection("SimpleCacheClient")]
-public class DictionaryTest
+public class DictionaryTest : TestBase
 {
-    private readonly SimpleCacheClient client;
-    private readonly string cacheName = SimpleCacheClientFixture.CacheName;
-    private const uint defaultTtlSeconds = SimpleCacheClientFixture.DefaultTtlSeconds;
-
-    public DictionaryTest(SimpleCacheClientFixture fixture)
+    public DictionaryTest(SimpleCacheClientFixture fixture) : base(fixture)
     {
-        this.client = fixture.Client;
     }
 
     [Theory]
