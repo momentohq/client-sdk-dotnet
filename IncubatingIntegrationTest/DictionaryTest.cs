@@ -842,6 +842,8 @@ public class DictionaryTest : TestBase
         var dictionaryName = Utils.GuidString();
         var response = client.DictionaryFetch(cacheName, dictionaryName);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
+        Assert.Null(response.ByteArrayDictionary);
+        Assert.Null(response.StringDictionary());
     }
 
     [Fact]
@@ -909,6 +911,8 @@ public class DictionaryTest : TestBase
         var dictionaryName = Utils.GuidString();
         var response = await client.DictionaryFetchAsync(cacheName, dictionaryName);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
+        Assert.Null(response.ByteArrayDictionary);
+        Assert.Null(response.StringDictionary());
     }
 
     [Fact]

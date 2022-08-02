@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 namespace MomentoIntegrationTest;
@@ -140,8 +141,8 @@ public class SimpleCacheDataTest
         List<byte[]> keys = new() { Utils.Utf8ToBytes(key1), Utils.Utf8ToBytes(key2) };
 
         CacheGetBatchResponse result = await client.GetBatchAsync(CacheName, keys);
-        string? stringResult1 = result.Strings()[0];
-        string? stringResult2 = result.Strings()[1];
+        string? stringResult1 = result.Strings().ToList()[0];
+        string? stringResult2 = result.Strings().ToList()[1];
         Assert.Equal(value1, stringResult1);
         Assert.Equal(value2, stringResult2);
     }
@@ -157,8 +158,8 @@ public class SimpleCacheDataTest
         client.Set(CacheName, key2, value2);
 
         CacheGetBatchResponse result = await client.GetBatchAsync(CacheName, key1, key2);
-        string? stringResult1 = result.Strings()[0];
-        string? stringResult2 = result.Strings()[1];
+        string? stringResult1 = result.Strings().ToList()[0];
+        string? stringResult2 = result.Strings().ToList()[1];
         Assert.Equal(value1, stringResult1);
         Assert.Equal(value2, stringResult2);
     }
@@ -418,8 +419,8 @@ public class SimpleCacheDataTest
         List<byte[]> keys = new() { Utils.Utf8ToBytes(key1), Utils.Utf8ToBytes(key2) };
 
         CacheGetBatchResponse result = client.GetBatch(CacheName, keys);
-        string? stringResult1 = result.Strings()[0];
-        string? stringResult2 = result.Strings()[1];
+        string? stringResult1 = result.Strings().ToList()[0];
+        string? stringResult2 = result.Strings().ToList()[1];
         Assert.Equal(value1, stringResult1);
         Assert.Equal(value2, stringResult2);
     }
@@ -435,8 +436,8 @@ public class SimpleCacheDataTest
         client.Set(CacheName, key2, value2);
 
         CacheGetBatchResponse result = client.GetBatch(CacheName, key1, key2);
-        string? stringResult1 = result.Strings()[0];
-        string? stringResult2 = result.Strings()[1];
+        string? stringResult1 = result.Strings().ToList()[0];
+        string? stringResult2 = result.Strings().ToList()[1];
         Assert.Equal(value1, stringResult1);
         Assert.Equal(value2, stringResult2);
     }

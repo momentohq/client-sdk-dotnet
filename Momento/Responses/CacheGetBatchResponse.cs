@@ -12,18 +12,18 @@ public class CacheGetBatchResponse
         this.Responses = new(responses);
     }
 
-    public List<CacheGetStatus> Status
+    public IEnumerable<CacheGetStatus> Status
     {
-        get => Responses.Select(response => response.Status).ToList();
+        get => Responses.Select(response => response.Status);
     }
 
-    public List<string?> Strings()
+    public IEnumerable<string?> Strings()
     {
-        return Responses.Select(response => response.String()).ToList();
+        return Responses.Select(response => response.String());
     }
 
-    public List<byte[]?> Bytes
+    public IEnumerable<byte[]?> Bytes
     {
-        get => Responses.Select(response => response.Bytes).ToList();
+        get => Responses.Select(response => response.Bytes);
     }
 }
