@@ -879,16 +879,16 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(setName, nameof(setName));
         Utils.ArgumentNotNull(element, nameof(element));
 
-        return new CacheSetAddResponse();
+        return await this.dataClient.SetAddAsync(cacheName, setName, element, refreshTtl, ttlSeconds);
     }
 
-    public async Task SetAddAsync(string cacheName, string setName, string element, bool refreshTtl, uint? ttlSeconds = null)
+    public async Task<CacheSetAddResponse> SetAddAsync(string cacheName, string setName, string element, bool refreshTtl, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(setName, nameof(setName));
         Utils.ArgumentNotNull(element, nameof(element));
 
-        return;
+        return await this.dataClient.SetAddAsync(cacheName, setName, element, refreshTtl, ttlSeconds);
     }
 
     public async Task<CacheSetAddBatchResponse> SetAddBatchAsync(string cacheName, string setName, bool refreshTtl, uint? ttlSeconds = null, params byte[][] elements)
@@ -936,7 +936,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(setName, nameof(setName));
 
-        return new CacheSetFetchResponse();
+        return await this.dataClient.SetFetch(cacheName, setName);
     }
 
     public async Task<CacheSetDeleteResponse> SetDeleteAsync(string cacheName, string setName)
