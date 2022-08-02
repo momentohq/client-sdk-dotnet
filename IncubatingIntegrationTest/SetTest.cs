@@ -21,8 +21,8 @@ public class SetTest : TestBase
     [Fact]
     public async Task SetAddFetch_ElementIsByteArray_HappyPath()
     {
-        var setName = Utils.GuidString();
-        var element = Utils.GuidBytes();
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidByteArray();
 
         await client.SetAddAsync(cacheName, setName, element, false);
 
@@ -37,8 +37,8 @@ public class SetTest : TestBase
     [Fact]
     public async Task SetAddFetch_ElementIsByteArray_NoRefreshTtl()
     {
-        var setName = Utils.GuidString();
-        var element = Utils.GuidBytes();
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidByteArray();
 
         await client.SetAddAsync(cacheName, setName, element, false, ttlSeconds: 5);
         Thread.Sleep(100);
@@ -53,8 +53,8 @@ public class SetTest : TestBase
     [Fact]
     public async Task SetAddFetch_ElementIsByteArray_RefreshTtl()
     {
-        var setName = Utils.GuidString();
-        var element = Utils.GuidBytes();
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidByteArray();
 
         await client.SetAddAsync(cacheName, setName, element, false, ttlSeconds: 1);
         Thread.Sleep(100);
@@ -79,8 +79,8 @@ public class SetTest : TestBase
     [Fact]
     public async Task SetAddFetch_ElementIsString_HappyPath()
     {
-        var setName = Utils.GuidString();
-        var element = Utils.GuidString();
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidString();
 
         await client.SetAddAsync(cacheName, setName, element, false);
 
@@ -95,8 +95,8 @@ public class SetTest : TestBase
     [Fact]
     public async Task SetAddFetch_ElementIsString_NoRefreshTtl()
     {
-        var setName = Utils.GuidString();
-        var element = Utils.GuidString();
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidString();
 
         await client.SetAddAsync(cacheName, setName, element, false, ttlSeconds: 5);
         Thread.Sleep(100);
@@ -111,8 +111,8 @@ public class SetTest : TestBase
     [Fact]
     public async Task SetAddFetch_ElementIsString_RefreshTtl()
     {
-        var setName = Utils.GuidString();
-        var element = Utils.GuidString();
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidString();
 
         await client.SetAddAsync(cacheName, setName, element, false, ttlSeconds: 1);
         Thread.Sleep(100);
@@ -128,7 +128,7 @@ public class SetTest : TestBase
     [Fact]
     public async Task SetAddBatchAsync_NullChecksByteArray_ThrowsException()
     {
-        var setName = Utils.GuidString();
+        var setName = Utils.NewGuidString();
         var set = new HashSet<byte[]>();
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAddBatchAsync(null!, setName, set, false));
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAddBatchAsync(cacheName, null!, set, false));
@@ -138,7 +138,7 @@ public class SetTest : TestBase
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAddBatchAsync(cacheName, setName, set, false));
 
         // Variadic args
-        var byteArray = Utils.GuidBytes();
+        var byteArray = Utils.NewGuidByteArray();
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAddBatchAsync(null!, setName, false, ttlSeconds: null, byteArray));
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAddBatchAsync(cacheName, null!, false, ttlSeconds: null, byteArray));
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAddBatchAsync(cacheName, setName, false, ttlSeconds: null, (byte[])null!));
@@ -147,7 +147,7 @@ public class SetTest : TestBase
     [Fact]
     public async Task SetAddBatchAsync_NullChecksString_ThrowsException()
     {
-        var setName = Utils.GuidString();
+        var setName = Utils.NewGuidString();
         var set = new HashSet<string>();
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAddBatchAsync(null!, setName, set, false));
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAddBatchAsync(cacheName, null!, set, false));
@@ -157,7 +157,7 @@ public class SetTest : TestBase
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAddBatchAsync(cacheName, setName, set, false));
 
         // Variadic args
-        var str = Utils.GuidString();
+        var str = Utils.NewGuidString();
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAddBatchAsync(null!, setName, false, ttlSeconds: null, str));
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAddBatchAsync(cacheName, null!, false, ttlSeconds: null, str));
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAddBatchAsync(cacheName, setName, false, ttlSeconds: null, (string)null!));
@@ -174,7 +174,7 @@ public class SetTest : TestBase
     [Fact]
     public async Task SetFetchAsync_Missing_HappyPath()
     {
-        var setName = Utils.GuidString();
+        var setName = Utils.NewGuidString();
         var response = await client.SetFetchAsync(cacheName, setName);
         Assert.Equal(CacheGetStatus.MISS, response.Status);
         Assert.Null(response.ByteArraySet);
@@ -192,7 +192,7 @@ public class SetTest : TestBase
     [Fact]
     public async void SetDeleteAsync_SetDoesNotExist_Noop()
     {
-        var setName = Utils.GuidString();
+        var setName = Utils.NewGuidString();
         Assert.Equal(CacheGetStatus.MISS, (await client.SetFetchAsync(cacheName, setName)).Status);
         await client.SetDeleteAsync(cacheName, setName);
         Assert.Equal(CacheGetStatus.MISS, (await client.SetFetchAsync(cacheName, setName)).Status);
@@ -201,10 +201,10 @@ public class SetTest : TestBase
     [Fact]
     public async void SetDeleteAsync_SetExists_HappyPath()
     {
-        var setName = Utils.GuidString();
-        await client.SetAddAsync(cacheName, setName, Utils.GuidString(), false);
-        await client.SetAddAsync(cacheName, setName, Utils.GuidString(), false);
-        await client.SetAddAsync(cacheName, setName, Utils.GuidString(), false);
+        var setName = Utils.NewGuidString();
+        await client.SetAddAsync(cacheName, setName, Utils.NewGuidString(), false);
+        await client.SetAddAsync(cacheName, setName, Utils.NewGuidString(), false);
+        await client.SetAddAsync(cacheName, setName, Utils.NewGuidString(), false);
 
         Assert.Equal(CacheGetStatus.HIT, (await client.SetFetchAsync(cacheName, setName)).Status);
         await client.SetDeleteAsync(cacheName, setName);
