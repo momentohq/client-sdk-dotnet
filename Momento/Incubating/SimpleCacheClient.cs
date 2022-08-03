@@ -898,7 +898,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(elements, nameof(elements));
         Utils.ElementsNotNull(elements, nameof(elements));
 
-        return new CacheSetAddBatchResponse();
+        return await this.dataClient.SetAddBatchAsync(cacheName, setName, elements, refreshTtl, ttlSeconds);
     }
 
     public async Task<CacheSetAddBatchResponse> SetAddBatchAsync(string cacheName, string setName, bool refreshTtl, uint? ttlSeconds = null, params string[] elements)
@@ -908,7 +908,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(elements, nameof(elements));
         Utils.ElementsNotNull(elements, nameof(elements));
 
-        return new CacheSetAddBatchResponse();
+        return await this.dataClient.SetAddBatchAsync(cacheName, setName, elements, refreshTtl, ttlSeconds);
     }
 
     public async Task<CacheSetAddBatchResponse> SetAddBatchAsync(string cacheName, string setName, IEnumerable<byte[]> elements, bool refreshTtl, uint? ttlSeconds = null)
@@ -918,7 +918,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(elements, nameof(elements));
         Utils.ElementsNotNull(elements, nameof(elements));
 
-        return new CacheSetAddBatchResponse();
+        return await this.dataClient.SetAddBatchAsync(cacheName, setName, elements, refreshTtl, ttlSeconds);
     }
 
     public async Task<CacheSetAddBatchResponse> SetAddBatchAsync(string cacheName, string setName, IEnumerable<string> elements, bool refreshTtl, uint? ttlSeconds = null)
@@ -928,7 +928,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(elements, nameof(elements));
         Utils.ElementsNotNull(elements, nameof(elements));
 
-        return new CacheSetAddBatchResponse();
+        return await this.dataClient.SetAddBatchAsync(cacheName, setName, elements, refreshTtl, ttlSeconds);
     }
 
     public async Task<CacheSetFetchResponse> SetFetchAsync(string cacheName, string setName)

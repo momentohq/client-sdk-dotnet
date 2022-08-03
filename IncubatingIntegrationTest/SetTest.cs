@@ -145,6 +145,117 @@ public class SetTest : TestBase
     }
 
     [Fact]
+    public async Task SetAddBatchAsync_ElementsAreByteArrayParams_HappyPath()
+    {
+        var setName = Utils.NewGuidString();
+        var element1 = Utils.NewGuidByteArray();
+        var element2 = Utils.NewGuidByteArray();
+
+        await client.SetAddBatchAsync(cacheName, setName, false, 10, element1, element2);
+
+        var fetchResponse = await client.SetFetchAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
+
+        var set = fetchResponse.ByteArraySet;
+        Assert.Equal(2, set!.Count);
+        Assert.True(set.Contains(element1));
+        Assert.True(set.Contains(element2));
+    }
+
+    [Fact]
+    public async void SetAddBatchAsync_ElementsAreByteArrayParams_NoRefreshTtl()
+    {
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidByteArray();
+
+        await client.SetAddBatchAsync(cacheName, setName, false, ttlSeconds: 5, element);
+        Thread.Sleep(100);
+
+        await client.SetAddBatchAsync(cacheName, setName, false, ttlSeconds: 10, element);
+        Thread.Sleep(4900);
+
+        var response = await client.SetFetchAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+    }
+
+    [Fact]
+    public async void SetAddBatchAsync_ElementsAreByteArrayParams_RefreshTtl()
+    {
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidByteArray();
+
+        await client.SetAddBatchAsync(cacheName, setName, false, ttlSeconds: 1, element);
+        Thread.Sleep(100);
+
+        await client.SetAddBatchAsync(cacheName, setName, true, ttlSeconds: 10, element);
+        Thread.Sleep(1000);
+
+        var response = await client.SetFetchAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.HIT, response.Status);
+
+        var set = response.ByteArraySet;
+        Assert.Equal(1, set!.Count);
+        Assert.True(set.Contains(element));
+    }
+
+    [Fact]
+    public async Task SetAddBatchAsync_ElementsAreByteArrayEnumerable_HappyPath()
+    {
+        var setName = Utils.NewGuidString();
+        var element1 = Utils.NewGuidByteArray();
+        var element2 = Utils.NewGuidByteArray();
+        var content = new List<byte[]>() { element1, element2 };
+
+        await client.SetAddBatchAsync(cacheName, setName, content, false, 10);
+
+        var fetchResponse = await client.SetFetchAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
+
+        var set = fetchResponse.ByteArraySet;
+        Assert.Equal(2, set!.Count);
+        Assert.True(set.Contains(element1));
+        Assert.True(set.Contains(element2));
+    }
+
+    [Fact]
+    public async void SetAddBatchAsync_ElementsAreByteArrayEnumerable_NoRefreshTtl()
+    {
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidByteArray();
+        var content = new List<byte[]>() { element };
+
+        await client.SetAddBatchAsync(cacheName, setName, content, false, ttlSeconds: 5);
+        Thread.Sleep(100);
+
+        await client.SetAddBatchAsync(cacheName, setName, content, false, ttlSeconds: 10);
+        Thread.Sleep(4900);
+
+        var response = await client.SetFetchAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+    }
+
+    [Fact]
+    public async void SetAddBatchAsync_ElementsAreByteArrayEnumerable_RefreshTtl()
+    {
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidByteArray();
+        var content = new List<byte[]>() { element };
+
+        await client.SetAddBatchAsync(cacheName, setName, content, false, ttlSeconds: 1);
+        Thread.Sleep(100);
+
+        await client.SetAddBatchAsync(cacheName, setName, content, true, ttlSeconds: 10);
+        Thread.Sleep(1000);
+
+        var response = await client.SetFetchAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.HIT, response.Status);
+
+        var set = response.ByteArraySet;
+        Assert.Equal(1, set!.Count);
+        Assert.True(set.Contains(element));
+    }
+
+    [Fact]
     public async Task SetAddBatchAsync_NullChecksString_ThrowsException()
     {
         var setName = Utils.NewGuidString();
@@ -161,6 +272,117 @@ public class SetTest : TestBase
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAddBatchAsync(null!, setName, false, ttlSeconds: null, str));
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAddBatchAsync(cacheName, null!, false, ttlSeconds: null, str));
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAddBatchAsync(cacheName, setName, false, ttlSeconds: null, (string)null!));
+    }
+
+    [Fact]
+    public async Task SetAddBatchAsync_ElementsAreStringParams_HappyPath()
+    {
+        var setName = Utils.NewGuidString();
+        var element1 = Utils.NewGuidString();
+        var element2 = Utils.NewGuidString();
+
+        await client.SetAddBatchAsync(cacheName, setName, false, 10, element1, element2);
+
+        var fetchResponse = await client.SetFetchAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
+
+        var set = fetchResponse.StringSet();
+        Assert.Equal(2, set!.Count);
+        Assert.True(set.Contains(element1));
+        Assert.True(set.Contains(element2));
+    }
+
+    [Fact]
+    public async void SetAddBatchAsync_ElementsAreStringParams_NoRefreshTtl()
+    {
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidString();
+
+        await client.SetAddBatchAsync(cacheName, setName, false, ttlSeconds: 5, element);
+        Thread.Sleep(100);
+
+        await client.SetAddBatchAsync(cacheName, setName, false, ttlSeconds: 10, element);
+        Thread.Sleep(4900);
+
+        var response = await client.SetFetchAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+    }
+
+    [Fact]
+    public async void SetAddBatchAsync_ElementsAreStringParams_RefreshTtl()
+    {
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidString();
+
+        await client.SetAddBatchAsync(cacheName, setName, false, ttlSeconds: 1, element);
+        Thread.Sleep(100);
+
+        await client.SetAddBatchAsync(cacheName, setName, true, ttlSeconds: 10, element);
+        Thread.Sleep(1000);
+
+        var response = await client.SetFetchAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.HIT, response.Status);
+
+        var set = response.StringSet();
+        Assert.Equal(1, set!.Count);
+        Assert.True(set.Contains(element));
+    }
+
+    [Fact]
+    public async Task SetAddBatchAsync_ElementsAreStringEnumerable_HappyPath()
+    {
+        var setName = Utils.NewGuidString();
+        var element1 = Utils.NewGuidString();
+        var element2 = Utils.NewGuidString();
+        var content = new List<string>() { element1, element2 };
+
+        await client.SetAddBatchAsync(cacheName, setName, content, false, 10);
+
+        var fetchResponse = await client.SetFetchAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
+
+        var set = fetchResponse.StringSet();
+        Assert.Equal(2, set!.Count);
+        Assert.True(set.Contains(element1));
+        Assert.True(set.Contains(element2));
+    }
+
+    [Fact]
+    public async void SetAddBatchAsync_ElementsAreStringEnumerable_NoRefreshTtl()
+    {
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidString();
+        var content = new List<string>() { element };
+
+        await client.SetAddBatchAsync(cacheName, setName, content, false, ttlSeconds: 5);
+        Thread.Sleep(100);
+
+        await client.SetAddBatchAsync(cacheName, setName, content, false, ttlSeconds: 10);
+        Thread.Sleep(4900);
+
+        var response = await client.SetFetchAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+    }
+
+    [Fact]
+    public async void SetAddBatchAsync_ElementsAreStringEnumerable_RefreshTtl()
+    {
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidString();
+        var content = new List<string>() { element };
+
+        await client.SetAddBatchAsync(cacheName, setName, content, false, ttlSeconds: 1);
+        Thread.Sleep(100);
+
+        await client.SetAddBatchAsync(cacheName, setName, content, true, ttlSeconds: 10);
+        Thread.Sleep(1000);
+
+        var response = await client.SetFetchAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.HIT, response.Status);
+
+        var set = response.StringSet();
+        Assert.Equal(1, set!.Count);
+        Assert.True(set.Contains(element));
     }
 
     [Theory]
