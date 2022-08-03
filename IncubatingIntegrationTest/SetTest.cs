@@ -163,7 +163,7 @@ public class SetTest : TestBase
     }
 
     [Fact]
-    public async void SetAddBatchAsync_ElementsAreByteArrayParams_NoRefreshTtl()
+    public async Task SetAddBatchAsync_ElementsAreByteArrayParams_NoRefreshTtl()
     {
         var setName = Utils.NewGuidString();
         var element = Utils.NewGuidByteArray();
@@ -179,7 +179,7 @@ public class SetTest : TestBase
     }
 
     [Fact]
-    public async void SetAddBatchAsync_ElementsAreByteArrayParams_RefreshTtl()
+    public async Task SetAddBatchAsync_ElementsAreByteArrayParams_RefreshTtl()
     {
         var setName = Utils.NewGuidString();
         var element = Utils.NewGuidByteArray();
@@ -218,7 +218,7 @@ public class SetTest : TestBase
     }
 
     [Fact]
-    public async void SetAddBatchAsync_ElementsAreByteArrayEnumerable_NoRefreshTtl()
+    public async Task SetAddBatchAsync_ElementsAreByteArrayEnumerable_NoRefreshTtl()
     {
         var setName = Utils.NewGuidString();
         var element = Utils.NewGuidByteArray();
@@ -235,7 +235,7 @@ public class SetTest : TestBase
     }
 
     [Fact]
-    public async void SetAddBatchAsync_ElementsAreByteArrayEnumerable_RefreshTtl()
+    public async Task SetAddBatchAsync_ElementsAreByteArrayEnumerable_RefreshTtl()
     {
         var setName = Utils.NewGuidString();
         var element = Utils.NewGuidByteArray();
@@ -293,7 +293,7 @@ public class SetTest : TestBase
     }
 
     [Fact]
-    public async void SetAddBatchAsync_ElementsAreStringParams_NoRefreshTtl()
+    public async Task SetAddBatchAsync_ElementsAreStringParams_NoRefreshTtl()
     {
         var setName = Utils.NewGuidString();
         var element = Utils.NewGuidString();
@@ -309,7 +309,7 @@ public class SetTest : TestBase
     }
 
     [Fact]
-    public async void SetAddBatchAsync_ElementsAreStringParams_RefreshTtl()
+    public async Task SetAddBatchAsync_ElementsAreStringParams_RefreshTtl()
     {
         var setName = Utils.NewGuidString();
         var element = Utils.NewGuidString();
@@ -348,7 +348,7 @@ public class SetTest : TestBase
     }
 
     [Fact]
-    public async void SetAddBatchAsync_ElementsAreStringEnumerable_NoRefreshTtl()
+    public async Task SetAddBatchAsync_ElementsAreStringEnumerable_NoRefreshTtl()
     {
         var setName = Utils.NewGuidString();
         var element = Utils.NewGuidString();
@@ -365,7 +365,7 @@ public class SetTest : TestBase
     }
 
     [Fact]
-    public async void SetAddBatchAsync_ElementsAreStringEnumerable_RefreshTtl()
+    public async Task SetAddBatchAsync_ElementsAreStringEnumerable_RefreshTtl()
     {
         var setName = Utils.NewGuidString();
         var element = Utils.NewGuidString();
@@ -412,7 +412,7 @@ public class SetTest : TestBase
     }
 
     [Fact]
-    public async void SetDeleteAsync_SetDoesNotExist_Noop()
+    public async Task SetDeleteAsync_SetDoesNotExist_Noop()
     {
         var setName = Utils.NewGuidString();
         Assert.Equal(CacheGetStatus.MISS, (await client.SetFetchAsync(cacheName, setName)).Status);
@@ -421,7 +421,7 @@ public class SetTest : TestBase
     }
 
     [Fact]
-    public async void SetDeleteAsync_SetExists_HappyPath()
+    public async Task SetDeleteAsync_SetExists_HappyPath()
     {
         var setName = Utils.NewGuidString();
         await client.SetAddAsync(cacheName, setName, Utils.NewGuidString(), false);

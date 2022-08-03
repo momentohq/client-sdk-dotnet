@@ -23,7 +23,7 @@ public class SimpleCacheDataTest
     [InlineData(null, new byte[] { 0x00 }, new byte[] { 0x00 })]
     [InlineData("cache", null, new byte[] { 0x00 })]
     [InlineData("cache", new byte[] { 0x00 }, null)]
-    public async void SetAsync_NullChecksByteArrayByteArray_ThrowsException(string cacheName, byte[] key, byte[] value)
+    public async Task SetAsync_NullChecksByteArrayByteArray_ThrowsException(string cacheName, byte[] key, byte[] value)
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAsync(cacheName, key, value));
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAsync(cacheName, key, value, DefaultTtlSeconds));
@@ -31,7 +31,7 @@ public class SimpleCacheDataTest
 
     // Tests SetAsyc(cacheName, byte[], byte[]) as well as GetAsync(cacheName, byte[])
     [Fact]
-    public async void SetAsync_KeyIsByteArrayValueIsByteArray_HappyPath()
+    public async Task SetAsync_KeyIsByteArrayValueIsByteArray_HappyPath()
     {
         byte[] key = Utils.NewGuidByteArray();
         byte[] value = Utils.NewGuidByteArray();
@@ -49,7 +49,7 @@ public class SimpleCacheDataTest
     [Theory]
     [InlineData(null, new byte[] { 0x00 })]
     [InlineData("cache", null)]
-    public async void GetAsync_NullChecksByteArray_ThrowsException(string cacheName, byte[] key)
+    public async Task GetAsync_NullChecksByteArray_ThrowsException(string cacheName, byte[] key)
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetAsync(cacheName, key));
     }
@@ -58,7 +58,7 @@ public class SimpleCacheDataTest
     [InlineData(null, "key", "value")]
     [InlineData("cache", null, "value")]
     [InlineData("cache", "key", null)]
-    public async void SetAsync_NullChecksStringString_ThrowsException(string cacheName, string key, string value)
+    public async Task SetAsync_NullChecksStringString_ThrowsException(string cacheName, string key, string value)
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAsync(cacheName, key, value));
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAsync(cacheName, key, value, DefaultTtlSeconds));
@@ -66,7 +66,7 @@ public class SimpleCacheDataTest
 
     // Also tests GetAsync(cacheName, string)
     [Fact]
-    public async void SetAsync_KeyIsStringValueIsString_HappyPath()
+    public async Task SetAsync_KeyIsStringValueIsString_HappyPath()
     {
         string key = Utils.NewGuidString();
         string value = Utils.NewGuidString();
@@ -84,7 +84,7 @@ public class SimpleCacheDataTest
     [Theory]
     [InlineData(null, "key")]
     [InlineData("cache", null)]
-    public async void GetAsync_NullChecksString_ThrowsException(string cacheName, string key)
+    public async Task GetAsync_NullChecksString_ThrowsException(string cacheName, string key)
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetAsync(cacheName, key));
     }
@@ -93,7 +93,7 @@ public class SimpleCacheDataTest
     [InlineData(null, "key", new byte[] { 0x00 })]
     [InlineData("cache", null, new byte[] { 0x00 })]
     [InlineData("cache", "key", null)]
-    public async void SetAsync_NullChecksStringByteArray_ThrowsException(string cacheName, string key, byte[] value)
+    public async Task SetAsync_NullChecksStringByteArray_ThrowsException(string cacheName, string key, byte[] value)
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAsync(cacheName, key, value));
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetAsync(cacheName, key, value, DefaultTtlSeconds));
@@ -101,7 +101,7 @@ public class SimpleCacheDataTest
 
     // Also tests GetAsync(cacheName, string)
     [Fact]
-    public async void SetAsync_KeyIsStringValueIsByteArray_HappyPath()
+    public async Task SetAsync_KeyIsStringValueIsByteArray_HappyPath()
     {
         string key = Utils.NewGuidString();
         byte[] value = Utils.NewGuidByteArray();
@@ -117,7 +117,7 @@ public class SimpleCacheDataTest
     }
 
     [Fact]
-    public async void GetBatchAsync_NullCheckByteArray_ThrowsException()
+    public async Task GetBatchAsync_NullCheckByteArray_ThrowsException()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetBatchAsync(null!, new List<byte[]>()));
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetBatchAsync("cache", (List<byte[]>)null!));
@@ -129,7 +129,7 @@ public class SimpleCacheDataTest
     }
 
     [Fact]
-    public async void GetBatchAsync_KeysAreByteArray_HappyPath()
+    public async Task GetBatchAsync_KeysAreByteArray_HappyPath()
     {
         string key1 = Utils.NewGuidString();
         string value1 = Utils.NewGuidString();
@@ -148,7 +148,7 @@ public class SimpleCacheDataTest
     }
 
     [Fact]
-    public async void GetBatchAsync_KeysAreByteArray_HappyPath2()
+    public async Task GetBatchAsync_KeysAreByteArray_HappyPath2()
     {
         string key1 = Utils.NewGuidString();
         string value1 = Utils.NewGuidString();
@@ -165,7 +165,7 @@ public class SimpleCacheDataTest
     }
 
     [Fact]
-    public async void GetBatchAsync_NullCheckString_ThrowsException()
+    public async Task GetBatchAsync_NullCheckString_ThrowsException()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetBatchAsync(null!, new List<string>()));
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetBatchAsync("cache", (List<string>)null!));
@@ -177,7 +177,7 @@ public class SimpleCacheDataTest
     }
 
     [Fact]
-    public async void GetBatchAsync_KeysAreString_HappyPath()
+    public async Task GetBatchAsync_KeysAreString_HappyPath()
     {
         string key1 = Utils.NewGuidString();
         string value1 = Utils.NewGuidString();
@@ -203,7 +203,7 @@ public class SimpleCacheDataTest
     }
 
     [Fact]
-    public async void SetBatchAsync_NullCheckByteArray_ThrowsException()
+    public async Task SetBatchAsync_NullCheckByteArray_ThrowsException()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetBatchAsync(null!, new Dictionary<byte[], byte[]>()));
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetBatchAsync("cache", (Dictionary<byte[], byte[]>)null!));
@@ -213,7 +213,7 @@ public class SimpleCacheDataTest
     }
 
     [Fact]
-    public async void SetBatchAsync_ItemsAreByteArray_HappyPath()
+    public async Task SetBatchAsync_ItemsAreByteArray_HappyPath()
     {
         var key1 = Utils.NewGuidByteArray();
         var key2 = Utils.NewGuidByteArray();
@@ -234,7 +234,7 @@ public class SimpleCacheDataTest
     }
 
     [Fact]
-    public async void SetBatchAsync_NullCheckStrings_ThrowsException()
+    public async Task SetBatchAsync_NullCheckStrings_ThrowsException()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetBatchAsync(null!, new Dictionary<string, string>()));
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetBatchAsync("cache", (Dictionary<string, string>)null!));
@@ -244,7 +244,7 @@ public class SimpleCacheDataTest
     }
 
     [Fact]
-    public async void SetBatchAsync_KeysAreString_HappyPath()
+    public async Task SetBatchAsync_KeysAreString_HappyPath()
     {
         var key1 = Utils.NewGuidString();
         var key2 = Utils.NewGuidString();
@@ -299,7 +299,7 @@ public class SimpleCacheDataTest
     }
 
     [Fact]
-    public async void Get_ExpiredTtl_HappyPath()
+    public async Task Get_ExpiredTtl_HappyPath()
     {
         string key = Utils.NewGuidString();
         string value = Utils.NewGuidString();
@@ -572,13 +572,13 @@ public class SimpleCacheDataTest
     [Theory]
     [InlineData(null, new byte[] { 0x00 })]
     [InlineData("cache", null)]
-    public async void DeleteAsync_NullChecksByte_ThrowsException(string cacheName, byte[] key)
+    public async Task DeleteAsync_NullChecksByte_ThrowsException(string cacheName, byte[] key)
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DeleteAsync(cacheName, key));
     }
 
     [Fact]
-    public async void DeleteAsync_KeyIsByteArray_HappyPath()
+    public async Task DeleteAsync_KeyIsByteArray_HappyPath()
     {
         // Set a key to then delete
         byte[] key = new byte[] { 0x01, 0x02, 0x03, 0x04 };
@@ -624,13 +624,13 @@ public class SimpleCacheDataTest
     [Theory]
     [InlineData(null, "key")]
     [InlineData("cache", null)]
-    public async void DeleteAsync_NullChecksString_ThrowsException(string cacheName, string key)
+    public async Task DeleteAsync_NullChecksString_ThrowsException(string cacheName, string key)
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DeleteAsync(cacheName, key));
     }
 
     [Fact]
-    public async void DeleteAsync_KeyIsString_HappyPath()
+    public async Task DeleteAsync_KeyIsString_HappyPath()
     {
         // Set a key to then delete
         string key = Utils.NewGuidString();
