@@ -21,146 +21,175 @@ public class SimpleCacheClient : ISimpleCacheClient
         this.dataClient = new(authToken, claims.CacheEndpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds);
     }
 
+    /// <inheritdoc />
     public CreateCacheResponse CreateCache(string cacheName)
     {
         return this.simpleCacheClient.CreateCache(cacheName);
     }
 
+    /// <inheritdoc />
     public DeleteCacheResponse DeleteCache(string cacheName)
     {
         return this.simpleCacheClient.DeleteCache(cacheName);
     }
 
+    /// <inheritdoc />
     public ListCachesResponse ListCaches(string? nextPageToken = null)
     {
         return this.simpleCacheClient.ListCaches(nextPageToken);
     }
 
+    /// <inheritdoc />
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
     {
         return await this.simpleCacheClient.SetAsync(cacheName, key, value, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
     {
         return await this.simpleCacheClient.GetAsync(cacheName, key);
     }
 
+    /// <inheritdoc />
     public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, byte[] key)
     {
         return await this.simpleCacheClient.DeleteAsync(cacheName, key);
     }
 
+    /// <inheritdoc />
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint? ttlSeconds = null)
     {
         return await simpleCacheClient.SetAsync(cacheName, key, value, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
     {
         return await this.simpleCacheClient.GetAsync(cacheName, key);
     }
 
+    /// <inheritdoc />
     public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key)
     {
         return await this.simpleCacheClient.DeleteAsync(cacheName, key);
     }
 
+    /// <inheritdoc />
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
     {
         return await this.simpleCacheClient.SetAsync(cacheName, key, value, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<byte[]> keys)
     {
         return await this.simpleCacheClient.GetBatchAsync(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<string> keys)
     {
         return await this.simpleCacheClient.GetBatchAsync(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, params byte[][] keys)
     {
         return await this.simpleCacheClient.GetBatchAsync(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, params string[] keys)
     {
         return await this.simpleCacheClient.GetBatchAsync(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public async Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
     {
         return await this.simpleCacheClient.SetBatchAsync(cacheName, items, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public async Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
     {
         return await this.simpleCacheClient.SetBatchAsync(cacheName, items, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
     {
         return this.simpleCacheClient.Set(cacheName, key, value, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public CacheGetResponse Get(string cacheName, byte[] key)
     {
         return this.simpleCacheClient.Get(cacheName, key);
     }
 
+    /// <inheritdoc />
     public CacheDeleteResponse Delete(string cacheName, byte[] key)
     {
         return this.simpleCacheClient.Delete(cacheName, key);
     }
 
+    /// <inheritdoc />
     public CacheSetResponse Set(string cacheName, string key, string value, uint? ttlSeconds = null)
     {
         return this.simpleCacheClient.Set(cacheName, key, value, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public CacheGetResponse Get(string cacheName, string key)
     {
         return this.simpleCacheClient.Get(cacheName, key);
     }
 
+    /// <inheritdoc />
     public CacheGetBatchResponse GetBatch(string cacheName, IEnumerable<byte[]> keys)
     {
         return this.simpleCacheClient.GetBatch(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public CacheGetBatchResponse GetBatch(string cacheName, IEnumerable<string> keys)
     {
         return this.simpleCacheClient.GetBatch(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public CacheGetBatchResponse GetBatch(string cacheName, params byte[][] keys)
     {
         return this.simpleCacheClient.GetBatch(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public CacheGetBatchResponse GetBatch(string cacheName, params string[] keys)
     {
         return this.simpleCacheClient.GetBatch(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public CacheSetBatchResponse SetBatch(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
     {
         return this.simpleCacheClient.SetBatch(cacheName, items, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public CacheSetBatchResponse SetBatch(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
     {
         return this.simpleCacheClient.SetBatch(cacheName, items, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public CacheDeleteResponse Delete(string cacheName, string key)
     {
         return this.simpleCacheClient.Delete(cacheName, key);
     }
 
+    /// <inheritdoc />
     public CacheSetResponse Set(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
     {
         return this.simpleCacheClient.Set(cacheName, key, value, ttlSeconds);
