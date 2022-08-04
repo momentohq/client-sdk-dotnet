@@ -31,7 +31,7 @@ public class SetTest : TestBase
 
         var set = fetchResponse.ByteArraySet;
         Assert.Equal(1, set!.Count);
-        Assert.True(set.Contains(element));
+        Assert.Contains(element, set);
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public class SetTest : TestBase
 
         var set = fetchResponse.StringSet();
         Assert.Equal(1, set!.Count);
-        Assert.True(set.Contains(element));
+        Assert.Contains(element, set);
     }
 
     [Fact]
@@ -158,8 +158,8 @@ public class SetTest : TestBase
 
         var set = fetchResponse.ByteArraySet;
         Assert.Equal(2, set!.Count);
-        Assert.True(set.Contains(element1));
-        Assert.True(set.Contains(element2));
+        Assert.Contains(element1, set);
+        Assert.Contains(element2, set);
     }
 
     [Fact]
@@ -195,7 +195,7 @@ public class SetTest : TestBase
 
         var set = response.ByteArraySet;
         Assert.Equal(1, set!.Count);
-        Assert.True(set.Contains(element));
+        Assert.Contains(element, set);
     }
 
     [Fact]
@@ -213,8 +213,8 @@ public class SetTest : TestBase
 
         var set = fetchResponse.ByteArraySet;
         Assert.Equal(2, set!.Count);
-        Assert.True(set.Contains(element1));
-        Assert.True(set.Contains(element2));
+        Assert.Contains(element1, set);
+        Assert.Contains(element2, set);
     }
 
     [Fact]
@@ -252,7 +252,7 @@ public class SetTest : TestBase
 
         var set = response.ByteArraySet;
         Assert.Equal(1, set!.Count);
-        Assert.True(set.Contains(element));
+        Assert.Contains(element, set);
     }
 
     [Fact]
@@ -288,8 +288,8 @@ public class SetTest : TestBase
 
         var set = fetchResponse.StringSet();
         Assert.Equal(2, set!.Count);
-        Assert.True(set.Contains(element1));
-        Assert.True(set.Contains(element2));
+        Assert.Contains(element1, set);
+        Assert.Contains(element2, set);
     }
 
     [Fact]
@@ -325,7 +325,7 @@ public class SetTest : TestBase
 
         var set = response.StringSet();
         Assert.Equal(1, set!.Count);
-        Assert.True(set.Contains(element));
+        Assert.Contains(element, set);
     }
 
     [Fact]
@@ -343,8 +343,8 @@ public class SetTest : TestBase
 
         var set = fetchResponse.StringSet();
         Assert.Equal(2, set!.Count);
-        Assert.True(set.Contains(element1));
-        Assert.True(set.Contains(element2));
+        Assert.Contains(element1, set);
+        Assert.Contains(element2, set);
     }
 
     [Fact]
@@ -382,7 +382,7 @@ public class SetTest : TestBase
 
         var set = response.StringSet();
         Assert.Equal(1, set!.Count);
-        Assert.True(set.Contains(element));
+        Assert.Contains(element, set);
     }
 
     [Theory]
