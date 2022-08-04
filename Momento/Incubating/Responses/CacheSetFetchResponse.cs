@@ -12,6 +12,8 @@ public class CacheSetFetchResponse
 {
     public CacheGetStatus Status { get; private set; }
     private readonly RepeatedField<ByteString>? elements;
+    private HashSet<byte[]>? _byteArraySet = null;
+    private HashSet<string>? _stringSet = null;
 
     public CacheSetFetchResponse(_SetFetchResponse response)
     {
@@ -27,10 +29,15 @@ public class CacheSetFetchResponse
             {
                 return null;
             }
-            return new HashSet<byte[]>(
+            if (_byteArraySet != null)
+            {
+                return _byteArraySet;
+            }
+            _byteArraySet = new HashSet<byte[]>(
                 elements.Select(element => element.ToByteArray()),
                 Utils.ByteArrayComparer
             );
+            return _byteArraySet;
         }
     }
 
@@ -40,7 +47,12 @@ public class CacheSetFetchResponse
         {
             return null;
         }
+        if (_stringSet != null)
+        {
+            return _stringSet;
+        }
 
-        return new HashSet<string>(elements.Select(element => element.ToStringUtf8()));
+        _stringSet = new HashSet<string>(elements.Select(element => element.ToStringUtf8()));
+        return _stringSet;
     }
 }

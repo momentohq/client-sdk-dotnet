@@ -403,6 +403,30 @@ public class SetTest : TestBase
         Assert.Null(response.StringSet());
     }
 
+    [Fact]
+    public async Task SetFetchAsync_UsesCachedByteArraySet_HappyPath()
+    {
+        var setName = Utils.NewGuidString();
+        await client.SetAddBatchAsync(cacheName, setName, false, null, Utils.NewGuidString(), Utils.NewGuidString());
+        var response = await client.SetFetchAsync(cacheName, setName);
+
+        var set1 = response.ByteArraySet;
+        var set2 = response.ByteArraySet;
+        Assert.Same(set1, set2);
+    }
+
+    [Fact]
+    public async Task SetFetchAsync_UsesCachedStringSet_HappyPath()
+    {
+        var setName = Utils.NewGuidString();
+        await client.SetAddBatchAsync(cacheName, setName, false, null, Utils.NewGuidString(), Utils.NewGuidString());
+        var response = await client.SetFetchAsync(cacheName, setName);
+
+        var set1 = response.StringSet();
+        var set2 = response.StringSet();
+        Assert.Same(set1, set2);
+    }
+
     [Theory]
     [InlineData(null, "my-set")]
     [InlineData("my-cache", null)]
