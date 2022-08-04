@@ -484,46 +484,29 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public async Task<CacheSetAddResponse> SetAddAsync(string cacheName, string setName, byte[] element, bool refreshTtl, uint? ttlSeconds = null)
     {
-        return await SendSetAddAsync(cacheName, setName, element.ToByteString(), refreshTtl, ttlSeconds);
+        await SendSetAddBatchAsync(cacheName, setName, new ByteString[] { element.ToByteString() }, refreshTtl, ttlSeconds);
+        return new CacheSetAddResponse();
     }
 
     public async Task<CacheSetAddResponse> SetAddAsync(string cacheName, string setName, string element, bool refreshTtl, uint? ttlSeconds = null)
     {
-        return await SendSetAddAsync(cacheName, setName, element.ToByteString(), refreshTtl, ttlSeconds);
-    }
-
-    private async Task<CacheSetAddResponse> SendSetAddAsync(string cacheName, string setName, ByteString element, bool refreshTtl, uint? ttlSeconds = null)
-    {
-        _SetUnionRequest request = new()
-        {
-            SetName = setName.ToByteString(),
-            RefreshTtl = refreshTtl,
-            TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds)
-        };
-        request.Elements.Add(element);
-
-        try
-        {
-            await this.grpcManager.Client.SetUnionAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
-        }
-        catch (Exception e)
-        {
-            throw CacheExceptionMapper.Convert(e);
-        }
+        await SendSetAddBatchAsync(cacheName, setName, new ByteString[] { element.ToByteString() }, refreshTtl, ttlSeconds);
         return new CacheSetAddResponse();
     }
 
     public async Task<CacheSetAddBatchResponse> SetAddBatchAsync(string cacheName, string setName, IEnumerable<byte[]> elements, bool refreshTtl, uint? ttlSeconds = null)
     {
-        return await SendSetAddBatchAsync(cacheName, setName, elements.Select(element => element.ToByteString()), refreshTtl, ttlSeconds);
+        await SendSetAddBatchAsync(cacheName, setName, elements.Select(element => element.ToByteString()), refreshTtl, ttlSeconds);
+        return new CacheSetAddBatchResponse();
     }
 
     public async Task<CacheSetAddBatchResponse> SetAddBatchAsync(string cacheName, string setName, IEnumerable<string> elements, bool refreshTtl, uint? ttlSeconds = null)
     {
-        return await SendSetAddBatchAsync(cacheName, setName, elements.Select(element => element.ToByteString()), refreshTtl, ttlSeconds);
+        await SendSetAddBatchAsync(cacheName, setName, elements.Select(element => element.ToByteString()), refreshTtl, ttlSeconds);
+        return new CacheSetAddBatchResponse();
     }
 
-    public async Task<CacheSetAddBatchResponse> SendSetAddBatchAsync(string cacheName, string setName, IEnumerable<ByteString> elements, bool refreshTtl, uint? ttlSeconds = null)
+    public async Task SendSetAddBatchAsync(string cacheName, string setName, IEnumerable<ByteString> elements, bool refreshTtl, uint? ttlSeconds = null)
     {
         _SetUnionRequest request = new()
         {
@@ -541,7 +524,6 @@ internal sealed class ScsDataClient : ScsDataClientBase
         {
             throw CacheExceptionMapper.Convert(e);
         }
-        return new CacheSetAddBatchResponse();
     }
 
     public async Task<CacheSetFetchResponse> SetFetchAsync(string cacheName, string setName)
