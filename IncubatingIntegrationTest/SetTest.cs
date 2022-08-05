@@ -30,7 +30,7 @@ public class SetTest : TestBase
         Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
 
         var set = fetchResponse.ByteArraySet;
-        Assert.Equal(1, set!.Count);
+        Assert.Single(set);
         Assert.Contains(element, set);
     }
 
@@ -64,7 +64,7 @@ public class SetTest : TestBase
 
         var response = await client.SetFetchAsync(cacheName, setName);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
-        Assert.Equal(1, response.ByteArraySet!.Count);
+        Assert.Single(response.ByteArraySet);
     }
 
     [Theory]
@@ -88,7 +88,7 @@ public class SetTest : TestBase
         Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
 
         var set = fetchResponse.StringSet();
-        Assert.Equal(1, set!.Count);
+        Assert.Single(set);
         Assert.Contains(element, set);
     }
 
@@ -122,7 +122,7 @@ public class SetTest : TestBase
 
         var response = await client.SetFetchAsync(cacheName, setName);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
-        Assert.Equal(1, response.StringSet()!.Count);
+        Assert.Single(response.StringSet());
     }
 
     [Fact]
@@ -194,7 +194,7 @@ public class SetTest : TestBase
         Assert.Equal(CacheGetStatus.HIT, response.Status);
 
         var set = response.ByteArraySet;
-        Assert.Equal(1, set!.Count);
+        Assert.Single(set);
         Assert.Contains(element, set);
     }
 
@@ -251,7 +251,7 @@ public class SetTest : TestBase
         Assert.Equal(CacheGetStatus.HIT, response.Status);
 
         var set = response.ByteArraySet;
-        Assert.Equal(1, set!.Count);
+        Assert.Single(set);
         Assert.Contains(element, set);
     }
 
@@ -324,7 +324,7 @@ public class SetTest : TestBase
         Assert.Equal(CacheGetStatus.HIT, response.Status);
 
         var set = response.StringSet();
-        Assert.Equal(1, set!.Count);
+        Assert.Single(set);
         Assert.Contains(element, set);
     }
 
@@ -381,7 +381,7 @@ public class SetTest : TestBase
         Assert.Equal(CacheGetStatus.HIT, response.Status);
 
         var set = response.StringSet();
-        Assert.Equal(1, set!.Count);
+        Assert.Single(set);
         Assert.Contains(element, set);
     }
 
