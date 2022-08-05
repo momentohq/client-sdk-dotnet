@@ -22,19 +22,6 @@ jobs:
         with:
           dotnet-version: "6.0.x"
 
-      - uses: nuget/setup-nuget@v1
-        with:
-          nuget-version: "5.x"
-
-      - name: Configure Artifactory publish credentials
-        run: |
-          set -e
-          set -x
-          nuget sources Add -Name Artifactory -Source https://momento.jfrog.io/artifactory/api/nuget/nuget-local -username deploy-user -password ${{ secrets.PUBLIC_ARTIFACTORY_DEPLOY_USER_MAGIC_PASSTOKEN }}
-          nuget setapikey deploy-user:${{ secrets.PUBLIC_ARTIFACTORY_DEPLOY_USER_MAGIC_PASSTOKEN }} -Source Artifactory
-          dotnet nuget add source https://momento.jfrog.io/artifactory/api/nuget/nuget-public --name Artifactory
-        shell: bash
-
       - name: Build
         run: |
           dotnet build
@@ -66,6 +53,6 @@ jobs:
             echo "version: ${VERSION}"
             dotnet build --configuration Release
             dotnet pack -c Release -p:Version=${VERSION}
-            nuget push ./bin/Release/MomentoSdk.${VERSION}.nupkg -Source Artifactory -Verbosity detailed
+            dotnet nuget push ./bin/Release/Momento.Sdk.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key=${{secrets.NUGET_API_KEY}}
           popd
         shell: bash

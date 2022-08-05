@@ -1,9 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
+		<AssemblyName>Momento.Sdk</AssemblyName>
 		<TargetFramework>netstandard2.1</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
+		<PackageId>Momento.Sdk</PackageId>
+		<Authors>Momento</Authors>
+		<Company>Momento Inc</Company>
+		<Description>
+		  C# SDK for Momento, a serverless cache that automatically scales without any of the
+		  operational overhead required by traditional caching solutions.
+
+		  Check out our SDK example here: https://github.com/momentohq/client-sdk-examples/tree/main/dotnet
+		</Description>
+		<PackageTags>caching, cache, serverless, key value, simple caching service, distributedcache</PackageTags>
+		<Copyright>Copyright (c) Momento Inc 2022</Copyright>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/momentohq/client-sdk-csharp</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/momentohq/client-sdk-csharp</RepositoryUrl>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="Momento.Protos" />

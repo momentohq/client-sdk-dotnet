@@ -22,17 +22,6 @@ jobs:
         with:
           dotnet-version: "6.0.x"
 
-      - uses: nuget/setup-nuget@v1
-        with:
-          nuget-version: "5.x"
-
-      - name: Configure Artifactory credentials
-        run: |
-          set -e
-          set -x
-          dotnet nuget add source https://momento.jfrog.io/artifactory/api/nuget/nuget-public --name Artifactory
-        shell: bash
-
       - name: Build
         run: |
           dotnet build
