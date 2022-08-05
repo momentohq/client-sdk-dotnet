@@ -14,7 +14,7 @@
 
 		  Check out our SDK example here: https://github.com/momentohq/client-sdk-examples/tree/main/dotnet
 		</Description>
-		<PackageTags>caching, cache, serverless, key value, simple caching service</PackageTags>
+		<PackageTags>caching, cache, serverless, key value, simple caching service, distributedcache</PackageTags>
 		<Copyright>Copyright (c) Momento Inc 2022</Copyright>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/momentohq/client-sdk-csharp</PackageProjectUrl>
