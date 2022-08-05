@@ -123,6 +123,26 @@ namespace MomentoSdk.Internal
             {
                 return ByteString.CopyFromUtf8(str);
             }
+
+            /// <summary>
+            /// Convert a byte array to a singleton `ByteString` array
+            /// </summary>
+            /// <param name="byteArray">The byte array to convert.</param>
+            /// <returns>A length one array containing the converted byte array.</returns>
+            public static ByteString[] ToSingletonByteString(this byte[] byteArray)
+            {
+                return new ByteString[] { byteArray.ToByteString() };
+            }
+
+            /// <summary>
+            /// Convert a UTF-8 string to a singleton `ByteString` array.
+            /// </summary>
+            /// <param name="str">The string to convert.</param>
+            /// <returns>A length one array containing the converted string.</returns>
+            public static ByteString[] ToSingletonByteString(this string str)
+            {
+                return new ByteString[] { str.ToByteString() };
+            }
         }
 
         public static class ByteArrayDictionaryExtensions

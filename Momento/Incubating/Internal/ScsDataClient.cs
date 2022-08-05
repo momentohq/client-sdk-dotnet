@@ -47,25 +47,25 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, byte[] field)
     {
-        var response = SendDictionaryGetBatch(cacheName, dictionaryName, new ByteString[] { field.ToByteString() });
+        var response = SendDictionaryGetBatch(cacheName, dictionaryName, field.ToSingletonByteString());
         return new CacheDictionaryGetResponse(response);
     }
 
     public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, string field)
     {
-        var response = SendDictionaryGetBatch(cacheName, dictionaryName, new ByteString[] { field.ToByteString() });
+        var response = SendDictionaryGetBatch(cacheName, dictionaryName, field.ToSingletonByteString());
         return new CacheDictionaryGetResponse(response);
     }
 
     public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, byte[] field)
     {
-        var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, new ByteString[] { field.ToByteString() });
+        var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, field.ToSingletonByteString());
         return new CacheDictionaryGetResponse(response);
     }
 
     public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, string field)
     {
-        var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, new ByteString[] { field.ToByteString() });
+        var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, field.ToSingletonByteString());
         return new CacheDictionaryGetResponse(response);
     }
 
