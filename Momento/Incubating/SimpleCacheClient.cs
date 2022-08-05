@@ -21,146 +21,175 @@ public class SimpleCacheClient : ISimpleCacheClient
         this.dataClient = new(authToken, claims.CacheEndpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds);
     }
 
+    /// <inheritdoc />
     public CreateCacheResponse CreateCache(string cacheName)
     {
         return this.simpleCacheClient.CreateCache(cacheName);
     }
 
+    /// <inheritdoc />
     public DeleteCacheResponse DeleteCache(string cacheName)
     {
         return this.simpleCacheClient.DeleteCache(cacheName);
     }
 
+    /// <inheritdoc />
     public ListCachesResponse ListCaches(string? nextPageToken = null)
     {
         return this.simpleCacheClient.ListCaches(nextPageToken);
     }
 
+    /// <inheritdoc />
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
     {
         return await this.simpleCacheClient.SetAsync(cacheName, key, value, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
     {
         return await this.simpleCacheClient.GetAsync(cacheName, key);
     }
 
+    /// <inheritdoc />
     public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, byte[] key)
     {
         return await this.simpleCacheClient.DeleteAsync(cacheName, key);
     }
 
+    /// <inheritdoc />
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint? ttlSeconds = null)
     {
         return await simpleCacheClient.SetAsync(cacheName, key, value, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
     {
         return await this.simpleCacheClient.GetAsync(cacheName, key);
     }
 
+    /// <inheritdoc />
     public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key)
     {
         return await this.simpleCacheClient.DeleteAsync(cacheName, key);
     }
 
+    /// <inheritdoc />
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
     {
         return await this.simpleCacheClient.SetAsync(cacheName, key, value, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<byte[]> keys)
     {
         return await this.simpleCacheClient.GetBatchAsync(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<string> keys)
     {
         return await this.simpleCacheClient.GetBatchAsync(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, params byte[][] keys)
     {
         return await this.simpleCacheClient.GetBatchAsync(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, params string[] keys)
     {
         return await this.simpleCacheClient.GetBatchAsync(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public async Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
     {
         return await this.simpleCacheClient.SetBatchAsync(cacheName, items, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public async Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
     {
         return await this.simpleCacheClient.SetBatchAsync(cacheName, items, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
     {
         return this.simpleCacheClient.Set(cacheName, key, value, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public CacheGetResponse Get(string cacheName, byte[] key)
     {
         return this.simpleCacheClient.Get(cacheName, key);
     }
 
+    /// <inheritdoc />
     public CacheDeleteResponse Delete(string cacheName, byte[] key)
     {
         return this.simpleCacheClient.Delete(cacheName, key);
     }
 
+    /// <inheritdoc />
     public CacheSetResponse Set(string cacheName, string key, string value, uint? ttlSeconds = null)
     {
         return this.simpleCacheClient.Set(cacheName, key, value, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public CacheGetResponse Get(string cacheName, string key)
     {
         return this.simpleCacheClient.Get(cacheName, key);
     }
 
+    /// <inheritdoc />
     public CacheGetBatchResponse GetBatch(string cacheName, IEnumerable<byte[]> keys)
     {
         return this.simpleCacheClient.GetBatch(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public CacheGetBatchResponse GetBatch(string cacheName, IEnumerable<string> keys)
     {
         return this.simpleCacheClient.GetBatch(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public CacheGetBatchResponse GetBatch(string cacheName, params byte[][] keys)
     {
         return this.simpleCacheClient.GetBatch(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public CacheGetBatchResponse GetBatch(string cacheName, params string[] keys)
     {
         return this.simpleCacheClient.GetBatch(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public CacheSetBatchResponse SetBatch(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
     {
         return this.simpleCacheClient.SetBatch(cacheName, items, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public CacheSetBatchResponse SetBatch(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
     {
         return this.simpleCacheClient.SetBatch(cacheName, items, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public CacheDeleteResponse Delete(string cacheName, string key)
     {
         return this.simpleCacheClient.Delete(cacheName, key);
     }
 
+    /// <inheritdoc />
     public CacheSetResponse Set(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
     {
         return this.simpleCacheClient.Set(cacheName, key, value, ttlSeconds);
@@ -871,6 +900,198 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ElementsNotNull(fields, nameof(fields));
 
         return await this.dataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
+    }
+
+    /// <summary>
+    /// Add an element to a set in the cache.
+    ///
+    /// After this operation, the set will contain the union
+    /// of the element passed in and the elements of the set.
+    ///
+    /// Creates the set if it does not exist and sets the TTL.
+    /// If the set already exists and `refreshTtl` is `true`, then update the
+    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to store the set in.</param>
+    /// <param name="setName">The set to add the element to.</param>
+    /// <param name="element">The data to add to the set.</param>
+    /// <param name="refreshTtl">Update `setName`'s TTL if it already exists.</param>
+    /// <param name="ttlSeconds">TTL for the set in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
+    /// <returns>Task representing the result of the cache operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName`, `setName`, `element` is `null`.</exception>
+    public async Task<CacheSetAddResponse> SetAddAsync(string cacheName, string setName, byte[] element, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(setName, nameof(setName));
+        Utils.ArgumentNotNull(element, nameof(element));
+
+        return await this.dataClient.SetAddAsync(cacheName, setName, element, refreshTtl, ttlSeconds);
+    }
+
+    /// <summary>
+    /// Add an element to a set in the cache.
+    ///
+    /// After this operation, the set will contain the union
+    /// of the element passed in and the elements of the set.
+    ///
+    /// Creates the set if it does not exist and sets the TTL.
+    /// If the set already exists and `refreshTtl` is `true`, then update the
+    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to store the set in.</param>
+    /// <param name="setName">The set to add the element to.</param>
+    /// <param name="element">The data to add to the set.</param>
+    /// <param name="refreshTtl">Update `setName`'s TTL if it already exists.</param>
+    /// <param name="ttlSeconds">TTL for the set in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
+    /// <returns>Task representing the result of the cache operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName`, `setName`, `element` is `null`.</exception>
+    public async Task<CacheSetAddResponse> SetAddAsync(string cacheName, string setName, string element, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(setName, nameof(setName));
+        Utils.ArgumentNotNull(element, nameof(element));
+
+        return await this.dataClient.SetAddAsync(cacheName, setName, element, refreshTtl, ttlSeconds);
+    }
+
+    /// <summary>
+    /// Add several elements to a set in the cache.
+    ///
+    /// After this operation, the set will contain the union
+    /// of the elements passed in and the elements of the set.
+    ///
+    /// Creates the set if it does not exist and sets the TTL.
+    /// If the set already exists and `refreshTtl` is `true`, then update the
+    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to store the set in.</param>
+    /// <param name="setName">The set to add elements to.</param>
+    /// <param name="refreshTtl">Update `setName`'s TTL if it already exists.</param>
+    /// <param name="ttlSeconds">TTL for the set in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
+    /// <param name="elements">The data to add to the set.</param>
+    /// <returns>Task representing the result of the cache operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName`, `setName`, `elements` is `null`.</exception>
+    public async Task<CacheSetAddBatchResponse> SetAddBatchAsync(string cacheName, string setName, bool refreshTtl, uint? ttlSeconds = null, params byte[][] elements)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(setName, nameof(setName));
+        Utils.ArgumentNotNull(elements, nameof(elements));
+        Utils.ElementsNotNull(elements, nameof(elements));
+
+        return await this.dataClient.SetAddBatchAsync(cacheName, setName, elements, refreshTtl, ttlSeconds);
+    }
+
+    /// <summary>
+    /// Add several elements to a set in the cache.
+    ///
+    /// After this operation, the set will contain the union
+    /// of the elements passed in and the elements of the set.
+    ///
+    /// Creates the set if it does not exist and sets the TTL.
+    /// If the set already exists and `refreshTtl` is `true`, then update the
+    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to store the set in.</param>
+    /// <param name="setName">The set to add elements to.</param>
+    /// <param name="refreshTtl">Update `setName`'s TTL if it already exists.</param>
+    /// <param name="ttlSeconds">TTL for the set in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
+    /// <param name="elements">The data to add to the set.</param>
+    /// <returns>Task representing the result of the cache operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName`, `setName`, `elements` is `null`.</exception>
+    public async Task<CacheSetAddBatchResponse> SetAddBatchAsync(string cacheName, string setName, bool refreshTtl, uint? ttlSeconds = null, params string[] elements)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(setName, nameof(setName));
+        Utils.ArgumentNotNull(elements, nameof(elements));
+        Utils.ElementsNotNull(elements, nameof(elements));
+
+        return await this.dataClient.SetAddBatchAsync(cacheName, setName, elements, refreshTtl, ttlSeconds);
+    }
+
+    /// <summary>
+    /// Add several elements to a set in the cache.
+    ///
+    /// After this operation, the set will contain the union
+    /// of the elements passed in and the elements of the set.
+    ///
+    /// Creates the set if it does not exist and sets the TTL.
+    /// If the set already exists and `refreshTtl` is `true`, then update the
+    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to store the set in.</param>
+    /// <param name="setName">The set to add elements to.</param>
+    /// <param name="elements">The data to add to the set.</param>
+    /// <param name="refreshTtl">Update `setName`'s TTL if it already exists.</param>
+    /// <param name="ttlSeconds">TTL for the set in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
+    /// <returns>Task representing the result of the cache operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName`, `setName`, `elements` is `null`.</exception>
+    public async Task<CacheSetAddBatchResponse> SetAddBatchAsync(string cacheName, string setName, IEnumerable<byte[]> elements, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(setName, nameof(setName));
+        Utils.ArgumentNotNull(elements, nameof(elements));
+        Utils.ElementsNotNull(elements, nameof(elements));
+
+        return await this.dataClient.SetAddBatchAsync(cacheName, setName, elements, refreshTtl, ttlSeconds);
+    }
+
+    /// <summary>
+    /// Add several elements to a set in the cache.
+    ///
+    /// After this operation, the set will contain the union
+    /// of the elements passed in and the elements of the set.
+    ///
+    /// Creates the set if it does not exist and sets the TTL.
+    /// If the set already exists and `refreshTtl` is `true`, then update the
+    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to store the set in.</param>
+    /// <param name="setName">The set to add elements to.</param>
+    /// <param name="elements">The data to add to the set.</param>
+    /// <param name="refreshTtl">Update `setName`'s TTL if it already exists.</param>
+    /// <param name="ttlSeconds">TTL for the set in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
+    /// <returns>Task representing the result of the cache operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName`, `setName`, `elements` is `null`.</exception>
+    public async Task<CacheSetAddBatchResponse> SetAddBatchAsync(string cacheName, string setName, IEnumerable<string> elements, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(setName, nameof(setName));
+        Utils.ArgumentNotNull(elements, nameof(elements));
+        Utils.ElementsNotNull(elements, nameof(elements));
+
+        return await this.dataClient.SetAddBatchAsync(cacheName, setName, elements, refreshTtl, ttlSeconds);
+    }
+
+    /// <summary>
+    /// Fetch the entire set from the cache.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+    /// <param name="setName">The set to fetch.</param>
+    /// <returns>Task representing with the status of the fetch operation and the associated set.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName` or `setName` is `null`.</exception>
+    public async Task<CacheSetFetchResponse> SetFetchAsync(string cacheName, string setName)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(setName, nameof(setName));
+
+        return await this.dataClient.SetFetchAsync(cacheName, setName);
+    }
+
+    /// <summary>
+    /// Remove the set from the cache.
+    ///
+    /// Performs a no-op if `setName` does not exist.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to delete the set from.</param>
+    /// <param name="setName">Name of the set to delete.</param>
+    /// <returns>Task representing the result of the delete operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName` or `setName` is `null`.</exception>
+    public async Task<CacheSetDeleteResponse> SetDeleteAsync(string cacheName, string setName)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(setName, nameof(setName));
+
+        return await this.dataClient.SetDeleteAsync(cacheName, setName);
     }
 
     public void Dispose()

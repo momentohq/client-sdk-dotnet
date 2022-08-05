@@ -1,5 +1,5 @@
-﻿using System.Text;
-using CacheClient;
+﻿using CacheClient;
+using Google.Protobuf;
 using MomentoSdk.Responses;
 
 
@@ -8,20 +8,18 @@ namespace MomentoSdk.Incubating.Responses;
 public class CacheDictionaryGetResponse
 {
     public CacheGetStatus Status { get; private set; }
-    public byte[]? Bytes { get; private set; }
+    private readonly ByteString? cacheBody;
 
     public CacheDictionaryGetResponse(_DictionaryGetResponse.Types._DictionaryGetResponsePart response)
     {
         this.Status = CacheGetStatusUtil.From(response.Result);
-        this.Bytes = (Status == CacheGetStatus.HIT) ? response.CacheBody.ToByteArray() : null;
+        this.cacheBody = (Status == CacheGetStatus.HIT) ? response.CacheBody : null;
     }
 
-    public string? String()
+    public byte[]? Bytes
     {
-        if (Bytes == null)
-        {
-            return null;
-        }
-        return Encoding.UTF8.GetString(Bytes);
+        get => (cacheBody != null) ? cacheBody.ToByteArray() : null;
     }
+
+    public string? String() => (cacheBody != null) ? cacheBody.ToStringUtf8() : null;
 }

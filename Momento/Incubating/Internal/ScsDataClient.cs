@@ -28,7 +28,6 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return SendDictionarySet(cacheName, dictionaryName, field.ToByteString(), value.ToByteString(), refreshTtl, ttlSeconds);
     }
 
-
     private CacheDictionarySetResponse SendDictionarySet(string cacheName, string dictionaryName, ByteString field, ByteString value, bool refreshTtl, uint? ttlSeconds = null)
     {
         _DictionarySetRequest request = new()
@@ -481,5 +480,84 @@ internal sealed class ScsDataClient : ScsDataClientBase
             throw CacheExceptionMapper.Convert(e);
         }
         return new CacheDictionaryRemoveFieldsResponse();
+    }
+
+    public async Task<CacheSetAddResponse> SetAddAsync(string cacheName, string setName, byte[] element, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        await SendSetAddBatchAsync(cacheName, setName, new ByteString[] { element.ToByteString() }, refreshTtl, ttlSeconds);
+        return new CacheSetAddResponse();
+    }
+
+    public async Task<CacheSetAddResponse> SetAddAsync(string cacheName, string setName, string element, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        await SendSetAddBatchAsync(cacheName, setName, new ByteString[] { element.ToByteString() }, refreshTtl, ttlSeconds);
+        return new CacheSetAddResponse();
+    }
+
+    public async Task<CacheSetAddBatchResponse> SetAddBatchAsync(string cacheName, string setName, IEnumerable<byte[]> elements, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        await SendSetAddBatchAsync(cacheName, setName, elements.Select(element => element.ToByteString()), refreshTtl, ttlSeconds);
+        return new CacheSetAddBatchResponse();
+    }
+
+    public async Task<CacheSetAddBatchResponse> SetAddBatchAsync(string cacheName, string setName, IEnumerable<string> elements, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        await SendSetAddBatchAsync(cacheName, setName, elements.Select(element => element.ToByteString()), refreshTtl, ttlSeconds);
+        return new CacheSetAddBatchResponse();
+    }
+
+    public async Task SendSetAddBatchAsync(string cacheName, string setName, IEnumerable<ByteString> elements, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        _SetUnionRequest request = new()
+        {
+            SetName = setName.ToByteString(),
+            RefreshTtl = refreshTtl,
+            TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds)
+        };
+        request.Elements.Add(elements);
+
+        try
+        {
+            await this.grpcManager.Client.SetUnionAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+    }
+
+    public async Task<CacheSetFetchResponse> SetFetchAsync(string cacheName, string setName)
+    {
+        _SetFetchRequest request = new() { SetName = setName.ToByteString() };
+        _SetFetchResponse response;
+
+        try
+        {
+            response = await this.grpcManager.Client.SetFetchAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+        return new CacheSetFetchResponse(response);
+    }
+
+    public async Task<CacheSetDeleteResponse> SetDeleteAsync(string cacheName, string setName)
+    {
+        _SetDifferenceRequest request = new()
+        {
+            SetName = setName.ToByteString(),
+            Subtrahend = new() { Identity = new() }
+        };
+
+        try
+        {
+            await this.grpcManager.Client.SetDifferenceAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+        return new CacheSetDeleteResponse();
     }
 }

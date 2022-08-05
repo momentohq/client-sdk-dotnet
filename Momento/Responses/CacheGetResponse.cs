@@ -1,27 +1,24 @@
-﻿using System.Text;
-using CacheClient;
+﻿using CacheClient;
 using Google.Protobuf;
-using MomentoSdk.Exceptions;
 
 namespace MomentoSdk.Responses;
 
 public class CacheGetResponse
 {
     public CacheGetStatus Status { get; }
-    public byte[]? Bytes { get; }
+    private readonly ByteString? cacheBody;
 
     public CacheGetResponse(_GetResponse response)
     {
         Status = CacheGetStatusUtil.From(response.Result);
-        Bytes = (Status == CacheGetStatus.HIT) ? response.CacheBody.ToByteArray() : null;
+
+        cacheBody = (Status == CacheGetStatus.HIT) ? response.CacheBody : null;
     }
 
-    public string? String()
+    public byte[]? Bytes
     {
-        if (Bytes == null)
-        {
-            return null;
-        }
-        return Encoding.UTF8.GetString(Bytes);
+        get => cacheBody != null ? cacheBody.ToByteArray() : null;
     }
+
+    public string? String() => (cacheBody != null) ? cacheBody.ToStringUtf8() : null;
 }

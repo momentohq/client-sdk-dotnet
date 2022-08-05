@@ -56,7 +56,7 @@ public class SimpleCacheControlTest
     public void ListCaches_OneCache_HappyPath()
     {
         // Create cache
-        string cacheName = Utils.GuidString();
+        string cacheName = Utils.NewGuidString();
         client.CreateCache(cacheName);
 
         // Test cache exists
@@ -80,7 +80,7 @@ public class SimpleCacheControlTest
         // TODO: increase limit after pagination is enabled
         foreach (int val in Enumerable.Range(1, 5))
         {
-            String cacheName = Utils.GuidString();
+            String cacheName = Utils.NewGuidString();
             cacheNames.Add(cacheName);
             client.CreateCache(cacheName);
         }

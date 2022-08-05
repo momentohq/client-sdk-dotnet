@@ -16,20 +16,20 @@ namespace MomentoSdk.Internal
         /// Make a globally unique ID as a string.
         /// </summary>
         /// <returns>A GUID as a string.</returns>
-        public static string GuidString() => Guid.NewGuid().ToString();
+        public static string NewGuidString() => Guid.NewGuid().ToString();
 
         /// <summary>
         /// Make a globally unique ID as a byte array.
         /// </summary>
         /// <returns>A GUID as a byte array.</returns>
-        public static byte[] GuidBytes() => Guid.NewGuid().ToByteArray();
+        public static byte[] NewGuidByteArray() => Guid.NewGuid().ToByteArray();
 
         /// <summary>
         /// Convert a UTF-8 encoded string to a byte array.
         /// </summary>
         /// <param name="s">The string to convert.</param>
         /// <returns>The string as a byte array.</returns>
-        public static byte[] Utf8ToBytes(string s) => Encoding.UTF8.GetBytes(s);
+        public static byte[] Utf8ToByteArray(string s) => Encoding.UTF8.GetBytes(s);
 
         /// <summary>
         /// Throw an exception if the argument is null.

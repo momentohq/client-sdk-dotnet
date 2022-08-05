@@ -28,23 +28,27 @@ public class SimpleCacheClient : ISimpleCacheClient
         this.dataClient = new(authToken, claims.CacheEndpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds);
     }
 
+    /// <inheritdoc />
     public CreateCacheResponse CreateCache(string cacheName)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         return this.controlClient.CreateCache(cacheName);
     }
 
+    /// <inheritdoc />
     public DeleteCacheResponse DeleteCache(string cacheName)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         return this.controlClient.DeleteCache(cacheName);
     }
 
+    /// <inheritdoc />
     public ListCachesResponse ListCaches(string? nextPageToken = null)
     {
         return this.controlClient.ListCaches(nextPageToken);
     }
 
+    /// <inheritdoc />
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -54,6 +58,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -62,6 +67,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.GetAsync(cacheName, key);
     }
 
+    /// <inheritdoc />
     public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, byte[] key)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -70,6 +76,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.DeleteAsync(cacheName, key);
     }
 
+    /// <inheritdoc />
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -79,6 +86,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -87,6 +95,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.GetAsync(cacheName, key);
     }
 
+    /// <inheritdoc />
     public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -95,6 +104,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.DeleteAsync(cacheName, key);
     }
 
+    /// <inheritdoc />
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -104,6 +114,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<byte[]> keys)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -113,6 +124,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.GetBatchAsync(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<string> keys)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -122,6 +134,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.GetBatchAsync(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, params byte[][] keys)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -131,6 +144,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.GetBatchAsync(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, params string[] keys)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -140,6 +154,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.GetBatchAsync(cacheName, keys);
     }
 
+    /// <inheritdoc />
     public async Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -149,6 +164,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.SetBatchAsync(cacheName, items, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public async Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -158,6 +174,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.SetBatchAsync(cacheName, items, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public CacheSetResponse Set(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -167,6 +184,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return this.dataClient.Set(cacheName, key, value, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public CacheGetResponse Get(string cacheName, byte[] key)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -175,6 +193,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return this.dataClient.Get(cacheName, key);
     }
 
+    /// <inheritdoc />
     public CacheDeleteResponse Delete(string cacheName, byte[] key)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -183,6 +202,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return this.dataClient.Delete(cacheName, key);
     }
 
+    /// <inheritdoc />
     public CacheSetResponse Set(string cacheName, string key, string value, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -192,6 +212,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return this.dataClient.Set(cacheName, key, value, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public CacheGetResponse Get(string cacheName, string key)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -200,6 +221,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return this.dataClient.Get(cacheName, key);
     }
 
+    /// <inheritdoc />
     public CacheGetBatchResponse GetBatch(string cacheName, IEnumerable<byte[]> keys)
     {
         try
@@ -212,6 +234,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         }
     }
 
+    /// <inheritdoc />
     public CacheGetBatchResponse GetBatch(string cacheName, IEnumerable<string> keys)
     {
         try
@@ -224,6 +247,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         }
     }
 
+    /// <inheritdoc />
     public CacheGetBatchResponse GetBatch(string cacheName, params byte[][] keys)
     {
         try
@@ -236,6 +260,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         }
     }
 
+    /// <inheritdoc />
     public CacheGetBatchResponse GetBatch(string cacheName, params string[] keys)
     {
         try
@@ -248,6 +273,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         }
     }
 
+    /// <inheritdoc />
     public CacheSetBatchResponse SetBatch(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
     {
         try
@@ -260,6 +286,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         }
     }
 
+    /// <inheritdoc />
     public CacheSetBatchResponse SetBatch(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
     {
         try
@@ -272,6 +299,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         }
     }
 
+    /// <inheritdoc />
     public CacheDeleteResponse Delete(string cacheName, string key)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -280,6 +308,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return this.dataClient.Delete(cacheName, key);
     }
 
+    /// <inheritdoc />
     public CacheSetResponse Set(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
