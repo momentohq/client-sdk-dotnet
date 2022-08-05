@@ -10,11 +10,11 @@ public class CacheDictionaryGetBatchResponse
 {
     public IEnumerable<CacheDictionaryGetResponse> Responses { get; private set; }
 
-    public CacheDictionaryGetBatchResponse(_DictionaryGetResponse responses, int numRequested)
+    public CacheDictionaryGetBatchResponse(_DictionaryGetResponse response, int numRequested)
     {
-        if (responses.DictionaryCase == _DictionaryGetResponse.DictionaryOneofCase.Found)
+        if (response.DictionaryCase == _DictionaryGetResponse.DictionaryOneofCase.Found)
         {
-            Responses = responses.Found.Items.Select(response => new CacheDictionaryGetResponse(response));
+            Responses = response.Found.Items.Select(item => new CacheDictionaryGetResponse(item));
         }
         else
         {

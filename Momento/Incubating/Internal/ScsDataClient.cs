@@ -83,57 +83,26 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, byte[] field)
     {
-        return SendDictionaryGet(cacheName, dictionaryName, field.ToByteString());
+        var response = SendDictionaryGetBatch(cacheName, dictionaryName, new ByteString[] { field.ToByteString() });
+        return new CacheDictionaryGetResponse(response);
     }
 
     public CacheDictionaryGetResponse DictionaryGet(string cacheName, string dictionaryName, string field)
     {
-        return SendDictionaryGet(cacheName, dictionaryName, field.ToByteString());
-    }
-
-    private CacheDictionaryGetResponse SendDictionaryGet(string cacheName, string dictionaryName, ByteString field)
-    {
-        _DictionaryGetRequest request = new() { DictionaryName = dictionaryName.ToByteString() };
-        request.Fields.Add(field);
-
-        try
-        {
-            var response = this.grpcManager.Client.DictionaryGet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
-            // TODO: report specific case of unexpected zero-length dictionary body
-            return new CacheDictionaryGetResponse(response);
-
-        }
-        catch (Exception e)
-        {
-            throw CacheExceptionMapper.Convert(e);
-        }
+        var response = SendDictionaryGetBatch(cacheName, dictionaryName, new ByteString[] { field.ToByteString() });
+        return new CacheDictionaryGetResponse(response);
     }
 
     public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, byte[] field)
     {
-        return await SendDictionaryGetAsync(cacheName, dictionaryName, field.ToByteString());
+        var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, new ByteString[] { field.ToByteString() });
+        return new CacheDictionaryGetResponse(response);
     }
 
     public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, string field)
     {
-        return await SendDictionaryGetAsync(cacheName, dictionaryName, field.ToByteString());
-    }
-
-    private async Task<CacheDictionaryGetResponse> SendDictionaryGetAsync(string cacheName, string dictionaryName, ByteString field)
-    {
-        _DictionaryGetRequest request = new() { DictionaryName = dictionaryName.ToByteString() };
-        request.Fields.Add(field);
-
-        try
-        {
-            var response = await this.grpcManager.Client.DictionaryGetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
-            // TODO: report specific case of unexpected zero-length dictionary body
-            return new CacheDictionaryGetResponse(response);
-        }
-        catch (Exception e)
-        {
-            throw CacheExceptionMapper.Convert(e);
-        }
+        var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, new ByteString[] { field.ToByteString() });
+        return new CacheDictionaryGetResponse(response);
     }
 
     public CacheDictionarySetBatchResponse DictionarySetBatch(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
@@ -204,76 +173,80 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public CacheDictionaryGetBatchResponse DictionaryGetBatch(string cacheName, string dictionaryName, params byte[][] fields)
     {
-        return SendDictionaryGetBatch(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        var response = SendDictionaryGetBatch(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        return new CacheDictionaryGetBatchResponse(response, fields.Length);
     }
 
     public CacheDictionaryGetBatchResponse DictionaryGetBatch(string cacheName, string dictionaryName, params string[] fields)
     {
-        return SendDictionaryGetBatch(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        var response = SendDictionaryGetBatch(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        return new CacheDictionaryGetBatchResponse(response, fields.Length);
     }
 
     public CacheDictionaryGetBatchResponse DictionaryGetBatch(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
     {
-        return SendDictionaryGetBatch(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        var response = SendDictionaryGetBatch(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        return new CacheDictionaryGetBatchResponse(response, fields.Count());
     }
 
     public CacheDictionaryGetBatchResponse DictionaryGetBatch(string cacheName, string dictionaryName, IEnumerable<string> fields)
     {
-        return SendDictionaryGetBatch(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        var response = SendDictionaryGetBatch(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        return new CacheDictionaryGetBatchResponse(response, fields.Count());
     }
 
-    private CacheDictionaryGetBatchResponse SendDictionaryGetBatch(string cacheName, string dictionaryName, IEnumerable<ByteString> fields)
+    private _DictionaryGetResponse SendDictionaryGetBatch(string cacheName, string dictionaryName, IEnumerable<ByteString> fields)
     {
         _DictionaryGetRequest request = new() { DictionaryName = dictionaryName.ToByteString() };
         request.Fields.Add(fields);
 
-        _DictionaryGetResponse response;
         try
         {
-            response = this.grpcManager.Client.DictionaryGet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            return this.grpcManager.Client.DictionaryGet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
             throw CacheExceptionMapper.Convert(e);
         }
-        return new CacheDictionaryGetBatchResponse(response, request.Fields.Count);
     }
 
     public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, params byte[][] fields)
     {
-        return await SendDictionaryGetBatchAsync(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        return new CacheDictionaryGetBatchResponse(response, fields.Length);
     }
 
     public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, params string[] fields)
     {
-        return await SendDictionaryGetBatchAsync(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        return new CacheDictionaryGetBatchResponse(response, fields.Length);
     }
 
     public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
     {
-        return await SendDictionaryGetBatchAsync(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        return new CacheDictionaryGetBatchResponse(response, fields.Count());
     }
 
     public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, IEnumerable<string> fields)
     {
-        return await SendDictionaryGetBatchAsync(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        return new CacheDictionaryGetBatchResponse(response, fields.Count());
     }
 
-    private async Task<CacheDictionaryGetBatchResponse> SendDictionaryGetBatchAsync(string cacheName, string dictionaryName, IEnumerable<ByteString> fields)
+    private async Task<_DictionaryGetResponse> SendDictionaryGetBatchAsync(string cacheName, string dictionaryName, IEnumerable<ByteString> fields)
     {
         _DictionaryGetRequest request = new() { DictionaryName = dictionaryName.ToByteString() };
         request.Fields.Add(fields);
 
-        _DictionaryGetResponse response;
         try
         {
-            response = await this.grpcManager.Client.DictionaryGetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            return await this.grpcManager.Client.DictionaryGetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
             throw CacheExceptionMapper.Convert(e);
         }
-        return new CacheDictionaryGetBatchResponse(response, request.Fields.Count);
     }
 
     public CacheDictionaryFetchResponse DictionaryFetch(string cacheName, string dictionaryName)
