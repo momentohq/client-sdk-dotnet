@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CacheClient;
-using Google.Protobuf.Collections;
 using MomentoSdk.Responses;
 
 
@@ -12,9 +10,17 @@ public class CacheDictionaryGetBatchResponse
 {
     public IEnumerable<CacheDictionaryGetResponse> Responses { get; private set; }
 
-    public CacheDictionaryGetBatchResponse(_DictionaryGetResponse responses)
+    public CacheDictionaryGetBatchResponse(_DictionaryGetResponse response, int numRequested)
     {
-        this.Responses = responses.DictionaryBody.Select(response => new CacheDictionaryGetResponse(response));
+        if (response.DictionaryCase == _DictionaryGetResponse.DictionaryOneofCase.Found)
+        {
+            Responses = response.Found.Items.Select(item => new CacheDictionaryGetResponse(item));
+        }
+        else
+        {
+            Responses = Enumerable.Range(1, numRequested).Select(_ => new CacheDictionaryGetResponse());
+        }
+
     }
 
     public IEnumerable<CacheGetStatus> Status
@@ -27,8 +33,8 @@ public class CacheDictionaryGetBatchResponse
         return Responses.Select(response => response.String());
     }
 
-    public IEnumerable<byte[]?> Bytes
+    public IEnumerable<byte[]?> ByteArrays
     {
-        get => Responses.Select(response => response.Bytes);
+        get => Responses.Select(response => response.ByteArray);
     }
 }
