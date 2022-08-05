@@ -36,7 +36,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
             RefreshTtl = refreshTtl,
             TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds)
         };
-        request.DictionaryBody.Add(new _DictionaryKeyValuePair() { Key = field, Value = value });
+        request.Items.Add(new _DictionaryFieldValuePair() { Field = field, Value = value });
 
         try
         {
@@ -68,7 +68,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
             RefreshTtl = refreshTtl,
             TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds)
         };
-        request.DictionaryBody.Add(new _DictionaryKeyValuePair() { Key = field, Value = value });
+        request.Items.Add(new _DictionaryFieldValuePair() { Field = field, Value = value });
 
         try
         {
@@ -94,13 +94,13 @@ internal sealed class ScsDataClient : ScsDataClientBase
     private CacheDictionaryGetResponse SendDictionaryGet(string cacheName, string dictionaryName, ByteString field)
     {
         _DictionaryGetRequest request = new() { DictionaryName = dictionaryName.ToByteString() };
-        request.DictionaryKeys.Add(field);
+        request.Fields.Add(field);
 
         try
         {
             var response = this.grpcManager.Client.DictionaryGet(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
             // TODO: report specific case of unexpected zero-length dictionary body
-            return new CacheDictionaryGetResponse(response.DictionaryBody[0]);
+            return new CacheDictionaryGetResponse(response);
 
         }
         catch (Exception e)
@@ -122,13 +122,13 @@ internal sealed class ScsDataClient : ScsDataClientBase
     private async Task<CacheDictionaryGetResponse> SendDictionaryGetAsync(string cacheName, string dictionaryName, ByteString field)
     {
         _DictionaryGetRequest request = new() { DictionaryName = dictionaryName.ToByteString() };
-        request.DictionaryKeys.Add(field);
+        request.Fields.Add(field);
 
         try
         {
             var response = await this.grpcManager.Client.DictionaryGetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
             // TODO: report specific case of unexpected zero-length dictionary body
-            return new CacheDictionaryGetResponse(response.DictionaryBody[0]);
+            return new CacheDictionaryGetResponse(response);
         }
         catch (Exception e)
         {
@@ -138,17 +138,17 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public CacheDictionarySetBatchResponse DictionarySetBatch(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
-        var protoItems = items.Select(kv => new _DictionaryKeyValuePair() { Key = kv.Key.ToByteString(), Value = kv.Value.ToByteString() });
+        var protoItems = items.Select(kv => new _DictionaryFieldValuePair() { Field = kv.Key.ToByteString(), Value = kv.Value.ToByteString() });
         return SendDictionarySetBatch(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
     }
 
     public CacheDictionarySetBatchResponse DictionarySetBatch(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
-        var protoItems = items.Select(kv => new _DictionaryKeyValuePair() { Key = kv.Key.ToByteString(), Value = kv.Value.ToByteString() });
+        var protoItems = items.Select(kv => new _DictionaryFieldValuePair() { Field = kv.Key.ToByteString(), Value = kv.Value.ToByteString() });
         return SendDictionarySetBatch(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
     }
 
-    public CacheDictionarySetBatchResponse SendDictionarySetBatch(string cacheName, string dictionaryName, IEnumerable<_DictionaryKeyValuePair> items, bool refreshTtl, uint? ttlSeconds = null)
+    public CacheDictionarySetBatchResponse SendDictionarySetBatch(string cacheName, string dictionaryName, IEnumerable<_DictionaryFieldValuePair> items, bool refreshTtl, uint? ttlSeconds = null)
     {
         _DictionarySetRequest request = new()
         {
@@ -156,7 +156,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
             RefreshTtl = refreshTtl,
             TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds)
         };
-        request.DictionaryBody.Add(items);
+        request.Items.Add(items);
 
         try
         {
@@ -171,17 +171,17 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public async Task<CacheDictionarySetBatchResponse> DictionarySetBatchAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
-        var protoItems = items.Select(kv => new _DictionaryKeyValuePair() { Key = kv.Key.ToByteString(), Value = kv.Value.ToByteString() });
+        var protoItems = items.Select(kv => new _DictionaryFieldValuePair() { Field = kv.Key.ToByteString(), Value = kv.Value.ToByteString() });
         return await SendDictionarySetBatchAsync(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
     }
 
     public async Task<CacheDictionarySetBatchResponse> DictionarySetBatchAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
-        var protoItems = items.Select(kv => new _DictionaryKeyValuePair() { Key = kv.Key.ToByteString(), Value = kv.Value.ToByteString() });
+        var protoItems = items.Select(kv => new _DictionaryFieldValuePair() { Field = kv.Key.ToByteString(), Value = kv.Value.ToByteString() });
         return await SendDictionarySetBatchAsync(cacheName, dictionaryName, protoItems, refreshTtl, ttlSeconds);
     }
 
-    public async Task<CacheDictionarySetBatchResponse> SendDictionarySetBatchAsync(string cacheName, string dictionaryName, IEnumerable<_DictionaryKeyValuePair> items, bool refreshTtl, uint? ttlSeconds = null)
+    public async Task<CacheDictionarySetBatchResponse> SendDictionarySetBatchAsync(string cacheName, string dictionaryName, IEnumerable<_DictionaryFieldValuePair> items, bool refreshTtl, uint? ttlSeconds = null)
     {
         _DictionarySetRequest request = new()
         {
@@ -189,7 +189,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
             RefreshTtl = refreshTtl,
             TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds)
         };
-        request.DictionaryBody.Add(items);
+        request.Items.Add(items);
 
         try
         {
@@ -225,7 +225,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
     private CacheDictionaryGetBatchResponse SendDictionaryGetBatch(string cacheName, string dictionaryName, IEnumerable<ByteString> fields)
     {
         _DictionaryGetRequest request = new() { DictionaryName = dictionaryName.ToByteString() };
-        request.DictionaryKeys.Add(fields);
+        request.Fields.Add(fields);
 
         _DictionaryGetResponse response;
         try
@@ -236,7 +236,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         {
             throw CacheExceptionMapper.Convert(e);
         }
-        return new CacheDictionaryGetBatchResponse(response);
+        return new CacheDictionaryGetBatchResponse(response, request.Fields.Count);
     }
 
     public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, params byte[][] fields)
@@ -262,7 +262,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
     private async Task<CacheDictionaryGetBatchResponse> SendDictionaryGetBatchAsync(string cacheName, string dictionaryName, IEnumerable<ByteString> fields)
     {
         _DictionaryGetRequest request = new() { DictionaryName = dictionaryName.ToByteString() };
-        request.DictionaryKeys.Add(fields);
+        request.Fields.Add(fields);
 
         _DictionaryGetResponse response;
         try
@@ -273,16 +273,16 @@ internal sealed class ScsDataClient : ScsDataClientBase
         {
             throw CacheExceptionMapper.Convert(e);
         }
-        return new CacheDictionaryGetBatchResponse(response);
+        return new CacheDictionaryGetBatchResponse(response, request.Fields.Count);
     }
 
     public CacheDictionaryFetchResponse DictionaryFetch(string cacheName, string dictionaryName)
     {
-        _DictionaryGetAllRequest request = new() { DictionaryName = dictionaryName.ToByteString() };
-        _DictionaryGetAllResponse response;
+        _DictionaryFetchRequest request = new() { DictionaryName = dictionaryName.ToByteString() };
+        _DictionaryFetchResponse response;
         try
         {
-            response = this.grpcManager.Client.DictionaryGetAll(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            response = this.grpcManager.Client.DictionaryFetch(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
@@ -293,11 +293,11 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public async Task<CacheDictionaryFetchResponse> DictionaryFetchAsync(string cacheName, string dictionaryName)
     {
-        _DictionaryGetAllRequest request = new() { DictionaryName = dictionaryName.ToByteString() };
-        _DictionaryGetAllResponse response;
+        _DictionaryFetchRequest request = new() { DictionaryName = dictionaryName.ToByteString() };
+        _DictionaryFetchResponse response;
         try
         {
-            response = await this.grpcManager.Client.DictionaryGetAllAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            response = await this.grpcManager.Client.DictionaryFetchAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
@@ -359,7 +359,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
             DictionaryName = dictionaryName.ToByteString(),
             Some = new()
         };
-        request.Some.Keys.Add(field);
+        request.Some.Fields.Add(field);
 
         try
         {
@@ -389,7 +389,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
             DictionaryName = dictionaryName.ToByteString(),
             Some = new()
         };
-        request.Some.Keys.Add(field);
+        request.Some.Fields.Add(field);
 
         try
         {
@@ -429,7 +429,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
             DictionaryName = dictionaryName.ToByteString(),
             Some = new()
         };
-        request.Some.Keys.Add(fields);
+        request.Some.Fields.Add(fields);
 
         try
         {
@@ -469,7 +469,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
             DictionaryName = dictionaryName.ToByteString(),
             Some = new()
         };
-        request.Some.Keys.Add(fields);
+        request.Some.Fields.Add(fields);
 
         try
         {

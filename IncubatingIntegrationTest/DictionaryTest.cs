@@ -98,7 +98,7 @@ public class DictionaryTest : TestBase
 
         var response = client.DictionaryGet(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
-        Assert.Equal(value, response.Bytes);
+        Assert.Equal(value, response.ByteArray);
     }
 
     [Theory]
@@ -280,7 +280,7 @@ public class DictionaryTest : TestBase
 
         var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
-        Assert.Equal(value, response.Bytes);
+        Assert.Equal(value, response.ByteArray);
     }
 
     [Theory]
@@ -402,11 +402,11 @@ public class DictionaryTest : TestBase
 
         var response = client.DictionaryGet(cacheName, dictionaryName, field1);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
-        Assert.Equal(value1, response.Bytes);
+        Assert.Equal(value1, response.ByteArray);
 
         response = client.DictionaryGet(cacheName, dictionaryName, field2);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
-        Assert.Equal(value2, response.Bytes);
+        Assert.Equal(value2, response.ByteArray);
     }
 
     [Fact]
@@ -443,7 +443,7 @@ public class DictionaryTest : TestBase
 
         var response = client.DictionaryGet(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
-        Assert.Equal(value, response.Bytes);
+        Assert.Equal(value, response.ByteArray);
     }
 
     [Fact]
@@ -546,11 +546,11 @@ public class DictionaryTest : TestBase
 
         var getResponse = await client.DictionaryGetAsync(cacheName, dictionaryName, field1);
         Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
-        Assert.Equal(value1, getResponse.Bytes);
+        Assert.Equal(value1, getResponse.ByteArray);
 
         getResponse = await client.DictionaryGetAsync(cacheName, dictionaryName, field2);
         Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
-        Assert.Equal(value2, getResponse.Bytes);
+        Assert.Equal(value2, getResponse.ByteArray);
     }
 
     [Fact]
@@ -587,7 +587,7 @@ public class DictionaryTest : TestBase
 
         var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
-        Assert.Equal(value, response.Bytes);
+        Assert.Equal(value, response.ByteArray);
     }
 
     [Fact]
@@ -700,8 +700,27 @@ public class DictionaryTest : TestBase
         var values = new byte[]?[] { value1, value2, null };
         Assert.Equal(status, response1.Status);
         Assert.Equal(status, response2.Status);
-        Assert.Equal(values, response1.Bytes);
-        Assert.Equal(values, response2.Bytes);
+        Assert.Equal(values, response1.ByteArrays);
+        Assert.Equal(values, response2.ByteArrays);
+    }
+
+    [Fact]
+    public void DictionaryGetBatch_DictionaryMissing_HappyPath()
+    {
+        var dictionaryName = Utils.NewGuidString();
+        var field1 = Utils.NewGuidByteArray();
+        var field2 = Utils.NewGuidByteArray();
+        var field3 = Utils.NewGuidByteArray();
+
+        var response = client.DictionaryGetBatch(cacheName, dictionaryName, field1, field2, field3);
+
+        var status = new CacheGetStatus[] { CacheGetStatus.MISS, CacheGetStatus.MISS, CacheGetStatus.MISS };
+        var byteArrays = new byte[]?[] { null, null, null };
+        var strings = new string?[] { null, null, null };
+
+        Assert.Equal(status, response.Status);
+        Assert.Equal(byteArrays, response.ByteArrays);
+        Assert.Equal(strings, response.Strings()!);
     }
 
     [Fact]
@@ -783,8 +802,27 @@ public class DictionaryTest : TestBase
         var values = new byte[]?[] { value1, value2, null };
         Assert.Equal(status, response1.Status);
         Assert.Equal(status, response2.Status);
-        Assert.Equal(values, response1.Bytes);
-        Assert.Equal(values, response2.Bytes);
+        Assert.Equal(values, response1.ByteArrays);
+        Assert.Equal(values, response2.ByteArrays);
+    }
+
+    [Fact]
+    public async Task DictionaryGetBatchAsync_DictionaryMissing_HappyPath()
+    {
+        var dictionaryName = Utils.NewGuidString();
+        var field1 = Utils.NewGuidByteArray();
+        var field2 = Utils.NewGuidByteArray();
+        var field3 = Utils.NewGuidByteArray();
+
+        var response = await client.DictionaryGetBatchAsync(cacheName, dictionaryName, field1, field2, field3);
+
+        var status = new CacheGetStatus[] { CacheGetStatus.MISS, CacheGetStatus.MISS, CacheGetStatus.MISS };
+        var byteArrays = new byte[]?[] { null, null, null };
+        var strings = new string?[] { null, null, null };
+
+        Assert.Equal(status, response.Status);
+        Assert.Equal(byteArrays, response.ByteArrays);
+        Assert.Equal(strings, response.Strings()!);
     }
 
     [Fact]
