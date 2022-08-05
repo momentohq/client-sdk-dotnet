@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Google.Protobuf;
@@ -12,47 +13,36 @@ public class CacheSetFetchResponse
 {
     public CacheGetStatus Status { get; private set; }
     private readonly RepeatedField<ByteString>? elements;
-    private HashSet<byte[]>? _byteArraySet = null;
-    private HashSet<string>? _stringSet = null;
+    private readonly Lazy<HashSet<byte[]>?> _byteArraySet;
+    private readonly Lazy<HashSet<string>?> _stringSet;
 
     public CacheSetFetchResponse(_SetFetchResponse response)
     {
         Status = (response.SetCase == _SetFetchResponse.SetOneofCase.Found) ? CacheGetStatus.HIT : CacheGetStatus.MISS;
         elements = (Status == CacheGetStatus.HIT) ? response.Found.Elements : null;
-    }
 
-    public HashSet<byte[]>? ByteArraySet
-    {
-        get
+        _byteArraySet = new(() =>
         {
             if (elements == null)
             {
                 return null;
             }
-            if (_byteArraySet != null)
-            {
-                return _byteArraySet;
-            }
-            _byteArraySet = new HashSet<byte[]>(
+            return new HashSet<byte[]>(
                 elements.Select(element => element.ToByteArray()),
-                Utils.ByteArrayComparer
-            );
-            return _byteArraySet;
-        }
+                Utils.ByteArrayComparer);
+        });
+
+        _stringSet = new(() =>
+        {
+            if (elements == null)
+            {
+                return null;
+            }
+            return new HashSet<string>(elements.Select(element => element.ToStringUtf8()));
+        });
     }
 
-    public HashSet<string>? StringSet()
-    {
-        if (elements == null)
-        {
-            return null;
-        }
-        if (_stringSet != null)
-        {
-            return _stringSet;
-        }
+    public HashSet<byte[]>? ByteArraySet { get => _byteArraySet.Value; }
 
-        _stringSet = new HashSet<string>(elements.Select(element => element.ToStringUtf8()));
-        return _stringSet;
-    }
+    public HashSet<string>? StringSet() => _stringSet.Value;
 }
