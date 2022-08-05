@@ -23,8 +23,10 @@ C# SDK for Momento, a serverless cache that automatically scales without any of 
 1. [.NET](https://docs.microsoft.com/en-us/dotnet/core/install/macos)
 
 ### How to run
-1. dotnet nuget add source https://momento.jfrog.io/artifactory/api/nuget/nuget-public --name Artifactory
 1. dotnet build
 
 ### How to install
+1. dotnet add package Momento.Sdk
+
+### How to install (legacy version)
 1. dotnet add package MomentoSdk -s https://momento.jfrog.io/artifactory/api/nuget/nuget-public

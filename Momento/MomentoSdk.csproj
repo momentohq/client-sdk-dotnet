@@ -9,10 +9,10 @@
 		<Authors>Momento</Authors>
 		<Company>Momento Inc</Company>
 		<Description>
-		  C# SDK for Momento, a serverless cache that automatically scales without any of the
-		  operational overhead required by traditional caching solutions.
+		C# SDK for Momento, a serverless cache that automatically scales without any of the
+		operational overhead required by traditional caching solutions.
 
-		  Check out our SDK example here: https://github.com/momentohq/client-sdk-examples/tree/main/dotnet
+		Check out our SDK example here: https://github.com/momentohq/client-sdk-examples/tree/main/dotnet
 		</Description>
 		<PackageTags>caching, cache, serverless, key value, simple caching service, distributedcache</PackageTags>
 		<Copyright>Copyright (c) Momento Inc 2022</Copyright>
