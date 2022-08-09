@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using MomentoSdk.Internal;
 using MomentoSdk.Responses;
@@ -8,6 +7,11 @@ using System.Collections.Generic;
 
 namespace MomentoSdk;
 
+/// <summary>
+/// Client to perform control and data operations against the Simple Cache Service.
+/// 
+/// See <see href="https://github.com/momentohq/client-sdk-examples/tree/main/dotnet/MomentoExamples">the examples repo</see> for complete workflows.
+/// </summary>
 public class SimpleCacheClient : ISimpleCacheClient
 {
     private readonly ScsControlClient controlClient;
@@ -174,6 +178,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.SetBatchAsync(cacheName, items, ttlSeconds);
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         this.controlClient.Dispose();

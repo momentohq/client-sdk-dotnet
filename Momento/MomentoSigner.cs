@@ -3,13 +3,24 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Web;
 using Microsoft.IdentityModel.Tokens;
 using MomentoSdk.Exceptions;
+using MomentoSdk.Requests;
 
 namespace MomentoSdk;
 
+/// <summary>
+/// Manage presigned URLs on the Simple Cache Service.
+///
+/// See <see href="https://github.com/momentohq/client-sdk-examples/tree/main/dotnet/MomentoExamples/MomentoApplicationPresignedUrl">the examples repo</see> for an example workflow.
+/// </summary>
 public class MomentoSigner
 {
     private readonly JwtHeader jwtHeader;
 
+    /// <summary>
+    /// Instantiate a signer using a JSON web key.
+    /// </summary>
+    /// <param name="jwkJsonString">The JSON web key containing signing credentials.</param>
+    /// <exception cref="InvalidArgumentException">The JSON web key is invalid.</exception>
     public MomentoSigner(string jwkJsonString)
     {
         try
@@ -47,7 +58,6 @@ public class MomentoSigner
     /// <summary>
     /// Create the signature for auth to be used in JWT.
     /// </summary>
-    /// <param name="hostname">Hostname of the SimpleCacheService. Use the value returned from CreateSigningKey's response.</param>
     /// <param name="signingRequest">The parameters used for generating a pre-signed URL</param>
     /// <returns></returns>
     public string SignAccessToken(SigningRequest signingRequest)
