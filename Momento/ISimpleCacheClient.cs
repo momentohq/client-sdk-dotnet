@@ -4,6 +4,11 @@ using System.Threading.Tasks;
 using MomentoSdk.Responses;
 namespace MomentoSdk;
 
+/// <summary>
+/// Minimum viable functionality of a cache client.
+///
+/// Includes control operations and data operations.
+/// </summary>
 public interface ISimpleCacheClient : IDisposable
 {
     /// <summary>
@@ -126,6 +131,7 @@ public interface ISimpleCacheClient : IDisposable
     /// </summary>
     /// <param name="cacheName">Name of the cache to store the items in.</param>
     /// <param name="items">The items to set.</param>
+    /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
     /// <returns>Task object representing the result of the set operation.</returns>
     public Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null);
 
@@ -134,6 +140,7 @@ public interface ISimpleCacheClient : IDisposable
     /// </summary>
     /// <param name="cacheName">Name of the cache to store the items in.</param>
     /// <param name="items">The items to set.</param>
+    /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
     /// <returns>Task object representing the result of the set operation.</returns>
     public Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null);
 }

@@ -8,11 +8,25 @@ using MomentoSdk.Incubating.Responses;
 
 namespace MomentoSdk.Incubating;
 
+/// <summary>
+/// Incubating cache client.
+///
+/// This enables preview features not ready for general release.
+/// </summary>
 public class SimpleCacheClient : ISimpleCacheClient
 {
     private readonly ISimpleCacheClient simpleCacheClient;
     private readonly ScsDataClient dataClient;
 
+    /// <summary>
+    /// Client to perform operations against the Simple Cache Service.
+    /// 
+    /// Enables preview features.
+    /// </summary>
+    /// <param name="simpleCacheClient">Instance of release cache client to delegate operations to.</param>
+    /// <param name="authToken">Momento JWT.</param>
+    /// <param name="defaultTtlSeconds">Default time to live for the item in cache.</param>
+    /// <param name="dataClientOperationTimeoutMilliseconds">Deadline (timeout) for communicating to the server. Defaults to 5 seconds.</param>
     public SimpleCacheClient(ISimpleCacheClient simpleCacheClient, string authToken, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
     {
         this.simpleCacheClient = simpleCacheClient;
@@ -663,6 +677,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.SetDeleteAsync(cacheName, setName);
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         this.simpleCacheClient.Dispose();

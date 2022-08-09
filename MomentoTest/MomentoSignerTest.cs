@@ -5,6 +5,7 @@ using System.Web;
 using Xunit;
 using MomentoSdk;
 using MomentoSdk.Exceptions;
+using MomentoSdk.Requests;
 
 namespace MomentoTest;
 
