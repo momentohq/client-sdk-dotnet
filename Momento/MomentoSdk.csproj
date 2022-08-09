@@ -5,6 +5,7 @@
 		<TargetFramework>netstandard2.1</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<PackageId>Momento.Sdk</PackageId>
 		<Authors>Momento</Authors>
 		<Company>Momento Inc</Company>
