@@ -1,4 +1,4 @@
-﻿namespace MomentoSdk.Exceptions;
+﻿namespace Momento.Sdk.Exceptions;
 
 /// <summary>
 /// Resource already exists

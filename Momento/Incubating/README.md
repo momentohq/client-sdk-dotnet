@@ -1,19 +1,19 @@
 # Incubating
 
-The `MomentoSdk.Incubating` namespace has work-in-progress features that may or may be be in the final version.
+The `Momento.Sdk.Incubating` namespace has work-in-progress features that may or may be be in the final version.
 
 # Dictionary Methods
 
 This demonstrates the methods and response types for a dictionary data type in the cache:
 
 ```csharp
-using MomentoSdk.Incubating;
+using Momento.Sdk.Incubating;
 
 class Driver
 {
     public static void Main()
     {
-        var client = SimpleCacheClientFactory.CreateClient(authToken: "YOUR-AUTH-TOKEN", defaultTtlSeconds: 60);
+        using var client = SimpleCacheClientFactory.CreateClient(authToken: "YOUR-AUTH-TOKEN", defaultTtlSeconds: 60);
         var cacheName = "my-cache";
 
         // Set a value

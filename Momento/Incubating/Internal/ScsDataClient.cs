@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Momento.Protos.CacheClient;
-using MomentoSdk.Exceptions;
-using MomentoSdk.Incubating.Responses;
-using MomentoSdk.Internal;
-using MomentoSdk.Internal.ExtensionMethods;
+using Momento.Sdk.Exceptions;
+using Momento.Sdk.Incubating.Responses;
+using Momento.Sdk.Internal;
+using Momento.Sdk.Internal.ExtensionMethods;
 
-namespace MomentoSdk.Incubating.Internal;
+namespace Momento.Sdk.Incubating.Internal;
 
 internal sealed class ScsDataClient : ScsDataClientBase
 {

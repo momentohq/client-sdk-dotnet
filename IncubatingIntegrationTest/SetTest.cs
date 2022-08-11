@@ -1,4 +1,4 @@
-using MomentoSdk.Responses;
+using Momento.Sdk.Responses;
 
 namespace IncubatingIntegrationTest;
 

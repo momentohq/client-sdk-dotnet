@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MomentoSdk.Responses;
-using Utils = MomentoSdk.Internal.Utils;
-using MomentoSdk.Incubating.Internal;
-using MomentoSdk.Incubating.Responses;
+using Momento.Sdk.Incubating.Internal;
+using Momento.Sdk.Incubating.Responses;
+using Momento.Sdk.Responses;
+using Utils = Momento.Sdk.Internal.Utils;
 
-namespace MomentoSdk.Incubating;
+namespace Momento.Sdk.Incubating;
 
 /// <summary>
 /// Incubating cache client.
@@ -31,7 +31,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     {
         this.simpleCacheClient = simpleCacheClient;
 
-        var claims = MomentoSdk.Internal.JwtUtils.DecodeJwt(authToken);
+        var claims = Momento.Sdk.Internal.JwtUtils.DecodeJwt(authToken);
         this.dataClient = new(authToken, claims.CacheEndpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds);
     }
 

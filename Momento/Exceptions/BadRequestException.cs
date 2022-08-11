@@ -1,4 +1,4 @@
-﻿namespace MomentoSdk.Exceptions;
+﻿namespace Momento.Sdk.Exceptions;
 
 /// <summary>
 /// Invalid parameters sent to Momento Services.

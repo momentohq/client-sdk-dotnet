@@ -1,10 +1,10 @@
 ﻿using System;
-using Grpc.Core;
-using Grpc.Core.Interceptors;
 using System.Collections.Generic;
 using System.Linq;
+using Grpc.Core;
+using Grpc.Core.Interceptors;
 
-namespace MomentoSdk.Internal;
+namespace Momento.Sdk.Internal;
 
 class Header
 {

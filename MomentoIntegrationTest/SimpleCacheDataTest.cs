@@ -200,7 +200,7 @@ public class SimpleCacheDataTest
         // Set very small timeout for dataClientOperationTimeoutMilliseconds
         using SimpleCacheClient simpleCacheClient = new SimpleCacheClient(authToken, DefaultTtlSeconds, 1);
         List<string> keys = new() { Utils.NewGuidString(), Utils.NewGuidString(), Utils.NewGuidString(), Utils.NewGuidString() };
-        await Assert.ThrowsAsync<MomentoSdk.Exceptions.TimeoutException>(async () => await simpleCacheClient.GetBatchAsync(cacheName, keys));
+        await Assert.ThrowsAsync<Momento.Sdk.Exceptions.TimeoutException>(async () => await simpleCacheClient.GetBatchAsync(cacheName, keys));
     }
 
     [Fact]

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MomentoSdk.Incubating.Responses;
+﻿namespace Momento.Sdk.Incubating.Responses;
 
 public class CacheDictionarySetBatchResponse
 {

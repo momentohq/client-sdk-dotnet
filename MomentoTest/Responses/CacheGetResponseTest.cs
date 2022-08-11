@@ -1,7 +1,7 @@
 ﻿using Google.Protobuf;
 using Momento.Protos.CacheClient;
-using MomentoSdk.Exceptions;
-using MomentoSdk.Responses;
+using Momento.Sdk.Exceptions;
+using Momento.Sdk.Responses;
 using Xunit;
 
 namespace MomentoTest.Responses;

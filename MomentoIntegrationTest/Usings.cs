@@ -1,6 +1,6 @@
-global using Xunit;
-global using MomentoSdk;
-global using Utils = MomentoSdk.Internal.Utils;
-global using MomentoSdk.Exceptions;
-global using MomentoSdk.Responses;
 global using System;
+global using Momento.Sdk;
+global using Momento.Sdk.Exceptions;
+global using Momento.Sdk.Responses;
+global using Xunit;
+global using Utils = Momento.Sdk.Internal.Utils;

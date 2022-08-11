@@ -1,10 +1,10 @@
 ﻿using System;
 using JWT;
 using JWT.Serializers;
-using MomentoSdk.Exceptions;
+using Momento.Sdk.Exceptions;
 using Newtonsoft.Json;
 
-namespace MomentoSdk.Internal;
+namespace Momento.Sdk.Internal;
 
 public class JwtUtils
 {

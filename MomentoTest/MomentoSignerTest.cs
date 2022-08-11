@@ -1,11 +1,11 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Web;
+using Microsoft.IdentityModel.Tokens;
+using Momento.Sdk;
+using Momento.Sdk.Exceptions;
+using Momento.Sdk.Requests;
 using Xunit;
-using MomentoSdk;
-using MomentoSdk.Exceptions;
-using MomentoSdk.Requests;
 
 namespace MomentoTest;
 

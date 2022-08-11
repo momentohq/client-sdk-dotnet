@@ -1,4 +1,4 @@
-﻿namespace MomentoSdk.Requests;
+﻿namespace Momento.Sdk.Requests;
 
 /// <summary>
 /// Type of operation to performed on the cache for the signed url.

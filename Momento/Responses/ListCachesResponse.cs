@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Momento.Protos.ControlClient;
 
-namespace MomentoSdk.Responses;
+namespace Momento.Sdk.Responses;
 
 public class ListCachesResponse
 {

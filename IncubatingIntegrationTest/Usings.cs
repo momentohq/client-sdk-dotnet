@@ -1,4 +1,4 @@
+global using Momento.Sdk.Exceptions;
+global using Momento.Sdk.Incubating;
 global using Xunit;
-global using MomentoSdk.Incubating;
-global using MomentoSdk.Exceptions;
-global using Utils = MomentoSdk.Internal.Utils;
+global using Utils = Momento.Sdk.Internal.Utils;

@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Threading.Tasks;
-using MomentoSdk.Internal;
-using MomentoSdk.Responses;
-using MomentoSdk.Exceptions;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Momento.Sdk.Exceptions;
+using Momento.Sdk.Internal;
+using Momento.Sdk.Responses;
 
-namespace MomentoSdk;
+namespace Momento.Sdk;
 
 /// <summary>
 /// Client to perform control and data operations against the Simple Cache Service.

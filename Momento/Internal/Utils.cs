@@ -1,11 +1,11 @@
 using System;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Google.Protobuf;
 
-namespace MomentoSdk.Internal
+namespace Momento.Sdk.Internal
 {
     /// <summary>
     /// Ad-hoc utility methods.

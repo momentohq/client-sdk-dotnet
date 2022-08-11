@@ -1,7 +1,7 @@
 ﻿using Google.Protobuf;
 using Momento.Protos.CacheClient;
 
-namespace MomentoSdk.Responses;
+namespace Momento.Sdk.Responses;
 
 public class CacheGetResponse
 {

@@ -4,10 +4,10 @@ using System.Linq;
 using Google.Protobuf;
 using Google.Protobuf.Collections;
 using Momento.Protos.CacheClient;
-using MomentoSdk.Internal;
-using MomentoSdk.Responses;
+using Momento.Sdk.Internal;
+using Momento.Sdk.Responses;
 
-namespace MomentoSdk.Incubating.Responses;
+namespace Momento.Sdk.Incubating.Responses;
 
 public class CacheSetFetchResponse
 {

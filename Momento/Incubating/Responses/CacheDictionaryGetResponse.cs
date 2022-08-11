@@ -1,9 +1,9 @@
 ﻿using Google.Protobuf;
 using Momento.Protos.CacheClient;
-using MomentoSdk.Exceptions;
-using MomentoSdk.Responses;
+using Momento.Sdk.Exceptions;
+using Momento.Sdk.Responses;
 
-namespace MomentoSdk.Incubating.Responses;
+namespace Momento.Sdk.Incubating.Responses;
 
 public class CacheDictionaryGetResponse
 {

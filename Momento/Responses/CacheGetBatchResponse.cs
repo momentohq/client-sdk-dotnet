@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace MomentoSdk.Responses;
+namespace Momento.Sdk.Responses;
 
 public class CacheGetBatchResponse
 {

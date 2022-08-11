@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MomentoSdk.Exceptions;
+namespace Momento.Sdk.Exceptions;
 
 public class ClientSdkException : SdkException
 {
