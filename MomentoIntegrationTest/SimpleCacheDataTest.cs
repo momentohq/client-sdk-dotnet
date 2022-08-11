@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace MomentoIntegrationTest;
 
@@ -17,7 +17,7 @@ public class SimpleCacheDataTest
     {
         client = fixture.Client;
         authToken = fixture.AuthToken;
-	cacheName = fixture.CacheName;
+        cacheName = fixture.CacheName;
     }
 
     [Theory]

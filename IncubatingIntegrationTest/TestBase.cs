@@ -9,6 +9,6 @@ public class TestBase
     public TestBase(SimpleCacheClientFixture fixture)
     {
         this.client = fixture.Client;
-	this.cacheName = fixture.CacheName;
+        this.cacheName = fixture.CacheName;
     }
 }
