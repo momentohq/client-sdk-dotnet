@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MomentoSdk.Internal.ExtensionMethods;
-using MomentoSdk.Responses;
-using MomentoSdk.Exceptions;
-using CacheClient;
 using Google.Protobuf;
 using Grpc.Core;
-using System.Collections.Generic;
+using Momento.Protos.CacheClient;
+using MomentoSdk.Exceptions;
+using MomentoSdk.Internal.ExtensionMethods;
+using MomentoSdk.Responses;
 
 namespace MomentoSdk.Internal;
 

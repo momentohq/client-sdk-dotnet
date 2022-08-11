@@ -1,7 +1,7 @@
-﻿using CacheClient;
-using Google.Protobuf;
-using MomentoSdk.Responses;
+﻿using Google.Protobuf;
+using Momento.Protos.CacheClient;
 using MomentoSdk.Exceptions;
+using MomentoSdk.Responses;
 
 namespace MomentoSdk.Incubating.Responses;
 

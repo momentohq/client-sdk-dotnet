@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Grpc.Net.Client;
-using ControlClient;
-using System.Collections.Generic;
+using Momento.Protos.ControlClient;
 using static System.Reflection.Assembly;
 
 namespace MomentoSdk.Internal;

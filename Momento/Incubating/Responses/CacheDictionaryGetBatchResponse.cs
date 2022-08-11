@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CacheClient;
+using Momento.Protos.CacheClient;
 using MomentoSdk.Responses;
 
 

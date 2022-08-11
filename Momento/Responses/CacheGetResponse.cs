@@ -1,5 +1,5 @@
-﻿using CacheClient;
-using Google.Protobuf;
+﻿using Google.Protobuf;
+using Momento.Protos.CacheClient;
 
 namespace MomentoSdk.Responses;
 

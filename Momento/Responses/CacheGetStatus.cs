@@ -1,4 +1,4 @@
-﻿using CacheClient;
+﻿using Momento.Protos.CacheClient;
 using MomentoSdk.Exceptions;
 
 namespace MomentoSdk.Responses;

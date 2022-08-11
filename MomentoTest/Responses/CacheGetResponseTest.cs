@@ -1,8 +1,8 @@
-﻿using CacheClient;
-using Google.Protobuf;
-using Xunit;
+﻿using Google.Protobuf;
+using Momento.Protos.CacheClient;
 using MomentoSdk.Exceptions;
 using MomentoSdk.Responses;
+using Xunit;
 
 namespace MomentoTest.Responses;
 
