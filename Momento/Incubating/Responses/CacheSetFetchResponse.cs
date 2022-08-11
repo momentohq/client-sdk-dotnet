@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Google.Protobuf;
 using Google.Protobuf.Collections;
-using CacheClient;
+using Momento.Protos.CacheClient;
 using MomentoSdk.Internal;
 using MomentoSdk.Responses;
 

@@ -1,6 +1,4 @@
-﻿using CacheClient;
-
-namespace MomentoSdk.Responses;
+﻿namespace MomentoSdk.Responses;
 
 public class CacheSetResponse
 {

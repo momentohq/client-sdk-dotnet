@@ -1,7 +1,7 @@
 ﻿using System;
-using MomentoSdk.Responses;
+using Momento.Protos.ControlClient;
 using MomentoSdk.Exceptions;
-using ControlClient;
+using MomentoSdk.Responses;
 
 namespace MomentoSdk.Internal;
 
@@ -51,7 +51,7 @@ internal sealed class ScsControlClient : IDisposable
         _ListCachesRequest request = new _ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
         try
         {
-            ControlClient._ListCachesResponse result = this.grpcManager.Client.ListCaches(request, deadline: CalculateDeadline());
+            _ListCachesResponse result = this.grpcManager.Client.ListCaches(request, deadline: CalculateDeadline());
             return new ListCachesResponse(result);
         }
         catch (Exception e)

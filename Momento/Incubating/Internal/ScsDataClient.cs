@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CacheClient;
 using Google.Protobuf;
+using Momento.Protos.CacheClient;
+using MomentoSdk.Exceptions;
+using MomentoSdk.Incubating.Responses;
 using MomentoSdk.Internal;
 using MomentoSdk.Internal.ExtensionMethods;
-using MomentoSdk.Incubating.Responses;
-using MomentoSdk.Exceptions;
 
 namespace MomentoSdk.Incubating.Internal;
 

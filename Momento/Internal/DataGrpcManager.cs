@@ -1,9 +1,9 @@
 ﻿using System;
-using CacheClient;
+using System.Collections.Generic;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Grpc.Net.Client;
-using System.Collections.Generic;
+using Momento.Protos.CacheClient;
 using static System.Reflection.Assembly;
 
 namespace MomentoSdk.Internal;

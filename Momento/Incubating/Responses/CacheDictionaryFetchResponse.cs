@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Google.Protobuf.Collections;
-using CacheClient;
-using MomentoSdk.Responses;
+using Momento.Protos.CacheClient;
 using MomentoSdk.Internal;
+using MomentoSdk.Responses;
 
 namespace MomentoSdk.Incubating.Responses;
 
