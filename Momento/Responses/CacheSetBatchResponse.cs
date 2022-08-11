@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-
-namespace MomentoSdk.Responses;
+namespace Momento.Sdk.Responses;
 
 public class CacheSetBatchResponse
 {

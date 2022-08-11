@@ -1,7 +1,7 @@
 ﻿using Momento.Protos.CacheClient;
-using MomentoSdk.Exceptions;
+using Momento.Sdk.Exceptions;
 
-namespace MomentoSdk.Responses;
+namespace Momento.Sdk.Responses;
 
 public enum CacheGetStatus
 {

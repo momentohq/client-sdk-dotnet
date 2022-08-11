@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MomentoSdk.Responses;
-namespace MomentoSdk;
+using Momento.Sdk.Responses;
+
+namespace Momento.Sdk;
 
 /// <summary>
 /// Minimum viable functionality of a cache client.

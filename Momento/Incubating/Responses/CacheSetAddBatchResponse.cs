@@ -1,4 +1,4 @@
-namespace MomentoSdk.Incubating.Responses;
+namespace Momento.Sdk.Incubating.Responses;
 
 public class CacheSetAddBatchResponse
 {

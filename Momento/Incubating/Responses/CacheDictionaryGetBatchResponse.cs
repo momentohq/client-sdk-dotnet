@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Momento.Protos.CacheClient;
-using MomentoSdk.Responses;
+using Momento.Sdk.Responses;
 
 
-namespace MomentoSdk.Incubating.Responses;
+namespace Momento.Sdk.Incubating.Responses;
 
 public class CacheDictionaryGetBatchResponse
 {

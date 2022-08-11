@@ -1,9 +1,9 @@
 ﻿using System;
 using Momento.Protos.ControlClient;
-using MomentoSdk.Exceptions;
-using MomentoSdk.Responses;
+using Momento.Sdk.Exceptions;
+using Momento.Sdk.Responses;
 
-namespace MomentoSdk.Internal;
+namespace Momento.Sdk.Internal;
 
 internal sealed class ScsControlClient : IDisposable
 {

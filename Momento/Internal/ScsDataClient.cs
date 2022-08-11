@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Google.Protobuf;
 using Grpc.Core;
 using Momento.Protos.CacheClient;
-using MomentoSdk.Exceptions;
-using MomentoSdk.Internal.ExtensionMethods;
-using MomentoSdk.Responses;
+using Momento.Sdk.Exceptions;
+using Momento.Sdk.Internal.ExtensionMethods;
+using Momento.Sdk.Responses;
 
-namespace MomentoSdk.Internal;
+namespace Momento.Sdk.Internal;
 
 public class ScsDataClientBase : IDisposable
 {

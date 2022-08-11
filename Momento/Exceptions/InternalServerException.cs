@@ -1,5 +1,6 @@
 ﻿using System;
-namespace MomentoSdk.Exceptions;
+
+namespace Momento.Sdk.Exceptions;
 
 /// <summary>
 /// Momento Service encountered an unexpected exception while trying to fulfill the request.

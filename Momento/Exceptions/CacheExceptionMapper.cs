@@ -1,7 +1,7 @@
 ﻿using System;
 using Grpc.Core;
 
-namespace MomentoSdk.Exceptions;
+namespace Momento.Sdk.Exceptions;
 
 class CacheExceptionMapper
 {

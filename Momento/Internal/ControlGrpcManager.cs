@@ -6,13 +6,13 @@ using Grpc.Net.Client;
 using Momento.Protos.ControlClient;
 using static System.Reflection.Assembly;
 
-namespace MomentoSdk.Internal;
+namespace Momento.Sdk.Internal;
 
 internal sealed class ControlGrpcManager : IDisposable
 {
     private readonly GrpcChannel channel;
     public ScsControl.ScsControlClient Client { get; }
-    private readonly string version = "csharp:" + GetAssembly(typeof(MomentoSdk.Responses.CacheGetResponse)).GetName().Version.ToString();
+    private readonly string version = "csharp:" + GetAssembly(typeof(Momento.Sdk.Responses.CacheGetResponse)).GetName().Version.ToString();
 
     public ControlGrpcManager(string authToken, string endpoint)
     {

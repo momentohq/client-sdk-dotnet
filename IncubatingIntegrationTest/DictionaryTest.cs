@@ -1,5 +1,5 @@
-using MomentoSdk.Internal.ExtensionMethods;
-using MomentoSdk.Responses;
+using Momento.Sdk.Internal.ExtensionMethods;
+using Momento.Sdk.Responses;
 
 namespace IncubatingIntegrationTest;
 

@@ -6,14 +6,14 @@ using Grpc.Net.Client;
 using Momento.Protos.CacheClient;
 using static System.Reflection.Assembly;
 
-namespace MomentoSdk.Internal;
+namespace Momento.Sdk.Internal;
 
 public class DataGrpcManager : IDisposable
 {
     private readonly GrpcChannel channel;
     public Scs.ScsClient Client { get; }
 
-    private readonly string version = "csharp:" + GetAssembly(typeof(MomentoSdk.Responses.CacheGetResponse)).GetName().Version.ToString();
+    private readonly string version = "csharp:" + GetAssembly(typeof(Momento.Sdk.Responses.CacheGetResponse)).GetName().Version.ToString();
 
     internal DataGrpcManager(string authToken, string host)
     {

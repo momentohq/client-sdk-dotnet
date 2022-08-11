@@ -2,10 +2,10 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Web;
 using Microsoft.IdentityModel.Tokens;
-using MomentoSdk.Exceptions;
-using MomentoSdk.Requests;
+using Momento.Sdk.Exceptions;
+using Momento.Sdk.Requests;
 
-namespace MomentoSdk;
+namespace Momento.Sdk;
 
 /// <summary>
 /// Manage presigned URLs on the Simple Cache Service.
