@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TEST_AUTH_TOKEN: ${{ secrets.ALPHA_TEST_AUTH_TOKEN }}
-      TEST_CACHE_NAME: dummy
+      TEST_CACHE_NAME: client-sdk-csharp
 
     steps:
       - name: Get current time
@@ -35,4 +35,9 @@ jobs:
       - name: Integration Test
         run: |
           dotnet test MomentoIntegrationTest
+        shell: bash
+
+      - name: Incubating Integration Test
+        run: |
+          dotnet test IncubatingIntegrationTest
         shell: bash

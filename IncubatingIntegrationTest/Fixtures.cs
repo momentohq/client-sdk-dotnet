@@ -9,37 +9,32 @@ public class SimpleCacheClientFixture : IDisposable
 {
     public SimpleCacheClient Client { get; private set; }
     public string AuthToken { get; private set; }
+    public string CacheName { get; private set; }
 
-    // TODO: this cache was specially created for this.
-    // We will not programmatically create integration test cache for now.
-    public const string CacheName = "client-sdk-csharp-incubating";
     public const uint DefaultTtlSeconds = 10;
 
     public SimpleCacheClientFixture()
     {
         AuthToken = Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN") ??
             throw new NullReferenceException("TEST_AUTH_TOKEN environment variable must be set.");
+        CacheName = Environment.GetEnvironmentVariable("TEST_CACHE_NAME") ??
+            throw new NullReferenceException("TEST_CACHE_NAME environment variable must be set.");
+        CacheName += "-incubating";
         Client = SimpleCacheClientFactory.CreateClient(AuthToken, defaultTtlSeconds: DefaultTtlSeconds);
 
-        /*
+
         try
         {
             Client.CreateCache(CacheName);
         }
         catch (AlreadyExistsException)
         {
-        }*/
-
-        if (!Client.ListCaches().Caches.Contains(new MomentoSdk.Responses.CacheInfo(CacheName)))
-        {
-            throw new NotFoundException($"Cache {CacheName} not found. This is assumed to exist and have a BlobDb partition.");
         }
     }
 
     public void Dispose()
     {
-        // TODO cleanup
-        //Client.DeleteCache(CacheName);
+        Client.DeleteCache(CacheName);
         Client.Dispose();
     }
 }
