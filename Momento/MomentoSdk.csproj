@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
+		<!-- Build Configuration -->
 		<AssemblyName>Momento.Sdk</AssemblyName>
 		<TargetFramework>netstandard2.1</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>1591</NoWarn> <!-- TODO: Address public-facing documentation -->
+
+		<!-- Package metadata -->
 		<PackageId>Momento.Sdk</PackageId>
 		<Authors>Momento</Authors>
 		<Company>Momento Inc</Company>
