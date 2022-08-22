@@ -677,6 +677,39 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.SetDeleteAsync(cacheName, setName);
     }
 
+    // TODO: ListPushFront
+    public async Task<CacheListPushFrontResponse> ListPushFrontAsync(string cacheName, string listName, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(listName, nameof(listName));
+        Utils.ArgumentNotNull(value, nameof(value));
+
+        return await this.dataClient.ListPushFrontAsync(cacheName, listName, value, refreshTtl, ttlSeconds);
+    }
+
+    public async Task<CacheListPushFrontResponse> ListPushFrontAsync(string cacheName, string listName, string value, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(listName, nameof(listName));
+        Utils.ArgumentNotNull(value, nameof(value));
+
+        return await this.dataClient.ListPushFrontAsync(cacheName, listName, value, refreshTtl, ttlSeconds);
+    }
+
+    // TODO: ListPushBack
+    // TODO: ListPopFront
+    // TODO: ListPopBack
+
+    // TODO: ListFetch
+    public async Task<CacheListFetchResponse> ListFetchAsync(string cacheName, string listName)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(listName, nameof(listName));
+
+        return await this.dataClient.ListFetchAsync(cacheName, listName);
+    }
+
+
     /// <inheritdoc />
     public void Dispose()
     {

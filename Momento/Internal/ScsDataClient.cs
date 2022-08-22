@@ -39,7 +39,7 @@ public class ScsDataClientBase : IDisposable
     /// </summary>
     /// <param name="ttlSeconds">The TTL to convert. Defaults to defaultTtlSeconds</param>
     /// <returns></returns>
-    protected uint ttlSecondsToMilliseconds(uint? ttlSeconds = null)
+    protected uint TtlSecondsToMilliseconds(uint? ttlSeconds = null)
     {
         return (ttlSeconds ?? defaultTtlSeconds) * 1000;
     }
@@ -176,7 +176,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     private async Task<CacheSetResponse> SendSetAsync(string cacheName, ByteString key, ByteString value, uint? ttlSeconds = null)
     {
-        _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = ttlSecondsToMilliseconds(ttlSeconds) };
+        _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = TtlSecondsToMilliseconds(ttlSeconds) };
         try
         {
             await this.grpcManager.Client.SetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());

@@ -472,10 +472,10 @@ public class DictionaryTest : TestBase
         await client.DictionarySetAsync(cacheName, dictionaryName, field1, value1, true, ttlSeconds: 10);
         await client.DictionarySetAsync(cacheName, dictionaryName, field2, value2, true, ttlSeconds: 10);
 
-        var getAllResponse = await client.DictionaryFetchAsync(cacheName, dictionaryName);
+        var fetchResponse = await client.DictionaryFetchAsync(cacheName, dictionaryName);
 
-        Assert.Equal(CacheGetStatus.HIT, getAllResponse.Status);
-        Assert.Equal(getAllResponse.StringDictionary(), contentDictionary);
+        Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
+        Assert.Equal(fetchResponse.StringDictionary(), contentDictionary);
     }
 
     [Fact]
@@ -494,17 +494,17 @@ public class DictionaryTest : TestBase
         await client.DictionarySetAsync(cacheName, dictionaryName, field1, value1, true, ttlSeconds: 10);
         await client.DictionarySetAsync(cacheName, dictionaryName, field2, value2, true, ttlSeconds: 10);
 
-        var getAllResponse = await client.DictionaryFetchAsync(cacheName, dictionaryName);
+        var fetchResponse = await client.DictionaryFetchAsync(cacheName, dictionaryName);
 
-        Assert.Equal(CacheGetStatus.HIT, getAllResponse.Status);
+        Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
 
         // Exercise byte array dictionary structural equality comparer
-        Assert.True(getAllResponse.ByteArrayDictionary!.ContainsKey(field1));
-        Assert.True(getAllResponse.ByteArrayDictionary!.ContainsKey(field2));
-        Assert.Equal(2, getAllResponse.ByteArrayDictionary!.Count);
+        Assert.True(fetchResponse.ByteArrayDictionary!.ContainsKey(field1));
+        Assert.True(fetchResponse.ByteArrayDictionary!.ContainsKey(field2));
+        Assert.Equal(2, fetchResponse.ByteArrayDictionary!.Count);
 
         // Exercise DictionaryEquals extension
-        Assert.True(getAllResponse.ByteArrayDictionary!.DictionaryEquals(contentDictionary));
+        Assert.True(fetchResponse.ByteArrayDictionary!.DictionaryEquals(contentDictionary));
     }
 
     [Theory]
