@@ -125,6 +125,150 @@ public class ListTest : TestBase
         Assert.Equal(2, response.StringList()!.Count);
     }
 
+    [Fact]
+    public async Task ListPushFrontBatchAsync_NullChecksByteArray_ThrowsException()
+    {
+        var listName = Utils.NewGuidString();
+        var list = new List<byte[]>();
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.ListPushFrontBatchAsync(null!, listName, list, false));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.ListPushFrontBatchAsync(cacheName, null!, list, false));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.ListPushFrontBatchAsync(cacheName, listName, (IEnumerable<byte[]>)null!, false));
+
+        list.Add(null!);
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.ListPushFrontBatchAsync(cacheName, listName, list, false));
+    }
+
+    [Fact]
+    public async Task ListPushFrontBatchAsync_ValuesAreByteArrayEnumerable_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        var value1 = Utils.NewGuidByteArray();
+        var value2 = Utils.NewGuidByteArray();
+        var content = new List<byte[]>() { value1, value2 };
+
+        // TODO: this does prepend instead of iterated push
+        await client.ListPushFrontBatchAsync(cacheName, listName, content, false, 10);
+
+        var fetchResponse = await client.ListFetchAsync(cacheName, listName);
+        Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
+
+        var list = fetchResponse.ByteArrayList;
+        Assert.Equal(2, list!.Count);
+        Assert.Equal(value1, list[0]);
+        Assert.Equal(value2, list[1]);
+    }
+
+    [Fact]
+    public async Task ListPushFrontBatchAsync_ValuesAreByteArrayEnumerable_NoRefreshTtl()
+    {
+        var listName = Utils.NewGuidString();
+        var value = Utils.NewGuidByteArray();
+        var content = new List<byte[]>() { value };
+
+        await client.ListPushFrontBatchAsync(cacheName, listName, content, false, ttlSeconds: 5);
+        await Task.Delay(100);
+
+        await client.ListPushFrontBatchAsync(cacheName, listName, content, false, ttlSeconds: 10);
+        await Task.Delay(4900);
+
+        var response = await client.ListFetchAsync(cacheName, listName);
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+    }
+
+    [Fact]
+    public async Task ListPushFrontBatchAsync_ValuesAreByteArrayEnumerable_RefreshTtl()
+    {
+        var listName = Utils.NewGuidString();
+        var value = Utils.NewGuidByteArray();
+        var content = new List<byte[]>() { value };
+
+        await client.ListPushFrontBatchAsync(cacheName, listName, content, false, ttlSeconds: 1);
+        await Task.Delay(100);
+
+        await client.ListPushFrontBatchAsync(cacheName, listName, content, true, ttlSeconds: 10);
+        await Task.Delay(1000);
+
+        var response = await client.ListFetchAsync(cacheName, listName);
+        Assert.Equal(CacheGetStatus.HIT, response.Status);
+
+        var list = response.ByteArrayList;
+        Assert.Equal(2, list!.Count);
+        Assert.Equal(value, list[0]);
+        Assert.Equal(value, list[1]);
+    }
+
+    [Fact]
+    public async Task ListPushFrontBatchAsync_NullChecksString_ThrowsException()
+    {
+        var listName = Utils.NewGuidString();
+        var list = new List<string>();
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.ListPushFrontBatchAsync(null!, listName, list, false));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.ListPushFrontBatchAsync(cacheName, null!, list, false));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.ListPushFrontBatchAsync(cacheName, listName, (IEnumerable<string>)null!, false));
+
+        list.Add(null!);
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.ListPushFrontBatchAsync(cacheName, listName, list, false));
+    }
+
+    [Fact]
+    public async Task ListPushFrontBatchAsync_ValuesAreStringEnumerable_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        var value1 = Utils.NewGuidString();
+        var value2 = Utils.NewGuidString();
+        var content = new List<string>() { value1, value2 };
+
+        await client.ListPushFrontBatchAsync(cacheName, listName, content, false, 10);
+
+        var fetchResponse = await client.ListFetchAsync(cacheName, listName);
+        Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
+
+        // TODO: consider iterated push
+        var list = fetchResponse.StringList();
+        Assert.Equal(2, list!.Count);
+        Assert.Equal(value1, list[0]);
+        Assert.Equal(value2, list[1]);
+    }
+
+    [Fact]
+    public async Task ListPushFrontBatchAsync_ValuesAreStringEnumerable_NoRefreshTtl()
+    {
+        var listName = Utils.NewGuidString();
+        var value = Utils.NewGuidString();
+        var content = new List<string>() { value };
+
+        await client.ListPushFrontBatchAsync(cacheName, listName, content, false, ttlSeconds: 5);
+        await Task.Delay(100);
+
+        await client.ListPushFrontBatchAsync(cacheName, listName, content, false, ttlSeconds: 10);
+        await Task.Delay(4900);
+
+        var response = await client.ListFetchAsync(cacheName, listName);
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+    }
+
+    [Fact]
+    public async Task ListPushFrontBatchAsync_ValuesAreStringEnumerable_RefreshTtl()
+    {
+        var listName = Utils.NewGuidString();
+        var value = Utils.NewGuidString();
+        var content = new List<string>() { value };
+
+        await client.ListPushFrontBatchAsync(cacheName, listName, content, false, ttlSeconds: 1);
+        await Task.Delay(100);
+
+        await client.ListPushFrontBatchAsync(cacheName, listName, content, true, ttlSeconds: 10);
+        await Task.Delay(1000);
+
+        var response = await client.ListFetchAsync(cacheName, listName);
+        Assert.Equal(CacheGetStatus.HIT, response.Status);
+
+        var list = response.StringList();
+        Assert.Equal(2, list!.Count);
+        Assert.Equal(value, list[0]);
+        Assert.Equal(value, list[1]);
+    }
+
     [Theory]
     [InlineData(null, "my-list")]
     [InlineData("cache", null)]

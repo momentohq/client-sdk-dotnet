@@ -677,7 +677,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.SetDeleteAsync(cacheName, setName);
     }
 
-    // TODO: ListPushFront
+    // TODO: document
     public async Task<CacheListPushFrontResponse> ListPushFrontAsync(string cacheName, string listName, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -697,7 +697,27 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.ListPushFrontAsync(cacheName, listName, value, refreshTtl, ttlSeconds);
     }
 
-    // TODO: ListPushFrontBatch
+    // TODO: document
+    public async Task<CacheListPushFrontBatchResponse> ListPushFrontBatchAsync(string cacheName, string listName, IEnumerable<byte[]> values, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(listName, nameof(listName));
+        Utils.ArgumentNotNull(values, nameof(values));
+        Utils.ElementsNotNull(values, nameof(values));
+
+        return await this.dataClient.ListPushFrontBatchAsync(cacheName, listName, values, refreshTtl, ttlSeconds);
+    }
+
+    // TODO: document
+    public async Task<CacheListPushFrontBatchResponse> ListPushFrontBatchAsync(string cacheName, string listName, IEnumerable<string> values, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(listName, nameof(listName));
+        Utils.ArgumentNotNull(values, nameof(values));
+        Utils.ElementsNotNull(values, nameof(values));
+
+        return await this.dataClient.ListPushFrontBatchAsync(cacheName, listName, values, refreshTtl, ttlSeconds);
+    }
 
     // TODO: ListPushBack
     // TODO: ListPushBackBatch

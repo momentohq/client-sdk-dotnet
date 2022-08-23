@@ -86,19 +86,19 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, params string[] fields)
     {
-        var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, fields.ToEnumerableByteString());
         return new CacheDictionaryGetBatchResponse(response, fields.Length);
     }
 
     public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
     {
-        var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, fields.ToEnumerableByteString());
         return new CacheDictionaryGetBatchResponse(response, fields.Count());
     }
 
     public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, IEnumerable<string> fields)
     {
-        var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, fields.ToEnumerableByteString());
         return new CacheDictionaryGetBatchResponse(response, fields.Count());
     }
 
@@ -182,22 +182,22 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, params byte[][] fields)
     {
-        return await DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        return await DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields.ToEnumerableByteString());
     }
 
     public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, params string[] fields)
     {
-        return await DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        return await DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields.ToEnumerableByteString());
     }
 
     public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
     {
-        return await DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        return await DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields.ToEnumerableByteString());
     }
 
     public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, IEnumerable<string> fields)
     {
-        return await DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
+        return await DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields.ToEnumerableByteString());
     }
 
     public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, IEnumerable<ByteString> fields)
@@ -222,25 +222,25 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public async Task<CacheSetAddResponse> SetAddAsync(string cacheName, string setName, byte[] element, bool refreshTtl, uint? ttlSeconds = null)
     {
-        await SendSetAddBatchAsync(cacheName, setName, new ByteString[] { element.ToByteString() }, refreshTtl, ttlSeconds);
+        await SendSetAddBatchAsync(cacheName, setName, element.ToSingletonByteString(), refreshTtl, ttlSeconds);
         return new CacheSetAddResponse();
     }
 
     public async Task<CacheSetAddResponse> SetAddAsync(string cacheName, string setName, string element, bool refreshTtl, uint? ttlSeconds = null)
     {
-        await SendSetAddBatchAsync(cacheName, setName, new ByteString[] { element.ToByteString() }, refreshTtl, ttlSeconds);
+        await SendSetAddBatchAsync(cacheName, setName, element.ToSingletonByteString(), refreshTtl, ttlSeconds);
         return new CacheSetAddResponse();
     }
 
     public async Task<CacheSetAddBatchResponse> SetAddBatchAsync(string cacheName, string setName, IEnumerable<byte[]> elements, bool refreshTtl, uint? ttlSeconds = null)
     {
-        await SendSetAddBatchAsync(cacheName, setName, elements.Select(element => element.ToByteString()), refreshTtl, ttlSeconds);
+        await SendSetAddBatchAsync(cacheName, setName, elements.ToEnumerableByteString(), refreshTtl, ttlSeconds);
         return new CacheSetAddBatchResponse();
     }
 
     public async Task<CacheSetAddBatchResponse> SetAddBatchAsync(string cacheName, string setName, IEnumerable<string> elements, bool refreshTtl, uint? ttlSeconds = null)
     {
-        await SendSetAddBatchAsync(cacheName, setName, elements.Select(element => element.ToByteString()), refreshTtl, ttlSeconds);
+        await SendSetAddBatchAsync(cacheName, setName, elements.ToEnumerableByteString(), refreshTtl, ttlSeconds);
         return new CacheSetAddBatchResponse();
     }
 
@@ -299,17 +299,31 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return new CacheSetDeleteResponse();
     }
 
-    public async Task<CacheListPushFrontResponse> ListPushFrontAsync(string cacheName, string listName, string value, bool refreshTtl, uint? ttlSeconds = null)
-    {
-        return await SendListPushFrontAsync(cacheName, listName, new ByteString[] { value.ToByteString() }, refreshTtl, ttlSeconds);
-    }
-
     public async Task<CacheListPushFrontResponse> ListPushFrontAsync(string cacheName, string listName, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        return await SendListPushFrontAsync(cacheName, listName, new ByteString[] { value.ToByteString() }, refreshTtl, ttlSeconds);
+        await SendListPushFrontAsync(cacheName, listName, value.ToSingletonByteString(), refreshTtl, ttlSeconds);
+        return new CacheListPushFrontResponse();
     }
 
-    public async Task<CacheListPushFrontResponse> SendListPushFrontAsync(string cacheName, string listName, IEnumerable<ByteString> values, bool refreshTtl, uint? ttlSeconds = null)
+    public async Task<CacheListPushFrontResponse> ListPushFrontAsync(string cacheName, string listName, string value, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        await SendListPushFrontAsync(cacheName, listName, value.ToSingletonByteString(), refreshTtl, ttlSeconds);
+        return new CacheListPushFrontResponse();
+    }
+
+    public async Task<CacheListPushFrontBatchResponse> ListPushFrontBatchAsync(string cacheName, string listName, IEnumerable<byte[]> values, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        await SendListPushFrontAsync(cacheName, listName, values.ToEnumerableByteString(), refreshTtl, ttlSeconds);
+        return new CacheListPushFrontBatchResponse();
+    }
+
+    public async Task<CacheListPushFrontBatchResponse> ListPushFrontBatchAsync(string cacheName, string listName, IEnumerable<string> values, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        await SendListPushFrontAsync(cacheName, listName, values.ToEnumerableByteString(), refreshTtl, ttlSeconds);
+        return new CacheListPushFrontBatchResponse();
+    }
+
+    public async Task SendListPushFrontAsync(string cacheName, string listName, IEnumerable<ByteString> values, bool refreshTtl, uint? ttlSeconds = null)
     {
         _ListPushFrontRequest request = new()
         {
@@ -327,7 +341,6 @@ internal sealed class ScsDataClient : ScsDataClientBase
         {
             throw CacheExceptionMapper.Convert(e);
         }
-        return new CacheListPushFrontResponse();
     }
 
     public async Task<CacheListFetchResponse> ListFetchAsync(string cacheName, string listName)
