@@ -328,6 +328,54 @@ public class ListTest : TestBase
     [Theory]
     [InlineData(null, "my-list")]
     [InlineData("cache", null)]
+    public async Task ListPopBackAsync_NullChecks_ThrowsException(string cacheName, string listName)
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.ListPopBackAsync(cacheName, listName));
+    }
+
+    [Fact]
+    public async Task ListPopBackAsync_ListIsMissing_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        var response = await client.ListPopBackAsync(cacheName, listName);
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+        Assert.Null(response.ByteArray);
+        Assert.Null(response.String());
+    }
+
+    [Fact]
+    public async Task ListPopBackAsync_ValueIsByteArray_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        var value1 = Utils.NewGuidByteArray();
+        var value2 = Utils.NewGuidByteArray();
+
+        await client.ListPushBackAsync(cacheName, listName, value1, false);
+        await client.ListPushBackAsync(cacheName, listName, value2, false);
+        var response = await client.ListPopBackAsync(cacheName, listName);
+
+        Assert.Equal(CacheGetStatus.HIT, response.Status);
+        Assert.Equal(value2, response.ByteArray);
+    }
+
+    [Fact]
+    public async Task ListPopBackAsync_ValueIsString_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        var value1 = Utils.NewGuidString();
+        var value2 = Utils.NewGuidString();
+
+        await client.ListPushBackAsync(cacheName, listName, value1, false);
+        await client.ListPushBackAsync(cacheName, listName, value2, false);
+        var response = await client.ListPopBackAsync(cacheName, listName);
+
+        Assert.Equal(CacheGetStatus.HIT, response.Status);
+        Assert.Equal(value2, response.String());
+    }
+
+    [Theory]
+    [InlineData(null, "my-list")]
+    [InlineData("cache", null)]
     public async Task ListFetchAsync_NullChecks_ThrowsException(string cacheName, string listName)
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.ListFetchAsync(cacheName, listName));
