@@ -677,7 +677,20 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.SetDeleteAsync(cacheName, setName);
     }
 
-    // TODO: document
+    /// <summary>
+    /// Push a value to the front of a list.
+    ///
+    /// Creates the list if it does not exist and sets the TTL.
+    /// If the list already exists and `refreshTtl` is `true`, then update the
+    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to store the list in.</param>
+    /// <param name="listName">The list to push the value on.</param>
+    /// <param name="value">The value to push to the front of the list.</param>
+    /// <param name="refreshTtl">Update `listName`'s TTL if it already exists.</param>
+    /// <param name="ttlSeconds">TTL for the list in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
+    /// <returns>Task representing the result of the push operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName` or `listName` or `value` is `null`.</exception>
     public async Task<CacheListPushFrontResponse> ListPushFrontAsync(string cacheName, string listName, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -687,7 +700,20 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.ListPushFrontAsync(cacheName, listName, value, refreshTtl, ttlSeconds);
     }
 
-    // TODO: document
+    /// <summary>
+    /// Push a value to the front of a list.
+    ///
+    /// Creates the list if it does not exist and sets the TTL.
+    /// If the list already exists and `refreshTtl` is `true`, then update the
+    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to store the list in.</param>
+    /// <param name="listName">The list to push the value on.</param>
+    /// <param name="value">The value to push to the front of the list.</param>
+    /// <param name="refreshTtl">Update `listName`'s TTL if it already exists.</param>
+    /// <param name="ttlSeconds">TTL for the list in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
+    /// <returns>Task representing the result of the push operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName` or `listName` or `value` is `null`.</exception>
     public async Task<CacheListPushFrontResponse> ListPushFrontAsync(string cacheName, string listName, string value, bool refreshTtl, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -697,7 +723,20 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.ListPushFrontAsync(cacheName, listName, value, refreshTtl, ttlSeconds);
     }
 
-    // TODO: document
+    /// <summary>
+    /// Push a value to the back of a list.
+    ///
+    /// Creates the list if it does not exist and sets the TTL.
+    /// If the list already exists and `refreshTtl` is `true`, then update the
+    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to store the list in.</param>
+    /// <param name="listName">The list to push the value on.</param>
+    /// <param name="value">The value to push to the back of the list.</param>
+    /// <param name="refreshTtl">Update `listName`'s TTL if it already exists.</param>
+    /// <param name="ttlSeconds">TTL for the list in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
+    /// <returns>Task representing the result of the push operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName` or `listName` or `value` is `null`.</exception>
     public async Task<CacheListPushBackResponse> ListPushBackAsync(string cacheName, string listName, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -707,7 +746,20 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.ListPushBackAsync(cacheName, listName, value, refreshTtl, ttlSeconds);
     }
 
-    // TODO: document
+    /// <summary>
+    /// Push a value to the back of a list.
+    ///
+    /// Creates the list if it does not exist and sets the TTL.
+    /// If the list already exists and `refreshTtl` is `true`, then update the
+    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to store the list in.</param>
+    /// <param name="listName">The list to push the value on.</param>
+    /// <param name="value">The value to push to the back of the list.</param>
+    /// <param name="refreshTtl">Update `listName`'s TTL if it already exists.</param>
+    /// <param name="ttlSeconds">TTL for the list in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
+    /// <returns>Task representing the result of the push operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName` or `listName` or `value` is `null`.</exception>
     public async Task<CacheListPushBackResponse> ListPushBackAsync(string cacheName, string listName, string value, bool refreshTtl, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -717,7 +769,13 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.ListPushBackAsync(cacheName, listName, value, refreshTtl, ttlSeconds);
     }
 
-    // TODO: document
+    /// <summary>
+    /// Retrieve and remove the first item from a list.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to read the list from.</param>
+    /// <param name="listName">The list to pop from.</param>
+    /// <returns>Task representing the status and associated value for the pop operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName` or `listName` is `null`.</exception>
     public async Task<CacheListPopFrontResponse> ListPopFrontAsync(string cacheName, string listName)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -726,7 +784,13 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.ListPopFrontAsync(cacheName, listName);
     }
 
-    // TODO: document
+    /// <summary>
+    /// Retrieve and remove the last item from a list.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to read the list from.</param>
+    /// <param name="listName">The list to pop from.</param>
+    /// <returns>Task representing the status and associated value for the pop operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName` or `listName` is `null`.</exception>
     public async Task<CacheListPopBackResponse> ListPopBackAsync(string cacheName, string listName)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -735,7 +799,13 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.ListPopBackAsync(cacheName, listName);
     }
 
-    // TODO: document
+    /// <summary>
+    /// Fetch the entire list from the cache.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+    /// <param name="listName">The list to fetch.</param>
+    /// <returns>Task representing with the status of the fetch operation and the associated list.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName` or `listName` is `null`.</exception>
     public async Task<CacheListFetchResponse> ListFetchAsync(string cacheName, string listName)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
