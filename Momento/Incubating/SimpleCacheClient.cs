@@ -717,7 +717,15 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.ListPushBackAsync(cacheName, listName, value, refreshTtl, ttlSeconds);
     }
 
-    // TODO: ListPopFront
+    // TODO: document
+    public async Task<CacheListPopFrontResponse> ListPopFrontAsync(string cacheName, string listName)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(listName, nameof(listName));
+
+        return await this.dataClient.ListPopFrontAsync(cacheName, listName);
+    }
+
     // TODO: ListPopBack
 
     // TODO: document

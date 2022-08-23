@@ -363,6 +363,22 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
     }
 
+    public async Task<CacheListPopFrontResponse> ListPopFrontAsync(string cacheName, string listName)
+    {
+        _ListPopFrontRequest request = new() { ListName = listName.ToByteString() };
+        _ListPopFrontResponse response;
+
+        try
+        {
+            response = await this.grpcManager.Client.ListPopFrontAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+        return new CacheListPopFrontResponse(response);
+    }
+
     public async Task<CacheListFetchResponse> ListFetchAsync(string cacheName, string listName)
     {
         _ListFetchRequest request = new() { ListName = listName.ToByteString() };

@@ -280,6 +280,50 @@ public class ListTest : TestBase
     [Theory]
     [InlineData(null, "my-list")]
     [InlineData("cache", null)]
+    public async Task ListPopFrontAsync_NullChecks_ThrowsException(string cacheName, string listName)
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.ListPopFrontAsync(cacheName, listName));
+    }
+
+    [Fact]
+    public async Task ListPopFrontAsync_ListIsMissing_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        var response = await client.ListPopFrontAsync(cacheName, listName);
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+        Assert.Null(response.ByteArray);
+        Assert.Null(response.String());
+    }
+
+    [Fact]
+    public async Task ListPopFrontAsync_ValueIsByteArray_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        var value = Utils.NewGuidByteArray();
+
+        await client.ListPushFrontAsync(cacheName, listName, value, false);
+        var response = await client.ListPopFrontAsync(cacheName, listName);
+
+        Assert.Equal(CacheGetStatus.HIT, response.Status);
+        Assert.Equal(value, response.ByteArray);
+    }
+
+    [Fact]
+    public async Task ListPopFrontAsync_ValueIsString_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        var value = Utils.NewGuidString();
+
+        await client.ListPushFrontAsync(cacheName, listName, value, false);
+        var response = await client.ListPopFrontAsync(cacheName, listName);
+
+        Assert.Equal(CacheGetStatus.HIT, response.Status);
+        Assert.Equal(value, response.String());
+    }
+
+    [Theory]
+    [InlineData(null, "my-list")]
+    [InlineData("cache", null)]
     public async Task ListFetchAsync_NullChecks_ThrowsException(string cacheName, string listName)
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.ListFetchAsync(cacheName, listName));
