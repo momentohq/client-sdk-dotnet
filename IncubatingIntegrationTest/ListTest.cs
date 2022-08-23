@@ -299,26 +299,30 @@ public class ListTest : TestBase
     public async Task ListPopFrontAsync_ValueIsByteArray_HappyPath()
     {
         var listName = Utils.NewGuidString();
-        var value = Utils.NewGuidByteArray();
+        var value1 = Utils.NewGuidByteArray();
+        var value2 = Utils.NewGuidByteArray();
 
-        await client.ListPushFrontAsync(cacheName, listName, value, false);
+        await client.ListPushFrontAsync(cacheName, listName, value1, false);
+        await client.ListPushFrontAsync(cacheName, listName, value2, false);
         var response = await client.ListPopFrontAsync(cacheName, listName);
 
         Assert.Equal(CacheGetStatus.HIT, response.Status);
-        Assert.Equal(value, response.ByteArray);
+        Assert.Equal(value2, response.ByteArray);
     }
 
     [Fact]
     public async Task ListPopFrontAsync_ValueIsString_HappyPath()
     {
         var listName = Utils.NewGuidString();
-        var value = Utils.NewGuidString();
+        var value1 = Utils.NewGuidString();
+        var value2 = Utils.NewGuidString();
 
-        await client.ListPushFrontAsync(cacheName, listName, value, false);
+        await client.ListPushFrontAsync(cacheName, listName, value1, false);
+        await client.ListPushFrontAsync(cacheName, listName, value2, false);
         var response = await client.ListPopFrontAsync(cacheName, listName);
 
         Assert.Equal(CacheGetStatus.HIT, response.Status);
-        Assert.Equal(value, response.String());
+        Assert.Equal(value2, response.String());
     }
 
     [Theory]
