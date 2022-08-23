@@ -36,13 +36,13 @@ internal sealed class ScsDataClient : ScsDataClientBase
     public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, byte[] field)
     {
         var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, field.ToSingletonByteString());
-        return new CacheDictionaryGetResponse(response);
+        return CacheDictionaryGetResponse.From(response);
     }
 
     public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, string field)
     {
         var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, field.ToSingletonByteString());
-        return new CacheDictionaryGetResponse(response);
+        return CacheDictionaryGetResponse.From(response);
     }
 
     public async Task<CacheDictionarySetBatchResponse> DictionarySetBatchAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
@@ -376,7 +376,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         {
             throw CacheExceptionMapper.Convert(e);
         }
-        return new CacheListPopFrontResponse(response);
+        return CacheListPopFrontResponse.From(response);
     }
 
     public async Task<CacheListPopBackResponse> ListPopBackAsync(string cacheName, string listName)
@@ -392,7 +392,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         {
             throw CacheExceptionMapper.Convert(e);
         }
-        return new CacheListPopBackResponse(response);
+        return CacheListPopBackResponse.From_ListPopBackResponse(response);
     }
 
     public async Task<CacheListFetchResponse> ListFetchAsync(string cacheName, string listName)

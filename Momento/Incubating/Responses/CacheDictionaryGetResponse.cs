@@ -5,46 +5,33 @@ using Momento.Sdk.Responses;
 
 namespace Momento.Sdk.Incubating.Responses;
 
-public class CacheDictionaryGetResponse
+public class CacheDictionaryGetResponse : CacheGetResponseBase
 {
-    public CacheGetStatus Status { get; private set; }
-    private readonly ByteString? value;
-
-    public CacheDictionaryGetResponse()
+    public CacheDictionaryGetResponse() : base(CacheGetStatus.MISS, null)
     {
-        Status = CacheGetStatus.MISS;
-        value = null;
+    }
+
+    public CacheDictionaryGetResponse(ECacheResult status, ByteString value) : base(status, value)
+    {
     }
 
     public CacheDictionaryGetResponse(_DictionaryGetResponse.Types._DictionaryGetResponsePart unaryResponse)
+        : base(unaryResponse.Result, unaryResponse.CacheBody)
     {
-        Status = CacheGetStatusUtil.From(unaryResponse.Result);
-        value = (Status == CacheGetStatus.HIT) ? unaryResponse.CacheBody : null;
     }
 
-    public CacheDictionaryGetResponse(_DictionaryGetResponse response)
+    public static CacheDictionaryGetResponse From(_DictionaryGetResponse response)
     {
-        if (response.DictionaryCase == _DictionaryGetResponse.DictionaryOneofCase.Found)
+        if (response.DictionaryCase == _DictionaryGetResponse.DictionaryOneofCase.Missing)
         {
-            if (response.Found.Items.Count == 0)
-            {
-                // TODO there are no exception types that cleanly map to this kind of error
-                throw new ClientSdkException("_DictionaryGetResponseResponse contained no data but was found");
-            }
-            Status = CacheGetStatusUtil.From(response.Found.Items[0].Result);
-            value = response.Found.Items[0].CacheBody;
+            return new CacheDictionaryGetResponse();
         }
-        else
+
+        if (response.Found.Items.Count == 0)
         {
-            Status = CacheGetStatus.MISS;
-            value = null;
+            // TODO there are no exception types that cleanly map to this kind of error
+            throw new ClientSdkException("_DictionaryGetResponseResponse contained no data but was found");
         }
+        return new CacheDictionaryGetResponse(response.Found.Items[0].Result, response.Found.Items[0].CacheBody);
     }
-
-    public byte[]? ByteArray
-    {
-        get => (value != null) ? value.ToByteArray() : null;
-    }
-
-    public string? String() => (value != null) ? value.ToStringUtf8() : null;
 }

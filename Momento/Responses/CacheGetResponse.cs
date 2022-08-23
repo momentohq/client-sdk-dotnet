@@ -3,22 +3,9 @@ using Momento.Protos.CacheClient;
 
 namespace Momento.Sdk.Responses;
 
-public class CacheGetResponse
+public class CacheGetResponse : CacheGetResponseBase
 {
-    public CacheGetStatus Status { get; }
-    private readonly ByteString? cacheBody;
-
-    public CacheGetResponse(_GetResponse response)
+    public CacheGetResponse(_GetResponse response) : base(response.Result, response.CacheBody)
     {
-        Status = CacheGetStatusUtil.From(response.Result);
-
-        cacheBody = (Status == CacheGetStatus.HIT) ? response.CacheBody : null;
     }
-
-    public byte[]? Bytes
-    {
-        get => cacheBody != null ? cacheBody.ToByteArray() : null;
-    }
-
-    public string? String() => (cacheBody != null) ? cacheBody.ToStringUtf8() : null;
 }

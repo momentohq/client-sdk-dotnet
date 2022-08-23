@@ -22,8 +22,8 @@ public class CacheGetBatchResponse
         return Responses.Select(response => response.String());
     }
 
-    public IEnumerable<byte[]?> Bytes
+    public IEnumerable<byte[]?> ByteArrays
     {
-        get => Responses.Select(response => response.Bytes);
+        get => Responses.Select(response => response.ByteArray);
     }
 }

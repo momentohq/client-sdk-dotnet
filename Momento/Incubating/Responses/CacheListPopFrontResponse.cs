@@ -4,29 +4,18 @@ using Momento.Sdk.Responses;
 
 namespace Momento.Sdk.Incubating.Responses;
 
-public class CacheListPopFrontResponse
+public class CacheListPopFrontResponse : CacheGetResponseBase
 {
-    public CacheGetStatus Status { get; private set; }
-    private readonly ByteString? value;
-
-    public CacheListPopFrontResponse(_ListPopFrontResponse response)
+    public CacheListPopFrontResponse(CacheGetStatus status, ByteString? value) : base(status, value)
     {
-        if (response.ListCase == _ListPopFrontResponse.ListOneofCase.Found)
-        {
-            Status = CacheGetStatus.HIT;
-            value = response.Found.Front;
-        }
-        else
-        {
-            Status = CacheGetStatus.MISS;
-            value = null;
-        }
     }
 
-    public byte[]? ByteArray
+    public static CacheListPopFrontResponse From(_ListPopFrontResponse response)
     {
-        get => (value != null) ? value.ToByteArray() : null;
+        if (response.ListCase == _ListPopFrontResponse.ListOneofCase.Missing)
+        {
+            return new CacheListPopFrontResponse(CacheGetStatus.MISS, null);
+        }
+        return new CacheListPopFrontResponse(CacheGetStatus.HIT, response.Found.Front);
     }
-
-    public string? String() => (value != null) ? value.ToStringUtf8() : null;
 }
