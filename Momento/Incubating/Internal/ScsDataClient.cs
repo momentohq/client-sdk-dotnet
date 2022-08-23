@@ -301,29 +301,17 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public async Task<CacheListPushFrontResponse> ListPushFrontAsync(string cacheName, string listName, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        await SendListPushFrontAsync(cacheName, listName, value.ToSingletonByteString(), refreshTtl, ttlSeconds);
+        await SendListPushFrontAsync(cacheName, listName, value.ToByteString(), refreshTtl, ttlSeconds);
         return new CacheListPushFrontResponse();
     }
 
     public async Task<CacheListPushFrontResponse> ListPushFrontAsync(string cacheName, string listName, string value, bool refreshTtl, uint? ttlSeconds = null)
     {
-        await SendListPushFrontAsync(cacheName, listName, value.ToSingletonByteString(), refreshTtl, ttlSeconds);
+        await SendListPushFrontAsync(cacheName, listName, value.ToByteString(), refreshTtl, ttlSeconds);
         return new CacheListPushFrontResponse();
     }
 
-    public async Task<CacheListPushFrontBatchResponse> ListPushFrontBatchAsync(string cacheName, string listName, IEnumerable<byte[]> values, bool refreshTtl, uint? ttlSeconds = null)
-    {
-        await SendListPushFrontAsync(cacheName, listName, values.ToEnumerableByteString(), refreshTtl, ttlSeconds);
-        return new CacheListPushFrontBatchResponse();
-    }
-
-    public async Task<CacheListPushFrontBatchResponse> ListPushFrontBatchAsync(string cacheName, string listName, IEnumerable<string> values, bool refreshTtl, uint? ttlSeconds = null)
-    {
-        await SendListPushFrontAsync(cacheName, listName, values.ToEnumerableByteString(), refreshTtl, ttlSeconds);
-        return new CacheListPushFrontBatchResponse();
-    }
-
-    public async Task SendListPushFrontAsync(string cacheName, string listName, IEnumerable<ByteString> values, bool refreshTtl, uint? ttlSeconds = null)
+    public async Task SendListPushFrontAsync(string cacheName, string listName, ByteString value, bool refreshTtl, uint? ttlSeconds = null)
     {
         _ListPushFrontRequest request = new()
         {
@@ -331,7 +319,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
             RefreshTtl = refreshTtl,
             TtlMilliseconds = TtlSecondsToMilliseconds(ttlSeconds)
         };
-        request.Values.Add(values);
+        request.Values.Add(value);
 
         try
         {
