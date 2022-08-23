@@ -331,6 +331,38 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
     }
 
+    public async Task<CacheListPushBackResponse> ListPushBackAsync(string cacheName, string listName, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        await SendListPushBackAsync(cacheName, listName, value.ToByteString(), refreshTtl, ttlSeconds);
+        return new CacheListPushBackResponse();
+    }
+
+    public async Task<CacheListPushBackResponse> ListPushBackAsync(string cacheName, string listName, string value, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        await SendListPushBackAsync(cacheName, listName, value.ToByteString(), refreshTtl, ttlSeconds);
+        return new CacheListPushBackResponse();
+    }
+
+    public async Task SendListPushBackAsync(string cacheName, string listName, ByteString value, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        _ListPushBackRequest request = new()
+        {
+            ListName = listName.ToByteString(),
+            RefreshTtl = refreshTtl,
+            TtlMilliseconds = TtlSecondsToMilliseconds(ttlSeconds)
+        };
+        request.Values.Add(value);
+
+        try
+        {
+            await this.grpcManager.Client.ListPushBackAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+    }
+
     public async Task<CacheListFetchResponse> ListFetchAsync(string cacheName, string listName)
     {
         _ListFetchRequest request = new() { ListName = listName.ToByteString() };

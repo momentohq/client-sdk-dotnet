@@ -1,5 +1,5 @@
 namespace Momento.Sdk.Incubating.Responses;
 
-public class CacheListPushFrontBatchResponse
+public class CacheListPushBackResponse
 {
 }
