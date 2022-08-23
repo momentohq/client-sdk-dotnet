@@ -10,6 +10,122 @@ public class ListTest : TestBase
     }
 
     [Theory]
+    [InlineData(null, "my-list", new byte[] { 0x00 })]
+    [InlineData("cache", null, new byte[] { 0x00 })]
+    [InlineData("cache", "my-list", null)]
+    public async Task ListPushFrontAsync_NullChecksByteArray_ThrowsException(string cacheName, string listName, byte[] value)
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.ListPushFrontAsync(cacheName, listName, value, false));
+    }
+
+    [Fact]
+    public async Task ListPushFrontFetch_ValueIsByteArray_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        var value = Utils.NewGuidByteArray();
+
+        await client.ListPushFrontAsync(cacheName, listName, value, false);
+
+        var fetchResponse = await client.ListFetchAsync(cacheName, listName);
+        Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
+
+        var list = fetchResponse.ByteArrayList;
+        Assert.Single(list);
+        Assert.Contains(value, list);
+    }
+
+    [Fact]
+    public async Task ListPushFrontFetch_ValueIsByteArray_NoRefreshTtl()
+    {
+        var listName = Utils.NewGuidString();
+        var value = Utils.NewGuidByteArray();
+
+        await client.ListPushFrontAsync(cacheName, listName, value, false, ttlSeconds: 5);
+        await Task.Delay(100);
+
+        await client.ListPushFrontAsync(cacheName, listName, value, false, ttlSeconds: 10);
+        await Task.Delay(4900);
+
+        var response = await client.ListFetchAsync(cacheName, listName);
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+    }
+
+    [Fact]
+    public async Task ListPushFrontFetch_ValueIsByteArray_RefreshTtl()
+    {
+        var listName = Utils.NewGuidString();
+        var value = Utils.NewGuidByteArray();
+
+        await client.ListPushFrontAsync(cacheName, listName, value, false, ttlSeconds: 1);
+        await Task.Delay(100);
+
+        await client.ListPushFrontAsync(cacheName, listName, value, true, ttlSeconds: 10);
+        await Task.Delay(1000);
+
+        var response = await client.ListFetchAsync(cacheName, listName);
+        Assert.Equal(CacheGetStatus.HIT, response.Status);
+        Assert.Equal(2, response.ByteArrayList!.Count);
+    }
+
+    [Theory]
+    [InlineData(null, "my-list", "my-value")]
+    [InlineData("cache", null, "my-value")]
+    [InlineData("cache", "my-list", null)]
+    public async Task ListPushFrontAsync_NullChecksString_ThrowsException(string cacheName, string listName, string value)
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.ListPushFrontAsync(cacheName, listName, value, false));
+    }
+
+    [Fact]
+    public async Task ListPushFrontFetch_ValueIsString_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        var value = Utils.NewGuidString();
+
+        await client.ListPushFrontAsync(cacheName, listName, value, false);
+
+        var fetchResponse = await client.ListFetchAsync(cacheName, listName);
+        Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
+
+        var list = fetchResponse.StringList();
+        Assert.Single(list);
+        Assert.Contains(value, list);
+    }
+
+    [Fact]
+    public async Task ListPushFrontFetch_ValueIsString_NoRefreshTtl()
+    {
+        var listName = Utils.NewGuidString();
+        var value = Utils.NewGuidString();
+
+        await client.ListPushFrontAsync(cacheName, listName, value, false, ttlSeconds: 5);
+        await Task.Delay(100);
+
+        await client.ListPushFrontAsync(cacheName, listName, value, false, ttlSeconds: 10);
+        await Task.Delay(4900);
+
+        var response = await client.ListFetchAsync(cacheName, listName);
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+    }
+
+    [Fact]
+    public async Task ListPushFrontFetch_ValueIsString_RefreshTtl()
+    {
+        var listName = Utils.NewGuidString();
+        var value = Utils.NewGuidString();
+
+        await client.ListPushFrontAsync(cacheName, listName, value, false, ttlSeconds: 1);
+        await Task.Delay(100);
+
+        await client.ListPushFrontAsync(cacheName, listName, value, true, ttlSeconds: 10);
+        await Task.Delay(1000);
+
+        var response = await client.ListFetchAsync(cacheName, listName);
+        Assert.Equal(CacheGetStatus.HIT, response.Status);
+        Assert.Equal(2, response.StringList()!.Count);
+    }
+
+    [Theory]
     [InlineData(null, "my-list")]
     [InlineData("cache", null)]
     public async Task ListFetchAsync_NullChecks_ThrowsException(string cacheName, string listName)

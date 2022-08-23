@@ -687,6 +687,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.ListPushFrontAsync(cacheName, listName, value, refreshTtl, ttlSeconds);
     }
 
+    // TODO: document
     public async Task<CacheListPushFrontResponse> ListPushFrontAsync(string cacheName, string listName, string value, bool refreshTtl, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -696,7 +697,10 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.ListPushFrontAsync(cacheName, listName, value, refreshTtl, ttlSeconds);
     }
 
+    // TODO: ListPushFrontBatch
+
     // TODO: ListPushBack
+    // TODO: ListPushBackBatch
     // TODO: ListPopFront
     // TODO: ListPopBack
 
