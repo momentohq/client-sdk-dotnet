@@ -66,8 +66,6 @@ public class ListTest : TestBase
         var value = Utils.NewGuidByteArray();
 
         await client.ListPushFrontAsync(cacheName, listName, value, false, ttlSeconds: 1);
-        await Task.Delay(100);
-
         await client.ListPushFrontAsync(cacheName, listName, value, true, ttlSeconds: 10);
         await Task.Delay(1000);
 
@@ -133,8 +131,6 @@ public class ListTest : TestBase
         var value = Utils.NewGuidString();
 
         await client.ListPushFrontAsync(cacheName, listName, value, false, ttlSeconds: 1);
-        await Task.Delay(100);
-
         await client.ListPushFrontAsync(cacheName, listName, value, true, ttlSeconds: 10);
         await Task.Delay(1000);
 
@@ -200,8 +196,6 @@ public class ListTest : TestBase
         var value = Utils.NewGuidByteArray();
 
         await client.ListPushBackAsync(cacheName, listName, value, false, ttlSeconds: 1);
-        await Task.Delay(100);
-
         await client.ListPushBackAsync(cacheName, listName, value, true, ttlSeconds: 10);
         await Task.Delay(1000);
 
@@ -267,8 +261,6 @@ public class ListTest : TestBase
         var value = Utils.NewGuidString();
 
         await client.ListPushBackAsync(cacheName, listName, value, false, ttlSeconds: 1);
-        await Task.Delay(100);
-
         await client.ListPushBackAsync(cacheName, listName, value, true, ttlSeconds: 10);
         await Task.Delay(1000);
 

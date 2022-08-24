@@ -57,8 +57,6 @@ public class SetTest : TestBase
         var element = Utils.NewGuidByteArray();
 
         await client.SetAddAsync(cacheName, setName, element, false, ttlSeconds: 1);
-        await Task.Delay(100);
-
         await client.SetAddAsync(cacheName, setName, element, true, ttlSeconds: 10);
         await Task.Delay(1000);
 
@@ -115,8 +113,6 @@ public class SetTest : TestBase
         var element = Utils.NewGuidString();
 
         await client.SetAddAsync(cacheName, setName, element, false, ttlSeconds: 1);
-        await Task.Delay(100);
-
         await client.SetAddAsync(cacheName, setName, element, true, ttlSeconds: 10);
         await Task.Delay(1000);
 
@@ -182,8 +178,6 @@ public class SetTest : TestBase
         var content = new List<byte[]>() { element };
 
         await client.SetAddBatchAsync(cacheName, setName, content, false, ttlSeconds: 1);
-        await Task.Delay(100);
-
         await client.SetAddBatchAsync(cacheName, setName, content, true, ttlSeconds: 10);
         await Task.Delay(1000);
 
@@ -252,8 +246,6 @@ public class SetTest : TestBase
         var content = new List<string>() { element };
 
         await client.SetAddBatchAsync(cacheName, setName, content, false, ttlSeconds: 1);
-        await Task.Delay(100);
-
         await client.SetAddBatchAsync(cacheName, setName, content, true, ttlSeconds: 10);
         await Task.Delay(1000);
 
