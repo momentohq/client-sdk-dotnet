@@ -37,13 +37,13 @@ public class SimpleCacheDataTest
         byte[] key = Utils.NewGuidByteArray();
         byte[] value = Utils.NewGuidByteArray();
         await client.SetAsync(cacheName, key, value);
-        byte[]? setValue = (await client.GetAsync(cacheName, key)).Bytes;
+        byte[]? setValue = (await client.GetAsync(cacheName, key)).ByteArray;
         Assert.Equal(value, setValue);
 
         key = Utils.NewGuidByteArray();
         value = Utils.NewGuidByteArray();
         await client.SetAsync(cacheName, key, value, ttlSeconds: 15);
-        setValue = (await client.GetAsync(cacheName, key)).Bytes;
+        setValue = (await client.GetAsync(cacheName, key)).ByteArray;
         Assert.Equal(value, setValue);
     }
 
@@ -107,13 +107,13 @@ public class SimpleCacheDataTest
         string key = Utils.NewGuidString();
         byte[] value = Utils.NewGuidByteArray();
         await client.SetAsync(cacheName, key, value);
-        byte[]? setValue = (await client.GetAsync(cacheName, key)).Bytes;
+        byte[]? setValue = (await client.GetAsync(cacheName, key)).ByteArray;
         Assert.Equal(value, setValue);
 
         key = Utils.NewGuidString();
         value = Utils.NewGuidByteArray();
         await client.SetAsync(cacheName, key, value, ttlSeconds: 15);
-        setValue = (await client.GetAsync(cacheName, key)).Bytes;
+        setValue = (await client.GetAsync(cacheName, key)).ByteArray;
         Assert.Equal(value, setValue);
     }
 
@@ -228,10 +228,10 @@ public class SimpleCacheDataTest
         await client.SetBatchAsync(cacheName, dictionary);
 
         var getResponse = await client.GetAsync(cacheName, key1);
-        Assert.Equal(value1, getResponse.Bytes);
+        Assert.Equal(value1, getResponse.ByteArray);
 
         getResponse = await client.GetAsync(cacheName, key2);
-        Assert.Equal(value2, getResponse.Bytes);
+        Assert.Equal(value2, getResponse.ByteArray);
     }
 
     [Fact]

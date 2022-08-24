@@ -143,6 +143,26 @@ namespace Momento.Sdk.Internal
             {
                 return new ByteString[] { str.ToByteString() };
             }
+
+            /// <summary>
+            /// Convert an enumerable of byte arrays to <code>IEnumerable&lt;ByteString&gt;</code>
+            /// </summary>
+            /// <param name="enumerable">The enumerable to convert.</param>
+            /// <returns>An enumerable over `ByteString`s.</returns>
+            public static IEnumerable<ByteString> ToEnumerableByteString(this IEnumerable<byte[]> enumerable)
+            {
+                return enumerable.Select(item => item.ToByteString());
+            }
+
+            /// <summary>
+            /// Convert an enumerable of strings to <code>IEnumerable&lt;ByteString&gt;</code>
+            /// </summary>
+            /// <param name="enumerable">The enumerable to convert.</param>
+            /// <returns>An enumerable over `ByteString`s.</returns>
+            public static IEnumerable<ByteString> ToEnumerableByteString(this IEnumerable<string> enumerable)
+            {
+                return enumerable.Select(item => item.ToByteString());
+            }
         }
 
         public static class ByteArrayDictionaryExtensions
