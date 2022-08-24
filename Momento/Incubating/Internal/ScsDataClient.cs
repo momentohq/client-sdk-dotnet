@@ -316,10 +316,10 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _ListPushFrontRequest request = new()
         {
             ListName = listName.ToByteString(),
+            Value = value,
             RefreshTtl = refreshTtl,
             TtlMilliseconds = TtlSecondsToMilliseconds(ttlSeconds)
         };
-        request.Values.Add(value);
 
         try
         {
@@ -348,10 +348,10 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _ListPushBackRequest request = new()
         {
             ListName = listName.ToByteString(),
+            Value = value,
             RefreshTtl = refreshTtl,
             TtlMilliseconds = TtlSecondsToMilliseconds(ttlSeconds)
         };
-        request.Values.Add(value);
 
         try
         {
