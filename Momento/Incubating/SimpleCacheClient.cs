@@ -108,18 +108,6 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <inheritdoc />
-    public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, params byte[][] keys)
-    {
-        return await this.simpleCacheClient.GetBatchAsync(cacheName, keys);
-    }
-
-    /// <inheritdoc />
-    public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, params string[] keys)
-    {
-        return await this.simpleCacheClient.GetBatchAsync(cacheName, keys);
-    }
-
-    /// <inheritdoc />
     public async Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
     {
         return await this.simpleCacheClient.SetBatchAsync(cacheName, items, ttlSeconds);
@@ -271,42 +259,6 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="fields">The fields in the dictionary to lookup.</param>
     /// <returns>Task representing the status and associated value for each field.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `fields` is `null`.</exception>
-    public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, params byte[][] fields)
-    {
-        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
-        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
-        Utils.ArgumentNotNull(fields, nameof(fields));
-        Utils.ElementsNotNull(fields, nameof(fields));
-
-        return await this.dataClient.DictionaryGetBatchAsync(cacheName, dictionaryName, fields);
-    }
-
-    /// <summary>
-    /// Get several values from a dictionary.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-    /// <param name="dictionaryName">The dictionary to lookup.</param>
-    /// <param name="fields">The fields in the dictionary to lookup.</param>
-    /// <returns>Task representing the status and associated value for each field.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `fields` is `null`.</exception>
-    public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, params string[] fields)
-    {
-        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
-        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
-        Utils.ArgumentNotNull(fields, nameof(fields));
-        Utils.ElementsNotNull(fields, nameof(fields));
-
-        return await this.dataClient.DictionaryGetBatchAsync(cacheName, dictionaryName, fields);
-    }
-
-    /// <summary>
-    /// Get several values from a dictionary.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-    /// <param name="dictionaryName">The dictionary to lookup.</param>
-    /// <param name="fields">The fields in the dictionary to lookup.</param>
-    /// <returns>Task representing the status and associated value for each field.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `fields` is `null`.</exception>
     public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -415,46 +367,6 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="fields">Name of the fields to remove from the dictionary.</param>
     /// <returns>Task representing the result of the cache operation.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `fields` is `null`.</exception>
-    public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, params byte[][] fields)
-    {
-        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
-        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
-        Utils.ArgumentNotNull(fields, nameof(fields));
-        Utils.ElementsNotNull(fields, nameof(fields));
-
-        return await this.dataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
-    }
-
-    /// <summary>
-    /// Remove fields from a dictionary.
-    ///
-    /// Performs a no-op if `dictionaryName` or a particular field does not exist.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to lookup the dictionary in.</param>
-    /// <param name="dictionaryName">Name of the dictionary to remove the field from.</param>
-    /// <param name="fields">Name of the fields to remove from the dictionary.</param>
-    /// <returns>Task representing the result of the cache operation.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `fields` is `null`.</exception>
-    public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, params string[] fields)
-    {
-        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
-        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
-        Utils.ArgumentNotNull(fields, nameof(fields));
-        Utils.ElementsNotNull(fields, nameof(fields));
-
-        return await this.dataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
-    }
-
-    /// <summary>
-    /// Remove fields from a dictionary.
-    ///
-    /// Performs a no-op if `dictionaryName` or a particular field does not exist.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to lookup the dictionary in.</param>
-    /// <param name="dictionaryName">Name of the dictionary to remove the field from.</param>
-    /// <param name="fields">Name of the fields to remove from the dictionary.</param>
-    /// <returns>Task representing the result of the cache operation.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `fields` is `null`.</exception>
     public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -535,60 +447,6 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(element, nameof(element));
 
         return await this.dataClient.SetAddAsync(cacheName, setName, element, refreshTtl, ttlSeconds);
-    }
-
-    /// <summary>
-    /// Add several elements to a set in the cache.
-    ///
-    /// After this operation, the set will contain the union
-    /// of the elements passed in and the elements of the set.
-    ///
-    /// Creates the set if it does not exist and sets the TTL.
-    /// If the set already exists and `refreshTtl` is `true`, then update the
-    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to store the set in.</param>
-    /// <param name="setName">The set to add elements to.</param>
-    /// <param name="refreshTtl">Update `setName`'s TTL if it already exists.</param>
-    /// <param name="ttlSeconds">TTL for the set in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
-    /// <param name="elements">The data to add to the set.</param>
-    /// <returns>Task representing the result of the cache operation.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName`, `setName`, `elements` is `null`.</exception>
-    public async Task<CacheSetAddBatchResponse> SetAddBatchAsync(string cacheName, string setName, bool refreshTtl, uint? ttlSeconds = null, params byte[][] elements)
-    {
-        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
-        Utils.ArgumentNotNull(setName, nameof(setName));
-        Utils.ArgumentNotNull(elements, nameof(elements));
-        Utils.ElementsNotNull(elements, nameof(elements));
-
-        return await this.dataClient.SetAddBatchAsync(cacheName, setName, elements, refreshTtl, ttlSeconds);
-    }
-
-    /// <summary>
-    /// Add several elements to a set in the cache.
-    ///
-    /// After this operation, the set will contain the union
-    /// of the elements passed in and the elements of the set.
-    ///
-    /// Creates the set if it does not exist and sets the TTL.
-    /// If the set already exists and `refreshTtl` is `true`, then update the
-    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to store the set in.</param>
-    /// <param name="setName">The set to add elements to.</param>
-    /// <param name="refreshTtl">Update `setName`'s TTL if it already exists.</param>
-    /// <param name="ttlSeconds">TTL for the set in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
-    /// <param name="elements">The data to add to the set.</param>
-    /// <returns>Task representing the result of the cache operation.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName`, `setName`, `elements` is `null`.</exception>
-    public async Task<CacheSetAddBatchResponse> SetAddBatchAsync(string cacheName, string setName, bool refreshTtl, uint? ttlSeconds = null, params string[] elements)
-    {
-        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
-        Utils.ArgumentNotNull(setName, nameof(setName));
-        Utils.ArgumentNotNull(elements, nameof(elements));
-        Utils.ElementsNotNull(elements, nameof(elements));
-
-        return await this.dataClient.SetAddBatchAsync(cacheName, setName, elements, refreshTtl, ttlSeconds);
     }
 
     /// <summary>
@@ -813,7 +671,6 @@ public class SimpleCacheClient : ISimpleCacheClient
 
         return await this.dataClient.ListFetchAsync(cacheName, listName);
     }
-
 
     /// <inheritdoc />
     public void Dispose()

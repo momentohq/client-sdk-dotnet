@@ -112,22 +112,6 @@ public interface ISimpleCacheClient : IDisposable
     public Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<string> keys);
 
     /// <summary>
-    /// Gets multiple values from the cache.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-    /// <param name="keys">The keys to get.</param>
-    /// <returns>Task object representing the statuses of the get operation and the associated values.</returns>
-    public Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, params byte[][] keys);
-
-    /// <summary>
-    /// Gets multiple values from the cache.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-    /// <param name="keys">The keys to get.</param>
-    /// <returns>Task object representing the statuses of the get operation and the associated values.</returns>
-    public Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, params string[] keys);
-
-    /// <summary>
     /// Sets multiple items in the cache. Overwrites existing items.
     /// </summary>
     /// <param name="cacheName">Name of the cache to store the items in.</param>

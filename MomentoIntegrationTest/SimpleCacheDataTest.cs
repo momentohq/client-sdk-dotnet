@@ -125,8 +125,6 @@ public class SimpleCacheDataTest
 
         var badList = new List<byte[]>(new byte[][] { Utils.NewGuidByteArray(), null! });
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetBatchAsync("cache", badList));
-
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetBatchAsync("cache", Utils.NewGuidByteArray(), null!));
     }
 
     [Fact]
@@ -149,23 +147,6 @@ public class SimpleCacheDataTest
     }
 
     [Fact]
-    public async Task GetBatchAsync_KeysAreByteArray_HappyPath2()
-    {
-        string key1 = Utils.NewGuidString();
-        string value1 = Utils.NewGuidString();
-        string key2 = Utils.NewGuidString();
-        string value2 = Utils.NewGuidString();
-        await client.SetAsync(cacheName, key1, value1);
-        await client.SetAsync(cacheName, key2, value2);
-
-        CacheGetBatchResponse result = await client.GetBatchAsync(cacheName, key1, key2);
-        string? stringResult1 = result.Strings().ToList()[0];
-        string? stringResult2 = result.Strings().ToList()[1];
-        Assert.Equal(value1, stringResult1);
-        Assert.Equal(value2, stringResult2);
-    }
-
-    [Fact]
     public async Task GetBatchAsync_NullCheckString_ThrowsException()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetBatchAsync(null!, new List<string>()));
@@ -173,8 +154,6 @@ public class SimpleCacheDataTest
 
         List<string> strings = new(new string[] { "key1", "key2", null! });
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetBatchAsync("cache", strings));
-
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetBatchAsync("cache", "key1", "key2", null!));
     }
 
     [Fact]
