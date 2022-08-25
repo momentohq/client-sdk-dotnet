@@ -255,6 +255,49 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
     }
 
+    public async Task<CacheSetRemoveElementResponse> SetRemoveElementAsync(string cacheName, string setName, byte[] element)
+    {
+        await SendSetRemoveElementsAsync(cacheName, setName, element.ToSingletonByteString());
+        return new CacheSetRemoveElementResponse();
+    }
+
+    public async Task<CacheSetRemoveElementResponse> SetRemoveElementAsync(string cacheName, string setName, string element)
+    {
+        await SendSetRemoveElementsAsync(cacheName, setName, element.ToSingletonByteString());
+        return new CacheSetRemoveElementResponse();
+    }
+
+    public async Task<CacheSetRemoveElementsResponse> SetRemoveElementsAsync(string cacheName, string setName, IEnumerable<byte[]> elements)
+    {
+        await SendSetRemoveElementsAsync(cacheName, setName, elements.ToEnumerableByteString());
+        return new CacheSetRemoveElementsResponse();
+    }
+
+    public async Task<CacheSetRemoveElementsResponse> SetRemoveElementsAsync(string cacheName, string setName, IEnumerable<string> elements)
+    {
+        await SendSetRemoveElementsAsync(cacheName, setName, elements.ToEnumerableByteString());
+        return new CacheSetRemoveElementsResponse();
+    }
+
+    public async Task SendSetRemoveElementsAsync(string cacheName, string setName, IEnumerable<ByteString> elements)
+    {
+        _SetDifferenceRequest request = new()
+        {
+            SetName = setName.ToByteString(),
+            Subtrahend = new() { Set = new() }
+        };
+        request.Subtrahend.Set.Elements.Add(elements);
+
+        try
+        {
+            await this.grpcManager.Client.SetDifferenceAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+    }
+
     public async Task<CacheSetFetchResponse> SetFetchAsync(string cacheName, string setName)
     {
         _SetFetchRequest request = new() { SetName = setName.ToByteString() };
