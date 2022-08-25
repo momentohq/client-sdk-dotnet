@@ -16,12 +16,22 @@ class Driver
         using var client = SimpleCacheClientFactory.CreateClient(authToken: "YOUR-AUTH-TOKEN", defaultTtlSeconds: 60);
         var cacheName = "my-cache";
 
+public static class Driver
+{
+    public async static Task Main()
+    {
+        var authToken = System.Environment.GetEnvironmentVariable("TEST_AUTH_TOKEN")!;
+        //using var client = new SimpleCacheClient(authToken, 60);
+        var cacheName = "my-example-cache";
+
+        using var client = Momento.Sdk.Incubating.SimpleCacheClientFactory.CreateClient(authToken, 60);
+
         // Set a value
-        client.DictionarySet(cacheName: cacheName, dictionaryName: "my-dictionary",
-            field: "my-key", value: "my-value", ttlSeconds: 60, refreshTtl: false);
+        await client.DictionarySetAsync(cacheName: cacheName, dictionaryName: "my-dictionary",
+            field: "my-key", value: "my-value", refreshTtl: false, ttlSeconds: 60);
 
         // Set multiple values
-        client.DictionarySetMulti(
+        await client.DictionarySetBatchAsync(
             cacheName: cacheName,
             dictionaryName: "my-dictionary",
             new Dictionary<string, string>() {
@@ -31,7 +41,7 @@ class Driver
             refreshTtl: false);
 
         // Get a value
-        var getResponse = client.DictionaryGet(
+        var getResponse = await client.DictionaryGetAsync(
             cacheName: cacheName,
             dictionaryName: "my-dictionary",
             field: "key1");
@@ -39,20 +49,20 @@ class Driver
         string value = getResponse.String()!; // "value1"
 
         // Get multiple values
-        var getMultiResponse = client.DictionaryGetMulti(
+        var getBatchResponse = await client.DictionaryGetBatchAsync(
             cacheName: cacheName,
             dictionaryName: "my-dictionary",
-            "key1", "key2", "key3", "key4");
-        var manyStatus = getMultiResponse.Status; // [HIT, HIT, HIT, MISS]
-        var values = getMultiResponse.Strings(); // ["value1", "value2", "value3", null]
-        var responses = getMultiResponse.Responses; // individual responses
+            new string[] { "key1", "key2", "key3", "key4" });
+        var manyStatus = getBatchResponse.Status; // [HIT, HIT, HIT, MISS]
+        var values = getBatchResponse.Strings(); // ["value1", "value2", "value3", null]
+        var responses = getBatchResponse.Responses; // individual responses
 
         // Get the whole dictionary
-        var getAllResponse = client.DictionaryGetAll(
+        var fetchResponse = await client.DictionaryFetchAsync(
             cacheName: cacheName,
             dictionaryName: "my-dictionary");
-        status = getAllResponse.Status;
-        var dictionary = getAllResponse.StringDictionary()!;
+        status = fetchResponse.Status;
+        var dictionary = fetchResponse.StringStringDictionary()!;
         value = dictionary["key1"]; // == "value1"
     }
 }
