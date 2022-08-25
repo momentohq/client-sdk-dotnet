@@ -277,6 +277,30 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <summary>
+    /// Set several dictionary field-value pairs in the cache.
+    ///
+    /// Creates the dictionary if it does not exist and sets the TTL.
+    /// If the dictionary already exists and `refreshTtl` is `true`, then update the
+    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to store the dictionary in.</param>
+    /// <param name="dictionaryName">The dictionary to set.</param>
+    /// <param name="items">The field-value pairs in the dictionary to set.</param>
+    /// <param name="refreshTtl">Update the dictionary TTL if the dictionary already exists.</param>
+    /// <param name="ttlSeconds">TTL for the dictionary in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
+    /// <returns>Task representing the result of the cache operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `items` is `null`.</exception>
+    public async Task<CacheDictionarySetBatchResponse> DictionarySetBatchAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(items, nameof(items));
+        Utils.KeysAndValuesNotNull(items, nameof(items));
+
+        return await this.dataClient.DictionarySetBatchAsync(cacheName, dictionaryName, items, refreshTtl, ttlSeconds);
+    }
+
+    /// <summary>
     /// Get several values from a dictionary.
     /// </summary>
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>

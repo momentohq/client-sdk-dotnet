@@ -258,7 +258,7 @@ public class DictionaryTest : TestBase
     }
 
     [Fact]
-    public async Task DictionarySetBatchAsync_FieldsAreByteArray_HappyPath()
+    public async Task DictionarySetBatchAsync_FieldsAreByteArrayValuesAreByteArray_HappyPath()
     {
         var dictionaryName = Utils.NewGuidString();
         var field1 = Utils.NewGuidByteArray();
@@ -315,7 +315,7 @@ public class DictionaryTest : TestBase
     }
 
     [Fact]
-    public async Task DictionarySetBatchAsync_NullChecksFieldIsStringValueIsString_ThrowsException()
+    public async Task DictionarySetBatchAsync_NullChecksFieldsAreStringValuesAreString_ThrowsException()
     {
         var dictionaryName = Utils.NewGuidString();
         var dictionary = new Dictionary<string, string>();
@@ -328,7 +328,7 @@ public class DictionaryTest : TestBase
     }
 
     [Fact]
-    public async Task DictionarySetBatchAsync_FieldsAreString_HappyPath()
+    public async Task DictionarySetBatchAsync_FieldsAreStringValuesAreString_HappyPath()
     {
         var dictionaryName = Utils.NewGuidString();
         var field1 = Utils.NewGuidString();
@@ -383,6 +383,75 @@ public class DictionaryTest : TestBase
         Assert.Equal(CacheGetStatus.HIT, response.Status);
         Assert.Equal(value, response.String());
     }
+    [Fact]
+    public async Task DictionarySetBatchAsync_NullChecksFieldsAreStringValuesAreByteArray_ThrowsException()
+    {
+        var dictionaryName = Utils.NewGuidString();
+        var dictionary = new Dictionary<string, string>();
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetBatchAsync(null!, dictionaryName, dictionary, false));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetBatchAsync(cacheName, null!, dictionary, false));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetBatchAsync(cacheName, dictionaryName, (IEnumerable<KeyValuePair<string, byte[]>>)null!, false));
+
+        dictionary[Utils.NewGuidString()] = null!;
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionarySetBatchAsync(cacheName, dictionaryName, dictionary, false));
+    }
+
+    [Fact]
+    public async Task DictionarySetBatchAsync_FieldsAreStringValuesAreByteArray_HappyPath()
+    {
+        var dictionaryName = Utils.NewGuidString();
+        var field1 = Utils.NewGuidString();
+        var value1 = Utils.NewGuidByteArray();
+        var field2 = Utils.NewGuidString();
+        var value2 = Utils.NewGuidByteArray();
+
+        var items = new Dictionary<string, byte[]>() { { field1, value1 }, { field2, value2 } };
+
+        await client.DictionarySetBatchAsync(cacheName, dictionaryName, items, false, 10);
+
+        var getResponse = await client.DictionaryGetAsync(cacheName, dictionaryName, field1);
+        Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
+        Assert.Equal(value1, getResponse.ByteArray);
+
+        getResponse = await client.DictionaryGetAsync(cacheName, dictionaryName, field2);
+        Assert.Equal(CacheGetStatus.HIT, getResponse.Status);
+        Assert.Equal(value2, getResponse.ByteArray);
+    }
+
+    [Fact]
+    public async Task DictionarySetBatchAsync_FieldsAreStringValuesAreByteArray_NoRefreshTtl()
+    {
+        var dictionaryName = Utils.NewGuidString();
+        var field = Utils.NewGuidString();
+        var value = Utils.NewGuidByteArray();
+        var content = new Dictionary<string, byte[]>() { { field, value } };
+
+        await client.DictionarySetBatchAsync(cacheName, dictionaryName, content, false, ttlSeconds: 5);
+        await Task.Delay(100);
+
+        await client.DictionarySetBatchAsync(cacheName, dictionaryName, content, false, ttlSeconds: 10);
+        await Task.Delay(4900);
+
+        var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+    }
+
+    [Fact]
+    public async Task DictionarySetBatchAsync_FieldsAreStringValuesAreByteArray_RefreshTtl()
+    {
+        var dictionaryName = Utils.NewGuidString();
+        var field = Utils.NewGuidString();
+        var value = Utils.NewGuidByteArray();
+        var content = new Dictionary<string, byte[]>() { { field, value } };
+
+        await client.DictionarySetBatchAsync(cacheName, dictionaryName, content, false, ttlSeconds: 1);
+        await client.DictionarySetBatchAsync(cacheName, dictionaryName, content, true, ttlSeconds: 10);
+        await Task.Delay(1000);
+
+        var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        Assert.Equal(CacheGetStatus.HIT, response.Status);
+        Assert.Equal(value, response.ByteArray);
+    }
 
     [Fact]
     public async Task DictionaryGetBatchAsync_NullChecksFieldsAreByteArray_ThrowsException()
@@ -403,7 +472,7 @@ public class DictionaryTest : TestBase
     }
 
     [Fact]
-    public async Task DictionaryGetBatchAsync_FieldsAreByteArray_HappyPath()
+    public async Task DictionaryGetBatchAsync_FieldsAreByteArrayValuesAreByteArray_HappyPath()
     {
         var dictionaryName = Utils.NewGuidString();
         var field1 = Utils.NewGuidByteArray();
@@ -696,7 +765,7 @@ public class DictionaryTest : TestBase
     }
 
     [Fact]
-    public async Task DictionaryRemoveFieldsAsync_FieldAreString_HappyPath()
+    public async Task DictionaryRemoveFieldsAsync_FieldsAreString_HappyPath()
     {
         var dictionaryName = Utils.NewGuidString();
         var fields = new string[] { Utils.NewGuidString(), Utils.NewGuidString() };
