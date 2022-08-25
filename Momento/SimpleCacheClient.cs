@@ -139,26 +139,6 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <inheritdoc />
-    public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, params byte[][] keys)
-    {
-        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
-        Utils.ArgumentNotNull(keys, nameof(keys));
-        Utils.ElementsNotNull(keys, nameof(keys));
-
-        return await this.dataClient.GetBatchAsync(cacheName, keys);
-    }
-
-    /// <inheritdoc />
-    public async Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, params string[] keys)
-    {
-        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
-        Utils.ArgumentNotNull(keys, nameof(keys));
-        Utils.ElementsNotNull(keys, nameof(keys));
-
-        return await this.dataClient.GetBatchAsync(cacheName, keys);
-    }
-
-    /// <inheritdoc />
     public async Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));

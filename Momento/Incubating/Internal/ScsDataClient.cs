@@ -78,18 +78,6 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return new CacheDictionarySetBatchResponse();
     }
 
-    public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, params byte[][] fields)
-    {
-        var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, fields.Select(field => field.ToByteString()));
-        return new CacheDictionaryGetBatchResponse(response, fields.Length);
-    }
-
-    public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, params string[] fields)
-    {
-        var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, fields.ToEnumerableByteString());
-        return new CacheDictionaryGetBatchResponse(response, fields.Length);
-    }
-
     public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
     {
         var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, fields.ToEnumerableByteString());
@@ -178,16 +166,6 @@ internal sealed class ScsDataClient : ScsDataClientBase
             throw CacheExceptionMapper.Convert(e);
         }
         return new CacheDictionaryRemoveFieldResponse();
-    }
-
-    public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, params byte[][] fields)
-    {
-        return await DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields.ToEnumerableByteString());
-    }
-
-    public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, params string[] fields)
-    {
-        return await DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields.ToEnumerableByteString());
     }
 
     public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
