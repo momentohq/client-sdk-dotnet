@@ -383,6 +383,7 @@ public class DictionaryTest : TestBase
         Assert.Equal(CacheGetStatus.HIT, response.Status);
         Assert.Equal(value, response.String());
     }
+
     [Fact]
     public async Task DictionarySetBatchAsync_NullChecksFieldsAreStringValuesAreByteArray_ThrowsException()
     {
@@ -568,7 +569,7 @@ public class DictionaryTest : TestBase
     }
 
     [Fact]
-    public async Task DictionaryFetchAsync_HasContentString_HappyPath()
+    public async Task DictionaryFetchAsync_HasContentStringString_HappyPath()
     {
         var dictionaryName = Utils.NewGuidString();
         var field1 = Utils.NewGuidString();
@@ -587,10 +588,38 @@ public class DictionaryTest : TestBase
 
         Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
         Assert.Equal(fetchResponse.StringStringDictionary(), contentDictionary);
+
+        // Test field caching behavior
+        Assert.Same(fetchResponse.StringStringDictionary(), fetchResponse.StringStringDictionary());
     }
 
     [Fact]
-    public async Task DictionaryFetchAsync_HasContentByteArray_HappyPath()
+    public async Task DictionaryFetchAsync_HasContentStringByteArray_HappyPath()
+    {
+        var dictionaryName = Utils.NewGuidString();
+        var field1 = Utils.NewGuidString();
+        var value1 = Utils.NewGuidByteArray();
+        var field2 = Utils.NewGuidString();
+        var value2 = Utils.NewGuidByteArray();
+        var contentDictionary = new Dictionary<string, byte[]>() {
+            {field1, value1},
+            {field2, value2}
+        };
+
+        await client.DictionarySetAsync(cacheName, dictionaryName, field1, value1, true, ttlSeconds: 10);
+        await client.DictionarySetAsync(cacheName, dictionaryName, field2, value2, true, ttlSeconds: 10);
+
+        var fetchResponse = await client.DictionaryFetchAsync(cacheName, dictionaryName);
+
+        Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
+        Assert.Equal(fetchResponse.StringByteArrayDictionary(), contentDictionary);
+
+        // Test field caching behavior
+        Assert.Same(fetchResponse.StringByteArrayDictionary(), fetchResponse.StringByteArrayDictionary());
+    }
+
+    [Fact]
+    public async Task DictionaryFetchAsync_HasContentByteArrayByteArray_HappyPath()
     {
         var dictionaryName = Utils.NewGuidString();
         var field1 = Utils.NewGuidByteArray();
@@ -616,6 +645,9 @@ public class DictionaryTest : TestBase
 
         // Exercise DictionaryEquals extension
         Assert.True(fetchResponse.ByteArrayByteArrayDictionary!.DictionaryEquals(contentDictionary));
+
+        // Test field caching behavior
+        Assert.Same(fetchResponse.ByteArrayByteArrayDictionary, fetchResponse.ByteArrayByteArrayDictionary);
     }
 
     [Theory]

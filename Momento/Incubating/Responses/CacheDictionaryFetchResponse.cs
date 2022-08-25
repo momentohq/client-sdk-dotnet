@@ -14,6 +14,7 @@ public class CacheDictionaryFetchResponse
     private readonly RepeatedField<_DictionaryFieldValuePair>? items;
     private readonly Lazy<Dictionary<byte[], byte[]>?> _byteArrayByteArrayDictionary;
     private readonly Lazy<Dictionary<string, string>?> _stringStringDictionary;
+    private readonly Lazy<Dictionary<string, byte[]>?> _stringByteArrayDictionary;
 
     public CacheDictionaryFetchResponse(_DictionaryFetchResponse response)
     {
@@ -40,9 +41,20 @@ public class CacheDictionaryFetchResponse
             return new Dictionary<string, string>(
                 items.Select(kv => new KeyValuePair<string, string>(kv.Field.ToStringUtf8(), kv.Value.ToStringUtf8())));
         });
+        _stringByteArrayDictionary = new(() =>
+        {
+            if (items == null)
+            {
+                return null;
+            }
+            return new Dictionary<string, byte[]>(
+                items.Select(kv => new KeyValuePair<string, byte[]>(kv.Field.ToStringUtf8(), kv.Value.ToByteArray())));
+        });
     }
 
     public Dictionary<byte[], byte[]>? ByteArrayByteArrayDictionary { get => _byteArrayByteArrayDictionary.Value; }
 
     public Dictionary<string, string>? StringStringDictionary() => _stringStringDictionary.Value;
+
+    public Dictionary<string, byte[]>? StringByteArrayDictionary() => _stringByteArrayDictionary.Value;
 }
