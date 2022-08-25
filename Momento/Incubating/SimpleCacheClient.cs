@@ -170,6 +170,31 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <summary>
+    /// Set the dictionary field to a value with a given time to live (TTL) seconds.
+    ///
+    /// Creates the dictionary if it does not exist and sets the TTL.
+    /// If the dictionary already exists and `refreshTtl` is `true`, then update the
+    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to store the dictionary in.</param>
+    /// <param name="dictionaryName">The dictionary to set.</param>
+    /// <param name="field">The field in the dictionary to set.</param>
+    /// <param name="value">The value to be stored.</param>
+    /// <param name="refreshTtl">Update the dictionary TTL if the dictionary already exists.</param>
+    /// <param name="ttlSeconds">TTL for the dictionary in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
+    /// <returns>Task representing the result of the cache operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `field`, `value` is `null`.</exception>
+    public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, string field, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(field, nameof(field));
+        Utils.ArgumentNotNull(value, nameof(value));
+
+        return await this.dataClient.DictionarySetAsync(cacheName, dictionaryName, field, value, refreshTtl, ttlSeconds);
+    }
+
+    /// <summary>
     /// Get the cache value stored for the given dictionary and field.
     /// </summary>
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
