@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
 
@@ -22,11 +21,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Momento\MomentoSdk.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Responses\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Responses\" />
   </ItemGroup>
 </Project>

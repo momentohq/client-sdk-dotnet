@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -24,5 +23,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Momento\MomentoSdk.csproj" />
   </ItemGroup>
-
 </Project>
