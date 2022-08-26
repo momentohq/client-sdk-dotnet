@@ -258,6 +258,177 @@ public class SetTest : TestBase
     }
 
     [Theory]
+    [InlineData(null, "my-set", new byte[] { 0x00 })]
+    [InlineData("cache", null, new byte[] { 0x00 })]
+    [InlineData("cache", "my-set", null)]
+    public async Task SetRemoveElementAsync_NullChecksByteArray_ThrowsException(string cacheName, string setName, byte[] element)
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetRemoveElementAsync(cacheName, setName, element));
+    }
+
+    [Fact]
+    public async Task SetRemoveElementAsync_ElementIsByteArray_HappyPath()
+    {
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidByteArray();
+
+        await client.SetAddAsync(cacheName, setName, element, false);
+
+        // Remove element that is not there -- no-op
+        await client.SetRemoveElementAsync(cacheName, setName, Utils.NewGuidByteArray());
+        // Fetch the whole set and make sure response has element we expect 
+        var fetchResponse = await client.SetFetchAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
+        var set = fetchResponse.ByteArraySet;
+        Assert.Single(set);
+        Assert.Contains(element, set);
+
+        // Remove element
+        await client.SetRemoveElementAsync(cacheName, setName, element);
+        fetchResponse = await client.SetFetchAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.MISS, fetchResponse.Status);
+    }
+
+    [Fact]
+    public async Task SetRemoveElementAsync_SetIsMissingElementIsByteArray_Noop()
+    {
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidString();
+
+        // Pre-condition: set is missing
+        Assert.Equal(CacheGetStatus.MISS, (await client.SetFetchAsync(cacheName, setName)).Status);
+
+        // Remove element that is not there -- no-op
+        await client.SetRemoveElementAsync(cacheName, setName, Utils.NewGuidByteArray());
+
+        // Post-condition: set is still missing
+        Assert.Equal(CacheGetStatus.MISS, (await client.SetFetchAsync(cacheName, setName)).Status);
+    }
+
+    [Theory]
+    [InlineData(null, "my-set", "my-element")]
+    [InlineData("cache", null, "my-element")]
+    [InlineData("cache", "my-set", null)]
+    public async Task SetRemoveElementAsync_NullChecksString_ThrowsException(string cacheName, string setName, string element)
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetRemoveElementAsync(cacheName, setName, element));
+    }
+
+    [Fact]
+    public async Task SetRemoveElementAsync_ElementIsString_HappyPath()
+    {
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidString();
+
+        await client.SetAddAsync(cacheName, setName, element, false);
+
+        // Remove element that is not there -- no-op
+        await client.SetRemoveElementAsync(cacheName, setName, Utils.NewGuidString());
+        var fetchResponse = await client.SetFetchAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
+        var set = fetchResponse.StringSet();
+        Assert.Single(set);
+        Assert.Contains(element, set);
+
+        // Remove element
+        await client.SetRemoveElementAsync(cacheName, setName, element);
+        fetchResponse = await client.SetFetchAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.MISS, fetchResponse.Status);
+    }
+
+    [Fact]
+    public async Task SetRemoveElementAsync_SetIsMissingElementIsString_Noop()
+    {
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidString();
+
+        // Pre-condition: set is missing
+        Assert.Equal(CacheGetStatus.MISS, (await client.SetFetchAsync(cacheName, setName)).Status);
+
+        // Remove element that is not there -- no-op
+        await client.SetRemoveElementAsync(cacheName, setName, Utils.NewGuidString());
+
+        // Post-condition: set is still missing
+        Assert.Equal(CacheGetStatus.MISS, (await client.SetFetchAsync(cacheName, setName)).Status);
+    }
+
+    [Fact]
+    public async Task SetRemoveElementsAsync_NullChecksElementsAreByteArray_ThrowsException()
+    {
+        var setName = Utils.NewGuidString();
+        var testData = new byte[][][] { new byte[][] { Utils.NewGuidByteArray(), Utils.NewGuidByteArray() }, new byte[][] { Utils.NewGuidByteArray(), null! } };
+
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetRemoveElementsAsync(null!, setName, testData[0]));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetRemoveElementsAsync(cacheName, null!, testData[0]));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetRemoveElementsAsync(cacheName, setName, (byte[][])null!));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetRemoveElementsAsync(cacheName, setName, testData[1]));
+
+        var fieldsList = new List<byte[]>(testData[0]);
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetRemoveElementsAsync(null!, setName, fieldsList));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetRemoveElementsAsync(cacheName, null!, fieldsList));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetRemoveElementsAsync(cacheName, setName, (List<byte[]>)null!));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetRemoveElementsAsync(cacheName, setName, new List<byte[]>(testData[1])));
+    }
+
+    [Fact]
+    public async Task SetRemoveElementsAsync_FieldsAreByteArray_HappyPath()
+    {
+        var setName = Utils.NewGuidString();
+        var elements = new byte[][] { Utils.NewGuidByteArray(), Utils.NewGuidByteArray() };
+        var otherElement = Utils.NewGuidByteArray();
+
+        // Test enumerable
+        await client.SetAddAsync(cacheName, setName, elements[0], false);
+        await client.SetAddAsync(cacheName, setName, elements[1], false);
+        await client.SetAddAsync(cacheName, setName, otherElement, false);
+
+        var elementsList = new List<byte[]>(elements);
+        await client.SetRemoveElementsAsync(cacheName, setName, elementsList);
+        var fetchResponse = await client.SetFetchAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
+        Assert.Single(fetchResponse.ByteArraySet!);
+        Assert.Contains(otherElement, fetchResponse.ByteArraySet!);
+    }
+
+    [Fact]
+    public async Task SetRemoveElementsAsync_NullChecksElementsAreString_ThrowsException()
+    {
+        var setName = Utils.NewGuidString();
+        var testData = new string[][] { new string[] { Utils.NewGuidString(), Utils.NewGuidString() }, new string[] { Utils.NewGuidString(), null! } };
+
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetRemoveElementsAsync(null!, setName, testData[0]));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetRemoveElementsAsync(cacheName, null!, testData[0]));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetRemoveElementsAsync(cacheName, setName, (byte[][])null!));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetRemoveElementsAsync(cacheName, setName, testData[1]));
+
+        var elementsList = new List<string>(testData[0]);
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetRemoveElementsAsync(null!, setName, elementsList));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetRemoveElementsAsync(cacheName, null!, elementsList));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetRemoveElementsAsync(cacheName, setName, (List<string>)null!));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SetRemoveElementsAsync(cacheName, setName, new List<string>(testData[1])));
+    }
+
+    [Fact]
+    public async Task SetRemoveElementsAsync_FieldsAreString_HappyPath()
+    {
+        var setName = Utils.NewGuidString();
+        var elements = new string[] { Utils.NewGuidString(), Utils.NewGuidString() };
+        var otherElement = Utils.NewGuidByteArray();
+
+        // Test enumerable
+        await client.SetAddAsync(cacheName, setName, elements[0], false);
+        await client.SetAddAsync(cacheName, setName, elements[1], false);
+        await client.SetAddAsync(cacheName, setName, otherElement, false);
+
+        var elementsList = new List<string>(elements);
+        await client.SetRemoveElementsAsync(cacheName, setName, elementsList);
+        var fetchResponse = await client.SetFetchAsync(cacheName, setName);
+        Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
+        Assert.Single(fetchResponse.ByteArraySet!);
+        Assert.Contains(otherElement, fetchResponse.ByteArraySet!);
+    }
+
+    [Theory]
     [InlineData(null, "my-set")]
     [InlineData("cache", null)]
     public async Task SetFetchAsync_NullChecks_ThrowsException(string cacheName, string setName)

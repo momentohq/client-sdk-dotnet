@@ -553,6 +553,84 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <summary>
+    /// Remove an element from a set.
+    ///
+    /// Performs a no-op if `setName` or `element` does not exist.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to lookup the set in.</param>
+    /// <param name="setName">The set to remove the element from.</param>
+    /// <param name="element">The data to remove from the set.</param>
+    /// <returns>Task representing the result of the cache operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName`, `setName`, `element` is `null`.</exception>
+    public async Task<CacheSetRemoveElementResponse> SetRemoveElementAsync(string cacheName, string setName, byte[] element)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(setName, nameof(setName));
+        Utils.ArgumentNotNull(element, nameof(element));
+
+        return await this.dataClient.SetRemoveElementAsync(cacheName, setName, element);
+    }
+
+    /// <summary>
+    /// Remove an element from a set.
+    ///
+    /// Performs a no-op if `setName` or `element` does not exist.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to lookup the set in.</param>
+    /// <param name="setName">The set to remove the element from.</param>
+    /// <param name="element">The data to remove from the set.</param>
+    /// <returns>Task representing the result of the cache operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName`, `setName`, `element` is `null`.</exception>
+    public async Task<CacheSetRemoveElementResponse> SetRemoveElementAsync(string cacheName, string setName, string element)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(setName, nameof(setName));
+        Utils.ArgumentNotNull(element, nameof(element));
+
+        return await this.dataClient.SetRemoveElementAsync(cacheName, setName, element);
+    }
+
+    /// <summary>
+    /// Remove elements from a set.
+    ///
+    /// Performs a no-op if `setName` or any of `elements` do not exist.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to lookup the set in.</param>
+    /// <param name="setName">The set to remove the elements from.</param>
+    /// <param name="elements">The data to remove from the set.</param>
+    /// <returns>Task representing the result of the cache operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName`, `setName`, `elements` is `null`.</exception>
+    public async Task<CacheSetRemoveElementsResponse> SetRemoveElementsAsync(string cacheName, string setName, IEnumerable<byte[]> elements)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(setName, nameof(setName));
+        Utils.ArgumentNotNull(elements, nameof(elements));
+        Utils.ElementsNotNull(elements, nameof(elements));
+
+        return await this.dataClient.SetRemoveElementsAsync(cacheName, setName, elements);
+    }
+
+    /// <summary>
+    /// Remove elements from a set.
+    ///
+    /// Performs a no-op if `setName` or any of `elements` do not exist.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to lookup the set in.</param>
+    /// <param name="setName">The set to remove the elements from.</param>
+    /// <param name="elements">The data to remove from the set.</param>
+    /// <returns>Task representing the result of the cache operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of `cacheName`, `setName`, `elements` is `null`.</exception>
+    public async Task<CacheSetRemoveElementsResponse> SetRemoveElementsAsync(string cacheName, string setName, IEnumerable<string> elements)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(setName, nameof(setName));
+        Utils.ArgumentNotNull(elements, nameof(elements));
+        Utils.ElementsNotNull(elements, nameof(elements));
+
+        return await this.dataClient.SetRemoveElementsAsync(cacheName, setName, elements);
+    }
+
+    /// <summary>
     /// Fetch the entire set from the cache.
     /// </summary>
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
