@@ -74,6 +74,12 @@ public class ListTest : TestBase
         Assert.Equal(2, response.ByteArrayList!.Count);
     }
 
+    [Fact]
+    public async Task ListPushFrontAsync_ValueIsByteArrayTruncateTailToSizeIsZero_ThrowsException()
+    {
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await client.ListPushFrontAsync("myCache", "listName", new byte[] { 0x00 }, false, truncateTailToSize: 0));
+    }
+
     [Theory]
     [InlineData(null, "my-list", "my-value")]
     [InlineData("cache", null, "my-value")]
@@ -137,6 +143,12 @@ public class ListTest : TestBase
         var response = await client.ListFetchAsync(cacheName, listName);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
         Assert.Equal(2, response.StringList()!.Count);
+    }
+
+    [Fact]
+    public async Task ListPushFrontAsync_ValueIsStringTruncateTailToSizeIsZero_ThrowsException()
+    {
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await client.ListPushFrontAsync("myCache", "listName", "value", false, truncateTailToSize: 0));
     }
 
     [Theory]
@@ -204,6 +216,12 @@ public class ListTest : TestBase
         Assert.Equal(2, response.ByteArrayList!.Count);
     }
 
+    [Fact]
+    public async Task ListPushBackAsync_ValueIsByteArrayTruncateHeadToSizeIsZero_ThrowsException()
+    {
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await client.ListPushBackAsync("myCache", "listName", new byte[] { 0x00 }, false, truncateHeadToSize: 0));
+    }
+
     [Theory]
     [InlineData(null, "my-list", "my-value")]
     [InlineData("cache", null, "my-value")]
@@ -267,6 +285,12 @@ public class ListTest : TestBase
         var response = await client.ListFetchAsync(cacheName, listName);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
         Assert.Equal(2, response.StringList()!.Count);
+    }
+
+    [Fact]
+    public async Task ListPushBackAsync_ValueIsStringTruncateHeadToSizeIsZero_ThrowsException()
+    {
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await client.ListPushBackAsync("myCache", "listName", "value", false, truncateHeadToSize: 0));
     }
 
     [Theory]
