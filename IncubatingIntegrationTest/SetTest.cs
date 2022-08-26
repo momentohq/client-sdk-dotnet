@@ -276,6 +276,7 @@ public class SetTest : TestBase
 
         // Remove element that is not there -- no-op
         await client.SetRemoveElementAsync(cacheName, setName, Utils.NewGuidByteArray());
+        // Fetch the whole set and make sure response has element we expect 
         var fetchResponse = await client.SetFetchAsync(cacheName, setName);
         Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
         var set = fetchResponse.ByteArraySet;
