@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.810.11
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momento.Sdk", "src\Momento.Sdk\Momento.Sdk.csproj", "{188A76AD-422A-4829-B59F-9EC1C102EA38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MomentoTest", "tests\Momento.Sdk.Tests\MomentoTest.csproj", "{77C34767-7796-4842-BE75-20563DB3230A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momento.Sdk.Tests", "tests\Momento.Sdk.Tests\Momento.Sdk.Tests.csproj", "{77C34767-7796-4842-BE75-20563DB3230A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MomentoIntegrationTest", "MomentoIntegrationTest\MomentoIntegrationTest.csproj", "{FB56314E-BDCF-474A-A2CD-8956934FF11B}"
 EndProject
