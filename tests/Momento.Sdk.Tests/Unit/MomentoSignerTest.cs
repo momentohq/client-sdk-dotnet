@@ -7,7 +7,7 @@ using Momento.Sdk.Exceptions;
 using Momento.Sdk.Requests;
 using Xunit;
 
-namespace MomentoTest;
+namespace Momento.Sdk.Tests.Unit;
 
 public class MomentoSignerTest
 {

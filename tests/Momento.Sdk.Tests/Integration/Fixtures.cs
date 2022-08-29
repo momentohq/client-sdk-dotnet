@@ -1,4 +1,4 @@
-namespace MomentoIntegrationTest;
+namespace Momento.Sdk.Tests.Integration;
 
 /// <summary>
 /// A cache client fixture.

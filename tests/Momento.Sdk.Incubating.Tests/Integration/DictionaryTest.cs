@@ -1,7 +1,7 @@
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Responses;
 
-namespace IncubatingIntegrationTest;
+namespace Momento.Sdk.Incubating.Tests.Integration;
 
 [Collection("SimpleCacheClient")]
 public class DictionaryTest : TestBase

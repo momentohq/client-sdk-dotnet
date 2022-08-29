@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 
-namespace MomentoIntegrationTest;
+namespace Momento.Sdk.Tests.Integration;
 
 [Collection("SimpleCacheClient")]
 public class SimpleCacheControlTest

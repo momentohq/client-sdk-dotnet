@@ -4,7 +4,7 @@ using Momento.Sdk.Exceptions;
 using Momento.Sdk.Responses;
 using Xunit;
 
-namespace MomentoTest.Responses;
+namespace Momento.Sdk.Tests.Unit.Responses;
 
 public class CacheGetResponseTest
 {
