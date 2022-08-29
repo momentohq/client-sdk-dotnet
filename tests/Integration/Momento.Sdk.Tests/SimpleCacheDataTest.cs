@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Momento.Sdk.Tests.Integration;
+namespace Momento.Sdk.Tests;
 
 [Collection("SimpleCacheClient")]
 public class SimpleCacheDataTest

@@ -29,17 +29,17 @@ jobs:
 
       - name: Unit Test
         run: |
-          dotnet test tests/Momento.Sdk.Tests/Unit
+          dotnet test tests/Unit/Momento.Sdk.Tests
         shell: bash
 
       - name: Integration Test
         run: |
-          dotnet test tests/Momento.Sdk.Tests/Integration
+          dotnet test tests/Integration/Momento.Sdk.Tests
         shell: bash
 
       - name: Incubating Integration Test
         run: |
-          dotnet test tests/Momento.Sdk.Incubating.Tests/Integration
+          dotnet test tests/Integration/Momento.Sdk.Incubating.Tests
         shell: bash
 
       - name: Set release
