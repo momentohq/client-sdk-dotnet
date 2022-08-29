@@ -53,7 +53,7 @@ jobs:
       - name: Pack and Publish
         run: |
           set -x
-          pushd ./src/Momento.Sdk
+          pushd src/Momento.Sdk
             VERSION="${{ steps.semrel.outputs.version }}"
             echo "version: ${VERSION}"
             dotnet build --configuration Release
