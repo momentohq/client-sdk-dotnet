@@ -663,7 +663,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <summary>
-    /// Push a value to the front of a list.
+    /// Push a value to the beginning of a list.
     ///
     /// Creates the list if it does not exist and sets the TTL.
     /// If the list already exists and `refreshTtl` is `true`, then update the
@@ -689,7 +689,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <summary>
-    /// Push a value to the front of a list.
+    /// Push a value to the beginning of a list.
     ///
     /// Creates the list if it does not exist and sets the TTL.
     /// If the list already exists and `refreshTtl` is `true`, then update the
@@ -715,7 +715,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <summary>
-    /// Push a value to the back of a list.
+    /// Push a value to the end of a list.
     ///
     /// Creates the list if it does not exist and sets the TTL.
     /// If the list already exists and `refreshTtl` is `true`, then update the
@@ -741,7 +741,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <summary>
-    /// Push a value to the back of a list.
+    /// Push a value to the end of a list.
     ///
     /// Creates the list if it does not exist and sets the TTL.
     /// If the list already exists and `refreshTtl` is `true`, then update the
