@@ -663,7 +663,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <summary>
-    /// Push a value to the front of a list.
+    /// Push a value to the beginning of a list.
     ///
     /// Creates the list if it does not exist and sets the TTL.
     /// If the list already exists and `refreshTtl` is `true`, then update the
@@ -674,22 +674,22 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="value">The value to push to the front of the list.</param>
     /// <param name="refreshTtl">Update `listName`'s TTL if it already exists.</param>
     /// <param name="ttlSeconds">TTL for the list in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
-    /// <param name="truncateTailToSize">Ensure the list does not exceed this length. Remove excess from tail of list. Must be a positive number.</param>
+    /// <param name="truncateBackToSize">Ensure the list does not exceed this length. Remove excess from the end of the list. Must be a positive number.</param>
     /// <returns>Task representing the result of the push operation.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName` or `listName` or `value` is `null`.</exception>
     /// <exception cref="ArgumentOutOfRangeException">`truncateTailToSize` is zero.</exception>
-    public async Task<CacheListPushFrontResponse> ListPushFrontAsync(string cacheName, string listName, byte[] value, bool refreshTtl, uint? ttlSeconds = null, uint? truncateTailToSize = null)
+    public async Task<CacheListPushFrontResponse> ListPushFrontAsync(string cacheName, string listName, byte[] value, bool refreshTtl, uint? ttlSeconds = null, uint? truncateBackToSize = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(listName, nameof(listName));
         Utils.ArgumentNotNull(value, nameof(value));
-        Utils.ArgumentStrictlyPositive(truncateTailToSize, nameof(truncateTailToSize));
+        Utils.ArgumentStrictlyPositive(truncateBackToSize, nameof(truncateBackToSize));
 
         return await this.dataClient.ListPushFrontAsync(cacheName, listName, value, refreshTtl, ttlSeconds);
     }
 
     /// <summary>
-    /// Push a value to the front of a list.
+    /// Push a value to the beginning of a list.
     ///
     /// Creates the list if it does not exist and sets the TTL.
     /// If the list already exists and `refreshTtl` is `true`, then update the
@@ -700,22 +700,22 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="value">The value to push to the front of the list.</param>
     /// <param name="refreshTtl">Update `listName`'s TTL if it already exists.</param>
     /// <param name="ttlSeconds">TTL for the list in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
-    /// <param name="truncateTailToSize">Ensure the list does not exceed this length. Remove excess from tail of list. Must be a positive number.</param>
+    /// <param name="truncateBackToSize">Ensure the list does not exceed this length. Remove excess from the end of the list. Must be a positive number.</param>
     /// <returns>Task representing the result of the push operation.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName` or `listName` or `value` is `null`.</exception>
     /// <exception cref="ArgumentOutOfRangeException">`truncateTailToSize` is zero.</exception>
-    public async Task<CacheListPushFrontResponse> ListPushFrontAsync(string cacheName, string listName, string value, bool refreshTtl, uint? ttlSeconds = null, uint? truncateTailToSize = null)
+    public async Task<CacheListPushFrontResponse> ListPushFrontAsync(string cacheName, string listName, string value, bool refreshTtl, uint? ttlSeconds = null, uint? truncateBackToSize = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(listName, nameof(listName));
         Utils.ArgumentNotNull(value, nameof(value));
-        Utils.ArgumentStrictlyPositive(truncateTailToSize, nameof(truncateTailToSize));
+        Utils.ArgumentStrictlyPositive(truncateBackToSize, nameof(truncateBackToSize));
 
         return await this.dataClient.ListPushFrontAsync(cacheName, listName, value, refreshTtl, ttlSeconds);
     }
 
     /// <summary>
-    /// Push a value to the back of a list.
+    /// Push a value to the end of a list.
     ///
     /// Creates the list if it does not exist and sets the TTL.
     /// If the list already exists and `refreshTtl` is `true`, then update the
@@ -726,22 +726,22 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="value">The value to push to the back of the list.</param>
     /// <param name="refreshTtl">Update `listName`'s TTL if it already exists.</param>
     /// <param name="ttlSeconds">TTL for the list in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
-    /// <param name="truncateHeadToSize">Ensure the list does not exceed this length. Remove excess from head of list. Must be a positive number.</param>
+    /// <param name="truncateFrontToSize">Ensure the list does not exceed this length. Remove excess from the beginning of the list. Must be a positive number.</param>
     /// <returns>Task representing the result of the push operation.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName` or `listName` or `value` is `null`.</exception>
     /// <exception cref="ArgumentOutOfRangeException">`truncateHeadToSize` is zero.</exception>
-    public async Task<CacheListPushBackResponse> ListPushBackAsync(string cacheName, string listName, byte[] value, bool refreshTtl, uint? ttlSeconds = null, uint? truncateHeadToSize = null)
+    public async Task<CacheListPushBackResponse> ListPushBackAsync(string cacheName, string listName, byte[] value, bool refreshTtl, uint? ttlSeconds = null, uint? truncateFrontToSize = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(listName, nameof(listName));
         Utils.ArgumentNotNull(value, nameof(value));
-        Utils.ArgumentStrictlyPositive(truncateHeadToSize, nameof(truncateHeadToSize));
+        Utils.ArgumentStrictlyPositive(truncateFrontToSize, nameof(truncateFrontToSize));
 
         return await this.dataClient.ListPushBackAsync(cacheName, listName, value, refreshTtl, ttlSeconds);
     }
 
     /// <summary>
-    /// Push a value to the back of a list.
+    /// Push a value to the end of a list.
     ///
     /// Creates the list if it does not exist and sets the TTL.
     /// If the list already exists and `refreshTtl` is `true`, then update the
@@ -752,16 +752,16 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="value">The value to push to the back of the list.</param>
     /// <param name="refreshTtl">Update `listName`'s TTL if it already exists.</param>
     /// <param name="ttlSeconds">TTL for the list in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
-    /// <param name="truncateHeadToSize">Ensure the list does not exceed this length. Remove excess from head of list. Must be a positive number.</param>
+    /// <param name="truncateFrontToSize">Ensure the list does not exceed this length. Remove excess from the beginning of the list. Must be a positive number.</param>
     /// <returns>Task representing the result of the push operation.</returns>
     /// <exception cref="ArgumentNullException">Any of `cacheName` or `listName` or `value` is `null`.</exception>
     /// <exception cref="ArgumentOutOfRangeException">`truncateHeadToSize` is zero.</exception>
-    public async Task<CacheListPushBackResponse> ListPushBackAsync(string cacheName, string listName, string value, bool refreshTtl, uint? ttlSeconds = null, uint? truncateHeadToSize = null)
+    public async Task<CacheListPushBackResponse> ListPushBackAsync(string cacheName, string listName, string value, bool refreshTtl, uint? ttlSeconds = null, uint? truncateFrontToSize = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(listName, nameof(listName));
         Utils.ArgumentNotNull(value, nameof(value));
-        Utils.ArgumentStrictlyPositive(truncateHeadToSize, nameof(truncateHeadToSize));
+        Utils.ArgumentStrictlyPositive(truncateFrontToSize, nameof(truncateFrontToSize));
 
         return await this.dataClient.ListPushBackAsync(cacheName, listName, value, refreshTtl, ttlSeconds);
     }

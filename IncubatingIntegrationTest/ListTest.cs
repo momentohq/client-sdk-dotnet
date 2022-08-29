@@ -75,9 +75,9 @@ public class ListTest : TestBase
     }
 
     [Fact]
-    public async Task ListPushFrontAsync_ValueIsByteArrayTruncateTailToSizeIsZero_ThrowsException()
+    public async Task ListPushFrontAsync_ValueIsByteArrayTruncateBackToSizeIsZero_ThrowsException()
     {
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await client.ListPushFrontAsync("myCache", "listName", new byte[] { 0x00 }, false, truncateTailToSize: 0));
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await client.ListPushFrontAsync("myCache", "listName", new byte[] { 0x00 }, false, truncateBackToSize: 0));
     }
 
     [Theory]
@@ -146,9 +146,9 @@ public class ListTest : TestBase
     }
 
     [Fact]
-    public async Task ListPushFrontAsync_ValueIsStringTruncateTailToSizeIsZero_ThrowsException()
+    public async Task ListPushFrontAsync_ValueIsStringTruncateBackToSizeIsZero_ThrowsException()
     {
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await client.ListPushFrontAsync("myCache", "listName", "value", false, truncateTailToSize: 0));
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await client.ListPushFrontAsync("myCache", "listName", "value", false, truncateBackToSize: 0));
     }
 
     [Theory]
@@ -217,9 +217,9 @@ public class ListTest : TestBase
     }
 
     [Fact]
-    public async Task ListPushBackAsync_ValueIsByteArrayTruncateHeadToSizeIsZero_ThrowsException()
+    public async Task ListPushBackAsync_ValueIsByteArrayTruncateFrontToSizeIsZero_ThrowsException()
     {
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await client.ListPushBackAsync("myCache", "listName", new byte[] { 0x00 }, false, truncateHeadToSize: 0));
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await client.ListPushBackAsync("myCache", "listName", new byte[] { 0x00 }, false, truncateFrontToSize: 0));
     }
 
     [Theory]
@@ -288,9 +288,9 @@ public class ListTest : TestBase
     }
 
     [Fact]
-    public async Task ListPushBackAsync_ValueIsStringTruncateHeadToSizeIsZero_ThrowsException()
+    public async Task ListPushBackAsync_ValueIsStringTruncateFrontToSizeIsZero_ThrowsException()
     {
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await client.ListPushBackAsync("myCache", "listName", "value", false, truncateHeadToSize: 0));
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await client.ListPushBackAsync("myCache", "listName", "value", false, truncateFrontToSize: 0));
     }
 
     [Theory]
