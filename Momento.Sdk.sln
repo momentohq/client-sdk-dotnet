@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.810.11
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MomentoSdk", "Momento\MomentoSdk.csproj", "{188A76AD-422A-4829-B59F-9EC1C102EA38}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momento.Sdk", "src\Momento.Sdk\Momento.Sdk.csproj", "{188A76AD-422A-4829-B59F-9EC1C102EA38}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MomentoTest", "MomentoTest\MomentoTest.csproj", "{77C34767-7796-4842-BE75-20563DB3230A}"
 EndProject
