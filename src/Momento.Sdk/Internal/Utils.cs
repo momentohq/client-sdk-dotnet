@@ -159,7 +159,7 @@ namespace Momento.Sdk.Internal
             }
 
             /// <summary>
-            /// Convert an enumerable of byte arrays to <code>IEnumerable&lt;ByteString&gt;</code>
+            /// Convert an enumerable of byte arrays to <see cref="IEnumerable{ByteString}"/>
             /// </summary>
             /// <param name="enumerable">The enumerable to convert.</param>
             /// <returns>An enumerable over <see cref="ByteString"/>s.</returns>
