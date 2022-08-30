@@ -1,4 +1,4 @@
-namespace MomentoIntegrationTest;
+namespace Momento.Sdk.Incubating.Tests;
 
 /// <summary>
 /// A cache client fixture.
@@ -19,7 +19,9 @@ public class SimpleCacheClientFixture : IDisposable
             throw new NullReferenceException("TEST_AUTH_TOKEN environment variable must be set.");
         CacheName = Environment.GetEnvironmentVariable("TEST_CACHE_NAME") ??
             throw new NullReferenceException("TEST_CACHE_NAME environment variable must be set.");
-        Client = new(AuthToken, defaultTtlSeconds: DefaultTtlSeconds);
+        CacheName += "-incubating";
+        Client = SimpleCacheClientFactory.CreateClient(AuthToken, defaultTtlSeconds: DefaultTtlSeconds);
+
 
         try
         {

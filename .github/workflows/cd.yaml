@@ -29,17 +29,17 @@ jobs:
 
       - name: Unit Test
         run: |
-          dotnet test MomentoTest
+          dotnet test tests/Unit/Momento.Sdk.Tests
         shell: bash
 
       - name: Integration Test
         run: |
-          dotnet test MomentoIntegrationTest
+          dotnet test tests/Integration/Momento.Sdk.Tests
         shell: bash
 
       - name: Incubating Integration Test
         run: |
-          dotnet test IncubatingIntegrationTest
+          dotnet test tests/Integration/Momento.Sdk.Incubating.Tests
         shell: bash
 
       - name: Set release
@@ -53,7 +53,7 @@ jobs:
       - name: Pack and Publish
         run: |
           set -x
-          pushd Momento
+          pushd src/Momento.Sdk
             VERSION="${{ steps.semrel.outputs.version }}"
             echo "version: ${VERSION}"
             dotnet build --configuration Release

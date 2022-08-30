@@ -1,4 +1,4 @@
-namespace IncubatingIntegrationTest;
+namespace Momento.Sdk.Incubating.Tests;
 
 public class TestBase
 {

@@ -1,6 +1,6 @@
 using Momento.Sdk.Responses;
 
-namespace IncubatingIntegrationTest;
+namespace Momento.Sdk.Incubating.Tests;
 
 [Collection("SimpleCacheClient")]
 public class ListTest : TestBase
