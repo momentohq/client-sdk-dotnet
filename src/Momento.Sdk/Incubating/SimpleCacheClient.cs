@@ -121,11 +121,12 @@ public class SimpleCacheClient : ISimpleCacheClient
 
     /// <summary>
     /// Set the dictionary field to a value with a given time to live (TTL) seconds.
-    ///
-    /// Creates the dictionary if it does not exist and sets the TTL.
-    /// If the dictionary already exists and <paramref name="refreshTtl"/> is <see langword="true"/>, then update the
-    /// TTL to <paramref name="ttlSeconds"/>, otherwise leave the TTL unchanged.
     /// </summary>
+    /// <remark>
+    /// Creates the data structure if it does not exist and sets the TTL.
+    /// If the data structure already exists and <paramref name="refreshTtl"/> is <see langword="true"/>,
+    /// then update the TTL to <paramref name="ttlSeconds"/>, otherwise leave the TTL unchanged.
+    /// </remark>
     /// <param name="cacheName">Name of the cache to store the dictionary in.</param>
     /// <param name="dictionaryName">The dictionary to set.</param>
     /// <param name="field">The field in the dictionary to set.</param>
@@ -195,11 +196,8 @@ public class SimpleCacheClient : ISimpleCacheClient
 
     /// <summary>
     /// Set several dictionary field-value pairs in the cache.
-    ///
-    /// Creates the dictionary if it does not exist and sets the TTL.
-    /// If the dictionary already exists and <paramref name="refreshTtl"/> is <see langword="true"/>, then update the
-    /// TTL to <paramref name="ttlSeconds"/>, otherwise leave the TTL unchanged.
     /// </summary>
+    /// <inheritdoc cref="DictionarySetAsync(string, string, byte[], byte[], bool, uint?)" path="/remark"/>
     /// <param name="cacheName">Name of the cache to store the dictionary in.</param>
     /// <param name="dictionaryName">The dictionary to set.</param>
     /// <param name="items">The field-value pairs in the dictionary to set.</param>
@@ -365,11 +363,8 @@ public class SimpleCacheClient : ISimpleCacheClient
     ///
     /// After this operation, the set will contain the union
     /// of the element passed in and the elements of the set.
-    ///
-    /// Creates the set if it does not exist and sets the TTL.
-    /// If the set already exists and <paramref name="refreshTtl"/> is <see langword="true"/>, then update the
-    /// TTL to <paramref name="ttlSeconds"/>, otherwise leave the TTL unchanged.
     /// </summary>
+    /// <inheritdoc cref="DictionarySetAsync(string, string, byte[], byte[], bool, uint?)" path="/remark"/>
     /// <param name="cacheName">Name of the cache to store the set in.</param>
     /// <param name="setName">The set to add the element to.</param>
     /// <param name="element">The data to add to the set.</param>
@@ -401,11 +396,8 @@ public class SimpleCacheClient : ISimpleCacheClient
     ///
     /// After this operation, the set will contain the union
     /// of the elements passed in and the elements of the set.
-    ///
-    /// Creates the set if it does not exist and sets the TTL.
-    /// If the set already exists and <paramref name="refreshTtl"/> is <see langword="true"/>, then update the
-    /// TTL to <paramref name="ttlSeconds"/>, otherwise leave the TTL unchanged.
     /// </summary>
+    /// <inheritdoc cref="DictionarySetAsync(string, string, byte[], byte[], bool, uint?)" path="/remark"/>
     /// <param name="cacheName">Name of the cache to store the set in.</param>
     /// <param name="setName">The set to add elements to.</param>
     /// <param name="elements">The data to add to the set.</param>
@@ -528,11 +520,8 @@ public class SimpleCacheClient : ISimpleCacheClient
 
     /// <summary>
     /// Push a value to the beginning of a list.
-    ///
-    /// Creates the list if it does not exist and sets the TTL.
-    /// If the list already exists and <paramref name="refreshTtl"/> is <see langword="true"/>, then update the
-    /// TTL to <paramref name="ttlSeconds"/>, otherwise leave the TTL unchanged.
     /// </summary>
+    /// <inheritdoc cref="DictionarySetAsync(string, string, byte[], byte[], bool, uint?)" path="/remark"/>
     /// <param name="cacheName">Name of the cache to store the list in.</param>
     /// <param name="listName">The list to push the value on.</param>
     /// <param name="value">The value to push to the front of the list.</param>
@@ -565,11 +554,8 @@ public class SimpleCacheClient : ISimpleCacheClient
 
     /// <summary>
     /// Push a value to the end of a list.
-    ///
-    /// Creates the list if it does not exist and sets the TTL.
-    /// If the list already exists and <paramref name="refreshTtl"/> is <see langword="true"/>, then update the
-    /// TTL to <paramref name="ttlSeconds"/>, otherwise leave the TTL unchanged.
     /// </summary>
+    /// <inheritdoc cref="DictionarySetAsync(string, string, byte[], byte[], bool, uint?)" path="/remark"/>
     /// <param name="cacheName">Name of the cache to store the list in.</param>
     /// <param name="listName">The list to push the value on.</param>
     /// <param name="value">The value to push to the back of the list.</param>
