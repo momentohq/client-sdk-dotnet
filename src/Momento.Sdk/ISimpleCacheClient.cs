@@ -59,16 +59,16 @@ public interface ISimpleCacheClient : IDisposable
     /// <returns>Task object representing the result of the delete operation.</returns>
     public Task<CacheDeleteResponse> DeleteAsync(string cacheName, byte[] key);
 
-    /// <inheritdoc cref="SetAsync(string, byte[], byte[], uint?)" />
+    /// <inheritdoc cref="SetAsync(string, byte[], byte[], uint?)"/>
     public Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint? ttlSeconds = null);
 
-    /// <inheritdoc cref="GetAsync(string, byte[])" />
+    /// <inheritdoc cref="GetAsync(string, byte[])"/>
     public Task<CacheGetResponse> GetAsync(string cacheName, string key);
 
-    /// <inheritdoc cref="DeleteAsync(string, byte[])" />
+    /// <inheritdoc cref="DeleteAsync(string, byte[])"/>
     public Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key);
 
-    /// <inheritdoc cref="SetAsync(string, byte[], byte[], uint?)" />
+    /// <inheritdoc cref="SetAsync(string, byte[], byte[], uint?)"/>
     public Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint? ttlSeconds = null);
 
     /// <summary>
@@ -79,7 +79,7 @@ public interface ISimpleCacheClient : IDisposable
     /// <returns>Task object representing the statuses of the get operation and the associated values.</returns>
     public Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<byte[]> keys);
 
-    /// <inheritdoc cref="GetBatchAsync(string, IEnumerable{byte[]})" />
+    /// <inheritdoc cref="GetBatchAsync(string, IEnumerable{byte[]})"/>
     public Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<string> keys);
 
     /// <summary>
@@ -91,6 +91,6 @@ public interface ISimpleCacheClient : IDisposable
     /// <returns>Task object representing the result of the set operation.</returns>
     public Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null);
 
-    /// <inheritdoc cref="SetBatchAsync(string, IEnumerable{KeyValuePair{byte[], byte[]}}, uint?)" />
+    /// <inheritdoc cref="SetBatchAsync(string, IEnumerable{KeyValuePair{byte[], byte[]}}, uint?)"/>
     public Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null);
 }

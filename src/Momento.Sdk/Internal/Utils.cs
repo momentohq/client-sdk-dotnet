@@ -32,11 +32,11 @@ namespace Momento.Sdk.Internal
         public static byte[] Utf8ToByteArray(string s) => Encoding.UTF8.GetBytes(s);
 
         /// <summary>
-        /// Throw an exception if the argument is <see langword="null" />.
+        /// Throw an exception if the argument is <see langword="null"/>.
         /// </summary>
-        /// <param name="argument">The instance to check for <see langword="null" />.</param>
+        /// <param name="argument">The instance to check for <see langword="null"/>.</param>
         /// <param name="paramName">The name of the object to propagate to the exception.</param>
-        /// <exception cref="ArgumentNullException">`argument` is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException">`argument` is <see langword="null"/>.</exception>
         public static void ArgumentNotNull(object? argument, string paramName)
         {
             if (argument == null)
@@ -46,13 +46,13 @@ namespace Momento.Sdk.Internal
         }
 
         /// <summary>
-        /// Throw an exception if any of the keys or values is <see langword="null" />.
+        /// Throw an exception if any of the keys or values is <see langword="null"/>.
         /// </summary>
         /// <typeparam name="TKey">Key type.</typeparam>
         /// <typeparam name="TValue">Value type.</typeparam>
-        /// <param name="argument">Enumerable to check for <see langword="null" /> keys/values.</param>
+        /// <param name="argument">Enumerable to check for <see langword="null"/> keys/values.</param>
         /// <param name="paramName">Name of the enumerable to propagate to the exception.</param>
-        /// <exception cref="ArgumentNullException">Any of `argument` keys or values is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException">Any of `argument` keys or values is <see langword="null"/>.</exception>
         public static void KeysAndValuesNotNull<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> argument, string paramName)
         {
             if (argument.Any(kv => kv.Key == null || kv.Value == null))
@@ -62,12 +62,12 @@ namespace Momento.Sdk.Internal
         }
 
         /// <summary>
-        /// Throw an exception if any of the elements of the enumerable is <see langword="null" />.
+        /// Throw an exception if any of the elements of the enumerable is <see langword="null"/>.
         /// </summary>
         /// <typeparam name="T">Enumerable element type.</typeparam>
-        /// <param name="argument">Enumerable to check for <see langword="null" /> elements.</param>
+        /// <param name="argument">Enumerable to check for <see langword="null"/> elements.</param>
         /// <param name="paramName">Name of the eumerable to propagate to the exception.</param>
-        /// <exception cref="ArgumentNullException">Any of `argument` elements is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException">Any of `argument` elements is <see langword="null"/>.</exception>
         public static void ElementsNotNull<T>(IEnumerable<T> argument, string paramName)
         {
             if (argument.Any(value => value == null))
@@ -168,7 +168,7 @@ namespace Momento.Sdk.Internal
                 return enumerable.Select(item => item.ToByteString());
             }
 
-            /// <inheritdoc cref="ToEnumerableByteString(IEnumerable{byte[]})" />
+            /// <inheritdoc cref="ToEnumerableByteString(IEnumerable{byte[]})"/>
             public static IEnumerable<ByteString> ToEnumerableByteString(this IEnumerable<string> enumerable)
             {
                 return enumerable.Select(item => item.ToByteString());
@@ -186,7 +186,7 @@ namespace Momento.Sdk.Internal
             /// </summary>
             /// <param name="dictionary">LHS to compare</param>
             /// <param name="other">RHS to compare</param>
-            /// <returns><see langword="true" /> if the dictionaries contain the same content.</returns>
+            /// <returns><see langword="true"/> if the dictionaries contain the same content.</returns>
             public static bool DictionaryEquals(this Dictionary<byte[], byte[]> dictionary, Dictionary<byte[], byte[]> other)
             {
                 if (dictionary == null && other == null)
