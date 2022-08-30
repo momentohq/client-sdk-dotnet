@@ -530,7 +530,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="truncateBackToSize">Ensure the list does not exceed this length. Remove excess from the end of the list. Must be a positive number.</param>
     /// <returns>Task representing the result of the push operation.</returns>
     /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/> or <paramref name="listName"/> or <paramref name="value"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="truncateTailToSize"/> is zero.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="truncateBackToSize"/> is zero.</exception>
     public async Task<CacheListPushFrontResponse> ListPushFrontAsync(string cacheName, string listName, byte[] value, bool refreshTtl, uint? ttlSeconds = null, uint? truncateBackToSize = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -564,7 +564,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="truncateFrontToSize">Ensure the list does not exceed this length. Remove excess from the beginning of the list. Must be a positive number.</param>
     /// <returns>Task representing the result of the push operation.</returns>
     /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/> or <paramref name="listName"/> or <paramref name="value"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="truncateHeadToSize"/> is zero.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="truncateFrontToSize"/> is zero.</exception>
     public async Task<CacheListPushBackResponse> ListPushBackAsync(string cacheName, string listName, byte[] value, bool refreshTtl, uint? ttlSeconds = null, uint? truncateFrontToSize = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
