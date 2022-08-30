@@ -65,9 +65,9 @@ public class ListTest : TestBase
         var listName = Utils.NewGuidString();
         var value = Utils.NewGuidByteArray();
 
-        await client.ListPushFrontAsync(cacheName, listName, value, false, ttlSeconds: 1);
+        await client.ListPushFrontAsync(cacheName, listName, value, false, ttlSeconds: 2);
         await client.ListPushFrontAsync(cacheName, listName, value, true, ttlSeconds: 10);
-        await Task.Delay(1000);
+        await Task.Delay(2000);
 
         var response = await client.ListFetchAsync(cacheName, listName);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
@@ -136,9 +136,9 @@ public class ListTest : TestBase
         var listName = Utils.NewGuidString();
         var value = Utils.NewGuidString();
 
-        await client.ListPushFrontAsync(cacheName, listName, value, false, ttlSeconds: 1);
+        await client.ListPushFrontAsync(cacheName, listName, value, false, ttlSeconds: 2);
         await client.ListPushFrontAsync(cacheName, listName, value, true, ttlSeconds: 10);
-        await Task.Delay(1000);
+        await Task.Delay(2000);
 
         var response = await client.ListFetchAsync(cacheName, listName);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
@@ -207,9 +207,9 @@ public class ListTest : TestBase
         var listName = Utils.NewGuidString();
         var value = Utils.NewGuidByteArray();
 
-        await client.ListPushBackAsync(cacheName, listName, value, false, ttlSeconds: 1);
+        await client.ListPushBackAsync(cacheName, listName, value, false, ttlSeconds: 2);
         await client.ListPushBackAsync(cacheName, listName, value, true, ttlSeconds: 10);
-        await Task.Delay(1000);
+        await Task.Delay(2000);
 
         var response = await client.ListFetchAsync(cacheName, listName);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
@@ -278,9 +278,9 @@ public class ListTest : TestBase
         var listName = Utils.NewGuidString();
         var value = Utils.NewGuidString();
 
-        await client.ListPushBackAsync(cacheName, listName, value, false, ttlSeconds: 1);
+        await client.ListPushBackAsync(cacheName, listName, value, false, ttlSeconds: 2);
         await client.ListPushBackAsync(cacheName, listName, value, true, ttlSeconds: 10);
-        await Task.Delay(1000);
+        await Task.Delay(2000);
 
         var response = await client.ListFetchAsync(cacheName, listName);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
