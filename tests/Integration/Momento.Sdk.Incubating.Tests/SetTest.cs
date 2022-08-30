@@ -56,9 +56,9 @@ public class SetTest : TestBase
         var setName = Utils.NewGuidString();
         var element = Utils.NewGuidByteArray();
 
-        await client.SetAddAsync(cacheName, setName, element, false, ttlSeconds: 1);
+        await client.SetAddAsync(cacheName, setName, element, false, ttlSeconds: 2);
         await client.SetAddAsync(cacheName, setName, element, true, ttlSeconds: 10);
-        await Task.Delay(1000);
+        await Task.Delay(2000);
 
         var response = await client.SetFetchAsync(cacheName, setName);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
@@ -112,9 +112,9 @@ public class SetTest : TestBase
         var setName = Utils.NewGuidString();
         var element = Utils.NewGuidString();
 
-        await client.SetAddAsync(cacheName, setName, element, false, ttlSeconds: 1);
+        await client.SetAddAsync(cacheName, setName, element, false, ttlSeconds: 2);
         await client.SetAddAsync(cacheName, setName, element, true, ttlSeconds: 10);
-        await Task.Delay(1000);
+        await Task.Delay(2000);
 
         var response = await client.SetFetchAsync(cacheName, setName);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
@@ -177,9 +177,9 @@ public class SetTest : TestBase
         var element = Utils.NewGuidByteArray();
         var content = new List<byte[]>() { element };
 
-        await client.SetAddBatchAsync(cacheName, setName, content, false, ttlSeconds: 1);
+        await client.SetAddBatchAsync(cacheName, setName, content, false, ttlSeconds: 2);
         await client.SetAddBatchAsync(cacheName, setName, content, true, ttlSeconds: 10);
-        await Task.Delay(1000);
+        await Task.Delay(2000);
 
         var response = await client.SetFetchAsync(cacheName, setName);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
@@ -245,9 +245,9 @@ public class SetTest : TestBase
         var element = Utils.NewGuidString();
         var content = new List<string>() { element };
 
-        await client.SetAddBatchAsync(cacheName, setName, content, false, ttlSeconds: 1);
+        await client.SetAddBatchAsync(cacheName, setName, content, false, ttlSeconds: 2);
         await client.SetAddBatchAsync(cacheName, setName, content, true, ttlSeconds: 10);
-        await Task.Delay(1000);
+        await Task.Delay(2000);
 
         var response = await client.SetFetchAsync(cacheName, setName);
         Assert.Equal(CacheGetStatus.HIT, response.Status);
