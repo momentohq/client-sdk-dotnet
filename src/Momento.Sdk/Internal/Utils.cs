@@ -36,7 +36,7 @@ namespace Momento.Sdk.Internal
         /// </summary>
         /// <param name="argument">The instance to check for <see langword="null"/>.</param>
         /// <param name="paramName">The name of the object to propagate to the exception.</param>
-        /// <exception cref="ArgumentNullException">`argument` is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="argument"/> is <see langword="null"/>.</exception>
         public static void ArgumentNotNull(object? argument, string paramName)
         {
             if (argument == null)
@@ -52,7 +52,7 @@ namespace Momento.Sdk.Internal
         /// <typeparam name="TValue">Value type.</typeparam>
         /// <param name="argument">Enumerable to check for <see langword="null"/> keys/values.</param>
         /// <param name="paramName">Name of the enumerable to propagate to the exception.</param>
-        /// <exception cref="ArgumentNullException">Any of `argument` keys or values is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentNullException">Any of <paramref name="argument"/> keys or values is <see langword="null"/>.</exception>
         public static void KeysAndValuesNotNull<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> argument, string paramName)
         {
             if (argument.Any(kv => kv.Key == null || kv.Value == null))
@@ -67,7 +67,7 @@ namespace Momento.Sdk.Internal
         /// <typeparam name="T">Enumerable element type.</typeparam>
         /// <param name="argument">Enumerable to check for <see langword="null"/> elements.</param>
         /// <param name="paramName">Name of the eumerable to propagate to the exception.</param>
-        /// <exception cref="ArgumentNullException">Any of `argument` elements is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentNullException">Any of <paramref name="argument"/> elements is <see langword="null"/>.</exception>
         public static void ElementsNotNull<T>(IEnumerable<T> argument, string paramName)
         {
             if (argument.Any(value => value == null))
@@ -81,7 +81,7 @@ namespace Momento.Sdk.Internal
         /// </summary>
         /// <param name="argument">The integer to zero test.</param>
         /// <param name="paramName">Name of the integer to propagate to the exception.</param>
-        /// <exception cref="ArgumentOutOfRangeException">`argument` is zero.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="argument"/> is zero.</exception>
         public static void ArgumentStrictlyPositive(uint? argument, string paramName)
         {
             if (argument == 0)

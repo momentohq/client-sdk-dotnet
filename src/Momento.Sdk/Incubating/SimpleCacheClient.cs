@@ -123,8 +123,8 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// Set the dictionary field to a value with a given time to live (TTL) seconds.
     ///
     /// Creates the dictionary if it does not exist and sets the TTL.
-    /// If the dictionary already exists and `refreshTtl` is <see langword="true"/>, then update the
-    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// If the dictionary already exists and <paramref name="refreshTtl"/> is <see langword="true"/>, then update the
+    /// TTL to <paramref name="ttlSeconds"/>, otherwise leave the TTL unchanged.
     /// </summary>
     /// <param name="cacheName">Name of the cache to store the dictionary in.</param>
     /// <param name="dictionaryName">The dictionary to set.</param>
@@ -133,7 +133,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="refreshTtl">Update the dictionary TTL if the dictionary already exists.</param>
     /// <param name="ttlSeconds">TTL for the dictionary in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
     /// <returns>Task representing the result of the cache operation.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `field`, `value` is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/>, <paramref name="dictionaryName"/>, <paramref name="field"/>, <paramref name="value"/> is <see langword="null"/>.</exception>
     public async Task<CacheDictionarySetResponse> DictionarySetAsync(string cacheName, string dictionaryName, byte[] field, byte[] value, bool refreshTtl, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -173,7 +173,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="dictionaryName">The dictionary to lookup.</param>
     /// <param name="field">The field in the dictionary to lookup.</param>
     /// <returns>Task representing the status of the get operation and the associated value.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `field` is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/>, <paramref name="dictionaryName"/>, <paramref name="field"/> is <see langword="null"/>.</exception>
     public async Task<CacheDictionaryGetResponse> DictionaryGetAsync(string cacheName, string dictionaryName, byte[] field)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -197,8 +197,8 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// Set several dictionary field-value pairs in the cache.
     ///
     /// Creates the dictionary if it does not exist and sets the TTL.
-    /// If the dictionary already exists and `refreshTtl` is <see langword="true"/>, then update the
-    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// If the dictionary already exists and <paramref name="refreshTtl"/> is <see langword="true"/>, then update the
+    /// TTL to <paramref name="ttlSeconds"/>, otherwise leave the TTL unchanged.
     /// </summary>
     /// <param name="cacheName">Name of the cache to store the dictionary in.</param>
     /// <param name="dictionaryName">The dictionary to set.</param>
@@ -206,7 +206,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="refreshTtl">Update the dictionary TTL if the dictionary already exists.</param>
     /// <param name="ttlSeconds">TTL for the dictionary in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
     /// <returns>Task representing the result of the cache operation.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `items` is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/>, <paramref name="dictionaryName"/>, <paramref name="items"/> is <see langword="null"/>.</exception>
     public async Task<CacheDictionarySetBatchResponse> DictionarySetBatchAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, bool refreshTtl, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -246,7 +246,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="dictionaryName">The dictionary to lookup.</param>
     /// <param name="fields">The fields in the dictionary to lookup.</param>
     /// <returns>Task representing the status and associated value for each field.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `fields` is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/>, <paramref name="dictionaryName"/>, <paramref name="fields"/> is <see langword="null"/>.</exception>
     public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -274,7 +274,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
     /// <param name="dictionaryName">The dictionary to fetch.</param>
     /// <returns>Task representing with the status of the fetch operation and the associated dictionary.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName` is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/>, <paramref name="dictionaryName"/> is <see langword="null"/>.</exception>
     public async Task<CacheDictionaryFetchResponse> DictionaryFetchAsync(string cacheName, string dictionaryName)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -286,12 +286,12 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <summary>
     /// Remove the dictionary from the cache.
     ///
-    /// Performs a no-op if `dictionaryName` does not exist.
+    /// Performs a no-op if <paramref name="dictionaryName"/> does not exist.
     /// </summary>
     /// <param name="cacheName">Name of the cache to delete the dictionary from.</param>
     /// <param name="dictionaryName">Name of the dictionary to delete.</param>
     /// <returns>Task representing the result of the delete operation.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName` or `dictionaryName` is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/> or <paramref name="dictionaryName"/> is <see langword="null"/>.</exception>
     public async Task<CacheDictionaryDeleteResponse> DictionaryDeleteAsync(string cacheName, string dictionaryName)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -303,13 +303,13 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <summary>
     /// Remove a field from a dictionary.
     ///
-    /// Performs a no-op if `dictionaryName` or `field` does not exist.
+    /// Performs a no-op if <paramref name="dictionaryName"/> or <paramref name="field"/> does not exist.
     /// </summary>
     /// <param name="cacheName">Name of the cache to lookup the dictionary in.</param>
     /// <param name="dictionaryName">Name of the dictionary to remove the field from.</param>
     /// <param name="field">Name of the field to remove from the dictionary.</param>
     /// <returns>Task representing the result of the cache operation.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `field` is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/>, <paramref name="dictionaryName"/>, <paramref name="field"/> is <see langword="null"/>.</exception>
     public async Task<CacheDictionaryRemoveFieldResponse> DictionaryRemoveFieldAsync(string cacheName, string dictionaryName, byte[] field)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -332,13 +332,13 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <summary>
     /// Remove fields from a dictionary.
     ///
-    /// Performs a no-op if `dictionaryName` or a particular field does not exist.
+    /// Performs a no-op if <paramref name="dictionaryName"/> or a particular field does not exist.
     /// </summary>
     /// <param name="cacheName">Name of the cache to lookup the dictionary in.</param>
     /// <param name="dictionaryName">Name of the dictionary to remove the field from.</param>
     /// <param name="fields">Name of the fields to remove from the dictionary.</param>
     /// <returns>Task representing the result of the cache operation.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName`, `dictionaryName`, `fields` is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/>, <paramref name="dictionaryName"/>, <paramref name="fields"/> is <see langword="null"/>.</exception>
     public async Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -367,16 +367,16 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// of the element passed in and the elements of the set.
     ///
     /// Creates the set if it does not exist and sets the TTL.
-    /// If the set already exists and `refreshTtl` is <see langword="true"/>, then update the
-    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// If the set already exists and <paramref name="refreshTtl"/> is <see langword="true"/>, then update the
+    /// TTL to <paramref name="ttlSeconds"/>, otherwise leave the TTL unchanged.
     /// </summary>
     /// <param name="cacheName">Name of the cache to store the set in.</param>
     /// <param name="setName">The set to add the element to.</param>
     /// <param name="element">The data to add to the set.</param>
-    /// <param name="refreshTtl">Update `setName`'s TTL if it already exists.</param>
+    /// <param name="refreshTtl">Update <paramref name="setName"/>'s TTL if it already exists.</param>
     /// <param name="ttlSeconds">TTL for the set in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
     /// <returns>Task representing the result of the cache operation.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName`, `setName`, `element` is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/>, <paramref name="setName"/>, <paramref name="element"/> is <see langword="null"/>.</exception>
     public async Task<CacheSetAddResponse> SetAddAsync(string cacheName, string setName, byte[] element, bool refreshTtl, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -403,16 +403,16 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// of the elements passed in and the elements of the set.
     ///
     /// Creates the set if it does not exist and sets the TTL.
-    /// If the set already exists and `refreshTtl` is <see langword="true"/>, then update the
-    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// If the set already exists and <paramref name="refreshTtl"/> is <see langword="true"/>, then update the
+    /// TTL to <paramref name="ttlSeconds"/>, otherwise leave the TTL unchanged.
     /// </summary>
     /// <param name="cacheName">Name of the cache to store the set in.</param>
     /// <param name="setName">The set to add elements to.</param>
     /// <param name="elements">The data to add to the set.</param>
-    /// <param name="refreshTtl">Update `setName`'s TTL if it already exists.</param>
+    /// <param name="refreshTtl">Update <paramref name="setName"/>'s TTL if it already exists.</param>
     /// <param name="ttlSeconds">TTL for the set in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
     /// <returns>Task representing the result of the cache operation.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName`, `setName`, `elements` is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/>, <paramref name="setName"/>, <paramref name="elements"/> is <see langword="null"/>.</exception>
     public async Task<CacheSetAddBatchResponse> SetAddBatchAsync(string cacheName, string setName, IEnumerable<byte[]> elements, bool refreshTtl, uint? ttlSeconds = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -437,13 +437,13 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <summary>
     /// Remove an element from a set.
     ///
-    /// Performs a no-op if `setName` or `element` does not exist.
+    /// Performs a no-op if <paramref name="setName"/> or <paramref name="element"/> does not exist.
     /// </summary>
     /// <param name="cacheName">Name of the cache to lookup the set in.</param>
     /// <param name="setName">The set to remove the element from.</param>
     /// <param name="element">The data to remove from the set.</param>
     /// <returns>Task representing the result of the cache operation.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName`, `setName`, `element` is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/>, <paramref name="setName"/>, <paramref name="element"/> is <see langword="null"/>.</exception>
     public async Task<CacheSetRemoveElementResponse> SetRemoveElementAsync(string cacheName, string setName, byte[] element)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -466,13 +466,13 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <summary>
     /// Remove elements from a set.
     ///
-    /// Performs a no-op if `setName` or any of `elements` do not exist.
+    /// Performs a no-op if <paramref name="setName"/> or any of <paramref name="elements"/> do not exist.
     /// </summary>
     /// <param name="cacheName">Name of the cache to lookup the set in.</param>
     /// <param name="setName">The set to remove the elements from.</param>
     /// <param name="elements">The data to remove from the set.</param>
     /// <returns>Task representing the result of the cache operation.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName`, `setName`, `elements` is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/>, <paramref name="setName"/>, <paramref name="elements"/> is <see langword="null"/>.</exception>
     public async Task<CacheSetRemoveElementsResponse> SetRemoveElementsAsync(string cacheName, string setName, IEnumerable<byte[]> elements)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -500,7 +500,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
     /// <param name="setName">The set to fetch.</param>
     /// <returns>Task representing with the status of the fetch operation and the associated set.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName` or `setName` is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/> or <paramref name="setName"/> is <see langword="null"/>.</exception>
     public async Task<CacheSetFetchResponse> SetFetchAsync(string cacheName, string setName)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -512,12 +512,12 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <summary>
     /// Remove the set from the cache.
     ///
-    /// Performs a no-op if `setName` does not exist.
+    /// Performs a no-op if <paramref name="setName"/> does not exist.
     /// </summary>
     /// <param name="cacheName">Name of the cache to delete the set from.</param>
     /// <param name="setName">Name of the set to delete.</param>
     /// <returns>Task representing the result of the delete operation.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName` or `setName` is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/> or <paramref name="setName"/> is <see langword="null"/>.</exception>
     public async Task<CacheSetDeleteResponse> SetDeleteAsync(string cacheName, string setName)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -530,18 +530,18 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// Push a value to the beginning of a list.
     ///
     /// Creates the list if it does not exist and sets the TTL.
-    /// If the list already exists and `refreshTtl` is <see langword="true"/>, then update the
-    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// If the list already exists and <paramref name="refreshTtl"/> is <see langword="true"/>, then update the
+    /// TTL to <paramref name="ttlSeconds"/>, otherwise leave the TTL unchanged.
     /// </summary>
     /// <param name="cacheName">Name of the cache to store the list in.</param>
     /// <param name="listName">The list to push the value on.</param>
     /// <param name="value">The value to push to the front of the list.</param>
-    /// <param name="refreshTtl">Update `listName`'s TTL if it already exists.</param>
+    /// <param name="refreshTtl">Update <paramref name="listName"/>'s TTL if it already exists.</param>
     /// <param name="ttlSeconds">TTL for the list in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
     /// <param name="truncateBackToSize">Ensure the list does not exceed this length. Remove excess from the end of the list. Must be a positive number.</param>
     /// <returns>Task representing the result of the push operation.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName` or `listName` or `value` is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">`truncateTailToSize` is zero.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/> or <paramref name="listName"/> or <paramref name="value"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="truncateTailToSize"/> is zero.</exception>
     public async Task<CacheListPushFrontResponse> ListPushFrontAsync(string cacheName, string listName, byte[] value, bool refreshTtl, uint? ttlSeconds = null, uint? truncateBackToSize = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -567,18 +567,18 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// Push a value to the end of a list.
     ///
     /// Creates the list if it does not exist and sets the TTL.
-    /// If the list already exists and `refreshTtl` is <see langword="true"/>, then update the
-    /// TTL to `ttlSeconds`, otherwise leave the TTL unchanged.
+    /// If the list already exists and <paramref name="refreshTtl"/> is <see langword="true"/>, then update the
+    /// TTL to <paramref name="ttlSeconds"/>, otherwise leave the TTL unchanged.
     /// </summary>
     /// <param name="cacheName">Name of the cache to store the list in.</param>
     /// <param name="listName">The list to push the value on.</param>
     /// <param name="value">The value to push to the back of the list.</param>
-    /// <param name="refreshTtl">Update `listName`'s TTL if it already exists.</param>
+    /// <param name="refreshTtl">Update <paramref name="listName"/>'s TTL if it already exists.</param>
     /// <param name="ttlSeconds">TTL for the list in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
     /// <param name="truncateFrontToSize">Ensure the list does not exceed this length. Remove excess from the beginning of the list. Must be a positive number.</param>
     /// <returns>Task representing the result of the push operation.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName` or `listName` or `value` is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">`truncateHeadToSize` is zero.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/> or <paramref name="listName"/> or <paramref name="value"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="truncateHeadToSize"/> is zero.</exception>
     public async Task<CacheListPushBackResponse> ListPushBackAsync(string cacheName, string listName, byte[] value, bool refreshTtl, uint? ttlSeconds = null, uint? truncateFrontToSize = null)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -606,7 +606,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="cacheName">Name of the cache to read the list from.</param>
     /// <param name="listName">The list to pop from.</param>
     /// <returns>Task representing the status and associated value for the pop operation.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName` or `listName` is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/> or <paramref name="listName"/> is <see langword="null"/>.</exception>
     public async Task<CacheListPopFrontResponse> ListPopFrontAsync(string cacheName, string listName)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -621,7 +621,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="cacheName">Name of the cache to read the list from.</param>
     /// <param name="listName">The list to pop from.</param>
     /// <returns>Task representing the status and associated value for the pop operation.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName` or `listName` is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/> or <paramref name="listName"/> is <see langword="null"/>.</exception>
     public async Task<CacheListPopBackResponse> ListPopBackAsync(string cacheName, string listName)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -636,7 +636,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
     /// <param name="listName">The list to fetch.</param>
     /// <returns>Task representing with the status of the fetch operation and the associated list.</returns>
-    /// <exception cref="ArgumentNullException">Any of `cacheName` or `listName` is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/> or <paramref name="listName"/> is <see langword="null"/>.</exception>
     public async Task<CacheListFetchResponse> ListFetchAsync(string cacheName, string listName)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
