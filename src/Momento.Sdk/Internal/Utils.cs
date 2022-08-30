@@ -119,27 +119,27 @@ namespace Momento.Sdk.Internal
         public static class ToByteStringExtensions
         {
             /// <summary>
-            /// Convert a byte array to a `ByteString`
+            /// Convert a byte array to a <see cref="ByteString"/>
             /// </summary>
             /// <param name="byteArray">The byte array to convert.</param>
-            /// <returns>The byte array as a `ByteString`</returns>
+            /// <returns>The byte array as a <see cref="ByteString"/></returns>
             public static ByteString ToByteString(this byte[] byteArray)
             {
                 return ByteString.CopyFrom(byteArray);
             }
 
             /// <summary>
-            /// Convert a UTF-8 string to a `ByteString`.
+            /// Convert a UTF-8 string to a <see cref="ByteString"/>.
             /// </summary>
             /// <param name="str">The string to convert.</param>
-            /// <returns>The string as a `ByteString`.</returns>
+            /// <returns>The string as a <see cref="ByteString"/>.</returns>
             public static ByteString ToByteString(this string str)
             {
                 return ByteString.CopyFromUtf8(str);
             }
 
             /// <summary>
-            /// Convert a byte array to a singleton `ByteString` array
+            /// Convert a byte array to a singleton <see cref="ByteString"/> array
             /// </summary>
             /// <param name="byteArray">The byte array to convert.</param>
             /// <returns>A length one array containing the converted byte array.</returns>
@@ -149,7 +149,7 @@ namespace Momento.Sdk.Internal
             }
 
             /// <summary>
-            /// Convert a UTF-8 string to a singleton `ByteString` array.
+            /// Convert a UTF-8 string to a singleton <see cref="ByteString"/> array.
             /// </summary>
             /// <param name="str">The string to convert.</param>
             /// <returns>A length one array containing the converted string.</returns>
@@ -162,7 +162,7 @@ namespace Momento.Sdk.Internal
             /// Convert an enumerable of byte arrays to <code>IEnumerable&lt;ByteString&gt;</code>
             /// </summary>
             /// <param name="enumerable">The enumerable to convert.</param>
-            /// <returns>An enumerable over `ByteString`s.</returns>
+            /// <returns>An enumerable over <see cref="ByteString"/>s.</returns>
             public static IEnumerable<ByteString> ToEnumerableByteString(this IEnumerable<byte[]> enumerable)
             {
                 return enumerable.Select(item => item.ToByteString());
@@ -178,8 +178,8 @@ namespace Momento.Sdk.Internal
         public static class ByteArrayDictionaryExtensions
         {
             /// <summary>
-            /// DWIM equality implementation for dictionaries. cf `SetEquals`.
-            /// https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1.setequals?view=net-6.0
+            /// DWIM equality implementation for dictionaries, cf <see href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1.setequals?view=net-6.0">SetEquals</see>.
+            /// 
             ///
             /// Tests whether the dictionaries contain the same content as opposed to the same
             /// references.
