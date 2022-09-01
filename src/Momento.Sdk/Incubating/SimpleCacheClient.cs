@@ -538,7 +538,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(value, nameof(value));
         Utils.ArgumentStrictlyPositive(truncateBackToSize, nameof(truncateBackToSize));
 
-        return await this.dataClient.ListPushFrontAsync(cacheName, listName, value, refreshTtl, ttlSeconds);
+        return await this.dataClient.ListPushFrontAsync(cacheName, listName, value, refreshTtl, truncateBackToSize, ttlSeconds);
     }
 
     /// <inheritdoc cref="ListPushFrontAsync(string, string, byte[], bool, uint?, uint?)"/>
@@ -549,7 +549,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(value, nameof(value));
         Utils.ArgumentStrictlyPositive(truncateBackToSize, nameof(truncateBackToSize));
 
-        return await this.dataClient.ListPushFrontAsync(cacheName, listName, value, refreshTtl, ttlSeconds);
+        return await this.dataClient.ListPushFrontAsync(cacheName, listName, value, refreshTtl, truncateBackToSize, ttlSeconds);
     }
 
     /// <summary>
@@ -572,7 +572,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(value, nameof(value));
         Utils.ArgumentStrictlyPositive(truncateFrontToSize, nameof(truncateFrontToSize));
 
-        return await this.dataClient.ListPushBackAsync(cacheName, listName, value, refreshTtl, ttlSeconds);
+        return await this.dataClient.ListPushBackAsync(cacheName, listName, value, refreshTtl, truncateFrontToSize, ttlSeconds);
     }
 
     /// <inheritdoc cref="ListPushBackAsync(string, string, byte[], bool, uint?, uint?)"/>
@@ -583,7 +583,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(value, nameof(value));
         Utils.ArgumentStrictlyPositive(truncateFrontToSize, nameof(truncateFrontToSize));
 
-        return await this.dataClient.ListPushBackAsync(cacheName, listName, value, refreshTtl, ttlSeconds);
+        return await this.dataClient.ListPushBackAsync(cacheName, listName, value, refreshTtl, truncateFrontToSize, ttlSeconds);
     }
 
     /// <summary>

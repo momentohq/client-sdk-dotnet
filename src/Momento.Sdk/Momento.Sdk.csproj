@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<!-- Build Configuration -->
@@ -28,7 +28,7 @@
 		<PackageReference Include="Google.Protobuf" Version="3.19.0" />
 		<PackageReference Include="Grpc.Net.Client" Version="2.40.0" />
 		<PackageReference Include="Grpc.Core" Version="2.41.1" />
-		<PackageReference Include="Momento.Protos" Version="0.28.3" />
+		<PackageReference Include="Momento.Protos" Version="0.29.0" />
 		<PackageReference Include="JWT" Version="8.4.2" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.16.0" />
 	</ItemGroup>
