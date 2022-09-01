@@ -631,6 +631,14 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.ListFetchAsync(cacheName, listName);
     }
 
+    /// <summary>
+    /// Remove all elements in a list equal to a particular value.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+    /// <param name="listName">The list to remove elements from.</param>
+    /// <param name="value">The value to completely remove from the list.</param>
+    /// <returns>Task representing the result of the cache operation.</returns>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/>, <paramref name="listName"/>, or <paramref name="value"/> is <see langword="null"/>.</exception>
     public async Task<CacheListRemoveAllResponse> ListRemoveAllAsync(string cacheName, string listName, byte[] value)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
@@ -640,6 +648,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.ListRemoveAllAsync(cacheName, listName, value);
     }
 
+    /// <inheritdoc cref="ListRemoveAllAsync(string, string, byte[])"/>
     public async Task<CacheListRemoveAllResponse> ListRemoveAllAsync(string cacheName, string listName, string value)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
