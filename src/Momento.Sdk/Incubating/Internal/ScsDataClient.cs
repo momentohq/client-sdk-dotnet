@@ -473,4 +473,23 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         return new CacheListRemoveAllResponse();
     }
+
+    public async Task<CacheListLengthResponse> ListLengthAsync(string cacheName, string listName)
+    {
+        _ListLengthRequest request = new()
+        {
+            ListName = listName.ToByteString(),
+        };
+        _ListLengthResponse response;
+
+        try
+        {
+            response = await this.grpcManager.Client.ListLengthAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+        return new CacheListLengthResponse(response);
+    }
 }

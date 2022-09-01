@@ -562,4 +562,32 @@ public class ListTest : TestBase
         await client.ListRemoveAllAsync(cacheName, listName, Utils.NewGuidString());
         Assert.Equal(CacheGetStatus.MISS, (await client.ListFetchAsync(cacheName, listName)).Status);
     }
+
+    [Theory]
+    [InlineData(null, "my-list")]
+    [InlineData("cache", null)]
+    public async Task ListLengthAsync_NullChecks_ThrowsException(string cacheName, string listName)
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.ListLengthAsync(cacheName, listName));
+    }
+
+    [Fact]
+    public async Task ListLengthAsync_ListIsMissing_HappyPath()
+    {
+        var lengthResponse = await client.ListLengthAsync(cacheName, Utils.NewGuidString());
+        Assert.Equal(0, lengthResponse.Length);
+    }
+
+    [Fact]
+    public async Task ListLengthAsync_ListIsFound_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        foreach (var i in Enumerable.Range(0, 10))
+        {
+            await client.ListPushBackAsync(cacheName, listName, Utils.NewGuidByteArray(), false);
+        }
+
+        var lengthResponse = await client.ListLengthAsync(cacheName, listName);
+        Assert.Equal(10, lengthResponse.Length);
+    }
 }
