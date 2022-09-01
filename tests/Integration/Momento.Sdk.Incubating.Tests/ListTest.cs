@@ -233,6 +233,19 @@ public class ListTest : TestBase
     }
 
     [Fact]
+    public async Task ListPushBackTruncate_TruncatesList()
+    {
+        var listName = Utils.NewGuidString();
+        var value1 = Utils.NewGuidString();
+        var value2 = Utils.NewGuidString();
+        await client.ListPushBackAsync(cacheName, listName, value1, false);
+        await client.ListPushBackAsync(cacheName, listName, value2, false, null, 1);
+        var response = await client.ListFetchAsync(cacheName, listName);
+        Assert.Single(response.StringList());
+        Assert.Contains(value2, response.StringList());
+    }
+
+    [Fact]
     public async Task ListPushBackFetch_ValueIsString_HappyPath()
     {
         var listName = Utils.NewGuidString();
