@@ -238,11 +238,14 @@ public class ListTest : TestBase
         var listName = Utils.NewGuidString();
         var value1 = Utils.NewGuidString();
         var value2 = Utils.NewGuidString();
+        var value3 = Utils.NewGuidString();
         await client.ListPushBackAsync(cacheName, listName, value1, false);
-        await client.ListPushBackAsync(cacheName, listName, value2, false, null, 1);
+        await client.ListPushBackAsync(cacheName, listName, value2, false);
+        await client.ListPushBackAsync(cacheName, listName, value3, false, null, 2);
         var response = await client.ListFetchAsync(cacheName, listName);
-        Assert.Single(response.StringList());
-        Assert.Contains(value2, response.StringList());
+        Assert.Equal(2, response.StringList().Count);
+        Assert.Equal(value2, response.StringList()[0]);
+        Assert.Equal(value3, response.StringList()[1]);
     }
 
     [Fact]
