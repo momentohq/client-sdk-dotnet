@@ -631,6 +631,24 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.ListFetchAsync(cacheName, listName);
     }
 
+    public async Task<CacheListRemoveAllResponse> ListRemoveAllAsync(string cacheName, string listName, byte[] value)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(listName, nameof(listName));
+        Utils.ArgumentNotNull(value, nameof(value));
+
+        return await this.dataClient.ListRemoveAllAsync(cacheName, listName, value);
+    }
+
+    public async Task<CacheListRemoveAllResponse> ListRemoveAllAsync(string cacheName, string listName, string value)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(listName, nameof(listName));
+        Utils.ArgumentNotNull(value, nameof(value));
+
+        return await this.dataClient.ListRemoveAllAsync(cacheName, listName, value);
+    }
+
     /// <inheritdoc />
     public void Dispose()
     {

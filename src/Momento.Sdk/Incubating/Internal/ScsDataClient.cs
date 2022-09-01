@@ -444,4 +444,33 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         return new CacheListFetchResponse(response);
     }
+
+    public async Task<CacheListRemoveAllResponse> ListRemoveAllAsync(string cacheName, string listName, byte[] value)
+    {
+        return await ListRemoveAllAsync(cacheName, listName, value.ToByteString());
+    }
+
+    public async Task<CacheListRemoveAllResponse> ListRemoveAllAsync(string cacheName, string listName, string value)
+    {
+        return await ListRemoveAllAsync(cacheName, listName, value.ToByteString());
+    }
+
+    public async Task<CacheListRemoveAllResponse> ListRemoveAllAsync(string cacheName, string listName, ByteString value)
+    {
+        _ListRemoveRequest request = new()
+        {
+            ListName = listName.ToByteString(),
+            AllElementsWithValue = value
+        };
+
+        try
+        {
+            await this.grpcManager.Client.ListRemoveAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+        return new CacheListRemoveAllResponse();
+    }
 }
