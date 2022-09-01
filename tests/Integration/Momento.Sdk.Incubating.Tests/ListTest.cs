@@ -1,3 +1,4 @@
+using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Responses;
 
 namespace Momento.Sdk.Incubating.Tests;
@@ -442,5 +443,123 @@ public class ListTest : TestBase
         Assert.Contains(field1, fetchResponse.ByteArrayList!);
         Assert.Contains(field2, fetchResponse.ByteArrayList!);
         Assert.Equal(2, fetchResponse.ByteArrayList!.Count);
+    }
+
+    [Theory]
+    [InlineData(null, "my-list", new byte[] { 0x00 })]
+    [InlineData("cache", null, new byte[] { 0x00 })]
+    [InlineData("cache", "my-list", null)]
+    public async Task ListRemoveAllAsync_NullChecksByteArray_ThrowsException(string cacheName, string listName, byte[] value)
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.ListRemoveAllAsync(cacheName, listName, value));
+    }
+
+    [Fact]
+    public async Task ListRemoveAllAsync_ValueIsByteArray_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        var list = new List<byte[]>() { Utils.NewGuidByteArray(), Utils.NewGuidByteArray(), Utils.NewGuidByteArray() };
+        var valueOfInterest = Utils.NewGuidByteArray();
+
+        // Add elements to the list
+        foreach (var value in list)
+        {
+            await client.ListPushBackAsync(cacheName, listName, value, true, ttlSeconds: 60);
+        }
+
+        await client.ListPushBackAsync(cacheName, listName, valueOfInterest, false);
+        await client.ListPushBackAsync(cacheName, listName, valueOfInterest, false);
+
+        // Remove value of interest
+        await client.ListRemoveAllAsync(cacheName, listName, valueOfInterest);
+
+        // Test not there
+        var cachedList = (await client.ListFetchAsync(cacheName, listName)).ByteArrayList!;
+        Assert.True(list.ListEquals(cachedList));
+    }
+
+    [Fact]
+    public async Task ListRemoveAllAsync_ValueIsByteArray_ValueNotPresentNoop()
+    {
+        var listName = Utils.NewGuidString();
+        var list = new List<byte[]>() { Utils.NewGuidByteArray(), Utils.NewGuidByteArray(), Utils.NewGuidByteArray() };
+
+        foreach (var value in list)
+        {
+            await client.ListPushBackAsync(cacheName, listName, value, false);
+        }
+
+        await client.ListRemoveAllAsync(cacheName, listName, Utils.NewGuidByteArray());
+
+        var cachedList = (await client.ListFetchAsync(cacheName, listName)).ByteArrayList!;
+        Assert.True(list.ListEquals(cachedList));
+    }
+
+    [Fact]
+    public async Task ListRemoveAllAsync_ValueIsByteArray_ListNotThereNoop()
+    {
+        var listName = Utils.NewGuidString();
+        Assert.Equal(CacheGetStatus.MISS, (await client.ListFetchAsync(cacheName, listName)).Status);
+        await client.ListRemoveAllAsync(cacheName, listName, Utils.NewGuidByteArray());
+        Assert.Equal(CacheGetStatus.MISS, (await client.ListFetchAsync(cacheName, listName)).Status);
+    }
+
+    [Theory]
+    [InlineData(null, "my-list", "")]
+    [InlineData("cache", null, "")]
+    [InlineData("cache", "my-list", null)]
+    public async Task ListRemoveAllAsync_NullChecksString_ThrowsException(string cacheName, string listName, string value)
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.ListRemoveAllAsync(cacheName, listName, value));
+    }
+
+    [Fact]
+    public async Task ListRemoveAllAsync_ValueIsString_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        var list = new List<string>() { Utils.NewGuidString(), Utils.NewGuidString(), Utils.NewGuidString() };
+        var valueOfInterest = Utils.NewGuidString();
+
+        // Add elements to the list
+        foreach (var value in list)
+        {
+            await client.ListPushBackAsync(cacheName, listName, value, true, ttlSeconds: 60);
+        }
+
+        await client.ListPushBackAsync(cacheName, listName, valueOfInterest, false);
+        await client.ListPushBackAsync(cacheName, listName, valueOfInterest, false);
+
+        // Remove value of interest
+        await client.ListRemoveAllAsync(cacheName, listName, valueOfInterest);
+
+        // Test not there
+        var cachedList = (await client.ListFetchAsync(cacheName, listName)).StringList()!;
+        Assert.True(list.SequenceEqual(cachedList));
+    }
+
+    [Fact]
+    public async Task ListRemoveAllAsync_ValueIsByteString_ValueNotPresentNoop()
+    {
+        var listName = Utils.NewGuidString();
+        var list = new List<string>() { Utils.NewGuidString(), Utils.NewGuidString(), Utils.NewGuidString() };
+
+        foreach (var value in list)
+        {
+            await client.ListPushBackAsync(cacheName, listName, value, false);
+        }
+
+        await client.ListRemoveAllAsync(cacheName, listName, Utils.NewGuidString());
+
+        var cachedList = (await client.ListFetchAsync(cacheName, listName)).StringList()!;
+        Assert.True(list.SequenceEqual(cachedList));
+    }
+
+    [Fact]
+    public async Task ListRemoveAllAsync_ValueIsString_ListNotThereNoop()
+    {
+        var listName = Utils.NewGuidString();
+        Assert.Equal(CacheGetStatus.MISS, (await client.ListFetchAsync(cacheName, listName)).Status);
+        await client.ListRemoveAllAsync(cacheName, listName, Utils.NewGuidString());
+        Assert.Equal(CacheGetStatus.MISS, (await client.ListFetchAsync(cacheName, listName)).Status);
     }
 }
