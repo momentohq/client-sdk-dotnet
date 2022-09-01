@@ -259,9 +259,9 @@ public class ListTest : TestBase
         await client.ListPushFrontAsync(cacheName, listName, value2, false);
         await client.ListPushFrontAsync(cacheName, listName, value3, false, null, 2);
         var response = await client.ListFetchAsync(cacheName, listName);
-        Assert.Equal(2, response.StringList().Count);
-        Assert.Equal(value2, response.StringList()[1]);
-        Assert.Equal(value3, response.StringList()[0]);
+        Assert.Equal(2, response.StringList()!.Count);
+        Assert.Equal(value2, response.StringList()![1]);
+        Assert.Equal(value3, response.StringList()![0]);
     }
 
     [Fact]
