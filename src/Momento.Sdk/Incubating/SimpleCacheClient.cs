@@ -658,6 +658,23 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.dataClient.ListRemoveValueAsync(cacheName, listName, value);
     }
 
+    /// <summary>
+    /// Calculate the length of a list in the cache.
+    ///
+    /// A list that does not exist is interpreted to have length 0.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+    /// <param name="listName">The list to calculate length.</param>
+    /// <returns>Task representing the length of the list.</returns>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/> or <paramref name="listName"/> is <see langword="null"/>.</exception>
+    public async Task<CacheListLengthResponse> ListLengthAsync(string cacheName, string listName)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(listName, nameof(listName));
+
+        return await this.dataClient.ListLengthAsync(cacheName, listName);
+    }
+
     /// <inheritdoc />
     public void Dispose()
     {
