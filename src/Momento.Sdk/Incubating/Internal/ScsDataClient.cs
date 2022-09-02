@@ -447,17 +447,17 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return new CacheListFetchResponse(response);
     }
 
-    public async Task<CacheListRemoveAllResponse> ListRemoveAllAsync(string cacheName, string listName, byte[] value)
+    public async Task<CacheListRemoveAllResponse> ListRemoveValueAsync(string cacheName, string listName, byte[] value)
     {
-        return await ListRemoveAllAsync(cacheName, listName, value.ToByteString());
+        return await ListRemoveValueAsync(cacheName, listName, value.ToByteString());
     }
 
-    public async Task<CacheListRemoveAllResponse> ListRemoveAllAsync(string cacheName, string listName, string value)
+    public async Task<CacheListRemoveAllResponse> ListRemoveValueAsync(string cacheName, string listName, string value)
     {
-        return await ListRemoveAllAsync(cacheName, listName, value.ToByteString());
+        return await ListRemoveValueAsync(cacheName, listName, value.ToByteString());
     }
 
-    public async Task<CacheListRemoveAllResponse> ListRemoveAllAsync(string cacheName, string listName, ByteString value)
+    public async Task<CacheListRemoveAllResponse> ListRemoveValueAsync(string cacheName, string listName, ByteString value)
     {
         _ListRemoveRequest request = new()
         {

@@ -639,23 +639,23 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="value">The value to completely remove from the list.</param>
     /// <returns>Task representing the result of the cache operation.</returns>
     /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/>, <paramref name="listName"/>, or <paramref name="value"/> is <see langword="null"/>.</exception>
-    public async Task<CacheListRemoveAllResponse> ListRemoveAllAsync(string cacheName, string listName, byte[] value)
+    public async Task<CacheListRemoveAllResponse> ListRemoveValueAsync(string cacheName, string listName, byte[] value)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(listName, nameof(listName));
         Utils.ArgumentNotNull(value, nameof(value));
 
-        return await this.dataClient.ListRemoveAllAsync(cacheName, listName, value);
+        return await this.dataClient.ListRemoveValueAsync(cacheName, listName, value);
     }
 
-    /// <inheritdoc cref="ListRemoveAllAsync(string, string, byte[])"/>
-    public async Task<CacheListRemoveAllResponse> ListRemoveAllAsync(string cacheName, string listName, string value)
+    /// <inheritdoc cref="ListRemoveValueAsync(string, string, byte[])"/>
+    public async Task<CacheListRemoveAllResponse> ListRemoveValueAsync(string cacheName, string listName, string value)
     {
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(listName, nameof(listName));
         Utils.ArgumentNotNull(value, nameof(value));
 
-        return await this.dataClient.ListRemoveAllAsync(cacheName, listName, value);
+        return await this.dataClient.ListRemoveValueAsync(cacheName, listName, value);
     }
 
     /// <inheritdoc />
