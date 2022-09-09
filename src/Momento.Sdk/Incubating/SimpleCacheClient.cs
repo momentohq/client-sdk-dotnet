@@ -238,6 +238,53 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <summary>
+    /// <para>Add an integer quantity to a dictionary value.</para>
+    ///
+    /// <para>Incrementing the value of a missing field sets the value to <paramref name="amount"/>.</para>
+    /// <para>Incrementing a value that is not an integer or not the string representation of an integer
+    /// results in <see cref="CacheDictionaryIncrementResponse.Status"/> equal to <see cref="CacheDictionaryIncrementStatus.PARSE_ERROR"/>.</para>
+    /// </summary>
+    /// <inheritdoc cref="DictionarySetAsync(string, string, byte[], byte[], bool, uint?)" path="remark"/>
+    /// <param name="cacheName">Name of the cache to store the dictionary in.</param>
+    /// <param name="dictionaryName">The dictionary to set.</param>
+    /// <param name="field"></param>
+    /// <param name="refreshTtl">Update the dictionary TTL if the dictionary already exists.</param>
+    /// <param name="amount">The quantity to add to the value. May be positive, negative, or zero. Defaults to 1.</param>
+    /// <param name="ttlSeconds">TTL for the dictionary in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
+    /// <returns>Task representing the result of the cache operation.</returns>
+    /// <exception cref="NotImplementedException">This method is a stub. Do not invoke.</exception>
+    /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/>, <paramref name="dictionaryName"/>, <paramref name="field"/> is <see langword="null"/>.</exception>
+    /// <example>
+    /// The following illustrates a typical workflow:
+    /// <code>
+    /// var response = client.DictionaryIncrementAsync("my cache", "my dictionary", "counter", amount: 42, refreshTtl: false);
+    /// Console.WriteLine($"Current value is {response.Value}");
+    ///
+    /// // Reset the counter. Note we use the string representation of an integer.
+    /// client.DictionarySetAsync("my cache", "my dictionary", "counter", "0", refreshTtl: false);
+    ///
+    /// // Retrieve the counter. The integer is represented as a string.
+    /// var response = client.DictionaryGetAsync("my cache", "my dictionary", "counter");
+    /// Console.WriteLine(response.String());
+    ///
+    /// // Here we try incrementing a value that isn't an integer. This results in an error.
+    /// client.DictionarySetAsync("my cache", "my dictionary", "counter", "0123ABC", refreshTtl: false);
+    /// var response = client.DictionaryIncrementAsync("my cache", "my dictionary", "counter", amount: 42, refreshTtl: false);
+    ///
+    /// // response.Status is PARSE_ERROR and response.Value is null
+    /// Console.WriteLine($"Status is {response.Status}");
+    /// </code>
+    /// </example>
+    public async Task<CacheDictionaryIncrementResponse> DictionaryIncrementAsync(string cacheName, string dictionaryName, string field, bool refreshTtl, long amount = 1, uint? ttlSeconds = null)
+    {
+        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+        Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        Utils.ArgumentNotNull(field, nameof(field));
+
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
     /// Get several values from a dictionary.
     /// </summary>
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>

@@ -100,6 +100,15 @@ public class DictionaryTest : TestBase
     }
 
     [Theory]
+    [InlineData(null, "my-dictionary", "field")]
+    [InlineData("cache", null, "field")]
+    [InlineData("cache", "my-dictionary", null)]
+    public async Task DictionaryIncrementAsync_NullChecksFieldIsString_ThrowsException(string cacheName, string dictionaryName, string field)
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryIncrementAsync(cacheName, dictionaryName, field, refreshTtl: true));
+    }
+
+    [Theory]
     [InlineData(null, "my-dictionary", "my-field")]
     [InlineData("cache", null, "my-field")]
     [InlineData("cache", "my-dictionary", null)]
