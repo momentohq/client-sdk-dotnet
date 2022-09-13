@@ -39,8 +39,8 @@ public class ListTest : TestBase
         var value2 = Utils.NewGuidByteArray();
         pushResponse = await client.ListPushFrontAsync(cacheName, listName, value2, false);
         Assert.Equal(2, pushResponse.ListLength);
-        fetchResponse = await client.ListFetchAsync(cacheName, listName);
 
+        fetchResponse = await client.ListFetchAsync(cacheName, listName);
         list = fetchResponse.ByteArrayList!;
         Assert.Equal(value2, list[0]);
         Assert.Equal(value1, list[1]);
@@ -114,7 +114,6 @@ public class ListTest : TestBase
         Assert.Equal(2, pushResponse.ListLength);
 
         fetchResponse = await client.ListFetchAsync(cacheName, listName);
-
         list = fetchResponse.StringList()!;
         Assert.Equal(value2, list[0]);
         Assert.Equal(value1, list[1]);
@@ -172,7 +171,8 @@ public class ListTest : TestBase
         var listName = Utils.NewGuidString();
         var value1 = Utils.NewGuidByteArray();
 
-        await client.ListPushBackAsync(cacheName, listName, value1, false);
+        var pushResponse = await client.ListPushBackAsync(cacheName, listName, value1, false);
+        Assert.Equal(1, pushResponse.ListLength);
 
         var fetchResponse = await client.ListFetchAsync(cacheName, listName);
         Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
@@ -183,9 +183,10 @@ public class ListTest : TestBase
 
         // Test push semantics
         var value2 = Utils.NewGuidByteArray();
-        await client.ListPushBackAsync(cacheName, listName, value2, false);
-        fetchResponse = await client.ListFetchAsync(cacheName, listName);
+        pushResponse = await client.ListPushBackAsync(cacheName, listName, value2, false);
+        Assert.Equal(2, pushResponse.ListLength);
 
+        fetchResponse = await client.ListFetchAsync(cacheName, listName);
         list = fetchResponse.ByteArrayList!;
         Assert.Equal(value1, list[0]);
         Assert.Equal(value2, list[1]);
@@ -307,7 +308,8 @@ public class ListTest : TestBase
         var listName = Utils.NewGuidString();
         var value1 = Utils.NewGuidString();
 
-        await client.ListPushBackAsync(cacheName, listName, value1, false);
+        var pushResponse = await client.ListPushBackAsync(cacheName, listName, value1, false);
+        Assert.Equal(1, pushResponse.ListLength);
 
         var fetchResponse = await client.ListFetchAsync(cacheName, listName);
         Assert.Equal(CacheGetStatus.HIT, fetchResponse.Status);
@@ -318,9 +320,10 @@ public class ListTest : TestBase
 
         // Test push semantics
         var value2 = Utils.NewGuidString();
-        await client.ListPushBackAsync(cacheName, listName, value2, false);
-        fetchResponse = await client.ListFetchAsync(cacheName, listName);
+        pushResponse = await client.ListPushBackAsync(cacheName, listName, value2, false);
+        Assert.Equal(2, pushResponse.ListLength);
 
+        fetchResponse = await client.ListFetchAsync(cacheName, listName);
         list = fetchResponse.StringList()!;
         Assert.Equal(value1, list[0]);
         Assert.Equal(value2, list[1]);

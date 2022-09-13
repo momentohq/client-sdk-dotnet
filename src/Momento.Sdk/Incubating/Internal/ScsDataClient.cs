@@ -368,17 +368,15 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public async Task<CacheListPushBackResponse> ListPushBackAsync(string cacheName, string listName, byte[] value, bool refreshTtl, uint? truncateFrontToSize = null, uint? ttlSeconds = null)
     {
-        await SendListPushBackAsync(cacheName, listName, value.ToByteString(), refreshTtl, truncateFrontToSize, ttlSeconds);
-        return new CacheListPushBackResponse();
+        return await SendListPushBackAsync(cacheName, listName, value.ToByteString(), refreshTtl, truncateFrontToSize, ttlSeconds);
     }
 
     public async Task<CacheListPushBackResponse> ListPushBackAsync(string cacheName, string listName, string value, bool refreshTtl, uint? truncateFrontToSize = null, uint? ttlSeconds = null)
     {
-        await SendListPushBackAsync(cacheName, listName, value.ToByteString(), refreshTtl, truncateFrontToSize, ttlSeconds);
-        return new CacheListPushBackResponse();
+        return await SendListPushBackAsync(cacheName, listName, value.ToByteString(), refreshTtl, truncateFrontToSize, ttlSeconds);
     }
 
-    public async Task SendListPushBackAsync(string cacheName, string listName, ByteString value, bool refreshTtl, uint? truncateFrontToSize = null, uint? ttlSeconds = null)
+    public async Task<CacheListPushBackResponse> SendListPushBackAsync(string cacheName, string listName, ByteString value, bool refreshTtl, uint? truncateFrontToSize = null, uint? ttlSeconds = null)
     {
         _ListPushBackRequest request = new()
         {
@@ -388,15 +386,17 @@ internal sealed class ScsDataClient : ScsDataClientBase
             RefreshTtl = refreshTtl,
             TtlMilliseconds = TtlSecondsToMilliseconds(ttlSeconds)
         };
+        _ListPushBackResponse response;
 
         try
         {
-            await this.grpcManager.Client.ListPushBackAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            response = await this.grpcManager.Client.ListPushBackAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
         }
         catch (Exception e)
         {
             throw CacheExceptionMapper.Convert(e);
         }
+        return new CacheListPushBackResponse(response);
     }
 
     public async Task<CacheListPopFrontResponse> ListPopFrontAsync(string cacheName, string listName)
