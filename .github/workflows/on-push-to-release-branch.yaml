@@ -2,7 +2,7 @@ name: On push Main
 
 on:
   push:
-    branches: [main]
+    branches: [release]
 
 jobs:
   build_csharp:
@@ -40,4 +40,24 @@ jobs:
       - name: Incubating Integration Test
         run: |
           dotnet test tests/Integration/Momento.Sdk.Incubating.Tests
+        shell: bash
+
+      - name: Set release
+        id: semrel
+        uses: go-semantic-release/action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          allow-initial-development-versions: true
+          force-bump-patch-version: true
+
+      - name: Pack and Publish
+        run: |
+          set -x
+          pushd src/Momento.Sdk
+            VERSION="${{ steps.semrel.outputs.version }}"
+            echo "version: ${VERSION}"
+            dotnet build --configuration Release
+            dotnet pack -c Release -p:Version=${VERSION}
+            dotnet nuget push ./bin/Release/Momento.Sdk.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key=${{secrets.NUGET_API_KEY}}
+          popd
         shell: bash
