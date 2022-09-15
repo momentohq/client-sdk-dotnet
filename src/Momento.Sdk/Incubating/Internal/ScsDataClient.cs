@@ -91,6 +91,29 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return new CacheDictionarySetBatchResponse();
     }
 
+    public async Task<CacheDictionaryIncrementResponse> DictionaryIncrementAsync(string cacheName, string dictionaryName, string field, bool refreshTtl, long amount = 1, uint? ttlSeconds = null)
+    {
+        _DictionaryIncrementRequest request = new()
+        {
+            DictionaryName = dictionaryName.ToByteString(),
+            Field = field.ToByteString(),
+            Amount = amount,
+            RefreshTtl = refreshTtl,
+            TtlMilliseconds = TtlSecondsToMilliseconds(ttlSeconds)
+        };
+        _DictionaryIncrementResponse response;
+
+        try
+        {
+            response = await this.grpcManager.Client.DictionaryIncrementAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+        }
+        catch (Exception e)
+        {
+            throw CacheExceptionMapper.Convert(e);
+        }
+        return new CacheDictionaryIncrementResponse(response);
+    }
+
     public async Task<CacheDictionaryGetBatchResponse> DictionaryGetBatchAsync(string cacheName, string dictionaryName, IEnumerable<byte[]> fields)
     {
         var response = await SendDictionaryGetBatchAsync(cacheName, dictionaryName, fields.ToEnumerableByteString());

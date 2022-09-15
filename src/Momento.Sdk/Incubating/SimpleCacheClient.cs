@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Momento.Sdk.Exceptions;
 using Momento.Sdk.Incubating.Internal;
 using Momento.Sdk.Incubating.Responses;
 using Momento.Sdk.Responses;
@@ -241,8 +242,8 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <para>Add an integer quantity to a dictionary value.</para>
     ///
     /// <para>Incrementing the value of a missing field sets the value to <paramref name="amount"/>.</para>
-    /// <para>Incrementing a value that is not an integer or not the string representation of an integer
-    /// results in <see cref="CacheDictionaryIncrementResponse.Status"/> equal to <see cref="CacheDictionaryIncrementStatus.PARSE_ERROR"/>.</para>
+    /// <para>Incrementing a value that was not set using this method or not the string representation of an integer
+    /// results in throwing a <see cref="FailedPreconditionException"/>.</para>
     /// </summary>
     /// <inheritdoc cref="DictionarySetAsync(string, string, byte[], byte[], bool, uint?)" path="remark"/>
     /// <param name="cacheName">Name of the cache to store the dictionary in.</param>
@@ -254,6 +255,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <returns>Task representing the result of the cache operation.</returns>
     /// <exception cref="NotImplementedException">This method is a stub. Do not invoke.</exception>
     /// <exception cref="ArgumentNullException">Any of <paramref name="cacheName"/>, <paramref name="dictionaryName"/>, <paramref name="field"/> is <see langword="null"/>.</exception>
+    /// <exception cref="FailedPreconditionException">The command is invoked on a field that wasn't set using <c>DictionaryIncrementAsync</c> or is not the string representation of an integer.</exception>
     /// <example>
     /// The following illustrates a typical workflow:
     /// <code>
@@ -267,12 +269,9 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// var response = client.DictionaryGetAsync("my cache", "my dictionary", "counter");
     /// Console.WriteLine(response.String());
     ///
-    /// // Here we try incrementing a value that isn't an integer. This results in an error.
+    /// // Here we try incrementing a value that isn't an integer. This throws a <see cref="FailedPreconditionException"/>
     /// client.DictionarySetAsync("my cache", "my dictionary", "counter", "0123ABC", refreshTtl: false);
     /// var response = client.DictionaryIncrementAsync("my cache", "my dictionary", "counter", amount: 42, refreshTtl: false);
-    ///
-    /// // response.Status is PARSE_ERROR and response.Value is null
-    /// Console.WriteLine($"Status is {response.Status}");
     /// </code>
     /// </example>
     public async Task<CacheDictionaryIncrementResponse> DictionaryIncrementAsync(string cacheName, string dictionaryName, string field, bool refreshTtl, long amount = 1, uint? ttlSeconds = null)
@@ -281,7 +280,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(field, nameof(field));
 
-        throw new NotImplementedException();
+        return await this.dataClient.DictionaryIncrementAsync(cacheName, dictionaryName, field, refreshTtl, amount, ttlSeconds);
     }
 
     /// <summary>

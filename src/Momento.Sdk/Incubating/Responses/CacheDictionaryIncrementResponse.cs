@@ -1,19 +1,13 @@
-﻿namespace Momento.Sdk.Incubating.Responses;
+﻿using Momento.Protos.CacheClient;
 
-public enum CacheDictionaryIncrementStatus
-{
-    OK,
-    PARSE_ERROR
-}
+namespace Momento.Sdk.Incubating.Responses;
 
 public class CacheDictionaryIncrementResponse
 {
-    public CacheDictionaryIncrementStatus Status { get; private set; }
     public long? Value { get; private set; }
 
-    public CacheDictionaryIncrementResponse()
+    public CacheDictionaryIncrementResponse(_DictionaryIncrementResponse response)
     {
-        Status = CacheDictionaryIncrementStatus.OK;
-        Value = 42;
+        Value = response.Value;
     }
 }
