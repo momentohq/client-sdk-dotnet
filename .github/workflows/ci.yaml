@@ -67,7 +67,7 @@ jobs:
         id: validation
         continue-on-error: true
         run: |
-          pushd dotnet/MomentoExamples
+          pushd examples
             dotnet build MomentoApplication
             dotnet run --project MomentoApplication
             dotnet build MomentoApplicationPresignedUrl
