@@ -178,7 +178,15 @@ public class DictionaryTest : TestBase
         Assert.Equal(0, incrementResponse.Value);
     }
 
-    // failed precondition test
+    [Fact]
+    public async Task DictionaryIncrementAsync_FailedPrecondition_ThrowsException()
+    {
+        var dictionaryName = Utils.NewGuidString();
+        var fieldName = Utils.NewGuidString();
+
+        await client.DictionarySetAsync(cacheName, dictionaryName, fieldName, "abcxyz", false);
+        await Assert.ThrowsAsync<FailedPreconditionException>(async () => await client.DictionaryIncrementAsync(cacheName, dictionaryName, fieldName, amount: 1, refreshTtl: true));
+    }
 
     [Theory]
     [InlineData(null, "my-dictionary", "my-field")]

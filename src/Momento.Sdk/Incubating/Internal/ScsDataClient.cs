@@ -109,7 +109,6 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            // TODO failed precondition
             throw CacheExceptionMapper.Convert(e);
         }
         return new CacheDictionaryIncrementResponse(response);
