@@ -281,7 +281,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
         Utils.ArgumentNotNull(field, nameof(field));
 
-        throw new NotImplementedException();
+        return await this.dataClient.DictionaryIncrementAsync(cacheName, dictionaryName, field, refreshTtl, amount, ttlSeconds);
     }
 
     /// <summary>

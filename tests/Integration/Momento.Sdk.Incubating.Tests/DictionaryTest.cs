@@ -108,6 +108,78 @@ public class DictionaryTest : TestBase
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DictionaryIncrementAsync(cacheName, dictionaryName, field, refreshTtl: true));
     }
 
+    [Fact]
+    public async Task DictionaryIncrementAsync_IncrementFromZero_HappyPath()
+    {
+        var dictionaryName = Utils.NewGuidString();
+        var fieldName = Utils.NewGuidString();
+
+        var incrementResponse = await client.DictionaryIncrementAsync(cacheName, dictionaryName, fieldName, false, 1);
+        Assert.Equal(1, incrementResponse.Value);
+
+        incrementResponse = await client.DictionaryIncrementAsync(cacheName, dictionaryName, fieldName, false, 41);
+        Assert.Equal(42, incrementResponse.Value);
+
+        incrementResponse = await client.DictionaryIncrementAsync(cacheName, dictionaryName, fieldName, false, -1042);
+        Assert.Equal(-1000, incrementResponse.Value);
+
+        var getResponse = await client.DictionaryGetAsync(cacheName, dictionaryName, fieldName);
+        Assert.Equal("-1000", getResponse.String());
+    }
+
+    [Fact]
+    public async Task DictionaryIncrementAsync_IncrementFromZero_RefreshTtl()
+    {
+        var dictionaryName = Utils.NewGuidString();
+        var field = Utils.NewGuidString();
+
+        await client.DictionaryIncrementAsync(cacheName, dictionaryName, field, refreshTtl: false, ttlSeconds: 2);
+        await client.DictionaryIncrementAsync(cacheName, dictionaryName, field, refreshTtl: true, ttlSeconds: 10);
+        await Task.Delay(2000);
+
+        var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        Assert.Equal(CacheGetStatus.HIT, response.Status);
+        Assert.Equal("2", response.String());
+    }
+
+    [Fact]
+    public async Task DictionaryIncrementAsync_IncrementFromZero_NoRefreshTtl()
+    {
+        var dictionaryName = Utils.NewGuidString();
+        var field = Utils.NewGuidString();
+
+        await client.DictionaryIncrementAsync(cacheName, dictionaryName, field, refreshTtl: false, ttlSeconds: 5);
+        await Task.Delay(100);
+
+        await client.DictionaryIncrementAsync(cacheName, dictionaryName, field, refreshTtl: false, ttlSeconds: 10);
+        await Task.Delay(4900);
+
+        var response = await client.DictionaryGetAsync(cacheName, dictionaryName, field);
+        Assert.Equal(CacheGetStatus.MISS, response.Status);
+    }
+
+    [Fact]
+    public async Task DictionaryIncrementAsync_SetAndReset_HappyPath()
+    {
+        var dictionaryName = Utils.NewGuidString();
+        var field = Utils.NewGuidString();
+
+        // Set field
+        await client.DictionarySetAsync(cacheName, dictionaryName, field, "10", false);
+        var incrementResponse = await client.DictionaryIncrementAsync(cacheName, dictionaryName, field, amount: 0, refreshTtl: false);
+        Assert.Equal(10, incrementResponse.Value);
+
+        incrementResponse = await client.DictionaryIncrementAsync(cacheName, dictionaryName, field, amount: 90, refreshTtl: false);
+        Assert.Equal(100, incrementResponse.Value);
+
+        // Reset field
+        await client.DictionarySetAsync(cacheName, dictionaryName, field, "0", false);
+        incrementResponse = await client.DictionaryIncrementAsync(cacheName, dictionaryName, field, amount: 0, refreshTtl: false);
+        Assert.Equal(0, incrementResponse.Value);
+    }
+
+    // failed precondition test
+
     [Theory]
     [InlineData(null, "my-dictionary", "my-field")]
     [InlineData("cache", null, "my-field")]

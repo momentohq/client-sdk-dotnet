@@ -1,4 +1,6 @@
-﻿namespace Momento.Sdk.Incubating.Responses;
+﻿using Momento.Protos.CacheClient;
+
+namespace Momento.Sdk.Incubating.Responses;
 
 public enum CacheDictionaryIncrementStatus
 {
@@ -11,9 +13,9 @@ public class CacheDictionaryIncrementResponse
     public CacheDictionaryIncrementStatus Status { get; private set; }
     public long? Value { get; private set; }
 
-    public CacheDictionaryIncrementResponse()
+    public CacheDictionaryIncrementResponse(_DictionaryIncrementResponse response)
     {
         Status = CacheDictionaryIncrementStatus.OK;
-        Value = 42;
+        Value = response.Value;
     }
 }
