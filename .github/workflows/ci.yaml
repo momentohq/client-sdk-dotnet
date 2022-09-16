@@ -42,11 +42,6 @@ jobs:
           dotnet test tests/Integration/Momento.Sdk.Tests
         shell: bash
 
-      - name: Incubating Integration Test
-        run: |
-          dotnet test tests/Integration/Momento.Sdk.Incubating.Tests
-        shell: bash
-
   build_examples:
     runs-on: ubuntu-latest
     env:
