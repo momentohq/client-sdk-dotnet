@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momento.Sdk.Tests.Unit", "t
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momento.Sdk.Tests.Integration", "tests\Integration\Momento.Sdk.Tests\Momento.Sdk.Tests.csproj", "{FB56314E-BDCF-474A-A2CD-8956934FF11B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momento.Sdk.Incubating.Tests.Integration", "tests\Integration\Momento.Sdk.Incubating.Tests\Momento.Sdk.Incubating.Tests.csproj", "{A0F6221C-42A9-454B-BB82-EDB9841DF6E1}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
