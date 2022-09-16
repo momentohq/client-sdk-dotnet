@@ -20,10 +20,11 @@ class CacheExceptionMapper
             {
                 case StatusCode.InvalidArgument:
                 case StatusCode.OutOfRange:
-                case StatusCode.FailedPrecondition:
-                    return new FailedPreconditionException(ex.Message);
                 case StatusCode.Unimplemented:
                     return new BadRequestException(ex.Message);
+
+                case StatusCode.FailedPrecondition:
+                    return new FailedPreconditionException(ex.Message);
 
                 case StatusCode.PermissionDenied:
                     return new PermissionDeniedException(ex.Message);
