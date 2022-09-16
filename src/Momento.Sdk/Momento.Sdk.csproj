@@ -16,13 +16,13 @@
 		C# SDK for Momento, a serverless cache that automatically scales without any of the
 		operational overhead required by traditional caching solutions.
 
-		Check out our SDK example here: https://github.com/momentohq/client-sdk-examples/tree/main/dotnet
+		Check out our SDK example here: https://github.com/momentohq/client-sdk-dotnet/tree/main/examples
 		</Description>
 		<PackageTags>caching, cache, serverless, key value, simple caching service, distributedcache</PackageTags>
 		<Copyright>Copyright (c) Momento Inc 2022</Copyright>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-		<PackageProjectUrl>https://github.com/momentohq/client-sdk-csharp</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/momentohq/client-sdk-csharp</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/momentohq/client-sdk-dotnet</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/momentohq/client-sdk-dotnet</RepositoryUrl>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Google.Protobuf" Version="3.19.0" />
