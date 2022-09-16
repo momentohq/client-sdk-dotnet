@@ -1,4 +1,4 @@
-name: On push Main
+name: On push to release
 
 on:
   push:
@@ -60,11 +60,6 @@ jobs:
       - name: Integration Test
         run: |
           dotnet test tests/Integration/Momento.Sdk.Tests
-        shell: bash
-
-      - name: Incubating Integration Test
-        run: |
-          dotnet test tests/Integration/Momento.Sdk.Incubating.Tests
         shell: bash
 
   publish:
