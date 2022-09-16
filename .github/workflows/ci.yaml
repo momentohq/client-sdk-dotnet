@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TEST_AUTH_TOKEN: ${{ secrets.ALPHA_TEST_AUTH_TOKEN }}
-      TEST_CACHE_NAME: client-sdk-csharp
+      TEST_CACHE_NAME: client-sdk-dotnet
 
     steps:
       - name: Get current time
