@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momento.Sdk.Tests.Unit", "t
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momento.Sdk.Tests.Integration", "tests\Integration\Momento.Sdk.Tests\Momento.Sdk.Tests.Integration.csproj", "{FB56314E-BDCF-474A-A2CD-8956934FF11B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momento.Sdk.Incubating.Tests", "tests\Integration\Momento.Sdk.Incubating.Tests\Momento.Sdk.Incubating.Tests.csproj", "{A0F6221C-42A9-454B-BB82-EDB9841DF6E1}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{FB56314E-BDCF-474A-A2CD-8956934FF11B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB56314E-BDCF-474A-A2CD-8956934FF11B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB56314E-BDCF-474A-A2CD-8956934FF11B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A0F6221C-42A9-454B-BB82-EDB9841DF6E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A0F6221C-42A9-454B-BB82-EDB9841DF6E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A0F6221C-42A9-454B-BB82-EDB9841DF6E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A0F6221C-42A9-454B-BB82-EDB9841DF6E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
