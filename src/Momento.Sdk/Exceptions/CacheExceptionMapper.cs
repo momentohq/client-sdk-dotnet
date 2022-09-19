@@ -54,6 +54,6 @@ public class CacheExceptionMapper
                 default: return new InternalServerException(INTERNAL_SERVER_ERROR_MESSAGE, e);
             }
         }
-        return new ClientSdkException(SDK_ERROR_MESSAGE, e);
+        return new UnknownException(SDK_ERROR_MESSAGE, e);
     }
 }
