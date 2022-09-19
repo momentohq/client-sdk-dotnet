@@ -4,6 +4,7 @@
 
     <IsPackable>false</IsPackable>
     <Nullable>enable</Nullable>
+    <AssemblyName>Momento.Sdk.Tests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
