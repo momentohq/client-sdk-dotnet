@@ -3,7 +3,7 @@
 /// <summary>
 /// Resource already exists
 /// </summary>
-public class AlreadyExistsException : MomentoServiceException
+public class AlreadyExistsException : SdkException
 {
     public AlreadyExistsException(string message) : base(message)
     {

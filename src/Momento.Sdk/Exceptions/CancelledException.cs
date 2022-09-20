@@ -1,6 +1,6 @@
 ﻿namespace Momento.Sdk.Exceptions;
 
-public class CancelledException : MomentoServiceException
+public class CancelledException : SdkException
 {
     /// <summary>
     /// Operation was cancelled.
