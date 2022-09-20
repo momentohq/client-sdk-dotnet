@@ -10,7 +10,8 @@ class Header
 {
     public const string AuthorizationKey = "Authorization";
     public const string AgentKey = "Agent";
-    public readonly List<string> onceOnlyHeaders = new List<string> { Header.AgentKey };
+    public const string RuntimeVersionKey = "Runtime_Version";
+    public readonly List<string> onceOnlyHeaders = new List<string> { Header.AgentKey, Header.RuntimeVersionKey };
     public string Name;
     public string Value;
     public Header(String name, String value)

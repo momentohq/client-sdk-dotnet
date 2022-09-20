@@ -4,6 +4,7 @@ using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Grpc.Net.Client;
 using Momento.Protos.CacheClient;
+using static System.Reflection.Assembly;
 
 namespace Momento.Sdk.Internal;
 
@@ -12,13 +13,14 @@ public class DataGrpcManager : IDisposable
     private readonly GrpcChannel channel;
     public Scs.ScsClient Client { get; }
 
-    private readonly string version = "dotnet:" + System.Environment.Version;
+    private readonly string version = "dotnet:" + GetAssembly(typeof(Momento.Sdk.Responses.CacheGetResponse)).GetName().Version.ToString();
+    private readonly string runtimeVersion = "dotnet:" + System.Environment.Version;
 
     internal DataGrpcManager(string authToken, string host)
     {
         var url = $"https://{host}";
         this.channel = GrpcChannel.ForAddress(url, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
-        List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version) };
+        List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version), new Header(name: Header.RuntimeVersionKey, value: runtimeVersion) };
         CallInvoker invoker = this.channel.Intercept(new HeaderInterceptor(headers));
         Client = new Scs.ScsClient(invoker);
     }
