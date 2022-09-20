@@ -5,7 +5,10 @@
 /// </summary>
 public class AuthenticationException : SdkException
 {
-    public AuthenticationException(string message) : base(message)
+    public AuthenticationException(string message) : base(message, MomentoErrorCode.AUTHENTICATION_ERROR)
+    {
+    }
+    public AuthenticationException(string message, MomentoErrorTransportDetails transportDetails) : base(message, MomentoErrorCode.AUTHENTICATION_ERROR, transportDetails)
     {
     }
 }

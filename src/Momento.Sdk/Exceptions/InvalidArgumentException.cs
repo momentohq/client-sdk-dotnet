@@ -7,11 +7,11 @@ namespace Momento.Sdk.Exceptions;
 /// </summary>
 public class InvalidArgumentException : SdkException
 {
-    public InvalidArgumentException(string message) : base(message)
+    public InvalidArgumentException(string message) : base(message, MomentoErrorCode.INVALID_ARGUMENT_ERROR)
     {
     }
 
-    public InvalidArgumentException(string message, Exception e) : base(message, e)
+    public InvalidArgumentException(string message, Exception e) : base(message, MomentoErrorCode.INVALID_ARGUMENT_ERROR, null, e)
     {
     }
 }
