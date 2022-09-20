@@ -5,7 +5,7 @@ namespace Momento.Sdk.Exceptions;
 /// <summary>
 /// SDK client side validation failed.
 /// </summary>
-public class InvalidArgumentException : ClientSdkException
+public class InvalidArgumentException : SdkException
 {
     public InvalidArgumentException(string message) : base(message)
     {
