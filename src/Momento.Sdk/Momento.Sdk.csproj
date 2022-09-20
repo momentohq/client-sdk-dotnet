@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<!-- Build Configuration -->
-		<TargetFramework>netstandard2.1</TargetFramework>
+		<TargetFramework>netstandard2.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -28,7 +28,7 @@
 		<PackageReference Include="Google.Protobuf" Version="3.19.0" />
 		<PackageReference Include="Grpc.Net.Client" Version="2.40.0" />
 		<PackageReference Include="Grpc.Core" Version="2.41.1" />
-		<PackageReference Include="Momento.Protos" Version="0.30.3" />
+		<PackageReference Include="Momento.Protos" Version="0.31.0" />
 		<PackageReference Include="JWT" Version="8.4.2" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.16.0" />
 	</ItemGroup>
