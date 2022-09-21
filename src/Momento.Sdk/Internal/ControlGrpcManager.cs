@@ -13,6 +13,8 @@ internal sealed class ControlGrpcManager : IDisposable
     private readonly GrpcChannel channel;
     public ScsControl.ScsControlClient Client { get; }
     private readonly string version = "dotnet:" + GetAssembly(typeof(Momento.Sdk.Responses.CacheGetResponse)).GetName().Version.ToString();
+    // Some System.Environment.Version remarks to be aware of
+    // https://learn.microsoft.com/en-us/dotnet/api/system.environment.version?view=netstandard-2.0#remarks
     private readonly string runtimeVersion = "dotnet:" + System.Environment.Version;
 
     public ControlGrpcManager(string authToken, string endpoint)
