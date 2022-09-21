@@ -11,12 +11,13 @@ using Momento.Sdk.Exceptions;
 
 namespace MomentoLoadGen
 {
-    public record CsharpLoadGeneratorOptions
+public record CsharpLoadGeneratorOptions
     (
+        uint numGrpcChannels,
         uint requestTimeoutMs,
         int cacheItemPayloadBytes,
         int numberOfConcurrentRequests,
-        int totalNumberOfOperationsToExecute
+        long totalNumberOfOperationsToExecute
     );
 
     enum AsyncSetGetResult
@@ -67,6 +68,7 @@ namespace MomentoLoadGen
         private readonly ILogger<CsharpLoadGenerator> _logger;
         private readonly CsharpLoadGeneratorOptions _options;
         private readonly string _cacheValue;
+        private readonly Random _random;
 
         public CsharpLoadGenerator(ILoggerFactory loggerFactory, CsharpLoadGeneratorOptions options)
         {
@@ -75,6 +77,8 @@ namespace MomentoLoadGen
             _options = options;
 
             _cacheValue = new String('x', _options.cacheItemPayloadBytes);
+
+            _random = new Random();
         }
 
 
@@ -89,6 +93,7 @@ namespace MomentoLoadGen
             var momento = new SimpleCacheClient(
                 authToken,
                 CACHE_ITEM_TTL_SECONDS,
+                _options.numGrpcChannels,
                 _options.requestTimeoutMs
             );
 
@@ -130,8 +135,11 @@ namespace MomentoLoadGen
             SimpleCacheClient client,
             CsharpLoadGeneratorContext context,
             int workerId,
-            int numOperations)
+            long numOperations)
         {
+            var jitterMs = _random.Next(0, 1000);
+            _logger.LogInformation($"Worker {workerId} jittering {jitterMs}");
+            await Task.Delay(jitterMs);
             for (var i = 1; i <= numOperations; i++)
             {
                 await IssueAsyncSetGet(client, context, workerId, i);
@@ -139,7 +147,7 @@ namespace MomentoLoadGen
             }
         }
 
-        private async Task LaunchStatsPrinterTask(CsharpLoadGeneratorContext context, int totalNumRequests)
+        private async Task LaunchStatsPrinterTask(CsharpLoadGeneratorContext context, long totalNumRequests)
         {
             var setsAccumulatingHistogram = new LongHistogram(TimeStamp.Minutes(1), 1);
             var getsAccumulatingHistogram = new LongHistogram(TimeStamp.Minutes(1), 1);
@@ -348,6 +356,9 @@ If you have questions or need help experimenting further, please reach out to us
             using ILoggerFactory loggerFactory = InitializeLogging();
 
             CsharpLoadGeneratorOptions loadGeneratorOptions = new CsharpLoadGeneratorOptions(
+                /// the number of gRPC channels to use to multiplex requests.
+                numGrpcChannels: 1,
+
               /**
                * Configures the Momento client to timeout if a request exceeds this limit.
                * Momento client default is 5 seconds.
@@ -366,13 +377,13 @@ If you have questions or need help experimenting further, please reach out to us
                * is more contention between the concurrent function calls, client-side latencies
                * may increase.
                */
-              numberOfConcurrentRequests: 50,
+              numberOfConcurrentRequests: 5000,
               /**
                * Controls how long the load test will run.  We will execute this many operations
                * (1 cache 'set' followed immediately by 1 'get') across all of our concurrent
                * workers before exiting.  Statistics will be logged every 1000 operations.
                */
-              totalNumberOfOperationsToExecute: 50_000
+              totalNumberOfOperationsToExecute: 5_000_000
             );
 
             CsharpLoadGenerator loadGenerator = new CsharpLoadGenerator(

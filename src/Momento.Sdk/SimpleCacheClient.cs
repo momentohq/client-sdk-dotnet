@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Threading;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal;
 using Momento.Sdk.Responses;
@@ -15,7 +16,8 @@ namespace Momento.Sdk;
 public class SimpleCacheClient : ISimpleCacheClient
 {
     private readonly ScsControlClient controlClient;
-    private readonly ScsDataClient dataClient;
+    private readonly List<ScsDataClient> dataClients;
+    private int NextDataClientIndex;
 
     /// <summary>
     /// Client to perform operations against the Simple Cache Service.
@@ -23,13 +25,20 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="authToken">Momento JWT.</param>
     /// <param name="defaultTtlSeconds">Default time to live for the item in cache.</param>
     /// <param name="dataClientOperationTimeoutMilliseconds">Deadline (timeout) for communicating to the server. Defaults to 5 seconds.</param>
-    public SimpleCacheClient(string authToken, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+    public SimpleCacheClient(string authToken, uint defaultTtlSeconds, uint numGrpcChannels, uint? dataClientOperationTimeoutMilliseconds = null)
     {
+        Console.WriteLine("\n\n\n\nWELCOME TO THE SIMPLE CACHE CLIENT!\n\n\n\n");
         ValidateRequestTimeout(dataClientOperationTimeoutMilliseconds);
         Claims claims = JwtUtils.DecodeJwt(authToken);
 
         this.controlClient = new(authToken, claims.ControlEndpoint);
-        this.dataClient = new(authToken, claims.CacheEndpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds);
+        this.dataClients = new List<ScsDataClient>();
+        this.NextDataClientIndex = 0;
+        for (var i = 0; i < numGrpcChannels; i++)
+        {
+            this.dataClients.Add(new ScsDataClient(authToken, claims.CacheEndpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds));
+        }
+        //new(authToken, claims.CacheEndpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds);
     }
 
     /// <inheritdoc />
@@ -59,7 +68,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(key, nameof(key));
         Utils.ArgumentNotNull(value, nameof(value));
 
-        return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
+        return await this.GetNextDataClient().SetAsync(cacheName, key, value, ttlSeconds);
     }
 
     /// <inheritdoc />
@@ -68,7 +77,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(key, nameof(key));
 
-        return await this.dataClient.GetAsync(cacheName, key);
+        return await this.GetNextDataClient().GetAsync(cacheName, key);
     }
 
     /// <inheritdoc />
@@ -77,7 +86,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(key, nameof(key));
 
-        return await this.dataClient.DeleteAsync(cacheName, key);
+        return await this.GetNextDataClient().DeleteAsync(cacheName, key);
     }
 
     /// <inheritdoc />
@@ -87,7 +96,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(key, nameof(key));
         Utils.ArgumentNotNull(value, nameof(value));
 
-        return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
+        return await this.GetNextDataClient().SetAsync(cacheName, key, value, ttlSeconds);
     }
 
     /// <inheritdoc />
@@ -96,7 +105,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(key, nameof(key));
 
-        return await this.dataClient.GetAsync(cacheName, key);
+        return await this.GetNextDataClient().GetAsync(cacheName, key);
     }
 
     /// <inheritdoc />
@@ -105,7 +114,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         Utils.ArgumentNotNull(key, nameof(key));
 
-        return await this.dataClient.DeleteAsync(cacheName, key);
+        return await this.GetNextDataClient().DeleteAsync(cacheName, key);
     }
 
     /// <inheritdoc />
@@ -115,7 +124,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(key, nameof(key));
         Utils.ArgumentNotNull(value, nameof(value));
 
-        return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
+        return await this.GetNextDataClient().SetAsync(cacheName, key, value, ttlSeconds);
     }
 
     /// <inheritdoc />
@@ -125,7 +134,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(keys, nameof(keys));
         Utils.ElementsNotNull(keys, nameof(keys));
 
-        return await this.dataClient.GetBatchAsync(cacheName, keys);
+        return await this.GetNextDataClient().GetBatchAsync(cacheName, keys);
     }
 
     /// <inheritdoc />
@@ -135,7 +144,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(keys, nameof(keys));
         Utils.ElementsNotNull(keys, nameof(keys));
 
-        return await this.dataClient.GetBatchAsync(cacheName, keys);
+        return await this.GetNextDataClient().GetBatchAsync(cacheName, keys);
     }
 
     /// <inheritdoc />
@@ -145,7 +154,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(items, nameof(items));
         Utils.KeysAndValuesNotNull(items, nameof(items));
 
-        return await this.dataClient.SetBatchAsync(cacheName, items, ttlSeconds);
+        return await this.GetNextDataClient().SetBatchAsync(cacheName, items, ttlSeconds);
     }
 
     /// <inheritdoc />
@@ -155,14 +164,17 @@ public class SimpleCacheClient : ISimpleCacheClient
         Utils.ArgumentNotNull(items, nameof(items));
         Utils.KeysAndValuesNotNull(items, nameof(items));
 
-        return await this.dataClient.SetBatchAsync(cacheName, items, ttlSeconds);
+        return await this.GetNextDataClient().SetBatchAsync(cacheName, items, ttlSeconds);
     }
 
     /// <inheritdoc />
     public void Dispose()
     {
         this.controlClient.Dispose();
-        this.dataClient.Dispose();
+        foreach (ScsDataClient client in this.dataClients)
+        {
+            client.Dispose();
+        }
         GC.SuppressFinalize(this);
     }
 
@@ -176,5 +188,14 @@ public class SimpleCacheClient : ISimpleCacheClient
         {
             throw new InvalidArgumentException("Request timeout must be greater than zero.");
         }
+    }
+
+    private ScsDataClient GetNextDataClient()
+    {
+        var nextCount = (uint) Interlocked.Increment(ref this.NextDataClientIndex);
+        //Console.WriteLine($"NEXT COUNT IS: {nextCount}");
+        int nextIndex = (int)(nextCount % this.dataClients.Count);
+        //Console.WriteLine($"Using data client: {nextIndex}");
+        return this.dataClients[nextIndex];
     }
 }
