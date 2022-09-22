@@ -5,13 +5,13 @@ using Momento.Sdk.Config.Transport;
 
 namespace Momento.Sdk.Config;
 
-public class PrebuiltConfigurations
+public class Configurations
 {
     /// <summary>
     /// Laptop config provides defaults suitable for a medium-to-high-latency dev environment.  Permissive timeouts, retries, potentially
     /// a higher number of connections, etc.
     /// </summary>
-    public class Laptop : BaseConfiguration
+    public class Laptop : Configuration
     {
         private Laptop(IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
             : base(retryStrategy, transportStrategy)
@@ -42,7 +42,7 @@ public class PrebuiltConfigurations
         /// <summary>
         ///  This config prioritizes throughput and client resource utilization.
         /// </summary>
-        public class Default : BaseConfiguration
+        public class Default : Configuration
         {
             private Default(IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
                 : base(retryStrategy, transportStrategy)
@@ -69,7 +69,7 @@ public class PrebuiltConfigurations
         /// some throughput to achieve this.  Use this configuration if the most important factor is to ensure that cache
         /// unavailability doesn't force unacceptably high latencies for your own application.
         /// </summary>
-        public class LowLatency : BaseConfiguration
+        public class LowLatency : Configuration
         {
             private LowLatency(IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
                 : base(retryStrategy, transportStrategy)

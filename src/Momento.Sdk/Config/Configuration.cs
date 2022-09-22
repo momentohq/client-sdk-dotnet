@@ -5,19 +5,19 @@ using Momento.Sdk.Config.Transport;
 
 namespace Momento.Sdk.Config;
 
-public class BaseConfiguration : IConfiguration
+public class Configuration : IConfiguration
 {
     public IRetryStrategy RetryStrategy { get; }
     public IList<IMiddleware> Middlewares { get; }
     public ITransportStrategy TransportStrategy { get; }
 
-    public BaseConfiguration(IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
+    public Configuration(IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
         : this(retryStrategy, new List<IMiddleware>(), transportStrategy)
     {
 
     }
 
-    public BaseConfiguration(IRetryStrategy retryStrategy, IList<IMiddleware> middlewares, ITransportStrategy transportStrategy)
+    public Configuration(IRetryStrategy retryStrategy, IList<IMiddleware> middlewares, ITransportStrategy transportStrategy)
     {
         this.RetryStrategy = retryStrategy;
         this.Middlewares = middlewares;
