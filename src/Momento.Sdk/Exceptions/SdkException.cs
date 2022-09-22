@@ -22,35 +22,35 @@ public enum MomentoErrorCode {
 }
 
 public class MomentoGrpcErrorDetails {
-  public StatusCode code;
-  public string details;
-  public Metadata? metadata = null;
+  public StatusCode Code { get; }
+  public string Details { get; }
+  public Metadata? Metadata { get; }
 
-  public MomentoGrpcErrorDetails(StatusCode code, string details, Metadata? metadata)
+  public MomentoGrpcErrorDetails(StatusCode code, string details, Metadata? metadata=null)
   {
-    this.code = code;
-    this.details = details;
-    this.metadata = metadata;
+    this.Code = code;
+    this.Details = details;
+    this.Metadata = metadata;
   }
 
 }
 
 public class MomentoErrorTransportDetails {
-  public MomentoGrpcErrorDetails grpc;
+  public MomentoGrpcErrorDetails Grpc { get; }
 
   public MomentoErrorTransportDetails(MomentoGrpcErrorDetails grpc) {
-    this.grpc = grpc;
+    this.Grpc = grpc;
   }
 }
 
 public abstract class SdkException : Exception
 {
-    public MomentoErrorCode errorCode;
-    public MomentoErrorTransportDetails? transportDetails = null;
+    public MomentoErrorCode ErrorCode { get; }
+    public MomentoErrorTransportDetails? TransportDetails { get; }
 
     protected SdkException(MomentoErrorCode errorCode, string message, MomentoErrorTransportDetails? transportDetails=null, Exception? e=null) : base(message, e)
     {
-      this.errorCode = errorCode;
-      this.transportDetails = transportDetails;
+      this.ErrorCode = errorCode;
+      this.TransportDetails = transportDetails;
     }
 }
