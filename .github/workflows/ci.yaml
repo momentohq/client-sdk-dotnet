@@ -58,7 +58,6 @@ jobs:
         with:
           dotnet-version: "6.0.x"
 
-      # Test
       - name: Run samples
         id: validation
         continue-on-error: true
