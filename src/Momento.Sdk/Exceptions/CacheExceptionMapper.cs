@@ -8,7 +8,7 @@ public class CacheExceptionMapper
     private const string INTERNAL_SERVER_ERROR_MESSAGE = "Unexpected exception occurred while trying to fulfill the request.";
     private const string SDK_ERROR_MESSAGE = "SDK Failed to process the request.";
 
-    public static Exception Convert(Exception e)
+    public static SdkException Convert(Exception e)
     {
         if (e is SdkException exception)
         {

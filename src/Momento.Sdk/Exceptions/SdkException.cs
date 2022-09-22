@@ -4,21 +4,21 @@ using Grpc.Core;
 namespace Momento.Sdk.Exceptions;
 
 public enum MomentoErrorCode {
-  INVALID_ARGUMENT_ERROR,
-  UNKNOWN_SERVICE_ERROR,
-  ALREADY_EXISTS_ERROR,
-  NOT_FOUND_ERROR,
-  INTERNAL_SERVER_ERROR,
-  PERMISSION_ERROR,
-  AUTHENTICATION_ERROR,
-  CANCELLED_ERROR,
-  LIMIT_EXCEEDED_ERROR,
-  BAD_REQUEST_ERROR,
-  TIMEOUT_ERROR,
-  SERVER_UNAVAILABLE,
-  CLIENT_RESOURCE_EXHAUSTED,
-  FAILED_PRECONDITION_ERROR,
-  UNKNOWN_ERROR
+  INVALID_ARGUMENT_ERROR, // Invalid argument passed to Momento client
+  UNKNOWN_SERVICE_ERROR,  // Service returned an unknown response
+  ALREADY_EXISTS_ERROR,  // Cache with specified name already exists
+  NOT_FOUND_ERROR,  // Cache with specified name doesn't exists
+  INTERNAL_SERVER_ERROR,  // An unexpected error occurred while trying to fulfill the request
+  PERMISSION_ERROR,  // Insufficient permissions to perform operation
+  AUTHENTICATION_ERROR,  // Invalid authentication credentials to connect to cache service
+  CANCELLED_ERROR,  // Request was cancelled by the server
+  LIMIT_EXCEEDED_ERROR,  // Request rate exceeded the limits for the account
+  BAD_REQUEST_ERROR,  // Request was invalid
+  TIMEOUT_ERROR,  // Client's configured timeout was exceeded
+  SERVER_UNAVAILABLE,  // Serer was unable to handle the request
+  CLIENT_RESOURCE_EXHAUSTED,  // A client resource (most likely memory) was exhausted
+  FAILED_PRECONDITION_ERROR,  // System is not in a state required for the operation's execution
+  UNKNOWN_ERROR  // Unknown error has occurred
 }
 
 public class MomentoGrpcErrorDetails {
