@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Momento.Sdk;
+using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Responses;
 
@@ -16,7 +17,7 @@ namespace MomentoApplication
 
         async static Task Main(string[] args)
         {
-            using SimpleCacheClient client = new SimpleCacheClient(MOMENTO_AUTH_TOKEN, DEFAULT_TTL_SECONDS);
+            using SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.Latest, MOMENTO_AUTH_TOKEN, DEFAULT_TTL_SECONDS);
             try
             {
                 client.CreateCache(CACHE_NAME);
