@@ -5,7 +5,10 @@
 /// </summary>
 public class NotFoundException : SdkException
 {
-    public NotFoundException(string message) : base(message)
+    public NotFoundException(string message) : base(MomentoErrorCode.NOT_FOUND_ERROR, message)
+    {
+    }
+    public NotFoundException(string message, MomentoErrorTransportDetails transportDetails) : base(MomentoErrorCode.NOT_FOUND_ERROR, message, transportDetails)
     {
     }
 }

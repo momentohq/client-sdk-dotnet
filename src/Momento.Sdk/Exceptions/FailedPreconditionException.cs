@@ -8,7 +8,10 @@ namespace Momento.Sdk.Exceptions;
 /// </summary>
 public class FailedPreconditionException : SdkException
 {
-    public FailedPreconditionException(string message) : base(message)
+    public FailedPreconditionException(string message) : base(MomentoErrorCode.FAILED_PRECONDITION_ERROR, message)
+    {
+    }
+    public FailedPreconditionException(string message, MomentoErrorTransportDetails transportDetails) : base(MomentoErrorCode.FAILED_PRECONDITION_ERROR, message, transportDetails)
     {
     }
 }

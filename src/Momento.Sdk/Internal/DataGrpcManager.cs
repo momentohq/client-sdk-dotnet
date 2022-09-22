@@ -14,6 +14,8 @@ public class DataGrpcManager : IDisposable
     public Scs.ScsClient Client { get; }
 
     private readonly string version = "dotnet:" + GetAssembly(typeof(Momento.Sdk.Responses.CacheGetResponse)).GetName().Version.ToString();
+    // Some System.Environment.Version remarks to be aware of
+    // https://learn.microsoft.com/en-us/dotnet/api/system.environment.version?view=netstandard-2.0#remarks
     private readonly string runtimeVersion = "dotnet:" + System.Environment.Version;
 
     internal DataGrpcManager(string authToken, string host)
