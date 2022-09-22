@@ -34,9 +34,10 @@ internal sealed class ScsControlClient : IDisposable
 
     public DeleteCacheResponse DeleteCache(string cacheName)
     {
-        _DeleteCacheRequest request = new _DeleteCacheRequest() { CacheName = cacheName };
         try
         {
+            CheckValidCacheName(cacheName);
+            _DeleteCacheRequest request = new _DeleteCacheRequest() { CacheName = cacheName };
             this.grpcManager.Client.DeleteCache(request, deadline: CalculateDeadline());
             return new DeleteCacheResponse.Success();
         }

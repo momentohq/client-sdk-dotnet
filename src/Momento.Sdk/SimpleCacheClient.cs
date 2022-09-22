@@ -39,14 +39,12 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <inheritdoc />
     public CreateCacheResponse CreateCache(string cacheName)
     {
-        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         return this.controlClient.CreateCache(cacheName);
     }
 
     /// <inheritdoc />
     public DeleteCacheResponse DeleteCache(string cacheName)
     {
-        Utils.ArgumentNotNull(cacheName, nameof(cacheName));
         return this.controlClient.DeleteCache(cacheName);
     }
 

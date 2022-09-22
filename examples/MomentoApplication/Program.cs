@@ -20,29 +20,18 @@ namespace MomentoApplication
 
             Console.WriteLine("Creating cache with an illegal empty name");
             CreateCacheResponse emptyCreateResp = client.CreateCache("");
-            Console.WriteLine(emptyCreateResp);
             if (emptyCreateResp is CreateCacheResponse.Error error) {
-                Console.WriteLine(error.Exception.errorCode);
-                Console.WriteLine(error.Exception);
-            }
-
-            Console.WriteLine("Creating cache that already exists");
-            CreateCacheResponse existsCreateResp = client.CreateCache("test1");
-            if (existsCreateResp is CreateCacheResponse.Error errorResp) {
-                if (errorResp.Exception.errorCode == MomentoErrorCode.ALREADY_EXISTS_ERROR) {
-                    Console.WriteLine($"Cache with name {CACHE_NAME} already exists.");
-                }
+                Console.WriteLine($"Exception error code: {error.Exception.ErrorCode}");
+                Console.WriteLine($"Exception msg: {error.Exception.Message}");
             }
 
             Console.WriteLine($"Creating cache {CACHE_NAME}");
             CreateCacheResponse createResp = client.CreateCache(CACHE_NAME);
             if (createResp is CreateCacheResponse.Error errorResp2) {
-                if (errorResp2.Exception.errorCode == MomentoErrorCode.ALREADY_EXISTS_ERROR) {
+                if (errorResp2.Exception.ErrorCode == MomentoErrorCode.ALREADY_EXISTS_ERROR) {
                     Console.WriteLine($"Cache with name {CACHE_NAME} already exists.");
-                } else if (errorResp2.Exception.errorCode == MomentoErrorCode.LIMIT_EXCEEDED_ERROR) {
+                } else {
                     Console.WriteLine($"Create error message: {errorResp2.Exception.Message}");
-                    Console.WriteLine($"Limit exceeded: {errorResp2.Exception}");
-                    Console.WriteLine($"gRPC code: {errorResp2.Exception.transportDetails.grpc.code}");
                 }
             }
 
@@ -58,18 +47,25 @@ namespace MomentoApplication
                 }
             } while (!String.IsNullOrEmpty(token));
 
-            Console.WriteLine("Deleting cache that doens't exist");
+            Console.WriteLine("Deleting cache using null name");
+            DeleteCacheResponse nullDeleteResp = client.DeleteCache(null);
+            if (nullDeleteResp is DeleteCacheResponse.Error nullDelErrResp) {
+                Console.WriteLine($"Delete error message: {nullDelErrResp.Exception.Message}");
+            }
+
+
+            Console.WriteLine("Deleting cache that doesn't exist");
             DeleteCacheResponse deleteResp = client.DeleteCache("idon'texist");
             if (deleteResp is DeleteCacheResponse.Error delErrResp) {
                 Console.WriteLine($"Delete error message: {delErrResp.Exception.Message}");
-                Console.WriteLine($"gRPC code: {delErrResp.Exception.transportDetails.grpc.code}");
+                Console.WriteLine($"gRPC code: {delErrResp.Exception.TransportDetails.Grpc.Code}");
             }
 
-            // Console.WriteLine($"\nSetting key: {KEY} with value: {VALUE}");
-            // await client.SetAsync(CACHE_NAME, KEY, VALUE);
-            // Console.WriteLine($"\nGet value for  key: {KEY}");
-            // CacheGetResponse getResponse = await client.GetAsync(CACHE_NAME, KEY);
-            // Console.WriteLine($"\nLookedup value: {getResponse.String()}, Stored value: {VALUE}");
+            Console.WriteLine($"\nSetting key: {KEY} with value: {VALUE}");
+            await client.SetAsync(CACHE_NAME, KEY, VALUE);
+            Console.WriteLine($"\nGet value for  key: {KEY}");
+            CacheGetResponse getResponse = await client.GetAsync(CACHE_NAME, KEY);
+            Console.WriteLine($"\nLookedup value: {getResponse.String()}, Stored value: {VALUE}");
         }
     }
 }
