@@ -11,6 +11,8 @@ public interface IMiddleware
 {
     public delegate Task<IGrpcResponse> MiddlewareFn(IGrpcRequest request);
 
+    // TODO: this should return another delegate, ie
+    // wrapRequest(middlewareFn) -> middlewareFn
     /// <summary>
     /// Called as a wrapper around each request; can be used to time the request and collect metrics etc.
     /// </summary>

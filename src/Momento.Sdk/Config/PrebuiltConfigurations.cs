@@ -5,13 +5,13 @@ using Momento.Sdk.Config.Transport;
 
 namespace Momento.Sdk.Config;
 
-public class PreBuiltConfigurations
+public class PrebuiltConfigurations
 {
     /// <summary>
     /// Laptop config provides defaults suitable for a medium-to-high-latency dev environment.  Permissive timeouts, retries, potentially
     /// a higher number of connections, etc.
     /// </summary>
-    public class Laptop : Configuration
+    public class Laptop : BaseConfiguration
     {
         private Laptop(IRetryStrategy retryStrategy, IList<IMiddleware> middlewares, ITransportStrategy transportStrategy)
             : base(retryStrategy, middlewares, transportStrategy)
@@ -42,7 +42,7 @@ public class PreBuiltConfigurations
         /// <summary>
         ///  This config prioritizes throughput and client resource utilization.
         /// </summary>
-        public class Default : Configuration
+        public class Default : BaseConfiguration
         {
             private Default(IRetryStrategy retryStrategy, IList<IMiddleware> middlewares, ITransportStrategy transportStrategy)
                 : base(retryStrategy, middlewares, transportStrategy)
@@ -69,7 +69,7 @@ public class PreBuiltConfigurations
         /// some throughput to achieve this.  Use this configuration if the most important factor is to ensure that cache
         /// unavailability doesn't force unacceptably high latencies for your own application.
         /// </summary>
-        public class LowLatency : Configuration
+        public class LowLatency : BaseConfiguration
         {
             private LowLatency(IRetryStrategy retryStrategy, IList<IMiddleware> middlewares, ITransportStrategy transportStrategy)
                 : base(retryStrategy, middlewares, transportStrategy)
@@ -93,9 +93,9 @@ public class PreBuiltConfigurations
     }
 
     /// <inheritDoc cref="Laptop" />
-    public static readonly Configuration DevConfig = Laptop.Latest;
+    public static readonly IConfiguration DevConfig = Laptop.Latest;
     /// <inheritDoc cref="InRegion.Default" />
-    public static readonly Configuration ProdConfig = InRegion.Default.Latest;
+    public static readonly IConfiguration ProdConfig = InRegion.Default.Latest;
     /// <inheritDoc cref="InRegion.LowLatency" />    
-    public static readonly Configuration ProdLowLatencyConfig = InRegion.LowLatency.Latest;
+    public static readonly IConfiguration ProdLowLatencyConfig = InRegion.LowLatency.Latest;
 }

@@ -17,7 +17,7 @@ public interface IGrpcConfiguration
     public bool UseLocalSubChannelPool { get; }
 
     /// <summary>
-    /// This is a map that encapsulates the settings above, and may also include other channel-specific settings.
+    /// This is a dictionary that encapsulates the settings above, and may also include other channel-specific settings.
     /// This allows strategy implementations to provide gRPC config key/value pairs for any available setting, even
     /// if it's not one we've explicitly tried / recommended.  The strategy implementation should implement this by
     /// calling the functions above, along with allowing a mechanism for specifying additional key/value pairs.

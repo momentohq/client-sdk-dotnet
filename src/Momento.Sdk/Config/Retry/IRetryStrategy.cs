@@ -1,5 +1,8 @@
 namespace Momento.Sdk.Config.Retry;
 
+/// <summary>
+/// Defines a contract for how and when to retry a request
+/// </summary>
 public interface IRetryStrategy
 {
     /// <summary>
