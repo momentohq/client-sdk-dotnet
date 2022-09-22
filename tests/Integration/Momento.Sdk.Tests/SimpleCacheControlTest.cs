@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Momento.Sdk.Config;
 
 namespace Momento.Sdk.Tests;
 
@@ -18,19 +19,19 @@ public class SimpleCacheControlTest
     [Fact]
     public void SimpleCacheClientConstructor_BadRequestTimeout_ThrowsException()
     {
-        Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(authToken, defaultTtlSeconds: 10, dataClientOperationTimeoutMilliseconds: 0));
+        Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(Configurations.Laptop.Latest, authToken, defaultTtlSeconds: 10, dataClientOperationTimeoutMilliseconds: 0));
     }
 
     [Fact]
     public void SimpleCacheClientConstructor_BadJWT_InvalidJwtException()
     {
-        Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs", defaultTtlSeconds: 10));
+        Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(Configurations.Laptop.Latest, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs", defaultTtlSeconds: 10));
     }
 
     [Fact]
     public void SimpleCacheClientConstructor_NullJWT_InvalidJwtException()
     {
-        Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(null!, defaultTtlSeconds: 10));
+        Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(Configurations.Laptop.Latest, null!, defaultTtlSeconds: 10));
     }
 
     [Fact]

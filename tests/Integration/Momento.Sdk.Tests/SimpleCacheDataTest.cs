@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Momento.Sdk.Config;
 
 namespace Momento.Sdk.Tests;
 
@@ -177,7 +178,7 @@ public class SimpleCacheDataTest
     public async Task GetBatchAsync_Failure()
     {
         // Set very small timeout for dataClientOperationTimeoutMilliseconds
-        using SimpleCacheClient simpleCacheClient = new SimpleCacheClient(authToken, DefaultTtlSeconds, 1);
+        using SimpleCacheClient simpleCacheClient = new SimpleCacheClient(Configurations.Laptop.Latest, authToken, DefaultTtlSeconds, 1);
         List<string> keys = new() { Utils.NewGuidString(), Utils.NewGuidString(), Utils.NewGuidString(), Utils.NewGuidString() };
         await Assert.ThrowsAsync<Momento.Sdk.Exceptions.TimeoutException>(async () => await simpleCacheClient.GetBatchAsync(cacheName, keys));
     }
