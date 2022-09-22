@@ -7,10 +7,10 @@ using System;
 /// </summary>
 public class UnknownException : SdkException
 {
-    public UnknownException(string message, MomentoErrorCode errorCode) : base(message, errorCode)
+    public UnknownException(string message) : base(MomentoErrorCode.UNKNOWN_ERROR, message)
     {
     }
-    public UnknownException(string message, Exception e) : base(message, MomentoErrorCode.UNKNOWN_ERROR, null, e)
+    public UnknownException(string message, Exception e) : base(MomentoErrorCode.UNKNOWN_ERROR, message, null, e)
     {
     }
 }

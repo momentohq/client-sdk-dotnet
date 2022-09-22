@@ -5,10 +5,10 @@
 /// </summary>
 public class PermissionDeniedException : SdkException
 {
-    public PermissionDeniedException(string message) : base(message, MomentoErrorCode.PERMISSION_ERROR)
+    public PermissionDeniedException(string message) : base(MomentoErrorCode.PERMISSION_ERROR, message)
     {
     }
-    public PermissionDeniedException(string message, MomentoErrorTransportDetails transportDetails) : base(message, MomentoErrorCode.PERMISSION_ERROR, transportDetails)
+    public PermissionDeniedException(string message, MomentoErrorTransportDetails transportDetails) : base(MomentoErrorCode.PERMISSION_ERROR, message, transportDetails)
     {
     }
 }

@@ -5,10 +5,10 @@
 /// </summary>
 public class AlreadyExistsException : SdkException
 {
-    public AlreadyExistsException(string message) : base(message, MomentoErrorCode.ALREADY_EXISTS_ERROR)
+    public AlreadyExistsException(string message) : base(MomentoErrorCode.ALREADY_EXISTS_ERROR, message)
     {
     }
-    public AlreadyExistsException(string message, MomentoErrorTransportDetails transportDetails) : base(message, MomentoErrorCode.ALREADY_EXISTS_ERROR, transportDetails)
+    public AlreadyExistsException(string message, MomentoErrorTransportDetails transportDetails) : base(MomentoErrorCode.ALREADY_EXISTS_ERROR, message, transportDetails)
     {
     }
 }

@@ -48,16 +48,7 @@ public abstract class SdkException : Exception
     public MomentoErrorCode errorCode;
     public MomentoErrorTransportDetails? transportDetails = null;
 
-    protected SdkException(string message, MomentoErrorCode errorCode) : base(message)
-    {
-      this.errorCode = errorCode;
-    }
-    protected SdkException(string message, MomentoErrorCode errorCode, MomentoErrorTransportDetails transportDetails) : base(message)
-    {
-      this.errorCode = errorCode;
-      this.transportDetails = transportDetails;
-    }
-    protected SdkException(string message, MomentoErrorCode errorCode, MomentoErrorTransportDetails? transportDetails, Exception e) : base(message, e)
+    protected SdkException(MomentoErrorCode errorCode, string message, MomentoErrorTransportDetails? transportDetails=null, Exception? e=null) : base(message, e)
     {
       this.errorCode = errorCode;
       this.transportDetails = transportDetails;

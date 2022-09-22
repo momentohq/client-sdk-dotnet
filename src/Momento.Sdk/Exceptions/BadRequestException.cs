@@ -5,10 +5,10 @@
 /// </summary>
 public class BadRequestException : SdkException
 {
-    public BadRequestException(string message) : base(message, MomentoErrorCode.BAD_REQUEST_ERROR)
+    public BadRequestException(string message) : base(MomentoErrorCode.BAD_REQUEST_ERROR, message)
     {
     }
-    public BadRequestException(string message, MomentoErrorTransportDetails transportDetails) : base(message, MomentoErrorCode.BAD_REQUEST_ERROR, transportDetails)
+    public BadRequestException(string message, MomentoErrorTransportDetails transportDetails) : base(MomentoErrorCode.BAD_REQUEST_ERROR, message, transportDetails)
     {
     }
 }

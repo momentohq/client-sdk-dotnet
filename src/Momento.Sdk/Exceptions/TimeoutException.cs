@@ -5,10 +5,10 @@
 /// </summary>
 public class TimeoutException : SdkException
 {
-    public TimeoutException(string message) : base(message, MomentoErrorCode.TIMEOUT_ERROR)
+    public TimeoutException(string message) : base(MomentoErrorCode.TIMEOUT_ERROR, message)
     {
     }
-    public TimeoutException(string message, MomentoErrorTransportDetails transportDetails) : base(message, MomentoErrorCode.TIMEOUT_ERROR, transportDetails)
+    public TimeoutException(string message, MomentoErrorTransportDetails transportDetails) : base(MomentoErrorCode.TIMEOUT_ERROR, message, transportDetails)
     {
     }
 }
