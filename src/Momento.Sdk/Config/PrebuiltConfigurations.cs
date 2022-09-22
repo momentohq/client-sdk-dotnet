@@ -13,8 +13,8 @@ public class PrebuiltConfigurations
     /// </summary>
     public class Laptop : BaseConfiguration
     {
-        private Laptop(IRetryStrategy retryStrategy, IList<IMiddleware> middlewares, ITransportStrategy transportStrategy)
-            : base(retryStrategy, middlewares, transportStrategy)
+        private Laptop(IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
+            : base(retryStrategy, transportStrategy)
         {
 
         }
@@ -28,7 +28,7 @@ public class PrebuiltConfigurations
                 ITransportStrategy transportStrategy = new StaticTransportStrategy(
                     maxConcurrentRequests: 1,
                     grpcConfig: new StaticGrpcConfiguration(numChannels: 6, maxSessionMemory: 128, useLocalSubChannelPool: true));
-                return new Laptop(retryStrategy, new List<IMiddleware>(), transportStrategy);
+                return new Laptop(retryStrategy, transportStrategy);
             }
         }
     }
@@ -44,8 +44,8 @@ public class PrebuiltConfigurations
         /// </summary>
         public class Default : BaseConfiguration
         {
-            private Default(IRetryStrategy retryStrategy, IList<IMiddleware> middlewares, ITransportStrategy transportStrategy)
-                : base(retryStrategy, middlewares, transportStrategy)
+            private Default(IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
+                : base(retryStrategy, transportStrategy)
             {
 
             }
@@ -59,7 +59,7 @@ public class PrebuiltConfigurations
                     ITransportStrategy transportStrategy = new StaticTransportStrategy(
                         maxConcurrentRequests: 1,
                         grpcConfig: new StaticGrpcConfiguration(numChannels: 6, maxSessionMemory: 128, useLocalSubChannelPool: true));
-                    return new Default(retryStrategy, new List<IMiddleware>(), transportStrategy);
+                    return new Default(retryStrategy, transportStrategy);
                 }
             }
         }
@@ -71,8 +71,8 @@ public class PrebuiltConfigurations
         /// </summary>
         public class LowLatency : BaseConfiguration
         {
-            private LowLatency(IRetryStrategy retryStrategy, IList<IMiddleware> middlewares, ITransportStrategy transportStrategy)
-                : base(retryStrategy, middlewares, transportStrategy)
+            private LowLatency(IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
+                : base(retryStrategy, transportStrategy)
             {
 
             }
@@ -86,7 +86,7 @@ public class PrebuiltConfigurations
                     ITransportStrategy transportStrategy = new StaticTransportStrategy(
                         maxConcurrentRequests: 1,
                         grpcConfig: new StaticGrpcConfiguration(numChannels: 6, maxSessionMemory: 128, useLocalSubChannelPool: true));
-                    return new LowLatency(retryStrategy, new List<IMiddleware>(), transportStrategy);
+                    return new LowLatency(retryStrategy, transportStrategy);
                 }
             }
         }

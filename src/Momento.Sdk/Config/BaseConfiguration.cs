@@ -11,6 +11,12 @@ public class BaseConfiguration : IConfiguration
     public IList<IMiddleware> Middlewares { get; }
     public ITransportStrategy TransportStrategy { get; }
 
+    public BaseConfiguration(IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
+        : this(retryStrategy, new List<IMiddleware>(), transportStrategy)
+    {
+
+    }
+
     public BaseConfiguration(IRetryStrategy retryStrategy, IList<IMiddleware> middlewares, ITransportStrategy transportStrategy)
     {
         this.RetryStrategy = retryStrategy;
