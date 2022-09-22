@@ -4,7 +4,7 @@ using Momento.Sdk.Exceptions;
 
 namespace Momento.Sdk.Responses;
 
-public class ListCachesResponse
+public abstract class ListCachesResponse
 {
     public class Success : ListCachesResponse
     {
@@ -24,16 +24,20 @@ public class ListCachesResponse
 
     public class Error : ListCachesResponse
     {
-        private readonly SdkException error;
-        public Error(SdkException e)
+        private readonly SdkException _error;
+        public Error(SdkException error)
         {
-            error = e;
+            _error = error;
         }
 
         public SdkException Exception
         {
-            get => error;
+            get => _error;
         }
 
+        public MomentoErrorCode ErrorCode
+        {
+            get => _error.ErrorCode;
+        }
     }
 }

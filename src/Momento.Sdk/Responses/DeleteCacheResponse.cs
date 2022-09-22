@@ -2,7 +2,7 @@
 
 using Momento.Sdk.Exceptions;
 
-public class DeleteCacheResponse
+public abstract class DeleteCacheResponse
 {
 
     public class Success : DeleteCacheResponse { }
@@ -18,6 +18,11 @@ public class DeleteCacheResponse
         public SdkException Exception
         {
             get => _error;
+        }
+
+        public MomentoErrorCode ErrorCode
+        {
+            get => _error.ErrorCode;
         }
     }
 }
