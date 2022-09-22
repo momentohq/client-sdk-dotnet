@@ -5,7 +5,10 @@
 /// </summary>
 public class LimitExceededException : SdkException
 {
-    public LimitExceededException(string message) : base(message)
+    public LimitExceededException(string message) : base(MomentoErrorCode.LIMIT_EXCEEDED_ERROR, message)
+    {
+    }
+    public LimitExceededException(string message, MomentoErrorTransportDetails transportDetails) : base(MomentoErrorCode.LIMIT_EXCEEDED_ERROR, message, transportDetails)
     {
     }
 }

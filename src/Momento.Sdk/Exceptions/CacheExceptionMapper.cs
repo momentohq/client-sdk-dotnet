@@ -16,42 +16,46 @@ public class CacheExceptionMapper
         }
         if (e is RpcException ex)
         {
+            MomentoErrorTransportDetails transportDetails = new MomentoErrorTransportDetails(
+                new MomentoGrpcErrorDetails(ex.StatusCode, ex.Message, null)
+            );
+
             switch (ex.StatusCode)
             {
                 case StatusCode.InvalidArgument:
                 case StatusCode.OutOfRange:
                 case StatusCode.Unimplemented:
-                    return new BadRequestException(ex.Message);
+                    return new BadRequestException(ex.Message, transportDetails);
 
                 case StatusCode.FailedPrecondition:
-                    return new FailedPreconditionException(ex.Message);
+                    return new FailedPreconditionException(ex.Message, transportDetails);
 
                 case StatusCode.PermissionDenied:
-                    return new PermissionDeniedException(ex.Message);
+                    return new PermissionDeniedException(ex.Message, transportDetails);
 
                 case StatusCode.Unauthenticated:
-                    return new AuthenticationException(ex.Message);
+                    return new AuthenticationException(ex.Message, transportDetails);
 
                 case StatusCode.ResourceExhausted:
-                    return new LimitExceededException(ex.Message);
+                    return new LimitExceededException(ex.Message, transportDetails);
 
                 case StatusCode.NotFound:
-                    return new NotFoundException(ex.Message);
+                    return new NotFoundException(ex.Message, transportDetails);
 
                 case StatusCode.AlreadyExists:
-                    return new AlreadyExistsException(ex.Message);
+                    return new AlreadyExistsException(ex.Message, transportDetails);
 
                 case StatusCode.DeadlineExceeded:
-                    return new TimeoutException(ex.Message);
+                    return new TimeoutException(ex.Message, transportDetails);
 
                 case StatusCode.Cancelled:
-                    return new CancelledException(ex.Message);
+                    return new CancelledException(ex.Message, transportDetails);
 
                 case StatusCode.Unknown:
                 case StatusCode.Unavailable:
                 case StatusCode.Aborted:
                 case StatusCode.DataLoss:
-                default: return new InternalServerException(INTERNAL_SERVER_ERROR_MESSAGE, e);
+                default: return new InternalServerException(INTERNAL_SERVER_ERROR_MESSAGE, transportDetails, e);
             }
         }
         return new UnknownException(SDK_ERROR_MESSAGE, e);

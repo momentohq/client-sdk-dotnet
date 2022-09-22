@@ -7,10 +7,13 @@ namespace Momento.Sdk.Exceptions;
 /// </summary>
 public class InternalServerException : SdkException
 {
-    public InternalServerException(string message, Exception e) : base(message, e)
+    public InternalServerException(string message) : base(MomentoErrorCode.INTERNAL_SERVER_ERROR, message)
     {
     }
-    public InternalServerException(string message) : base(message)
+    public InternalServerException(string message, Exception e) : base(MomentoErrorCode.INTERNAL_SERVER_ERROR, message, null, e)
+    {
+    }
+    public InternalServerException(string message, MomentoErrorTransportDetails transportDetails, Exception e) : base(MomentoErrorCode.INTERNAL_SERVER_ERROR, message, transportDetails, e)
     {
     }
 }
