@@ -2,7 +2,7 @@ namespace Momento.Sdk.Config.Retry;
 
 public class FixedCountRetryStrategy : IRetryStrategy
 {
-    public int MaxAttempts { get; private set; }
+    public int MaxAttempts { get; set; }
     //FixedCountRetryStrategy(retryableStatusCodes = DEFAULT_RETRYABLE_STATUS_CODES, maxAttempts = 3),
     public FixedCountRetryStrategy(int maxAttempts)
     {

@@ -11,10 +11,15 @@ namespace Momento.Sdk.Config.Transport;
 /// </summary>
 public interface IGrpcConfiguration
 {
-    public int NumChannels { get; }
+    public int NumChannels { get; set; }
 
-    public int MaxSessionMemory { get; }
-    public bool UseLocalSubChannelPool { get; }
+    public int MaxSessionMemory { get; set; }
+    public bool UseLocalSubChannelPool { get; set; }
+
+    /// <summary>
+    /// How long the client is willing to wait for an RPC to complete before it is terminated with <see cref="Grpc.Core.StatusCode.DeadlineExceeded"/>
+    /// </summary>
+    public uint DeadlineMilliseconds { get; set; }
 
     /// <summary>
     /// This is a dictionary that encapsulates the settings above, and may also include other channel-specific settings.
@@ -22,5 +27,5 @@ public interface IGrpcConfiguration
     /// if it's not one we've explicitly tried / recommended.  The strategy implementation should implement this by
     /// calling the functions above, along with allowing a mechanism for specifying additional key/value pairs.
     /// </summary>
-    public IDictionary<string, string> GrpcChannelConfig { get; }
+    public IDictionary<string, string> GrpcChannelConfig { get; set; }
 }

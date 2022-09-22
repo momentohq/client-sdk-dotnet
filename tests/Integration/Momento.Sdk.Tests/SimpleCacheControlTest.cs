@@ -17,12 +17,6 @@ public class SimpleCacheControlTest
     }
 
     [Fact]
-    public void SimpleCacheClientConstructor_BadRequestTimeout_ThrowsException()
-    {
-        Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(Configurations.Laptop.Latest, authToken, defaultTtlSeconds: 10, dataClientOperationTimeoutMilliseconds: 0));
-    }
-
-    [Fact]
     public void SimpleCacheClientConstructor_BadJWT_InvalidJwtException()
     {
         Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(Configurations.Laptop.Latest, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs", defaultTtlSeconds: 10));

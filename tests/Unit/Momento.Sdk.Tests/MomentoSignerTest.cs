@@ -2,7 +2,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Web;
 using Microsoft.IdentityModel.Tokens;
-using Momento.Sdk;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Requests;
 using Xunit;

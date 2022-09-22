@@ -7,9 +7,9 @@ namespace Momento.Sdk.Config;
 
 public class Configuration : IConfiguration
 {
-    public IRetryStrategy RetryStrategy { get; }
-    public IList<IMiddleware> Middlewares { get; }
-    public ITransportStrategy TransportStrategy { get; }
+    public IRetryStrategy RetryStrategy { get; set; }
+    public IList<IMiddleware> Middlewares { get; set; }
+    public ITransportStrategy TransportStrategy { get; set; }
 
     public Configuration(IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
         : this(retryStrategy, new List<IMiddleware>(), transportStrategy)
