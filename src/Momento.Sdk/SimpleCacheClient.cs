@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal;
 using Momento.Sdk.Responses;
@@ -16,15 +17,18 @@ public class SimpleCacheClient : ISimpleCacheClient
 {
     private readonly ScsControlClient controlClient;
     private readonly ScsDataClient dataClient;
+    protected readonly IConfiguration config;
 
     /// <summary>
     /// Client to perform operations against the Simple Cache Service.
     /// </summary>
+    /// <param name="config">Configuration to use for the transport, retries, middlewares. See <see cref="Configurations"/> for out-of-the-box configuration choices, eg <see cref="Configurations.Laptop.Latest"/></param>
     /// <param name="authToken">Momento JWT.</param>
     /// <param name="defaultTtlSeconds">Default time to live for the item in cache.</param>
     /// <param name="dataClientOperationTimeoutMilliseconds">Deadline (timeout) for communicating to the server. Defaults to 5 seconds.</param>
-    public SimpleCacheClient(string authToken, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+    public SimpleCacheClient(IConfiguration config, string authToken, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
     {
+        this.config = config;
         ValidateRequestTimeout(dataClientOperationTimeoutMilliseconds);
         Claims claims = JwtUtils.DecodeJwt(authToken);
 
