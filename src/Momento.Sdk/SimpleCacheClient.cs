@@ -18,6 +18,16 @@ public class SimpleCacheClient : ISimpleCacheClient
     private readonly ScsControlClient controlClient;
     private readonly List<ScsDataClient> dataClients;
     private int NextDataClientIndex;
+    private readonly Claims _claims;
+
+    public static async Task<SimpleCacheClient> ConstructSimpleCacheClientAsync(string authToken, uint defaultTtlSeconds, uint numGrpcChannels, int maxConcurrentRequests, uint? dataClientOperationTimeoutMilliseconds = null)
+    {
+        var client = new SimpleCacheClient(authToken, defaultTtlSeconds, numGrpcChannels, maxConcurrentRequests, dataClientOperationTimeoutMilliseconds);
+        await client.Initialize(authToken, numGrpcChannels, maxConcurrentRequests, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds);
+        return client;
+    }
+
+
 
     /// <summary>
     /// Client to perform operations against the Simple Cache Service.
@@ -25,20 +35,32 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="authToken">Momento JWT.</param>
     /// <param name="defaultTtlSeconds">Default time to live for the item in cache.</param>
     /// <param name="dataClientOperationTimeoutMilliseconds">Deadline (timeout) for communicating to the server. Defaults to 5 seconds.</param>
-    public SimpleCacheClient(string authToken, uint defaultTtlSeconds, uint numGrpcChannels, uint? dataClientOperationTimeoutMilliseconds = null)
+    private SimpleCacheClient(string authToken, uint defaultTtlSeconds, uint numGrpcChannels, int maxConcurrentRequests, uint? dataClientOperationTimeoutMilliseconds = null)
     {
         Console.WriteLine("\n\n\n\nWELCOME TO THE SIMPLE CACHE CLIENT!\n\n\n\n");
         ValidateRequestTimeout(dataClientOperationTimeoutMilliseconds);
-        Claims claims = JwtUtils.DecodeJwt(authToken);
+        _claims = JwtUtils.DecodeJwt(authToken);
 
-        this.controlClient = new(authToken, claims.ControlEndpoint);
+        this.controlClient = new(authToken, _claims.ControlEndpoint);
         this.dataClients = new List<ScsDataClient>();
         this.NextDataClientIndex = 0;
+        //for (var i = 0; i < numGrpcChannels; i++)
+        //{
+        //    this.dataClients.Add(new ScsDataClient(authToken, claims.CacheEndpoint,
+        //        maxConcurrentRequests: maxConcurrentRequests,
+        //        defaultTtlSeconds, dataClientOperationTimeoutMilliseconds));
+        //}
+        //new(authToken, claims.CacheEndpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds);
+    }
+
+    private async Task Initialize(string authToken, uint numGrpcChannels, int maxConcurrentRequests, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+    {
         for (var i = 0; i < numGrpcChannels; i++)
         {
-            this.dataClients.Add(new ScsDataClient(authToken, claims.CacheEndpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds));
+            this.dataClients.Add(await ScsDataClient.ConstructScsDataClient(authToken, _claims.CacheEndpoint,
+                maxConcurrentRequests: maxConcurrentRequests,
+                defaultTtlSeconds, dataClientOperationTimeoutMilliseconds));
         }
-        //new(authToken, claims.CacheEndpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds);
     }
 
     /// <inheritdoc />

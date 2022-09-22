@@ -90,43 +90,48 @@ public record CsharpLoadGeneratorOptions
                 throw new Exception("Missing required environment variable MOMENTO_AUTH_TOKEN");
             }
 
-            var momento = new SimpleCacheClient(
+            using (var momento = await SimpleCacheClient.ConstructSimpleCacheClientAsync(
                 authToken,
                 CACHE_ITEM_TTL_SECONDS,
                 _options.numGrpcChannels,
+                maxConcurrentRequests: 1,
                 _options.requestTimeoutMs
-            );
-
-            try
+            ))
             {
-                momento.CreateCache(CACHE_NAME);
+                try
+                {
+                    momento.CreateCache(CACHE_NAME);
+                }
+                catch (AlreadyExistsException)
+                {
+                    _logger.LogInformation("cache '{0}' already exists", CACHE_NAME);
+                }
+
+
+                var numOperationsPerWorker = _options.totalNumberOfOperationsToExecute / _options.numberOfConcurrentRequests;
+                var totalNumRequestsExpected = _options.totalNumberOfOperationsToExecute * NUM_REQUESTS_PER_OPERATION;
+
+                var context = new CsharpLoadGeneratorContext();
+
+                var asyncResults = Enumerable.Range(0, _options.numberOfConcurrentRequests).Select<int, Task>(workerId =>
+                    LaunchAndRunWorkers(
+                        momento,
+                        context,
+                        workerId + 1,
+                        numOperationsPerWorker
+                        )
+                );
+
+                var statsPrinterTask = LaunchStatsPrinterTask(context, totalNumRequestsExpected);
+
+                // TODO SPLAIN
+                var firstDone = await Task.WhenAny(asyncResults);
+                await firstDone;
+                Console.WriteLine("\n\n\n\n\n\nBACK FROM WHEN ANY\n\n\n\n\n\n\n");
+                await Task.WhenAll(asyncResults);
+
+                await statsPrinterTask;
             }
-            catch (AlreadyExistsException)
-            {
-                _logger.LogInformation("cache '{0}' already exists", CACHE_NAME);
-            }
-
-
-            var numOperationsPerWorker = _options.totalNumberOfOperationsToExecute / _options.numberOfConcurrentRequests;
-            var totalNumRequestsExpected = _options.totalNumberOfOperationsToExecute * NUM_REQUESTS_PER_OPERATION;
-
-            var context = new CsharpLoadGeneratorContext();
-
-
-            var asyncResults = Enumerable.Range(0, _options.numberOfConcurrentRequests).Select<int, Task>(workerId =>
-                LaunchAndRunWorkers(
-                    momento,
-                    context,
-                    workerId + 1,
-                    numOperationsPerWorker
-                    )
-            );
-
-            var statsPrinterTask = LaunchStatsPrinterTask(context, totalNumRequestsExpected);
-
-            await Task.WhenAll(asyncResults);
-
-            await statsPrinterTask;
             _logger.LogInformation("Done");
         }
 
@@ -258,7 +263,7 @@ cumulative get latencies:
             catch (InternalServerException e)
             {
                 var innerException = e.InnerException as RpcException;
-                _logger.LogWarning("CAUGHT AN EXCEPTION WHILE EXECUTING REQUEST: {0}", innerException);
+                //_logger.LogWarning("CAUGHT AN EXCEPTION WHILE EXECUTING REQUEST: {0}", innerException);
                 switch (innerException!.StatusCode)
                 {
 
@@ -271,7 +276,7 @@ cumulative get latencies:
             catch (Exception e)
             {
                 _logger.LogError("CAUGHT AN EXCEPTION WHILE EXECUTING REQUEST: {0}", e);
-                throw;
+                throw e;
             }
         }
 
@@ -377,7 +382,7 @@ If you have questions or need help experimenting further, please reach out to us
                * is more contention between the concurrent function calls, client-side latencies
                * may increase.
                */
-              numberOfConcurrentRequests: 5000,
+              numberOfConcurrentRequests: 200,
               /**
                * Controls how long the load test will run.  We will execute this many operations
                * (1 cache 'set' followed immediately by 1 'get') across all of our concurrent

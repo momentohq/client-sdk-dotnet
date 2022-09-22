@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Grpc.Core;
@@ -8,17 +9,18 @@ using Momento.Protos.CacheClient;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Responses;
+using Newtonsoft.Json.Linq;
 
 namespace Momento.Sdk.Internal;
 
-public class ScsDataClientBase : IDisposable
+internal class ScsDataClientBase : IDisposable
 {
     protected readonly DataGrpcManager grpcManager;
     protected readonly uint defaultTtlSeconds;
     protected readonly uint dataClientOperationTimeoutMilliseconds;
     protected const uint DEFAULT_DEADLINE_MILLISECONDS = 5000;
 
-    public ScsDataClientBase(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+    internal ScsDataClientBase(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
     {
         this.grpcManager = new(authToken, endpoint);
         this.defaultTtlSeconds = defaultTtlSeconds;
@@ -52,19 +54,59 @@ public class ScsDataClientBase : IDisposable
 
 internal sealed class ScsDataClient : ScsDataClientBase
 {
-    public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+    //private readonly Semaphore _maxConcurrentRequestSemapore;
+    private readonly System.Threading.Channels.Channel<bool> _requestTokenChannel;
+    private readonly int _maxConcurrentRequests;
+
+    public static async Task<ScsDataClient> ConstructScsDataClient(string authToken, string endpoint, int maxConcurrentRequests, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+    {
+        var client = new ScsDataClient(authToken, endpoint, maxConcurrentRequests, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds);
+        await client.Initialize();
+        return client;
+    }
+
+    private ScsDataClient(string authToken, string endpoint, int maxConcurrentRequests, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
         : base(authToken, endpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds)
     {
+        Console.WriteLine($"\n\n\n\n\nCREATING SEMAPHORE WITH COUNT: {maxConcurrentRequests}\n\n\n\n\n\n");
+        //_maxConcurrentRequestSemapore = new Semaphore(initialCount: maxConcurrentRequests, maximumCount: maxConcurrentRequests);
+        _requestTokenChannel = System.Threading.Channels.Channel.CreateBounded<bool>(maxConcurrentRequests);
+        _maxConcurrentRequests = maxConcurrentRequests;
+    }
+    internal async Task Initialize()
+    {
+        for (var i = 0; i < _maxConcurrentRequests; i++)
+        {
+            await _requestTokenChannel.Writer.WriteAsync(true);
+        }
     }
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
     {
-        return await this.SendSetAsync(cacheName, value: value.ToByteString(), key: key.ToByteString(), ttlSeconds: ttlSeconds);
+        Console.WriteLine("WAITING FOR SEMAPHORE");
+        //_maxConcurrentRequestSemapore.WaitOne();
+        //try
+        //{
+            return await this.SendSetAsync(cacheName, value: value.ToByteString(), key: key.ToByteString(), ttlSeconds: ttlSeconds);
+        //} finally
+        //{
+            //Console.WriteLine("DELAYING BEFORE RELEASING SEMAPHORE");
+            //await Task.Delay(100);
+            //Console.WriteLine("RELEASING SEMAPHORE");
+            //_maxConcurrentRequestSemapore.Release();
+        //}
     }
 
     public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
     {
-        return await this.SendGetAsync(cacheName, key.ToByteString());
+        //_maxConcurrentRequestSemapore.WaitOne();
+        //try
+        //{
+            return await this.SendGetAsync(cacheName, key.ToByteString());
+        //} finally
+        //{
+            //_maxConcurrentRequestSemapore.Release();
+        //}
     }
 
     public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, byte[] key)
@@ -72,14 +114,46 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return await this.SendDeleteAsync(cacheName, key.ToByteString());
     }
 
+    // CHRIS
+    // CHRIS THESE ARE THE ONES THAT MATTER
+    // CHRIS
+
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint? ttlSeconds = null)
     {
-        return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
+        //Console.WriteLine("WAITING FOR SEMAPHORE");
+        //_maxConcurrentRequestSemapore.WaitOne();
+        var token = await _requestTokenChannel.Reader.ReadAsync();
+        try
+        {
+            return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
+        }
+        finally
+        {
+            //Console.WriteLine("DELAYING BEFORE RELEASING SEMAPHORE");
+            //await Task.Delay(100);
+            //Console.WriteLine("RELEASING SEMAPHORE");
+            //_maxConcurrentRequestSemapore.Release();
+            await _requestTokenChannel.Writer.WriteAsync(token);
+        }
     }
 
     public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
     {
-        return await this.SendGetAsync(cacheName, key.ToByteString());
+        //Console.WriteLine("WAITING FOR SEMAPHORE");
+        //_maxConcurrentRequestSemapore.WaitOne();
+        var token = await _requestTokenChannel.Reader.ReadAsync();
+        try
+        {
+            return await this.SendGetAsync(cacheName, key.ToByteString());
+        }
+        finally
+        {
+            //Console.WriteLine("DELAYING BEFORE RELEASING SEMAPHORE");
+            //await Task.Delay(100);
+            //Console.WriteLine("RELEASING SEMAPHORE");
+            //_maxConcurrentRequestSemapore.Release();
+            await _requestTokenChannel.Writer.WriteAsync(token);
+        }
     }
 
     public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key)

@@ -31,5 +31,9 @@
 		<PackageReference Include="Momento.Protos" Version="0.30.3" />
 		<PackageReference Include="JWT" Version="8.4.2" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.16.0" />
+		<PackageReference Include="System.Threading.Channels" Version="7.0.0-rc.1.22426.10" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Remove="System.Threading.Channels" />
 	</ItemGroup>
 </Project>
