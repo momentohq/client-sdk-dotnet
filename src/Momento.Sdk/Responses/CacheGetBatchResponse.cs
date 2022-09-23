@@ -16,7 +16,6 @@ public class CacheGetBatchResponse
 
         public IEnumerable<CacheGetStatus> Status
         {
-            // get => Responses.Select(response => response.Status);
             get
             {
                 var ret = new List<CacheGetStatus>();
@@ -30,7 +29,6 @@ public class CacheGetBatchResponse
 
         public IEnumerable<string?> Strings()
         {
-            // return Responses.Select(response => response.String());
             var ret = new List<string?>();
             foreach (CacheGetResponse.Success response in Responses)
             {
@@ -41,7 +39,6 @@ public class CacheGetBatchResponse
 
         public IEnumerable<byte[]?> ByteArrays
         {
-            // get => Responses.Select(response => response.ByteArray);
             get
             {
                 var ret = new List<byte[]?>();
