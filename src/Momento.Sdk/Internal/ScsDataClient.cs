@@ -134,6 +134,13 @@ internal sealed class ScsDataClient : ScsDataClientBase
             );
         }
 
+        // preserve old behavior of failing on first error
+        foreach (CacheGetResponse response in continuation.Result) {
+            if (response is CacheGetResponse.Error errorResponse) {
+                return new CacheGetBatchResponse.Error(errorResponse.Exception);
+            }
+        }
+
         // Package results
         return new CacheGetBatchResponse.Success(continuation.Result);
     }

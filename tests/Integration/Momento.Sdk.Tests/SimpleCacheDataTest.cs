@@ -39,19 +39,17 @@ public class SimpleCacheDataTest
         byte[] value = Utils.NewGuidByteArray();
         await client.SetAsync(cacheName, key, value);
         CacheGetResponse response = await client.GetAsync(cacheName, key);
-        if (response is CacheGetResponse.Hit goodResponse) {
-            byte[]? setValue = goodResponse.ByteArray;
-            Assert.Equal(value, setValue);
-        }
+        var goodResponse = (CacheGetResponse.Hit)response;
+        byte[]? setValue = goodResponse.ByteArray;
+        Assert.Equal(value, setValue);
 
         key = Utils.NewGuidByteArray();
         value = Utils.NewGuidByteArray();
         await client.SetAsync(cacheName, key, value, ttlSeconds: 15);
         response = await client.GetAsync(cacheName, key);
-        if (response is CacheGetResponse.Hit anotherGoodResponse) {
-            byte[]? setValue = anotherGoodResponse.ByteArray;
-            Assert.Equal(value, setValue);
-        }
+        goodResponse = (CacheGetResponse.Hit)response;
+        setValue = goodResponse.ByteArray;
+        Assert.Equal(value, setValue);
     }
 
     [Theory]
@@ -80,19 +78,17 @@ public class SimpleCacheDataTest
         string value = Utils.NewGuidString();
         await client.SetAsync(cacheName, key, value);
         CacheGetResponse response = await client.GetAsync(cacheName, key);
-        if (response is CacheGetResponse.Hit goodResponse) {
-            string? setValue = goodResponse.String();
-            Assert.Equal(value, setValue);
-        }
+        var goodResponse = (CacheGetResponse.Hit)response;
+        string? setValue = goodResponse.String();
+        Assert.Equal(value, setValue);
 
         key = Utils.NewGuidString();
         value = Utils.NewGuidString();
         await client.SetAsync(cacheName, key, value, ttlSeconds: 15);
         response = await client.GetAsync(cacheName, key);
-        if (response is CacheGetResponse.Hit anotherGoodResponse) {
-            string? setValue = anotherGoodResponse.String();
-            Assert.Equal(value, setValue);
-        }
+        goodResponse = (CacheGetResponse.Hit)response;
+        setValue = goodResponse.String();
+        Assert.Equal(value, setValue);
     }
 
     [Theory]
@@ -121,10 +117,9 @@ public class SimpleCacheDataTest
         byte[] value = Utils.NewGuidByteArray();
         await client.SetAsync(cacheName, key, value);
         CacheGetResponse response = await client.GetAsync(cacheName, key);
-        if (response is CacheGetResponse.Hit goodResponse) {
-            byte[]? setValue = goodResponse.ByteArray;
-            Assert.Equal(value, setValue);
-        }
+        var goodResponse = (CacheGetResponse.Hit)response;
+        byte[]? setValue = goodResponse.ByteArray;
+        Assert.Equal(value, setValue);
 
         key = Utils.NewGuidString();
         value = Utils.NewGuidByteArray();
@@ -200,9 +195,8 @@ public class SimpleCacheDataTest
         using SimpleCacheClient simpleCacheClient = new SimpleCacheClient(Configurations.Laptop.Latest, authToken, DefaultTtlSeconds, 1);
         List<string> keys = new() { Utils.NewGuidString(), Utils.NewGuidString(), Utils.NewGuidString(), Utils.NewGuidString() };
         CacheGetBatchResponse response = await simpleCacheClient.GetBatchAsync(cacheName, keys);
-        if (response is CacheGetBatchResponse.Error badResponse) {
-            Assert.Equal(MomentoErrorCode.TIMEOUT_ERROR, badResponse.ErrorCode);
-        }
+        var badResponse = (CacheGetBatchResponse.Error)response;
+        Assert.Equal(MomentoErrorCode.TIMEOUT_ERROR, badResponse.ErrorCode);
     }
 
     [Fact]
