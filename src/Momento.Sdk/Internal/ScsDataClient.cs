@@ -226,8 +226,8 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            throw CacheExceptionMapper.Convert(e);
+            return new CacheDeleteResponse.Error(CacheExceptionMapper.Convert(e));
         }
-        return new CacheDeleteResponse();
+        return new CacheDeleteResponse.Success();
     }
 }
