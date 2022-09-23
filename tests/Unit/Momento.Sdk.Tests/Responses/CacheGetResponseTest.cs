@@ -14,16 +14,15 @@ public class CacheGetResponseTest
         string cacheBody = "test body";
         ByteString body = ByteString.CopyFromUtf8(cacheBody);
         _GetResponse serverResponseHit = new _GetResponse() { CacheBody = body, Result = ECacheResult.Hit };
-        CacheGetResponse responseHit = new CacheGetResponse(serverResponseHit);
+        CacheGetResponse.Success responseHit = new CacheGetResponse.Success(serverResponseHit);
         Assert.Equal(CacheGetStatus.HIT, responseHit.Status);
         Assert.Equal(cacheBody, responseHit.String());
 
         _GetResponse serverResponseMiss = new _GetResponse() { Result = ECacheResult.Miss };
-        CacheGetResponse responseMiss = new CacheGetResponse(serverResponseMiss);
+        CacheGetResponse.Success responseMiss = new CacheGetResponse.Success(serverResponseMiss);
         Assert.Equal(CacheGetStatus.MISS, responseMiss.Status);
 
         _GetResponse serverResponseBadRequest = new _GetResponse() { Result = ECacheResult.Invalid };
-        _ = Assert.Throws<InternalServerException>(() => new CacheGetResponse(serverResponseBadRequest));
-
+        _ = Assert.Throws<InternalServerException>(() => new CacheGetResponse.Success(serverResponseBadRequest));
     }
 }

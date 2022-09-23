@@ -115,21 +115,27 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            throw CacheExceptionMapper.Convert(e);
+            return new CacheGetBatchResponse.Error(CacheExceptionMapper.Convert(e));
         }
 
         // Handle failures
         if (continuation.Status == TaskStatus.Faulted)
         {
-            throw CacheExceptionMapper.Convert(continuation.Exception);
+            return new CacheGetBatchResponse.Error(
+                CacheExceptionMapper.Convert(continuation.Exception)
+            );
         }
         else if (continuation.Status != TaskStatus.RanToCompletion)
         {
-            throw CacheExceptionMapper.Convert(new Exception(String.Format("Failure issuing multi-get: {0}", continuation.Status)));
+            return new CacheGetBatchResponse.Error(
+                CacheExceptionMapper.Convert(
+                    new Exception(String.Format("Failure issuing multi-get: {0}", continuation.Status))
+                )
+            );
         }
 
         // Package results
-        return new CacheGetBatchResponse(continuation.Result);
+        return new CacheGetBatchResponse.Success(continuation.Result);
     }
 
     public async Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
@@ -159,19 +165,27 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            throw CacheExceptionMapper.Convert(e);
+            return new CacheSetBatchResponse.Error(
+                CacheExceptionMapper.Convert(e)
+            );
         }
 
         // Handle failures
         if (continuation.Status == TaskStatus.Faulted)
         {
-            throw CacheExceptionMapper.Convert(continuation.Exception);
+            return new CacheSetBatchResponse.Error(
+                CacheExceptionMapper.Convert(continuation.Exception)
+            );
         }
         else if (continuation.Status != TaskStatus.RanToCompletion)
         {
-            throw CacheExceptionMapper.Convert(new Exception(String.Format("Failure issuing multi-set: {0}", continuation.Status)));
+            return new CacheSetBatchResponse.Error(
+                CacheExceptionMapper.Convert(
+                    new Exception(String.Format("Failure issuing multi-set: {0}", continuation.Status))
+                )
+            );
         }
-        return new CacheSetBatchResponse();
+        return new CacheSetBatchResponse.Success();
     }
 
     private async Task<CacheSetResponse> SendSetAsync(string cacheName, ByteString key, ByteString value, uint? ttlSeconds = null)
@@ -183,9 +197,9 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            throw CacheExceptionMapper.Convert(e);
+            return new CacheSetResponse.Error(CacheExceptionMapper.Convert(e));
         }
-        return new CacheSetResponse();
+        return new CacheSetResponse.Success();
     }
 
     private async Task<CacheGetResponse> SendGetAsync(string cacheName, ByteString key)
@@ -198,9 +212,9 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            throw CacheExceptionMapper.Convert(e);
+            return new CacheGetResponse.Error(CacheExceptionMapper.Convert(e));
         }
-        return new CacheGetResponse(response);
+        return new CacheGetResponse.Success(response);
     }
 
     private async Task<CacheDeleteResponse> SendDeleteAsync(string cacheName, ByteString key)

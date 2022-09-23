@@ -1,29 +1,75 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using Momento.Sdk.Exceptions;
 
 namespace Momento.Sdk.Responses;
 
 public class CacheGetBatchResponse
 {
-    public List<CacheGetResponse> Responses { get; }
-
-    public CacheGetBatchResponse(IEnumerable<CacheGetResponse> responses)
+    public class Success : CacheGetBatchResponse
     {
-        this.Responses = new(responses);
+        public List<CacheGetResponse> Responses { get; }
+
+        public Success(IEnumerable<CacheGetResponse> responses)
+        {
+            this.Responses = new(responses);
+        }
+
+        public IEnumerable<CacheGetStatus> Status
+        {
+            // get => Responses.Select(response => response.Status);
+            get
+            {
+                var ret = new List<CacheGetStatus>();
+                foreach (CacheGetResponse.Success response in Responses)
+                {
+                    ret.Add(response.Status);
+                }
+                return ret;
+            }
+        }
+
+        public IEnumerable<string?> Strings()
+        {
+            // return Responses.Select(response => response.String());
+            var ret = new List<string?>();
+            foreach (CacheGetResponse.Success response in Responses)
+            {
+                ret.Add(response.String());
+            }
+            return ret.ToArray();
+        }
+
+        public IEnumerable<byte[]?> ByteArrays
+        {
+            // get => Responses.Select(response => response.ByteArray);
+            get
+            {
+                var ret = new List<byte[]?>();
+                foreach (CacheGetResponse.Success response in Responses)
+                {
+                    ret.Add(response.ByteArray);
+                }
+                return ret;
+            }
+        }
     }
 
-    public IEnumerable<CacheGetStatus> Status
+    public class Error : CacheGetBatchResponse
     {
-        get => Responses.Select(response => response.Status);
-    }
+        private readonly SdkException _error;
+        public Error(SdkException error)
+        {
+            _error = error;
+        }
 
-    public IEnumerable<string?> Strings()
-    {
-        return Responses.Select(response => response.String());
-    }
+        public SdkException Exception
+        {
+            get => _error;
+        }
 
-    public IEnumerable<byte[]?> ByteArrays
-    {
-        get => Responses.Select(response => response.ByteArray);
+        public MomentoErrorCode ErrorCode
+        {
+            get => _error.ErrorCode;
+        }
     }
 }
