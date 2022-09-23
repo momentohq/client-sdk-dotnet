@@ -39,7 +39,7 @@ public class SimpleCacheDataTest
         byte[] value = Utils.NewGuidByteArray();
         await client.SetAsync(cacheName, key, value);
         CacheGetResponse response = await client.GetAsync(cacheName, key);
-        if (response is CacheGetResponse.Success goodResponse) {
+        if (response is CacheGetResponse.Hit goodResponse) {
             byte[]? setValue = goodResponse.ByteArray;
             Assert.Equal(value, setValue);
         }
@@ -48,7 +48,7 @@ public class SimpleCacheDataTest
         value = Utils.NewGuidByteArray();
         await client.SetAsync(cacheName, key, value, ttlSeconds: 15);
         response = await client.GetAsync(cacheName, key);
-        if (response is CacheGetResponse.Success anotherGoodResponse) {
+        if (response is CacheGetResponse.Hit anotherGoodResponse) {
             byte[]? setValue = anotherGoodResponse.ByteArray;
             Assert.Equal(value, setValue);
         }
@@ -80,7 +80,7 @@ public class SimpleCacheDataTest
         string value = Utils.NewGuidString();
         await client.SetAsync(cacheName, key, value);
         CacheGetResponse response = await client.GetAsync(cacheName, key);
-        if (response is CacheGetResponse.Success goodResponse) {
+        if (response is CacheGetResponse.Hit goodResponse) {
             string? setValue = goodResponse.String();
             Assert.Equal(value, setValue);
         }
@@ -89,7 +89,7 @@ public class SimpleCacheDataTest
         value = Utils.NewGuidString();
         await client.SetAsync(cacheName, key, value, ttlSeconds: 15);
         response = await client.GetAsync(cacheName, key);
-        if (response is CacheGetResponse.Success anotherGoodResponse) {
+        if (response is CacheGetResponse.Hit anotherGoodResponse) {
             string? setValue = anotherGoodResponse.String();
             Assert.Equal(value, setValue);
         }
@@ -121,7 +121,7 @@ public class SimpleCacheDataTest
         byte[] value = Utils.NewGuidByteArray();
         await client.SetAsync(cacheName, key, value);
         CacheGetResponse response = await client.GetAsync(cacheName, key);
-        if (response is CacheGetResponse.Success goodResponse) {
+        if (response is CacheGetResponse.Hit goodResponse) {
             byte[]? setValue = goodResponse.ByteArray;
             Assert.Equal(value, setValue);
         }
@@ -130,7 +130,7 @@ public class SimpleCacheDataTest
         value = Utils.NewGuidByteArray();
         await client.SetAsync(cacheName, key, value, ttlSeconds: 15);
         response = await client.GetAsync(cacheName, key);
-        var anotherGoodResponse = (CacheGetResponse.Success)response;
+        var anotherGoodResponse = (CacheGetResponse.Hit)response;
         byte[]? anotherSetValue = anotherGoodResponse.ByteArray;
         Assert.Equal(value, anotherSetValue);
     }
@@ -230,11 +230,11 @@ public class SimpleCacheDataTest
         await client.SetBatchAsync(cacheName, dictionary);
 
         var getResponse = await client.GetAsync(cacheName, key1);
-        var goodGetResponse = (CacheGetResponse.Success)getResponse;
+        var goodGetResponse = (CacheGetResponse.Hit)getResponse;
         Assert.Equal(value1, goodGetResponse.ByteArray);
 
         getResponse = await client.GetAsync(cacheName, key2);
-        goodGetResponse = (CacheGetResponse.Success)getResponse;
+        goodGetResponse = (CacheGetResponse.Hit)getResponse;
         Assert.Equal(value2, goodGetResponse.ByteArray);
     }
 
@@ -263,11 +263,11 @@ public class SimpleCacheDataTest
         await client.SetBatchAsync(cacheName, dictionary);
 
         var getResponse = await client.GetAsync(cacheName, key1);
-        var goodGetResponse = (CacheGetResponse.Success)getResponse;
+        var goodGetResponse = (CacheGetResponse.Hit)getResponse;
         Assert.Equal(value1, goodGetResponse.String());
 
         getResponse = await client.GetAsync(cacheName, key2);
-        goodGetResponse = (CacheGetResponse.Success)getResponse;
+        goodGetResponse = (CacheGetResponse.Hit)getResponse;
         Assert.Equal(value2, goodGetResponse.String());
     }
 
@@ -279,8 +279,8 @@ public class SimpleCacheDataTest
         await client.SetAsync(cacheName, key, value, 1);
         await Task.Delay(3000);
         CacheGetResponse result = await client.GetAsync(cacheName, key);
-        var goodResult = (CacheGetResponse.Success)result;
-        Assert.Equal(CacheGetStatus.MISS, goodResult.Status);
+        var missResult = (CacheGetResponse.Miss)result;
+        Assert.Equal(CacheGetStatus.MISS, missResult.Status);
     }
 
     [Theory]
@@ -299,7 +299,7 @@ public class SimpleCacheDataTest
         byte[] value = new byte[] { 0x05, 0x06, 0x07, 0x08 };
         await client.SetAsync(cacheName, key, value, ttlSeconds: 60);
         CacheGetResponse getResponse = await client.GetAsync(cacheName, key);
-        var goodGetResponse = (CacheGetResponse.Success)getResponse;
+        var goodGetResponse = (CacheGetResponse.Hit)getResponse;
         Assert.Equal(CacheGetStatus.HIT, goodGetResponse.Status);
 
         // Delete
@@ -307,8 +307,8 @@ public class SimpleCacheDataTest
 
         // Check deleted
         getResponse = await client.GetAsync(cacheName, key);
-        goodGetResponse = (CacheGetResponse.Success)getResponse;
-        Assert.Equal(CacheGetStatus.MISS, goodGetResponse.Status);
+        var missGetResponse = (CacheGetResponse.Miss)getResponse;
+        Assert.Equal(CacheGetStatus.MISS, missGetResponse.Status);
     }
 
     [Theory]
@@ -327,7 +327,7 @@ public class SimpleCacheDataTest
         string value = Utils.NewGuidString();
         await client.SetAsync(cacheName, key, value, ttlSeconds: 60);
         CacheGetResponse getResponse = await client.GetAsync(cacheName, key);
-        var goodGetResponse = (CacheGetResponse.Success)getResponse;
+        var goodGetResponse = (CacheGetResponse.Hit)getResponse;
         Assert.Equal(CacheGetStatus.HIT, goodGetResponse.Status);
 
         // Delete
@@ -335,7 +335,7 @@ public class SimpleCacheDataTest
 
         // Check deleted
         getResponse = await client.GetAsync(cacheName, key);
-        goodGetResponse = (CacheGetResponse.Success)getResponse;
-        Assert.Equal(CacheGetStatus.MISS, goodGetResponse.Status);
+        var missGetResponse = (CacheGetResponse.Miss)getResponse;
+        Assert.Equal(CacheGetStatus.MISS, missGetResponse.Status);
     }
 }

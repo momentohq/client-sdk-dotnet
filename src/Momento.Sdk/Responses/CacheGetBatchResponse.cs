@@ -19,9 +19,12 @@ public abstract class CacheGetBatchResponse
             get
             {
                 var ret = new List<CacheGetStatus>();
-                foreach (CacheGetResponse.Success response in Responses)
-                {
-                    ret.Add(response.Status);
+                foreach (CacheGetResponse response in Responses) {
+                    if (response is CacheGetResponse.Hit hitResponse) {
+                        ret.Add(hitResponse.Status);
+                    } else if (response is CacheGetResponse.Miss missResponse) {
+                        ret.Add(missResponse.Status);
+                    }
                 }
                 return ret;
             }
@@ -30,9 +33,13 @@ public abstract class CacheGetBatchResponse
         public IEnumerable<string?> Strings()
         {
             var ret = new List<string?>();
-            foreach (CacheGetResponse.Success response in Responses)
+            foreach (CacheGetResponse response in Responses)
             {
-                ret.Add(response.String());
+                if (response is CacheGetResponse.Hit hitResponse) {
+                    ret.Add(hitResponse.String());
+                } else if (response is CacheGetResponse.Miss missResponse) {
+                    ret.Add(null);
+                }
             }
             return ret.ToArray();
         }
@@ -42,11 +49,16 @@ public abstract class CacheGetBatchResponse
             get
             {
                 var ret = new List<byte[]?>();
-                foreach (CacheGetResponse.Success response in Responses)
+                foreach (CacheGetResponse response in Responses)
                 {
-                    ret.Add(response.ByteArray);
+                    if (response is CacheGetResponse.Hit hitResponse)
+                    {
+                        ret.Add(hitResponse.ByteArray);
+                    } else if (response is CacheGetResponse.Miss missResponse) {
+                        ret.Add(null);
+                    }
                 }
-                return ret;
+                return ret.ToArray();
             }
         }
     }

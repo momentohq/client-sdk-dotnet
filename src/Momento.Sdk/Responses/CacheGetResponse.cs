@@ -5,12 +5,12 @@ namespace Momento.Sdk.Responses;
 
 public abstract class CacheGetResponse
 {
-    public class Success : CacheGetResponse
+    public class Hit : CacheGetResponse
     {
         public CacheGetStatus Status { get; }
         protected readonly ByteString? value;
 
-        public Success(_GetResponse response)
+        public Hit(_GetResponse response)
         {
             if (response.Result is ECacheResult status) {
                 Status = CacheGetStatusUtil.From(status);
@@ -26,6 +26,14 @@ public abstract class CacheGetResponse
         }
 
         public string? String() => (value != null) ? value.ToStringUtf8() : null;
+    }
+
+    public class Miss : CacheGetResponse {
+        public CacheGetStatus Status { get; }
+
+        public Miss() {
+            Status = CacheGetStatus.MISS;
+        }
 
     }
 

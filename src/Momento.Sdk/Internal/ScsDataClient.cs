@@ -214,7 +214,11 @@ internal sealed class ScsDataClient : ScsDataClientBase
         {
             return new CacheGetResponse.Error(CacheExceptionMapper.Convert(e));
         }
-        return new CacheGetResponse.Success(response);
+
+        if (response.Result == ECacheResult.Miss) {
+            return new CacheGetResponse.Miss();
+        }
+        return new CacheGetResponse.Hit(response);
     }
 
     private async Task<CacheDeleteResponse> SendDeleteAsync(string cacheName, ByteString key)
