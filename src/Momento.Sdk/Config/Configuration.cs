@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
 using Momento.Sdk.Config.Transport;
@@ -22,5 +23,14 @@ public class Configuration : IConfiguration
         this.RetryStrategy = retryStrategy;
         this.Middlewares = middlewares;
         this.TransportStrategy = transportStrategy;
+    }
+
+    public Configuration WithAdditionalMiddlewares(IList<IMiddleware> additionalMiddlewares)
+    {
+        return new(
+            retryStrategy: RetryStrategy,
+            middlewares: Middlewares.Concat(additionalMiddlewares).ToList(),
+            transportStrategy: TransportStrategy
+        );
     }
 }

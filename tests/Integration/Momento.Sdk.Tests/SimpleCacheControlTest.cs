@@ -70,7 +70,8 @@ public class SimpleCacheControlTest
 
         // Test cache exists
         ListCachesResponse result = client.ListCaches();
-        if (result is ListCachesResponse.Success successResult) {
+        if (result is ListCachesResponse.Success successResult)
+        {
             List<CacheInfo> caches = successResult.Caches;
             Assert.Contains(new CacheInfo(cacheName), caches);
         }
@@ -78,7 +79,8 @@ public class SimpleCacheControlTest
         // Test deleting cache
         client.DeleteCache(cacheName);
         result = client.ListCaches();
-        if (result is ListCachesResponse.Success successResult2) {
+        if (result is ListCachesResponse.Success successResult2)
+        {
             var caches = successResult2.Caches;
             Assert.DoesNotContain(new CacheInfo(cacheName), caches);
         }
@@ -103,7 +105,8 @@ public class SimpleCacheControlTest
         ListCachesResponse result = client.ListCaches();
         while (true)
         {
-            if (result is ListCachesResponse.Success successResult) {
+            if (result is ListCachesResponse.Success successResult)
+            {
                 foreach (CacheInfo cache in successResult.Caches)
                 {
                     retrievedCaches.Add(cache.Name);

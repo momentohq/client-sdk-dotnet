@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Google.Protobuf;
 using Grpc.Core;
 using Momento.Protos.CacheClient;
+using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Responses;
@@ -18,9 +19,9 @@ public class ScsDataClientBase : IDisposable
     protected readonly uint dataClientOperationTimeoutMilliseconds;
     protected const uint DEFAULT_DEADLINE_MILLISECONDS = 5000;
 
-    public ScsDataClientBase(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+    public ScsDataClientBase(IList<IMiddleware> middlewares, string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
     {
-        this.grpcManager = new(authToken, endpoint);
+        this.grpcManager = new(middlewares, authToken, endpoint);
         this.defaultTtlSeconds = defaultTtlSeconds;
         this.dataClientOperationTimeoutMilliseconds = dataClientOperationTimeoutMilliseconds ?? DEFAULT_DEADLINE_MILLISECONDS;
     }
@@ -52,8 +53,8 @@ public class ScsDataClientBase : IDisposable
 
 internal sealed class ScsDataClient : ScsDataClientBase
 {
-    public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
-        : base(authToken, endpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds)
+    public ScsDataClient(IList<IMiddleware> middlewares, string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+        : base(middlewares, authToken, endpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds)
     {
     }
 
