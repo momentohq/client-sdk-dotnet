@@ -14,4 +14,8 @@ public interface IConfiguration
     public IRetryStrategy RetryStrategy { get; }
     public IList<IMiddleware> Middlewares { get; }
     public ITransportStrategy TransportStrategy { get; }
+
+    public IConfiguration WithRetryStrategy(IRetryStrategy retryStrategy);
+    public IConfiguration WithMiddlewares(IList<IMiddleware> middlewares);
+    public IConfiguration WithTransportStrategy(ITransportStrategy transportStrategy);
 }

@@ -7,6 +7,8 @@ namespace Momento.Sdk.Config;
 
 public class Configurations
 {
+    public static readonly uint DEFAULT_DEADLINE_MILLISECONDS = 5000;
+
     /// <summary>
     /// Laptop config provides defaults suitable for a medium-to-high-latency dev environment.  Permissive timeouts, retries, potentially
     /// a higher number of connections, etc.
@@ -27,7 +29,7 @@ public class Configurations
                 IRetryStrategy retryStrategy = new FixedCountRetryStrategy(maxAttempts: 3);
                 ITransportStrategy transportStrategy = new StaticTransportStrategy(
                     maxConcurrentRequests: 1,
-                    grpcConfig: new StaticGrpcConfiguration(numChannels: 6, maxSessionMemory: 128, useLocalSubChannelPool: true));
+                    grpcConfig: new StaticGrpcConfiguration(numChannels: 6, maxSessionMemory: 128, useLocalSubChannelPool: true, deadlineMilliseconds: DEFAULT_DEADLINE_MILLISECONDS));
                 return new Laptop(retryStrategy, transportStrategy);
             }
         }
@@ -58,7 +60,7 @@ public class Configurations
                     IRetryStrategy retryStrategy = new FixedCountRetryStrategy(maxAttempts: 3);
                     ITransportStrategy transportStrategy = new StaticTransportStrategy(
                         maxConcurrentRequests: 1,
-                        grpcConfig: new StaticGrpcConfiguration(numChannels: 6, maxSessionMemory: 128, useLocalSubChannelPool: true));
+                        grpcConfig: new StaticGrpcConfiguration(numChannels: 6, maxSessionMemory: 128, useLocalSubChannelPool: true, deadlineMilliseconds: DEFAULT_DEADLINE_MILLISECONDS));
                     return new Default(retryStrategy, transportStrategy);
                 }
             }
@@ -85,7 +87,7 @@ public class Configurations
                     IRetryStrategy retryStrategy = new FixedCountRetryStrategy(maxAttempts: 3);
                     ITransportStrategy transportStrategy = new StaticTransportStrategy(
                         maxConcurrentRequests: 1,
-                        grpcConfig: new StaticGrpcConfiguration(numChannels: 6, maxSessionMemory: 128, useLocalSubChannelPool: true));
+                        grpcConfig: new StaticGrpcConfiguration(numChannels: 6, maxSessionMemory: 128, useLocalSubChannelPool: true, deadlineMilliseconds: DEFAULT_DEADLINE_MILLISECONDS));
                     return new LowLatency(retryStrategy, transportStrategy);
                 }
             }
