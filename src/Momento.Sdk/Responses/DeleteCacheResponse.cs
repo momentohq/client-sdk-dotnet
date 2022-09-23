@@ -7,7 +7,7 @@ public abstract class DeleteCacheResponse
 
     public class Success : DeleteCacheResponse { }
 
-    public class Error: DeleteCacheResponse
+    public class Error : DeleteCacheResponse
     {
         private readonly SdkException _error;
         public Error(SdkException error)

@@ -37,8 +37,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         Claims claims = JwtUtils.DecodeJwt(authToken);
 
         this.controlClient = new(authToken, claims.ControlEndpoint, loggerFactory);
-        
-        this.dataClient = new(authToken, claims.CacheEndpoint, defaultTtlSeconds, config.TransportStrategy.GrpcConfig.DeadlineMilliseconds, loggerFactory);
+        this.dataClient = new(config, authToken, claims.CacheEndpoint, defaultTtlSeconds, loggerFactory);
     }
 
     /// <inheritdoc />

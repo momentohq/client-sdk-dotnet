@@ -6,6 +6,8 @@ using Google.Protobuf;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient;
+using Momento.Sdk.Config;
+using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal;
 using Momento.Sdk.Internal.ExtensionMethods;
@@ -18,14 +20,13 @@ public class ScsDataClientBase : IDisposable
     protected readonly DataGrpcManager grpcManager;
     protected readonly uint defaultTtlSeconds;
     protected readonly uint dataClientOperationTimeoutMilliseconds;
-    protected const uint DEFAULT_DEADLINE_MILLISECONDS = 5000;
     protected readonly ILogger _logger;
 
-    public ScsDataClientBase(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null, ILoggerFactory? loggerFactory = null)
+    public ScsDataClientBase(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds, ILoggerFactory? loggerFactory = null)
     {
-        this.grpcManager = new(authToken, endpoint, loggerFactory);
+        this.grpcManager = new(config, authToken, endpoint, loggerFactory);
         this.defaultTtlSeconds = defaultTtlSeconds;
-        this.dataClientOperationTimeoutMilliseconds = dataClientOperationTimeoutMilliseconds ?? DEFAULT_DEADLINE_MILLISECONDS;
+        this.dataClientOperationTimeoutMilliseconds = config.TransportStrategy.GrpcConfig.DeadlineMilliseconds;
         this._logger = Utils.CreateOrNullLogger<ScsDataClient>(loggerFactory);
     }
 
@@ -56,8 +57,8 @@ public class ScsDataClientBase : IDisposable
 
 internal sealed class ScsDataClient : ScsDataClientBase
 {
-    public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null, ILoggerFactory? loggerFactory = null)
-        : base(authToken, endpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds, loggerFactory)
+    public ScsDataClient(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds, ILoggerFactory? loggerFactory = null)
+        : base(config, authToken, endpoint, defaultTtlSeconds, loggerFactory)
     {
 
     }
@@ -205,7 +206,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = TtlSecondsToMilliseconds(ttlSeconds) };
         try
         {
-            await this.grpcManager.Client.SetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            await this.grpcManager.Client.SetAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
         }
         catch (Exception e)
         {
@@ -225,7 +226,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _GetResponse response;
         try
         {
-            response = await this.grpcManager.Client.GetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            response = await this.grpcManager.Client.GetAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
         }
         catch (Exception e)
         {
@@ -248,7 +249,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _DeleteRequest request = new _DeleteRequest() { CacheKey = key };
         try
         {
-            await this.grpcManager.Client.DeleteAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            await this.grpcManager.Client.DeleteAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
         }
         catch (Exception e)
         {
