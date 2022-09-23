@@ -43,5 +43,5 @@ jobs:
           project_status: experimental
           project_stability: alpha
           project_type: sdk
-          sdk_language: C#
+          sdk_language: .NET
           usage_example_path: ./examples/MomentoApplication/Program.cs
