@@ -14,11 +14,10 @@ public class CacheGetResponse
         {
             if (response.Result is ECacheResult status) {
                 Status = CacheGetStatusUtil.From(status);
-                this.value = response.CacheBody;
             } else {
                 Status = (CacheGetStatus)response.Result;
-                this.value = (Status == CacheGetStatus.HIT) ? value : null;
             }
+            this.value = (Status == CacheGetStatus.HIT) ? response.CacheBody : null;
         }
 
         public byte[]? ByteArray
