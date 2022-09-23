@@ -2,7 +2,7 @@
 
 using Momento.Sdk.Exceptions;
 
-public class CacheSetResponse
+public abstract class CacheSetResponse
 {
 
     public class Success : CacheSetResponse { }

@@ -3,7 +3,7 @@ using Momento.Protos.CacheClient;
 using Momento.Sdk.Exceptions;
 namespace Momento.Sdk.Responses;
 
-public class CacheGetResponse
+public abstract class CacheGetResponse
 {
     public class Success : CacheGetResponse
     {

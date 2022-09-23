@@ -2,7 +2,7 @@ namespace Momento.Sdk.Responses;
 
 using Momento.Sdk.Exceptions;
 
-public class CacheSetBatchResponse
+public abstract class CacheSetBatchResponse
 {
 
     public class Success : CacheSetBatchResponse { }

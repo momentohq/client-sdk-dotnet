@@ -3,7 +3,7 @@ using Momento.Sdk.Exceptions;
 
 namespace Momento.Sdk.Responses;
 
-public class CacheGetBatchResponse
+public abstract class CacheGetBatchResponse
 {
     public class Success : CacheGetBatchResponse
     {
