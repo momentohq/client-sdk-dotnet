@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Grpc.Core;
+using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient;
 using Momento.Sdk.Exceptions;
+using Momento.Sdk.Internal;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Responses;
 
@@ -17,12 +19,14 @@ public class ScsDataClientBase : IDisposable
     protected readonly uint defaultTtlSeconds;
     protected readonly uint dataClientOperationTimeoutMilliseconds;
     protected const uint DEFAULT_DEADLINE_MILLISECONDS = 5000;
+    protected readonly ILogger _logger;
 
-    public ScsDataClientBase(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+    public ScsDataClientBase(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null, ILoggerFactory? loggerFactory = null)
     {
-        this.grpcManager = new(authToken, endpoint);
+        this.grpcManager = new(authToken, endpoint, loggerFactory);
         this.defaultTtlSeconds = defaultTtlSeconds;
         this.dataClientOperationTimeoutMilliseconds = dataClientOperationTimeoutMilliseconds ?? DEFAULT_DEADLINE_MILLISECONDS;
+        this._logger = Utils.CreateOrNullLogger<ScsDataClient>(loggerFactory);
     }
 
     protected Metadata MetadataWithCache(string cacheName)
@@ -52,9 +56,10 @@ public class ScsDataClientBase : IDisposable
 
 internal sealed class ScsDataClient : ScsDataClientBase
 {
-    public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
-        : base(authToken, endpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds)
+    public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null, ILoggerFactory? loggerFactory = null)
+        : base(authToken, endpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds, loggerFactory)
     {
+
     }
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
