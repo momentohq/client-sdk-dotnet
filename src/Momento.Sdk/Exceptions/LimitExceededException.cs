@@ -9,6 +9,6 @@ public class LimitExceededException : SdkException
 {
     public LimitExceededException(string message, MomentoErrorTransportDetails? transportDetails, Exception? e=null) : base(MomentoErrorCode.LIMIT_EXCEEDED_ERROR, message, transportDetails, e)
     {
-        this.MessageWrapper = "Request rate exceeded the limits for this account.  To resolve this error, reduce your request rate, or contact Momento to request a limit increase";
+        this.MessageWrapper = "Request rate exceeded the limits for this account.  To resolve this error, reduce your request rate, or contact us at support@momentohq.com to request a limit increase";
     }
 }
