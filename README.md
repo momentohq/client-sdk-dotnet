@@ -44,6 +44,8 @@ using System.Threading.Tasks;
 using Momento.Sdk;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Responses;
+using Momento.Sdk.Config;
+using Microsoft.Extensions.Logging;
 
 namespace MomentoApplication
 {
@@ -57,7 +59,7 @@ namespace MomentoApplication
 
         async static Task Main(string[] args)
         {
-            using SimpleCacheClient client = new SimpleCacheClient(MOMENTO_AUTH_TOKEN, DEFAULT_TTL_SECONDS);
+            using SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.Latest, MOMENTO_AUTH_TOKEN, DEFAULT_TTL_SECONDS);
             try
             {
                 client.CreateCache(CACHE_NAME);
@@ -71,17 +73,23 @@ namespace MomentoApplication
             do
             {
                 ListCachesResponse resp = client.ListCaches(token);
-                foreach (CacheInfo cacheInfo in resp.Caches)
+                if (resp is ListCachesResponse.Success successResult)
                 {
-                    Console.WriteLine(cacheInfo.Name);
+                    foreach (CacheInfo cacheInfo in successResult.Caches)
+                    {
+                        Console.WriteLine(cacheInfo.Name);
+                    }
+                    token = successResult.NextPageToken;
                 }
-                token = resp.NextPageToken;
             } while (!String.IsNullOrEmpty(token));
             Console.WriteLine($"\nSetting key: {KEY} with value: {VALUE}");
             await client.SetAsync(CACHE_NAME, KEY, VALUE);
             Console.WriteLine($"\nGet value for  key: {KEY}");
             CacheGetResponse getResponse = await client.GetAsync(CACHE_NAME, KEY);
-            Console.WriteLine($"\nLookedup value: {getResponse.String()}, Stored value: {VALUE}");
+            if (getResponse is CacheGetResponse.Hit hitResponse)
+            {
+                Console.WriteLine($"\nLookedup value: {hitResponse.String()}, Stored value: {VALUE}");
+            }
         }
     }
 }
