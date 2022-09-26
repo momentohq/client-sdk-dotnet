@@ -1,11 +1,52 @@
 ﻿using Google.Protobuf;
 using Momento.Protos.CacheClient;
-
+using Momento.Sdk.Exceptions;
 namespace Momento.Sdk.Responses;
 
-public class CacheGetResponse : CacheGetResponseBase
+public abstract class CacheGetResponse
 {
-    public CacheGetResponse(_GetResponse response) : base(response.Result, response.CacheBody)
+    public class Hit : CacheGetResponse
     {
+        public CacheGetStatus Status { get => CacheGetStatus.HIT; }
+        protected readonly ByteString value;
+
+        public Hit(_GetResponse response)
+        {
+            this.value = response.CacheBody;
+        }
+
+        public byte[] ByteArray
+        {
+            get => value.ToByteArray();
+        }
+
+        public string String() => value.ToStringUtf8();
+    }
+
+    public class Miss : CacheGetResponse {
+        public CacheGetStatus Status {
+            get => CacheGetStatus.MISS;
+        }
+
+        public Miss() { }
+    }
+
+    public class Error : CacheGetResponse
+    {
+        private readonly SdkException _error;
+        public Error(SdkException error)
+        {
+            _error = error;
+        }
+
+        public SdkException Exception
+        {
+            get => _error;
+        }
+
+        public MomentoErrorCode ErrorCode
+        {
+            get => _error.ErrorCode;
+        }
     }
 }

@@ -1,29 +1,84 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using Momento.Sdk.Exceptions;
 
 namespace Momento.Sdk.Responses;
 
-public class CacheGetBatchResponse
+public abstract class CacheGetBatchResponse
 {
-    public List<CacheGetResponse> Responses { get; }
-
-    public CacheGetBatchResponse(IEnumerable<CacheGetResponse> responses)
+    public class Success : CacheGetBatchResponse
     {
-        this.Responses = new(responses);
+        public List<CacheGetResponse> Responses { get; }
+
+        public Success(IEnumerable<CacheGetResponse> responses)
+        {
+            this.Responses = new(responses);
+        }
+
+        public IEnumerable<CacheGetStatus> Status
+        {
+            get
+            {
+                var ret = new List<CacheGetStatus>();
+                foreach (CacheGetResponse response in Responses) {
+                    if (response is CacheGetResponse.Hit hitResponse) {
+                        ret.Add(hitResponse.Status);
+                    } else if (response is CacheGetResponse.Miss missResponse) {
+                        ret.Add(missResponse.Status);
+                    }
+                }
+                return ret;
+            }
+        }
+
+        public IEnumerable<string?> Strings()
+        {
+            var ret = new List<string?>();
+            foreach (CacheGetResponse response in Responses)
+            {
+                if (response is CacheGetResponse.Hit hitResponse) {
+                    ret.Add(hitResponse.String());
+                } else if (response is CacheGetResponse.Miss missResponse) {
+                    ret.Add(null);
+                }
+            }
+            return ret.ToArray();
+        }
+
+        public IEnumerable<byte[]?> ByteArrays
+        {
+            get
+            {
+                var ret = new List<byte[]?>();
+                foreach (CacheGetResponse response in Responses)
+                {
+                    if (response is CacheGetResponse.Hit hitResponse)
+                    {
+                        ret.Add(hitResponse.ByteArray);
+                    } else if (response is CacheGetResponse.Miss missResponse) {
+                        ret.Add(null);
+                    }
+                }
+                return ret.ToArray();
+            }
+        }
     }
 
-    public IEnumerable<CacheGetStatus> Status
+    public class Error : CacheGetBatchResponse
     {
-        get => Responses.Select(response => response.Status);
-    }
+        private readonly SdkException _error;
+        public Error(SdkException error)
+        {
+            _error = error;
+        }
 
-    public IEnumerable<string?> Strings()
-    {
-        return Responses.Select(response => response.String());
-    }
+        public SdkException Exception
+        {
+            get => _error;
+        }
 
-    public IEnumerable<byte[]?> ByteArrays
-    {
-        get => Responses.Select(response => response.ByteArray);
+        public MomentoErrorCode ErrorCode
+        {
+            get => _error.ErrorCode;
+        }
     }
 }
