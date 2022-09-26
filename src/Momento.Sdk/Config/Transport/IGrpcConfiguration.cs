@@ -17,10 +17,21 @@ public interface IGrpcConfiguration
     public bool UseLocalSubChannelPool { get; }
 
     /// <summary>
+    /// How long the client is willing to wait for an RPC to complete before it is terminated with <see cref="Grpc.Core.StatusCode.DeadlineExceeded"/>
+    /// </summary>
+    public uint DeadlineMilliseconds { get; }
+
+    /// <summary>
     /// This is a dictionary that encapsulates the settings above, and may also include other channel-specific settings.
     /// This allows strategy implementations to provide gRPC config key/value pairs for any available setting, even
     /// if it's not one we've explicitly tried / recommended.  The strategy implementation should implement this by
     /// calling the functions above, along with allowing a mechanism for specifying additional key/value pairs.
     /// </summary>
     public IDictionary<string, string> GrpcChannelConfig { get; }
+
+    public IGrpcConfiguration WithNumChannels(int numChannels);
+    public IGrpcConfiguration WithMaxSessionMemory(int maxSessionMemory);
+    public IGrpcConfiguration WithUseLocalSubChannelPool(bool useLocalSubChannelPool);
+    public IGrpcConfiguration WithDeadlineMilliseconds(uint deadlineMilliseconds);
+    public IGrpcConfiguration WithGrpcChannelConfig(IDictionary<string, string> grpcChannelConfig);
 }

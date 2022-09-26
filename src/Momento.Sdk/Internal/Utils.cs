@@ -237,6 +237,17 @@ namespace Momento.Sdk.Internal
                 return Enumerable.Range(0, list.Count).All(index => list[index].SequenceEqual(other[index]));
             }
         }
-
+        public static class StringStringDictionaryExtensions
+        {
+            /// <summary>
+            /// Make a shallow copy of a dictionary.
+            /// </summary>
+            /// <param name="dictionary">The dictionary to copy.</param>
+            /// <returns>A new dictionary container with the same contents.</returns>
+            public static IDictionary<string, string> Clone(this IDictionary<string, string> dictionary)
+            {
+                return new Dictionary<string, string>(dictionary);
+            }
+        }
     }
 }

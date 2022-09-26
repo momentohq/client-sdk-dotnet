@@ -178,7 +178,12 @@ public class SimpleCacheDataTest
     public async Task GetBatchAsync_Failure()
     {
         // Set very small timeout for dataClientOperationTimeoutMilliseconds
-        using SimpleCacheClient simpleCacheClient = new SimpleCacheClient(Configurations.Laptop.Latest, authToken, DefaultTtlSeconds, 1);
+        IConfiguration config = Configurations.Laptop.Latest;
+        config = config.WithTransportStrategy(
+            config.TransportStrategy.WithGrpcConfig(
+                config.TransportStrategy.GrpcConfig.WithDeadlineMilliseconds(1)));
+
+        using SimpleCacheClient simpleCacheClient = new SimpleCacheClient(config, authToken, DefaultTtlSeconds);
         List<string> keys = new() { Utils.NewGuidString(), Utils.NewGuidString(), Utils.NewGuidString(), Utils.NewGuidString() };
         await Assert.ThrowsAsync<Momento.Sdk.Exceptions.TimeoutException>(async () => await simpleCacheClient.GetBatchAsync(cacheName, keys));
     }

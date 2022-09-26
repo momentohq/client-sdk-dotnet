@@ -23,4 +23,19 @@ public class Configuration : IConfiguration
         this.Middlewares = middlewares;
         this.TransportStrategy = transportStrategy;
     }
+
+    public IConfiguration WithRetryStrategy(IRetryStrategy retryStrategy)
+    {
+        return new Configuration(retryStrategy, Middlewares, TransportStrategy);
+    }
+
+    public IConfiguration WithMiddlewares(IList<IMiddleware> middlewares)
+    {
+        return new Configuration(RetryStrategy, middlewares, TransportStrategy);
+    }
+
+    public IConfiguration WithTransportStrategy(ITransportStrategy transportStrategy)
+    {
+        return new Configuration(RetryStrategy, Middlewares, transportStrategy);
+    }
 }
