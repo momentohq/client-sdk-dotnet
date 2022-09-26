@@ -45,8 +45,10 @@ namespace MomentoApplication
             await client.SetAsync(CACHE_NAME, KEY, VALUE);
             Console.WriteLine($"\nGet value for  key: {KEY}");
             CacheGetResponse getResponse = await client.GetAsync(CACHE_NAME, KEY);
-            var hitResponse = (CacheGetResponse.Hit)getResponse;
-            Console.WriteLine($"\nLookedup value: {hitResponse.String()}, Stored value: {VALUE}");
+            if (getResponse is CacheGetResponse.Hit hitResponse)
+            {
+                Console.WriteLine($"\nLookedup value: {hitResponse.String()}, Stored value: {VALUE}");
+            }
         }
     }
 }
