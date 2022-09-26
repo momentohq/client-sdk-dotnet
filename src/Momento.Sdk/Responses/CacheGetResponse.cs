@@ -7,7 +7,6 @@ public abstract class CacheGetResponse
 {
     public class Hit : CacheGetResponse
     {
-        public CacheGetStatus Status { get => CacheGetStatus.HIT; }
         protected readonly ByteString value;
 
         public Hit(_GetResponse response)
@@ -24,10 +23,6 @@ public abstract class CacheGetResponse
     }
 
     public class Miss : CacheGetResponse {
-        public CacheGetStatus Status {
-            get => CacheGetStatus.MISS;
-        }
-
         public Miss() { }
     }
 
