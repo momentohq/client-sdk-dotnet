@@ -7,13 +7,8 @@ namespace Momento.Sdk.Exceptions;
 /// </summary>
 public class InternalServerException : SdkException
 {
-    public InternalServerException(string message) : base(MomentoErrorCode.INTERNAL_SERVER_ERROR, message)
+    public InternalServerException(string message, MomentoErrorTransportDetails? transportDetails=null, Exception? e=null) : base(MomentoErrorCode.INTERNAL_SERVER_ERROR, message, transportDetails, e)
     {
-    }
-    public InternalServerException(string message, Exception e) : base(MomentoErrorCode.INTERNAL_SERVER_ERROR, message, null, e)
-    {
-    }
-    public InternalServerException(string message, MomentoErrorTransportDetails transportDetails, Exception e) : base(MomentoErrorCode.INTERNAL_SERVER_ERROR, message, transportDetails, e)
-    {
+        this.MessageWrapper = "An unexpected error occurred while trying to fulfill the request; please contact us at support@momentohq.com";
     }
 }
