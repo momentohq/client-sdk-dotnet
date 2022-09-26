@@ -28,7 +28,7 @@ public class Configurations
                 /*retryableStatusCodes = DEFAULT_RETRYABLE_STATUS_CODES,*/
                 IRetryStrategy retryStrategy = new FixedCountRetryStrategy(maxAttempts: 3);
                 ITransportStrategy transportStrategy = new StaticTransportStrategy(
-                    maxConcurrentRequests: 1,
+                    maxConcurrentRequests: 200,
                     grpcConfig: new StaticGrpcConfiguration(numChannels: 6, maxSessionMemory: 128, useLocalSubChannelPool: true, deadlineMilliseconds: DEFAULT_DEADLINE_MILLISECONDS));
                 return new Laptop(retryStrategy, transportStrategy);
             }
@@ -86,8 +86,9 @@ public class Configurations
                     /*retryableStatusCodes = DEFAULT_RETRYABLE_STATUS_CODES,*/
                     IRetryStrategy retryStrategy = new FixedCountRetryStrategy(maxAttempts: 3);
                     ITransportStrategy transportStrategy = new StaticTransportStrategy(
-                        maxConcurrentRequests: 1,
-                        grpcConfig: new StaticGrpcConfiguration(numChannels: 6, maxSessionMemory: 128, useLocalSubChannelPool: true, deadlineMilliseconds: DEFAULT_DEADLINE_MILLISECONDS));
+                        maxConcurrentRequests: 200,
+                        grpcConfig: new StaticGrpcConfiguration(numChannels: 6, maxSessionMemory: 128, useLocalSubChannelPool: true, deadlineMilliseconds: DEFAULT_DEADLINE_MILLISECONDS)
+                    );
                     return new LowLatency(retryStrategy, transportStrategy);
                 }
             }

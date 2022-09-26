@@ -2,11 +2,12 @@
 
 using Momento.Sdk.Exceptions;
 
-public abstract class CreateCacheResponse {
+public abstract class CreateCacheResponse
+{
 
     public class Success : CreateCacheResponse { }
 
-    public class Error: CreateCacheResponse
+    public class Error : CreateCacheResponse
     {
         private readonly SdkException _error;
         public Error(SdkException error)
@@ -19,7 +20,8 @@ public abstract class CreateCacheResponse {
             get => _error;
         }
 
-        public MomentoErrorCode ErrorCode {
+        public MomentoErrorCode ErrorCode
+        {
             get => _error.ErrorCode;
         }
 
