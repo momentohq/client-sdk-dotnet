@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using Momento.Protos.ControlClient;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Responses;
@@ -10,11 +11,13 @@ internal sealed class ScsControlClient : IDisposable
     private readonly ControlGrpcManager grpcManager;
     private readonly string authToken;
     private const uint DEADLINE_SECONDS = 60;
+    private readonly ILogger _logger;
 
-    public ScsControlClient(string authToken, string endpoint)
+    public ScsControlClient(string authToken, string endpoint, ILoggerFactory? loggerFactory = null)
     {
-        this.grpcManager = new ControlGrpcManager(authToken, endpoint);
+        this.grpcManager = new ControlGrpcManager(authToken, endpoint, loggerFactory);
         this.authToken = authToken;
+        this._logger = Utils.CreateOrNullLogger<ScsControlClient>(loggerFactory);
     }
 
     public CreateCacheResponse CreateCache(string cacheName)

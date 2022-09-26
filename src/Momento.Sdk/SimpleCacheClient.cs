@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal;
@@ -18,6 +19,8 @@ public class SimpleCacheClient : ISimpleCacheClient
     private readonly ScsControlClient controlClient;
     private readonly ScsDataClient dataClient;
     protected readonly IConfiguration config;
+    protected readonly ILogger _logger;
+
 
     /// <summary>
     /// Client to perform operations against the Simple Cache Service.
@@ -25,13 +28,17 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="config">Configuration to use for the transport, retries, middlewares. See <see cref="Configurations"/> for out-of-the-box configuration choices, eg <see cref="Configurations.Laptop.Latest"/></param>
     /// <param name="authToken">Momento JWT.</param>
     /// <param name="defaultTtlSeconds">Default time to live for the item in cache.</param>
-    public SimpleCacheClient(IConfiguration config, string authToken, uint defaultTtlSeconds)
+    /// <param name="loggerFactory">Logger factory to create loggers for contained instances.</param>
+    public SimpleCacheClient(IConfiguration config, string authToken, uint defaultTtlSeconds, ILoggerFactory? loggerFactory = null)
     {
         this.config = config;
+        this._logger = Utils.CreateOrNullLogger<SimpleCacheClient>(loggerFactory);
+        ValidateRequestTimeout(config.TransportStrategy.GrpcConfig.DeadlineMilliseconds);
         Claims claims = JwtUtils.DecodeJwt(authToken);
 
-        this.controlClient = new(authToken, claims.ControlEndpoint);
-        this.dataClient = new(authToken, claims.CacheEndpoint, defaultTtlSeconds, config.TransportStrategy.GrpcConfig.DeadlineMilliseconds);
+        this.controlClient = new(authToken, claims.ControlEndpoint, loggerFactory);
+        
+        this.dataClient = new(authToken, claims.CacheEndpoint, defaultTtlSeconds, config.TransportStrategy.GrpcConfig.DeadlineMilliseconds, loggerFactory);
     }
 
     /// <inheritdoc />
