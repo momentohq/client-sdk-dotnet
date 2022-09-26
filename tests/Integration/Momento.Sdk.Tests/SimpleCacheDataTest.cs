@@ -200,7 +200,9 @@ public class SimpleCacheDataTest
 
         var goodResult = (CacheGetBatchResponse.Success)result;
         Assert.Equal(goodResult.Strings(), new string[] { value1, value2, null! });
-        Assert.Equal(goodResult.Status, new CacheGetStatus[] { CacheGetStatus.HIT, CacheGetStatus.HIT, CacheGetStatus.MISS });
+        Assert.True(goodResult.Responses[0] is CacheGetResponse.Hit);
+        Assert.True(goodResult.Responses[1] is CacheGetResponse.Hit);
+        Assert.True(goodResult.Responses[2] is CacheGetResponse.Miss);
     }
 
     [Fact]
@@ -299,8 +301,7 @@ public class SimpleCacheDataTest
         await client.SetAsync(cacheName, key, value, 1);
         await Task.Delay(3000);
         CacheGetResponse result = await client.GetAsync(cacheName, key);
-        var missResult = (CacheGetResponse.Miss)result;
-        Assert.Equal(CacheGetStatus.MISS, missResult.Status);
+        Assert.True(result is CacheGetResponse.Miss);
     }
 
     [Theory]
@@ -320,16 +321,14 @@ public class SimpleCacheDataTest
         byte[] value = new byte[] { 0x05, 0x06, 0x07, 0x08 };
         await client.SetAsync(cacheName, key, value, ttlSeconds: 60);
         CacheGetResponse getResponse = await client.GetAsync(cacheName, key);
-        var goodGetResponse = (CacheGetResponse.Hit)getResponse;
-        Assert.Equal(CacheGetStatus.HIT, goodGetResponse.Status);
+        Assert.True(getResponse is CacheGetResponse.Hit);
 
         // Delete
         await client.DeleteAsync(cacheName, key);
 
         // Check deleted
         getResponse = await client.GetAsync(cacheName, key);
-        var missGetResponse = (CacheGetResponse.Miss)getResponse;
-        Assert.Equal(CacheGetStatus.MISS, missGetResponse.Status);
+        Assert.True(getResponse is CacheGetResponse.Miss);
     }
 
     [Theory]
@@ -349,15 +348,13 @@ public class SimpleCacheDataTest
         string value = Utils.NewGuidString();
         await client.SetAsync(cacheName, key, value, ttlSeconds: 60);
         CacheGetResponse getResponse = await client.GetAsync(cacheName, key);
-        var goodGetResponse = (CacheGetResponse.Hit)getResponse;
-        Assert.Equal(CacheGetStatus.HIT, goodGetResponse.Status);
+        Assert.True(getResponse is CacheGetResponse.Hit);
 
         // Delete
         await client.DeleteAsync(cacheName, key);
 
         // Check deleted
         getResponse = await client.GetAsync(cacheName, key);
-        var missGetResponse = (CacheGetResponse.Miss)getResponse;
-        Assert.Equal(CacheGetStatus.MISS, missGetResponse.Status);
+        Assert.True(getResponse is CacheGetResponse.Miss);
     }
 }
