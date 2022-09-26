@@ -7,9 +7,7 @@ using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient;
 using Momento.Sdk.Config;
-using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Exceptions;
-using Momento.Sdk.Internal;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Responses;
 

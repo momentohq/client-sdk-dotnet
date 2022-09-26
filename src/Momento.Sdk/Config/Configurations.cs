@@ -27,7 +27,7 @@ public class Configurations
                 IRetryStrategy retryStrategy = new FixedCountRetryStrategy(maxAttempts: 3);
                 ITransportStrategy transportStrategy = new StaticTransportStrategy(
                     maxConcurrentRequests: 200,
-                    grpcConfig: new StaticGrpcConfiguration(numChannels: 6, maxSessionMemory: 128, useLocalSubChannelPool: true, deadlineMilliseconds: 5000));
+                    grpcConfig: new StaticGrpcConfiguration(deadlineMilliseconds: 5000));
                 return new Laptop(retryStrategy, transportStrategy);
             }
         }
@@ -59,7 +59,7 @@ public class Configurations
                     ITransportStrategy transportStrategy = new StaticTransportStrategy(
                         maxConcurrentRequests: 1,
                         // TODO: tune the timeout value
-                        grpcConfig: new StaticGrpcConfiguration(numChannels: 6, maxSessionMemory: 128, useLocalSubChannelPool: true, deadlineMilliseconds: 1000));
+                        grpcConfig: new StaticGrpcConfiguration(deadlineMilliseconds: 1000));
                     return new Default(retryStrategy, transportStrategy);
                 }
             }
@@ -87,7 +87,7 @@ public class Configurations
                     ITransportStrategy transportStrategy = new StaticTransportStrategy(
                         maxConcurrentRequests: 200,
                         // TODO: tune the timeout value
-                        grpcConfig: new StaticGrpcConfiguration(numChannels: 6, maxSessionMemory: 128, useLocalSubChannelPool: true, deadlineMilliseconds: 1000)
+                        grpcConfig: new StaticGrpcConfiguration(deadlineMilliseconds: 1000)
                     );
                     return new LowLatency(retryStrategy, transportStrategy);
                 }
