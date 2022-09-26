@@ -5,13 +5,10 @@ namespace Momento.Sdk.Exceptions;
 /// <summary>
 /// SDK client side validation failed.
 /// </summary>
-public class InvalidArgumentException : ClientSdkException
+public class InvalidArgumentException : SdkException
 {
-    public InvalidArgumentException(string message) : base(message)
+    public InvalidArgumentException(string message, MomentoErrorTransportDetails? transportDetails=null, Exception? e=null) : base(MomentoErrorCode.INVALID_ARGUMENT_ERROR, message, transportDetails, e)
     {
-    }
-
-    public InvalidArgumentException(string message, Exception e) : base(message, e)
-    {
+        this.MessageWrapper = "Invalid argument passed to Momento client";
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Momento.Sdk.Config;
 
 namespace Momento.Sdk.Tests;
 
@@ -16,39 +17,41 @@ public class SimpleCacheControlTest
     }
 
     [Fact]
-    public void SimpleCacheClientConstructor_BadRequestTimeout_ThrowsException()
-    {
-        Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(authToken, defaultTtlSeconds: 10, dataClientOperationTimeoutMilliseconds: 0));
-    }
-
-    [Fact]
     public void SimpleCacheClientConstructor_BadJWT_InvalidJwtException()
     {
-        Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs", defaultTtlSeconds: 10));
+        Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(Configurations.Laptop.Latest, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs", defaultTtlSeconds: 10));
     }
 
     [Fact]
     public void SimpleCacheClientConstructor_NullJWT_InvalidJwtException()
     {
-        Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(null!, defaultTtlSeconds: 10));
+        Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(Configurations.Laptop.Latest, null!, defaultTtlSeconds: 10));
     }
 
     [Fact]
-    public void DeleteCache_NullCache_ArgumentNullException()
+    public void DeleteCache_NullCache_InvalidArgumentError()
     {
-        Assert.Throws<ArgumentNullException>(() => client.DeleteCache(null!));
+        DeleteCacheResponse resp = client.DeleteCache(null!);
+        DeleteCacheResponse.Error errResp = (DeleteCacheResponse.Error)resp;
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errResp.Exception.ErrorCode);
     }
 
     [Fact]
     public void DeleteCache_CacheDoesntExist_NotFoundException()
     {
-        Assert.Throws<NotFoundException>(() => client.DeleteCache("non-existent cache"));
+        // Assert.Throws<NotFoundException>(() => client.DeleteCache("non-existent cache"));
+        DeleteCacheResponse resp = client.DeleteCache("non-existent cache");
+        Assert.True(resp is DeleteCacheResponse.Error);
+        DeleteCacheResponse.Error errResp = (DeleteCacheResponse.Error)resp;
+        Assert.Equal(MomentoErrorCode.NOT_FOUND_ERROR, errResp.Exception.ErrorCode);
     }
 
     [Fact]
-    public void CreateCache_NullCache_ArgumentNullException()
+    public void CreateCache_NullCache_InvalidArgumentError()
     {
-        Assert.Throws<ArgumentNullException>(() => client.CreateCache(null!));
+        CreateCacheResponse resp = client.CreateCache(null!);
+        CreateCacheResponse.Error errResp = (CreateCacheResponse.Error)resp;
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errResp.Exception.ErrorCode);
     }
 
     // Tests: creating a cache, listing a cache, and deleting a cache.
@@ -61,14 +64,20 @@ public class SimpleCacheControlTest
 
         // Test cache exists
         ListCachesResponse result = client.ListCaches();
-        List<CacheInfo> caches = result.Caches;
-        Assert.Contains(new CacheInfo(cacheName), caches);
+        if (result is ListCachesResponse.Success successResult)
+        {
+            List<CacheInfo> caches = successResult.Caches;
+            Assert.Contains(new CacheInfo(cacheName), caches);
+        }
 
         // Test deleting cache
         client.DeleteCache(cacheName);
         result = client.ListCaches();
-        caches = result.Caches;
-        Assert.DoesNotContain(new CacheInfo(cacheName), caches);
+        if (result is ListCachesResponse.Success successResult2)
+        {
+            var caches = successResult2.Caches;
+            Assert.DoesNotContain(new CacheInfo(cacheName), caches);
+        }
     }
 
     [Fact]
@@ -90,16 +99,20 @@ public class SimpleCacheControlTest
         ListCachesResponse result = client.ListCaches();
         while (true)
         {
-            foreach (CacheInfo cache in result.Caches)
+            if (result is ListCachesResponse.Success successResult)
             {
-                retrievedCaches.Add(cache.Name);
+                foreach (CacheInfo cache in successResult.Caches)
+                {
+                    retrievedCaches.Add(cache.Name);
+                }
+                if (successResult.NextPageToken == null)
+                {
+                    break;
+                }
+                result = client.ListCaches(successResult.NextPageToken);
             }
-            if (result.NextPageToken == null)
-            {
-                break;
-            }
-            result = client.ListCaches(result.NextPageToken);
         }
+
 
         int sizeOverlap = cacheNames.Intersect(retrievedCaches).Count();
 

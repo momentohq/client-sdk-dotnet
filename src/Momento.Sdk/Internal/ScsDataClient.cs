@@ -4,8 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Grpc.Core;
+using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient;
+using Momento.Sdk.Config;
+using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Exceptions;
+using Momento.Sdk.Internal;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Responses;
 
@@ -16,13 +20,14 @@ public class ScsDataClientBase : IDisposable
     protected readonly DataGrpcManager grpcManager;
     protected readonly uint defaultTtlSeconds;
     protected readonly uint dataClientOperationTimeoutMilliseconds;
-    protected const uint DEFAULT_DEADLINE_MILLISECONDS = 5000;
+    protected readonly ILogger _logger;
 
-    public ScsDataClientBase(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
+    public ScsDataClientBase(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds, ILoggerFactory? loggerFactory = null)
     {
-        this.grpcManager = new(authToken, endpoint);
+        this.grpcManager = new(config, authToken, endpoint, loggerFactory);
         this.defaultTtlSeconds = defaultTtlSeconds;
-        this.dataClientOperationTimeoutMilliseconds = dataClientOperationTimeoutMilliseconds ?? DEFAULT_DEADLINE_MILLISECONDS;
+        this.dataClientOperationTimeoutMilliseconds = config.TransportStrategy.GrpcConfig.DeadlineMilliseconds;
+        this._logger = Utils.CreateOrNullLogger<ScsDataClient>(loggerFactory);
     }
 
     protected Metadata MetadataWithCache(string cacheName)
@@ -52,9 +57,10 @@ public class ScsDataClientBase : IDisposable
 
 internal sealed class ScsDataClient : ScsDataClientBase
 {
-    public ScsDataClient(string authToken, string endpoint, uint defaultTtlSeconds, uint? dataClientOperationTimeoutMilliseconds = null)
-        : base(authToken, endpoint, defaultTtlSeconds, dataClientOperationTimeoutMilliseconds)
+    public ScsDataClient(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds, ILoggerFactory? loggerFactory = null)
+        : base(config, authToken, endpoint, defaultTtlSeconds, loggerFactory)
     {
+
     }
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
@@ -115,21 +121,34 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            throw CacheExceptionMapper.Convert(e);
+            return new CacheGetBatchResponse.Error(CacheExceptionMapper.Convert(e));
         }
 
         // Handle failures
         if (continuation.Status == TaskStatus.Faulted)
         {
-            throw CacheExceptionMapper.Convert(continuation.Exception);
+            return new CacheGetBatchResponse.Error(
+                CacheExceptionMapper.Convert(continuation.Exception)
+            );
         }
         else if (continuation.Status != TaskStatus.RanToCompletion)
         {
-            throw CacheExceptionMapper.Convert(new Exception(String.Format("Failure issuing multi-get: {0}", continuation.Status)));
+            return new CacheGetBatchResponse.Error(
+                CacheExceptionMapper.Convert(
+                    new Exception(String.Format("Failure issuing multi-get: {0}", continuation.Status))
+                )
+            );
+        }
+
+        // preserve old behavior of failing on first error
+        foreach (CacheGetResponse response in continuation.Result) {
+            if (response is CacheGetResponse.Error errorResponse) {
+                return new CacheGetBatchResponse.Error(errorResponse.Exception);
+            }
         }
 
         // Package results
-        return new CacheGetBatchResponse(continuation.Result);
+        return new CacheGetBatchResponse.Success(continuation.Result);
     }
 
     public async Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null)
@@ -159,19 +178,27 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            throw CacheExceptionMapper.Convert(e);
+            return new CacheSetBatchResponse.Error(
+                CacheExceptionMapper.Convert(e)
+            );
         }
 
         // Handle failures
         if (continuation.Status == TaskStatus.Faulted)
         {
-            throw CacheExceptionMapper.Convert(continuation.Exception);
+            return new CacheSetBatchResponse.Error(
+                CacheExceptionMapper.Convert(continuation.Exception)
+            );
         }
         else if (continuation.Status != TaskStatus.RanToCompletion)
         {
-            throw CacheExceptionMapper.Convert(new Exception(String.Format("Failure issuing multi-set: {0}", continuation.Status)));
+            return new CacheSetBatchResponse.Error(
+                CacheExceptionMapper.Convert(
+                    new Exception(String.Format("Failure issuing multi-set: {0}", continuation.Status))
+                )
+            );
         }
-        return new CacheSetBatchResponse();
+        return new CacheSetBatchResponse.Success();
     }
 
     private async Task<CacheSetResponse> SendSetAsync(string cacheName, ByteString key, ByteString value, uint? ttlSeconds = null)
@@ -179,13 +206,18 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = TtlSecondsToMilliseconds(ttlSeconds) };
         try
         {
-            await this.grpcManager.Client.SetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            await this.grpcManager.Client.SetAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
         }
         catch (Exception e)
         {
-            throw CacheExceptionMapper.Convert(e);
+            var exc = CacheExceptionMapper.Convert(e);
+            if (exc.TransportDetails != null)
+            {
+                exc.TransportDetails.Grpc.Metadata = MetadataWithCache(cacheName);
+            }
+            return new CacheSetResponse.Error(exc);
         }
-        return new CacheSetResponse();
+        return new CacheSetResponse.Success();
     }
 
     private async Task<CacheGetResponse> SendGetAsync(string cacheName, ByteString key)
@@ -194,13 +226,22 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _GetResponse response;
         try
         {
-            response = await this.grpcManager.Client.GetAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            response = await this.grpcManager.Client.GetAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
         }
         catch (Exception e)
         {
-            throw CacheExceptionMapper.Convert(e);
+            var exc = CacheExceptionMapper.Convert(e);
+            if (exc.TransportDetails != null)
+            {
+                exc.TransportDetails.Grpc.Metadata = MetadataWithCache(cacheName);
+            }
+            return new CacheGetResponse.Error(exc);
         }
-        return new CacheGetResponse(response);
+
+        if (response.Result == ECacheResult.Miss) {
+            return new CacheGetResponse.Miss();
+        }
+        return new CacheGetResponse.Hit(response);
     }
 
     private async Task<CacheDeleteResponse> SendDeleteAsync(string cacheName, ByteString key)
@@ -208,12 +249,17 @@ internal sealed class ScsDataClient : ScsDataClientBase
         _DeleteRequest request = new _DeleteRequest() { CacheKey = key };
         try
         {
-            await this.grpcManager.Client.DeleteAsync(request, MetadataWithCache(cacheName), deadline: CalculateDeadline());
+            await this.grpcManager.Client.DeleteAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
         }
         catch (Exception e)
         {
-            throw CacheExceptionMapper.Convert(e);
+            var exc = CacheExceptionMapper.Convert(e);
+            if (exc.TransportDetails != null)
+            {
+                exc.TransportDetails.Grpc.Metadata = MetadataWithCache(cacheName);
+            }
+            return new CacheDeleteResponse.Error(exc);
         }
-        return new CacheDeleteResponse();
+        return new CacheDeleteResponse.Success();
     }
 }

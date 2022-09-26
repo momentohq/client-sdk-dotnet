@@ -28,8 +28,17 @@
 		<PackageReference Include="Google.Protobuf" Version="3.19.0" />
 		<PackageReference Include="Grpc.Net.Client" Version="2.40.0" />
 		<PackageReference Include="Grpc.Core" Version="2.41.1" />
-		<PackageReference Include="Momento.Protos" Version="0.30.3" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+		<PackageReference Include="Momento.Protos" Version="0.31.0" />
 		<PackageReference Include="JWT" Version="8.4.2" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.16.0" />
+		<PackageReference Include="System.Threading.Channels" Version="6.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Remove="System.Threading.Channels" />
+	  <None Remove="Internal\Middleware\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Internal\Middleware\" />
 	</ItemGroup>
 </Project>

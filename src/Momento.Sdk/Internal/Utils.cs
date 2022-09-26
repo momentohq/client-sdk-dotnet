@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Google.Protobuf;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Momento.Sdk.Internal
 {
@@ -112,6 +114,17 @@ namespace Momento.Sdk.Internal
         /// so comparisons operate on byte-array content instead of reference.
         /// </summary>
         public static StructuralEqualityComparer<byte[]> ByteArrayComparer = new();
+
+        /// <summary>
+        /// Create a logger using a provided factory or else use <see cref="NullLoggerFactory"/>.
+        /// </summary>
+        /// <typeparam name="T">The type for which the logger is scoped.</typeparam>
+        /// <param name="loggerFactory">The factory to use by default, otherwise <see cref="NullLoggerFactory.Instance"/>.</param>
+        /// <returns></returns>
+        public static ILogger<T> CreateOrNullLogger<T>(ILoggerFactory? loggerFactory = null)
+        {
+            return (loggerFactory ?? NullLoggerFactory.Instance).CreateLogger<T>();
+        }
     }
 
     namespace ExtensionMethods
@@ -237,6 +250,17 @@ namespace Momento.Sdk.Internal
                 return Enumerable.Range(0, list.Count).All(index => list[index].SequenceEqual(other[index]));
             }
         }
-
+        public static class StringStringDictionaryExtensions
+        {
+            /// <summary>
+            /// Make a shallow copy of a dictionary.
+            /// </summary>
+            /// <param name="dictionary">The dictionary to copy.</param>
+            /// <returns>A new dictionary container with the same contents.</returns>
+            public static IDictionary<string, string> Clone(this IDictionary<string, string> dictionary)
+            {
+                return new Dictionary<string, string>(dictionary);
+            }
+        }
     }
 }

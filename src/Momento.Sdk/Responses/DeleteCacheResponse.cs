@@ -1,8 +1,33 @@
 ﻿namespace Momento.Sdk.Responses;
 
-public class DeleteCacheResponse
+using Momento.Sdk.Exceptions;
+
+public abstract class DeleteCacheResponse
 {
-    public DeleteCacheResponse()
+
+    public class Success : DeleteCacheResponse { }
+
+    public class Error : DeleteCacheResponse
     {
+        private readonly SdkException _error;
+        public Error(SdkException error)
+        {
+            _error = error;
+        }
+
+        public SdkException Exception
+        {
+            get => _error;
+        }
+
+        public MomentoErrorCode ErrorCode
+        {
+            get => _error.ErrorCode;
+        }
+
+        public string Message {
+            get => $"{_error.MessageWrapper}: {_error.Message}";
+        }
+
     }
 }

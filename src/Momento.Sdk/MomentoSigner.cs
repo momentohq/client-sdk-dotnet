@@ -31,7 +31,7 @@ public class MomentoSigner
         }
         catch (Exception e)
         {
-            throw new InvalidArgumentException($"Invalid JWK: {jwkJsonString}", e);
+            throw new InvalidArgumentException($"Invalid JWK: {jwkJsonString}", null, e);
         }
     }
 
@@ -94,7 +94,7 @@ public class MomentoSigner
         }
         catch (Exception e)
         {
-            throw new InvalidArgumentException($"Invalid JWK alg: {jwtHeader.Alg}", e);
+            throw new InvalidArgumentException($"Invalid JWK alg: {jwtHeader.Alg}", null, e);
         }
     }
 
