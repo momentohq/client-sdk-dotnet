@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal;
@@ -32,12 +33,13 @@ public class SimpleCacheClient : ISimpleCacheClient
     public SimpleCacheClient(IConfiguration config, string authToken, uint defaultTtlSeconds, ILoggerFactory? loggerFactory = null)
     {
         this.config = config;
-        this._logger = Utils.CreateOrNullLogger<SimpleCacheClient>(loggerFactory);
+        var _loggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
+        this._logger = _loggerFactory.CreateLogger<SimpleCacheClient>();
         ValidateRequestTimeout(config.TransportStrategy.GrpcConfig.DeadlineMilliseconds);
         Claims claims = JwtUtils.DecodeJwt(authToken);
 
-        this.controlClient = new(authToken, claims.ControlEndpoint, loggerFactory);
-        this.dataClient = new(config, authToken, claims.CacheEndpoint, defaultTtlSeconds, loggerFactory);
+        this.controlClient = new(authToken, claims.ControlEndpoint, _loggerFactory);
+        this.dataClient = new(config, authToken, claims.CacheEndpoint, defaultTtlSeconds, _loggerFactory);
     }
 
     /// <inheritdoc />

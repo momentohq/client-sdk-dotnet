@@ -13,11 +13,11 @@ internal sealed class ScsControlClient : IDisposable
     private const uint DEADLINE_SECONDS = 60;
     private readonly ILogger _logger;
 
-    public ScsControlClient(string authToken, string endpoint, ILoggerFactory? loggerFactory = null)
+    public ScsControlClient(string authToken, string endpoint, ILoggerFactory loggerFactory)
     {
         this.grpcManager = new ControlGrpcManager(authToken, endpoint, loggerFactory);
         this.authToken = authToken;
-        this._logger = Utils.CreateOrNullLogger<ScsControlClient>(loggerFactory);
+        this._logger = loggerFactory.CreateLogger<ScsControlClient>();
     }
 
     public CreateCacheResponse CreateCache(string cacheName)
