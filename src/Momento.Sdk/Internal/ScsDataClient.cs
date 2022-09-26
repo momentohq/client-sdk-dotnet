@@ -204,7 +204,12 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            return new CacheSetResponse.Error(CacheExceptionMapper.Convert(e));
+            var exc = CacheExceptionMapper.Convert(e);
+            if (exc.TransportDetails != null)
+            {
+                exc.TransportDetails.Grpc.Metadata = MetadataWithCache(cacheName);
+            }
+            return new CacheSetResponse.Error(exc);
         }
         return new CacheSetResponse.Success();
     }
@@ -219,7 +224,12 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            return new CacheGetResponse.Error(CacheExceptionMapper.Convert(e));
+            var exc = CacheExceptionMapper.Convert(e);
+            if (exc.TransportDetails != null)
+            {
+                exc.TransportDetails.Grpc.Metadata = MetadataWithCache(cacheName);
+            }
+            return new CacheGetResponse.Error(exc);
         }
 
         if (response.Result == ECacheResult.Miss) {
@@ -237,7 +247,12 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            return new CacheDeleteResponse.Error(CacheExceptionMapper.Convert(e));
+            var exc = CacheExceptionMapper.Convert(e);
+            if (exc.TransportDetails != null)
+            {
+                exc.TransportDetails.Grpc.Metadata = MetadataWithCache(cacheName);
+            }
+            return new CacheDeleteResponse.Error(exc);
         }
         return new CacheDeleteResponse.Success();
     }

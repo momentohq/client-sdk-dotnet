@@ -22,6 +22,11 @@ public abstract class CreateCacheResponse {
         public MomentoErrorCode ErrorCode {
             get => _error.ErrorCode;
         }
+
+        public string Message {
+            get => $"{_error.MessageWrapper}: {_error.Message}";
+        }
+
     }
 
 }

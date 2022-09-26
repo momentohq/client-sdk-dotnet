@@ -7,10 +7,8 @@ using System;
 /// </summary>
 public class UnknownException : SdkException
 {
-    public UnknownException(string message) : base(MomentoErrorCode.UNKNOWN_ERROR, message)
+    public UnknownException(string message, MomentoErrorTransportDetails? transportDetails=null, Exception? e=null) : base(MomentoErrorCode.UNKNOWN_ERROR, message, transportDetails, e)
     {
-    }
-    public UnknownException(string message, Exception e) : base(MomentoErrorCode.UNKNOWN_ERROR, message, null, e)
-    {
+        this.MessageWrapper = "Unknown error has occurred";
     }
 }

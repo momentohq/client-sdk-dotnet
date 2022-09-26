@@ -1,5 +1,7 @@
 namespace Momento.Sdk.Exceptions;
 
+using System;
+
 /// <summary>
 /// The server did not meet the precondition to run a command.
 /// 
@@ -8,10 +10,8 @@ namespace Momento.Sdk.Exceptions;
 /// </summary>
 public class FailedPreconditionException : SdkException
 {
-    public FailedPreconditionException(string message) : base(MomentoErrorCode.FAILED_PRECONDITION_ERROR, message)
+    public FailedPreconditionException(string message, MomentoErrorTransportDetails? transportDetails=null, Exception? e=null) : base(MomentoErrorCode.FAILED_PRECONDITION_ERROR, message, transportDetails, e)
     {
-    }
-    public FailedPreconditionException(string message, MomentoErrorTransportDetails transportDetails) : base(MomentoErrorCode.FAILED_PRECONDITION_ERROR, message, transportDetails)
-    {
+        this.MessageWrapper = "System is not in a state required for the operation's execution";
     }
 }

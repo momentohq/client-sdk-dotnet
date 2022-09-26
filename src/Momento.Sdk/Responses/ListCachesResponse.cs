@@ -39,5 +39,10 @@ public abstract class ListCachesResponse
         {
             get => _error.ErrorCode;
         }
+
+        public string Message {
+            get => $"{_error.MessageWrapper}: {_error.Message}";
+        }
+
     }
 }

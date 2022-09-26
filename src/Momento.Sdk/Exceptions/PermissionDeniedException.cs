@@ -1,14 +1,13 @@
 ﻿namespace Momento.Sdk.Exceptions;
 
+using System;
+
 /// <summary>
 /// Insufficient permissions to execute an operation.
 /// </summary>
 public class PermissionDeniedException : SdkException
 {
-    public PermissionDeniedException(string message) : base(MomentoErrorCode.PERMISSION_ERROR, message)
-    {
-    }
-    public PermissionDeniedException(string message, MomentoErrorTransportDetails transportDetails) : base(MomentoErrorCode.PERMISSION_ERROR, message, transportDetails)
+    public PermissionDeniedException(string message, MomentoErrorTransportDetails? transportDetails=null, Exception? e=null) : base(MomentoErrorCode.PERMISSION_ERROR, message, transportDetails, e)
     {
     }
 }

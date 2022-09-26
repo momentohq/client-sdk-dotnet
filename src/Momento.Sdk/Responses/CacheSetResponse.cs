@@ -24,5 +24,10 @@ public abstract class CacheSetResponse
         {
             get => _error.ErrorCode;
         }
+
+        public string Message {
+            get => $"{_error.MessageWrapper}: {_error.Message}";
+        }
+
     }
 }
