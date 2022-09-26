@@ -17,12 +17,5 @@ public class CacheGetResponseTest
         CacheGetResponse.Hit responseHit = new CacheGetResponse.Hit(serverResponseHit);
         Assert.Equal(CacheGetStatus.HIT, responseHit.Status);
         Assert.Equal(cacheBody, responseHit.String());
-
-        // _GetResponse serverResponseMiss = new _GetResponse() { Result = ECacheResult.Miss };
-        // CacheGetResponse.Miss responseMiss = new CacheGetResponse.Miss(serverResponseMiss);
-        // Assert.Equal(CacheGetStatus.MISS, responseMiss.Status);
-
-        // _GetResponse serverResponseBadRequest = new _GetResponse() { Result = ECacheResult.Invalid };
-        // _ = Assert.Throws<InternalServerException>(() => new CacheGetResponse.Success(serverResponseBadRequest));
     }
 }
