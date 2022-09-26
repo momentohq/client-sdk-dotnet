@@ -114,17 +114,6 @@ namespace Momento.Sdk.Internal
         /// so comparisons operate on byte-array content instead of reference.
         /// </summary>
         public static StructuralEqualityComparer<byte[]> ByteArrayComparer = new();
-
-        /// <summary>
-        /// Create a logger using a provided factory or else use <see cref="NullLoggerFactory"/>.
-        /// </summary>
-        /// <typeparam name="T">The type for which the logger is scoped.</typeparam>
-        /// <param name="loggerFactory">The factory to use by default, otherwise <see cref="NullLoggerFactory.Instance"/>.</param>
-        /// <returns></returns>
-        public static ILogger<T> CreateOrNullLogger<T>(ILoggerFactory? loggerFactory = null)
-        {
-            return (loggerFactory ?? NullLoggerFactory.Instance).CreateLogger<T>();
-        }
     }
 
     namespace ExtensionMethods

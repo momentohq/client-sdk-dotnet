@@ -20,14 +20,14 @@ internal sealed class ControlGrpcManager : IDisposable
     private readonly string runtimeVersion = "dotnet:" + System.Environment.Version;
     private readonly ILogger _logger;
 
-    public ControlGrpcManager(string authToken, string endpoint, ILoggerFactory? loggerFactory = null)
+    public ControlGrpcManager(string authToken, string endpoint, ILoggerFactory loggerFactory)
     {
         var uri = $"https://{endpoint}";
         this.channel = GrpcChannel.ForAddress(uri, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
         List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version), new Header(name: Header.RuntimeVersionKey, value: runtimeVersion) };
         CallInvoker invoker = channel.Intercept(new HeaderInterceptor(headers));
         Client = new ScsControl.ScsControlClient(invoker);
-        this._logger = Utils.CreateOrNullLogger<ControlGrpcManager>(loggerFactory);
+        this._logger = loggerFactory.CreateLogger<ControlGrpcManager>();
     }
 
     public void Dispose()
