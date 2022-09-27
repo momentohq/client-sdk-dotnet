@@ -19,9 +19,12 @@ public abstract class CacheGetBatchResponse
             var ret = new List<string?>();
             foreach (CacheGetResponse response in Responses)
             {
-                if (response is CacheGetResponse.Hit hitResponse) {
+                if (response is CacheGetResponse.Hit hitResponse)
+                {
                     ret.Add(hitResponse.String());
-                } else if (response is CacheGetResponse.Miss missResponse) {
+                }
+                else if (response is CacheGetResponse.Miss missResponse)
+                {
                     ret.Add(null);
                 }
             }
@@ -38,7 +41,9 @@ public abstract class CacheGetBatchResponse
                     if (response is CacheGetResponse.Hit hitResponse)
                     {
                         ret.Add(hitResponse.ByteArray);
-                    } else if (response is CacheGetResponse.Miss missResponse) {
+                    }
+                    else if (response is CacheGetResponse.Miss missResponse)
+                    {
                         ret.Add(null);
                     }
                 }
@@ -65,7 +70,8 @@ public abstract class CacheGetBatchResponse
             get => _error.ErrorCode;
         }
 
-        public string Message {
+        public string Message
+        {
             get => $"{_error.MessageWrapper}: {_error.Message}";
         }
 

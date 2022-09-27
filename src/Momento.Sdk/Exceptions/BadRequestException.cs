@@ -7,7 +7,7 @@ using System;
 /// </summary>
 public class BadRequestException : SdkException
 {
-    public BadRequestException(string message, MomentoErrorTransportDetails transportDetails, Exception? e=null) : base(MomentoErrorCode.BAD_REQUEST_ERROR, message, transportDetails, e)
+    public BadRequestException(string message, MomentoErrorTransportDetails transportDetails, Exception? e = null) : base(MomentoErrorCode.BAD_REQUEST_ERROR, message, transportDetails, e)
     {
         this.MessageWrapper = "The request was invalid; please contact us at support@momentohq.com";
     }
