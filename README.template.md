@@ -4,14 +4,21 @@
 
 ### Requirements
 
-- brew install nuget 
-- brew install --cask dotnet
-- [Visual Studio](https://visualstudio.microsoft.com/vs/mac/)
-- [.NET](https://docs.microsoft.com/en-us/dotnet/core/install/macos)
+- You will most likely want an IDE that supports .NET development, such as [Microsoft Visual Studio](https://visualstudio.microsoft.com/vs),
+  [JetBrains Rider](https://www.jetbrains.com/rider/), or [Microsoft Visual Studio Code](https://code.visualstudio.com/).
+- You will need the [`dotnet` runtime and command line tools](https://dotnet.microsoft.com/en-us/download).  After installing them,
+  you should have the `dotnet` command on your PATH.
 
 ### Installation
 
+If you'd like to see a complete working example, check out our [examples](./examples/README.md) page.
+
+To create a new .NET project and add the Momento client library as a dependency:
+
 ```bash
+mkdir my-momento-dotnet-project
+cd my-momento-dotnet-project
+dotnet new console 
 dotnet add package Momento.Sdk
 ```
 
