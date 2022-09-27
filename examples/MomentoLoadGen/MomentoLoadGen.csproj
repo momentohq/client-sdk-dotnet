@@ -22,7 +22,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
-    <PackageReference Include="Momento.Sdk" Version="0.30.1" />
+    <PackageReference Include="Momento.Sdk" Version="0.31.0" />
     <PackageReference Include="HdrHistogram" Version="2.5.0" />
   </ItemGroup>
 </Project>

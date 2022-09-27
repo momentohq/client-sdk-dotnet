@@ -104,7 +104,7 @@ namespace MomentoLoadGen
 
             try
             {
-                momento.CreateCache(CACHE_NAME);
+                await momento.CreateCacheAsync(CACHE_NAME);
             }
             catch (AlreadyExistsException)
             {
