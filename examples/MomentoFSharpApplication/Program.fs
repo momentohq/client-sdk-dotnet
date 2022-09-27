@@ -1,5 +1,4 @@
 ﻿open Momento.Sdk
-open Momento.Sdk.Exceptions
 open Momento.Sdk.Config
 open Momento.Sdk.Responses
 open System
