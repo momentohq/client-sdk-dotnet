@@ -7,7 +7,7 @@ using System;
 /// </summary>
 public class PermissionDeniedException : SdkException
 {
-    public PermissionDeniedException(string message, MomentoErrorTransportDetails transportDetails, Exception? e=null) : base(MomentoErrorCode.PERMISSION_ERROR, message, transportDetails, e)
+    public PermissionDeniedException(string message, MomentoErrorTransportDetails transportDetails, Exception? e = null) : base(MomentoErrorCode.PERMISSION_ERROR, message, transportDetails, e)
     {
     }
 }

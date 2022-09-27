@@ -67,10 +67,11 @@ public enum MomentoErrorCode
     UNKNOWN_ERROR
 }
 
-public class MomentoGrpcErrorDetails {
-  public StatusCode Code { get; }
-  public string Details { get; }
-  public Metadata? Metadata { get; set; }
+public class MomentoGrpcErrorDetails
+{
+    public StatusCode Code { get; }
+    public string Details { get; }
+    public Metadata? Metadata { get; set; }
 
     public MomentoGrpcErrorDetails(StatusCode code, string details, Metadata? metadata = null)
     {
@@ -98,8 +99,8 @@ public abstract class SdkException : Exception
 
     protected SdkException(MomentoErrorCode errorCode, string message, MomentoErrorTransportDetails? transportDetails = null, Exception? e = null) : base(message, e)
     {
-      this.ErrorCode = errorCode;
-      this.TransportDetails = transportDetails;
-      this.MessageWrapper = "";
+        this.ErrorCode = errorCode;
+        this.TransportDetails = transportDetails;
+        this.MessageWrapper = "";
     }
 }

@@ -22,7 +22,8 @@ public abstract class CacheGetResponse
         public string String() => value.ToStringUtf8();
     }
 
-    public class Miss : CacheGetResponse {
+    public class Miss : CacheGetResponse
+    {
         public Miss() { }
     }
 
@@ -44,7 +45,8 @@ public abstract class CacheGetResponse
             get => _error.ErrorCode;
         }
 
-        public string Message {
+        public string Message
+        {
             get => $"{_error.MessageWrapper}: {_error.Message}";
         }
 

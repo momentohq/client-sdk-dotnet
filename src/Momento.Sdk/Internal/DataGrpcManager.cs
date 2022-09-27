@@ -109,7 +109,7 @@ public class DataGrpcManager : IDisposable
         List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version), new Header(name: Header.RuntimeVersionKey, value: runtimeVersion) };
         this._logger = loggerFactory.CreateLogger<DataGrpcManager>();
         CallInvoker invoker = this.channel.Intercept(new HeaderInterceptor(headers));
-        
+
         var middlewares = config.Middlewares.Concat(
             new List<IMiddleware> { new MaxConcurrentRequestsMiddleware(config.TransportStrategy.MaxConcurrentRequests) }
         ).ToList();

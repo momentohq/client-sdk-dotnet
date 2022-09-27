@@ -7,7 +7,7 @@ using System;
 /// </summary>
 public class AuthenticationException : SdkException
 {
-    public AuthenticationException(string message, MomentoErrorTransportDetails transportDetails, Exception? e=null) : base(MomentoErrorCode.AUTHENTICATION_ERROR, message, transportDetails, e)
+    public AuthenticationException(string message, MomentoErrorTransportDetails transportDetails, Exception? e = null) : base(MomentoErrorCode.AUTHENTICATION_ERROR, message, transportDetails, e)
     {
         this.MessageWrapper = "Invalid authentication credentials to connect to cache service";
     }
