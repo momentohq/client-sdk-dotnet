@@ -72,11 +72,11 @@ tuning for different environments for you, so that you can focus on the things t
 You can find the pre-built configurations in our `Configurations` namespace.  Some of the pre-built configurations that
 you might be interested in:
 
-* `Configurations.Laptop` - this one is a development environment, just for poking around.  It has relaxed timeouts
+- `Configurations.Laptop` - this one is a development environment, just for poking around.  It has relaxed timeouts
       and assumes that your network latencies might be a bit high.
-* `Configurations.InRegion.Default` - provides defaults suitable for an environment where your client is running in the same region as the Momento
+- `Configurations.InRegion.Default` - provides defaults suitable for an environment where your client is running in the same region as the Momento
       service.  It has more aggressive timeouts and retry behavior than the Laptop config.
-* `Configurations.InRegion.LowLatency` - This config prioritizes keeping p99.9 latencies as low as possible, potentially sacrificing
+- `Configurations.InRegion.LowLatency` - This config prioritizes keeping p99.9 latencies as low as possible, potentially sacrificing
       some throughput to achieve this.  Use this configuration if the most important factor is to ensure that cache
       unavailability doesn't force unacceptably high latencies for your own application.
 
