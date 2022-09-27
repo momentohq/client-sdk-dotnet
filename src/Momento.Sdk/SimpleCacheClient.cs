@@ -49,9 +49,9 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <inheritdoc />
-    public DeleteCacheResponse DeleteCache(string cacheName)
+    public async Task<DeleteCacheResponse> DeleteCacheAsync(string cacheName)
     {
-        return this.controlClient.DeleteCache(cacheName);
+        return await this.controlClient.DeleteCacheAsync(cacheName);
     }
 
     /// <inheritdoc />

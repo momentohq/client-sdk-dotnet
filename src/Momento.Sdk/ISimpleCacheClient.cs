@@ -23,8 +23,8 @@ public interface ISimpleCacheClient : IDisposable
     /// Deletes a cache and all of the items within it.
     /// </summary>
     /// <param name="cacheName">Name of the cache to be deleted.</param>
-    /// <returns>Result of the delete cache operation.</returns>
-    public DeleteCacheResponse DeleteCache(string cacheName);
+    /// <returns>Task representing the result of the delete cache operation.</returns>
+    public Task<DeleteCacheResponse> DeleteCacheAsync(string cacheName);
 
     /// <summary>
     /// List all caches.

@@ -34,7 +34,7 @@ public class SimpleCacheClientFixture : IDisposable
 
     public void Dispose()
     {
-        Client.DeleteCache(CacheName);
+        var result = Client.DeleteCacheAsync(CacheName).Result;
         Client.Dispose();
     }
 }

@@ -30,18 +30,18 @@ public class SimpleCacheControlTest
     }
 
     [Fact]
-    public void DeleteCache_NullCache_InvalidArgumentError()
+    public async Task DeleteCacheAsync_NullCache_InvalidArgumentError()
     {
-        DeleteCacheResponse resp = client.DeleteCache(null!);
+        DeleteCacheResponse resp = await client.DeleteCacheAsync(null!);
         DeleteCacheResponse.Error errResp = (DeleteCacheResponse.Error)resp;
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errResp.Exception.ErrorCode);
     }
 
     [Fact]
-    public void DeleteCache_CacheDoesntExist_NotFoundException()
+    public async Task DeleteCacheAsync_CacheDoesntExist_NotFoundException()
     {
         // Assert.Throws<NotFoundException>(() => client.DeleteCache("non-existent cache"));
-        DeleteCacheResponse resp = client.DeleteCache("non-existent cache");
+        DeleteCacheResponse resp = await client.DeleteCacheAsync("non-existent cache");
         Assert.True(resp is DeleteCacheResponse.Error);
         DeleteCacheResponse.Error errResp = (DeleteCacheResponse.Error)resp;
         Assert.Equal(MomentoErrorCode.NOT_FOUND_ERROR, errResp.Exception.ErrorCode);
@@ -72,7 +72,7 @@ public class SimpleCacheControlTest
         }
 
         // Test deleting cache
-        client.DeleteCache(cacheName);
+        await client.DeleteCacheAsync(cacheName);
         result = client.ListCaches();
         if (result is ListCachesResponse.Success successResult2)
         {
@@ -120,7 +120,7 @@ public class SimpleCacheControlTest
         // Cleanup
         foreach (String cacheName in cacheNames)
         {
-            client.DeleteCache(cacheName);
+            await client.DeleteCacheAsync(cacheName);
         }
 
         Assert.True(sizeOverlap == cacheNames.Count);

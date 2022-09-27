@@ -36,13 +36,13 @@ internal sealed class ScsControlClient : IDisposable
         }
     }
 
-    public DeleteCacheResponse DeleteCache(string cacheName)
+    public async Task<DeleteCacheResponse> DeleteCacheAsync(string cacheName)
     {
         try
         {
             CheckValidCacheName(cacheName);
             _DeleteCacheRequest request = new _DeleteCacheRequest() { CacheName = cacheName };
-            this.grpcManager.Client.DeleteCache(request, deadline: CalculateDeadline());
+            await this.grpcManager.Client.DeleteCacheAsync(request, deadline: CalculateDeadline());
             return new DeleteCacheResponse.Success();
         }
         catch (Exception e)
