@@ -60,14 +60,8 @@ namespace MomentoApplication
         async static Task Main(string[] args)
         {
             using SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.Latest, MOMENTO_AUTH_TOKEN, DEFAULT_TTL_SECONDS);
-            try
-            {
-                client.CreateCache(CACHE_NAME);
-            }
-            catch (AlreadyExistsException)
-            {
-                Console.WriteLine($"Cache with name {CACHE_NAME} already exists.\n");
-            }
+            var createCacheResult = client.CreateCache(CACHE_NAME);
+            
             Console.WriteLine("Listing caches:");
             String token = null;
             do
