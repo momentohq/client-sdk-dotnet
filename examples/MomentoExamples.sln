@@ -9,6 +9,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MomentoFSharpApplication", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MomentoLoadGen", "MomentoLoadGen\MomentoLoadGen.csproj", "{307C0F57-D39C-461C-8F18-4E78DDD1BEFF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MomentoUsage", "MomentoUsage\MomentoUsage.csproj", "{7367E20A-B926-4701-BF02-D1FC5D2D1571}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{307C0F57-D39C-461C-8F18-4E78DDD1BEFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{307C0F57-D39C-461C-8F18-4E78DDD1BEFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{307C0F57-D39C-461C-8F18-4E78DDD1BEFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7367E20A-B926-4701-BF02-D1FC5D2D1571}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7367E20A-B926-4701-BF02-D1FC5D2D1571}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7367E20A-B926-4701-BF02-D1FC5D2D1571}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7367E20A-B926-4701-BF02-D1FC5D2D1571}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
