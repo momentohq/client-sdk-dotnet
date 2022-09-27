@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Momento.Sdk" Version="0.26.0">
+    <PackageReference Include="Momento.Sdk" Version="0.30.1">
       <GeneratePathProperty></GeneratePathProperty>
     </PackageReference>
   </ItemGroup>

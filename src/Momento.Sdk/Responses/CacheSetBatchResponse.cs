@@ -7,7 +7,7 @@ public abstract class CacheSetBatchResponse
 
     public class Success : CacheSetBatchResponse { }
 
-    public class Error: CacheSetBatchResponse
+    public class Error : CacheSetBatchResponse
     {
         private readonly SdkException _error;
         public Error(SdkException error)
@@ -25,7 +25,8 @@ public abstract class CacheSetBatchResponse
             get => _error.ErrorCode;
         }
 
-        public string Message {
+        public string Message
+        {
             get => $"{_error.MessageWrapper}: {_error.Message}";
         }
 

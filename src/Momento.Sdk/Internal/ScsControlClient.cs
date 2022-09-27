@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.ControlClient;
 using Momento.Sdk.Exceptions;
@@ -20,13 +21,13 @@ internal sealed class ScsControlClient : IDisposable
         this._logger = loggerFactory.CreateLogger<ScsControlClient>();
     }
 
-    public CreateCacheResponse CreateCache(string cacheName)
+    public async Task<CreateCacheResponse> CreateCacheAsync(string cacheName)
     {
         try
         {
             CheckValidCacheName(cacheName);
             _CreateCacheRequest request = new _CreateCacheRequest() { CacheName = cacheName };
-            this.grpcManager.Client.CreateCache(request, deadline: CalculateDeadline());
+            await this.grpcManager.Client.CreateCacheAsync(request, deadline: CalculateDeadline());
             return new CreateCacheResponse.Success();
         }
         catch (Exception e)
@@ -35,13 +36,13 @@ internal sealed class ScsControlClient : IDisposable
         }
     }
 
-    public DeleteCacheResponse DeleteCache(string cacheName)
+    public async Task<DeleteCacheResponse> DeleteCacheAsync(string cacheName)
     {
         try
         {
             CheckValidCacheName(cacheName);
             _DeleteCacheRequest request = new _DeleteCacheRequest() { CacheName = cacheName };
-            this.grpcManager.Client.DeleteCache(request, deadline: CalculateDeadline());
+            await this.grpcManager.Client.DeleteCacheAsync(request, deadline: CalculateDeadline());
             return new DeleteCacheResponse.Success();
         }
         catch (Exception e)
@@ -50,12 +51,12 @@ internal sealed class ScsControlClient : IDisposable
         }
     }
 
-    public ListCachesResponse ListCaches(string? nextPageToken = null)
+    public async Task<ListCachesResponse> ListCachesAsync(string? nextPageToken = null)
     {
         _ListCachesRequest request = new _ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
         try
         {
-            _ListCachesResponse result = this.grpcManager.Client.ListCaches(request, deadline: CalculateDeadline());
+            _ListCachesResponse result = await this.grpcManager.Client.ListCachesAsync(request, deadline: CalculateDeadline());
             return new ListCachesResponse.Success(result);
         }
         catch (Exception e)

@@ -10,7 +10,7 @@ using System;
 /// </summary>
 public class FailedPreconditionException : SdkException
 {
-    public FailedPreconditionException(string message, MomentoErrorTransportDetails transportDetails, Exception? e=null) : base(MomentoErrorCode.FAILED_PRECONDITION_ERROR, message, transportDetails, e)
+    public FailedPreconditionException(string message, MomentoErrorTransportDetails transportDetails, Exception? e = null) : base(MomentoErrorCode.FAILED_PRECONDITION_ERROR, message, transportDetails, e)
     {
         this.MessageWrapper = "System is not in a state required for the operation's execution";
     }

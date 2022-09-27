@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Momento.Sdk.Config;
 
 namespace Momento.Sdk.Tests;
@@ -29,41 +30,41 @@ public class SimpleCacheControlTest
     }
 
     [Fact]
-    public void DeleteCache_NullCache_InvalidArgumentError()
+    public async Task DeleteCacheAsync_NullCache_InvalidArgumentError()
     {
-        DeleteCacheResponse resp = client.DeleteCache(null!);
+        DeleteCacheResponse resp = await client.DeleteCacheAsync(null!);
         DeleteCacheResponse.Error errResp = (DeleteCacheResponse.Error)resp;
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errResp.Exception.ErrorCode);
     }
 
     [Fact]
-    public void DeleteCache_CacheDoesntExist_NotFoundException()
+    public async Task DeleteCacheAsync_CacheDoesntExist_NotFoundException()
     {
         // Assert.Throws<NotFoundException>(() => client.DeleteCache("non-existent cache"));
-        DeleteCacheResponse resp = client.DeleteCache("non-existent cache");
+        DeleteCacheResponse resp = await client.DeleteCacheAsync("non-existent cache");
         Assert.True(resp is DeleteCacheResponse.Error);
         DeleteCacheResponse.Error errResp = (DeleteCacheResponse.Error)resp;
         Assert.Equal(MomentoErrorCode.NOT_FOUND_ERROR, errResp.Exception.ErrorCode);
     }
 
     [Fact]
-    public void CreateCache_NullCache_InvalidArgumentError()
+    public async Task CreateCacheAsync_NullCache_InvalidArgumentError()
     {
-        CreateCacheResponse resp = client.CreateCache(null!);
+        CreateCacheResponse resp = await client.CreateCacheAsync(null!);
         CreateCacheResponse.Error errResp = (CreateCacheResponse.Error)resp;
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errResp.Exception.ErrorCode);
     }
 
     // Tests: creating a cache, listing a cache, and deleting a cache.
     [Fact]
-    public void ListCaches_OneCache_HappyPath()
+    public async Task ListCachesAsync_OneCache_HappyPath()
     {
         // Create cache
         string cacheName = Utils.NewGuidString();
-        client.CreateCache(cacheName);
+        await client.CreateCacheAsync(cacheName);
 
         // Test cache exists
-        ListCachesResponse result = client.ListCaches();
+        ListCachesResponse result = await client.ListCachesAsync();
         if (result is ListCachesResponse.Success successResult)
         {
             List<CacheInfo> caches = successResult.Caches;
@@ -71,8 +72,8 @@ public class SimpleCacheControlTest
         }
 
         // Test deleting cache
-        client.DeleteCache(cacheName);
-        result = client.ListCaches();
+        await client.DeleteCacheAsync(cacheName);
+        result = await client.ListCachesAsync();
         if (result is ListCachesResponse.Success successResult2)
         {
             var caches = successResult2.Caches;
@@ -81,7 +82,7 @@ public class SimpleCacheControlTest
     }
 
     [Fact]
-    public void ListCaches_Iteration_HappyPath()
+    public async Task ListCachesAsync_Iteration_HappyPath()
     {
         // Create caches
         List<String> cacheNames = new List<String>();
@@ -91,12 +92,12 @@ public class SimpleCacheControlTest
         {
             String cacheName = Utils.NewGuidString();
             cacheNames.Add(cacheName);
-            client.CreateCache(cacheName);
+            await client.CreateCacheAsync(cacheName);
         }
 
         // List caches
         HashSet<String> retrievedCaches = new HashSet<string>();
-        ListCachesResponse result = client.ListCaches();
+        ListCachesResponse result = await client.ListCachesAsync();
         while (true)
         {
             if (result is ListCachesResponse.Success successResult)
@@ -109,7 +110,7 @@ public class SimpleCacheControlTest
                 {
                     break;
                 }
-                result = client.ListCaches(successResult.NextPageToken);
+                result = await client.ListCachesAsync(successResult.NextPageToken);
             }
         }
 
@@ -119,16 +120,16 @@ public class SimpleCacheControlTest
         // Cleanup
         foreach (String cacheName in cacheNames)
         {
-            client.DeleteCache(cacheName);
+            await client.DeleteCacheAsync(cacheName);
         }
 
         Assert.True(sizeOverlap == cacheNames.Count);
     }
 
     [Fact]
-    public void ListCaches_BadNextToken_NoException()
+    public async Task ListCachesAsync_BadNextToken_NoException()
     {
         // A bad next token does not throw an exception
-        client.ListCaches(nextPageToken: "hello world");
+        await client.ListCachesAsync(nextPageToken: "hello world");
     }
 }

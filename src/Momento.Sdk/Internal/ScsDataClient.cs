@@ -139,8 +139,10 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
 
         // preserve old behavior of failing on first error
-        foreach (CacheGetResponse response in continuation.Result) {
-            if (response is CacheGetResponse.Error errorResponse) {
+        foreach (CacheGetResponse response in continuation.Result)
+        {
+            if (response is CacheGetResponse.Error errorResponse)
+            {
                 return new CacheGetBatchResponse.Error(errorResponse.Exception);
             }
         }
@@ -236,7 +238,8 @@ internal sealed class ScsDataClient : ScsDataClientBase
             return new CacheGetResponse.Error(exc);
         }
 
-        if (response.Result == ECacheResult.Miss) {
+        if (response.Result == ECacheResult.Miss)
+        {
             return new CacheGetResponse.Miss();
         }
         return new CacheGetResponse.Hit(response);
