@@ -16,8 +16,8 @@ public interface ISimpleCacheClient : IDisposable
     /// Creates a cache if it doesn't exist.
     /// </summary>
     /// <param name="cacheName">Name of the cache to be created.</param>
-    /// <returns>The result of the create cache operation</returns>
-    public CreateCacheResponse CreateCache(string cacheName);
+    /// <returns>Task representing the result of the create cache operation</returns>
+    public Task<CreateCacheResponse> CreateCacheAsync(string cacheName);
 
     /// <summary>
     /// Deletes a cache and all of the items within it.

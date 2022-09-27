@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.ControlClient;
 using Momento.Sdk.Exceptions;
@@ -20,13 +21,13 @@ internal sealed class ScsControlClient : IDisposable
         this._logger = loggerFactory.CreateLogger<ScsControlClient>();
     }
 
-    public CreateCacheResponse CreateCache(string cacheName)
+    public async Task<CreateCacheResponse> CreateCacheAsync(string cacheName)
     {
         try
         {
             CheckValidCacheName(cacheName);
             _CreateCacheRequest request = new _CreateCacheRequest() { CacheName = cacheName };
-            this.grpcManager.Client.CreateCache(request, deadline: CalculateDeadline());
+            await this.grpcManager.Client.CreateCacheAsync(request, deadline: CalculateDeadline());
             return new CreateCacheResponse.Success();
         }
         catch (Exception e)

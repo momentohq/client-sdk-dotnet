@@ -25,7 +25,7 @@ public class SimpleCacheClientFixture : IDisposable
 
         try
         {
-            Client.CreateCache(CacheName);
+            var result = Client.CreateCacheAsync(CacheName).Result;
         }
         catch (AlreadyExistsException)
         {

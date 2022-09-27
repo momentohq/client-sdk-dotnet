@@ -43,9 +43,9 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <inheritdoc />
-    public CreateCacheResponse CreateCache(string cacheName)
+    public async Task<CreateCacheResponse> CreateCacheAsync(string cacheName)
     {
-        return this.controlClient.CreateCache(cacheName);
+        return await this.controlClient.CreateCacheAsync(cacheName);
     }
 
     /// <inheritdoc />

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Momento.Sdk.Config;
 
 namespace Momento.Sdk.Tests;
@@ -47,20 +48,20 @@ public class SimpleCacheControlTest
     }
 
     [Fact]
-    public void CreateCache_NullCache_InvalidArgumentError()
+    public async Task CreateCacheAsync_NullCache_InvalidArgumentError()
     {
-        CreateCacheResponse resp = client.CreateCache(null!);
+        CreateCacheResponse resp = await client.CreateCacheAsync(null!);
         CreateCacheResponse.Error errResp = (CreateCacheResponse.Error)resp;
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errResp.Exception.ErrorCode);
     }
 
     // Tests: creating a cache, listing a cache, and deleting a cache.
     [Fact]
-    public void ListCaches_OneCache_HappyPath()
+    public async Task ListCaches_OneCache_HappyPath()
     {
         // Create cache
         string cacheName = Utils.NewGuidString();
-        client.CreateCache(cacheName);
+        await client.CreateCacheAsync(cacheName);
 
         // Test cache exists
         ListCachesResponse result = client.ListCaches();
@@ -81,7 +82,7 @@ public class SimpleCacheControlTest
     }
 
     [Fact]
-    public void ListCaches_Iteration_HappyPath()
+    public async Task ListCaches_Iteration_HappyPath()
     {
         // Create caches
         List<String> cacheNames = new List<String>();
@@ -91,7 +92,7 @@ public class SimpleCacheControlTest
         {
             String cacheName = Utils.NewGuidString();
             cacheNames.Add(cacheName);
-            client.CreateCache(cacheName);
+            await client.CreateCacheAsync(cacheName);
         }
 
         // List caches
