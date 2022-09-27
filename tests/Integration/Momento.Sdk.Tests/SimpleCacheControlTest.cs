@@ -57,14 +57,14 @@ public class SimpleCacheControlTest
 
     // Tests: creating a cache, listing a cache, and deleting a cache.
     [Fact]
-    public async Task ListCaches_OneCache_HappyPath()
+    public async Task ListCachesAsync_OneCache_HappyPath()
     {
         // Create cache
         string cacheName = Utils.NewGuidString();
         await client.CreateCacheAsync(cacheName);
 
         // Test cache exists
-        ListCachesResponse result = client.ListCaches();
+        ListCachesResponse result = await client.ListCachesAsync();
         if (result is ListCachesResponse.Success successResult)
         {
             List<CacheInfo> caches = successResult.Caches;
@@ -73,7 +73,7 @@ public class SimpleCacheControlTest
 
         // Test deleting cache
         await client.DeleteCacheAsync(cacheName);
-        result = client.ListCaches();
+        result = await client.ListCachesAsync();
         if (result is ListCachesResponse.Success successResult2)
         {
             var caches = successResult2.Caches;
@@ -82,7 +82,7 @@ public class SimpleCacheControlTest
     }
 
     [Fact]
-    public async Task ListCaches_Iteration_HappyPath()
+    public async Task ListCachesAsync_Iteration_HappyPath()
     {
         // Create caches
         List<String> cacheNames = new List<String>();
@@ -97,7 +97,7 @@ public class SimpleCacheControlTest
 
         // List caches
         HashSet<String> retrievedCaches = new HashSet<string>();
-        ListCachesResponse result = client.ListCaches();
+        ListCachesResponse result = await client.ListCachesAsync();
         while (true)
         {
             if (result is ListCachesResponse.Success successResult)
@@ -110,7 +110,7 @@ public class SimpleCacheControlTest
                 {
                     break;
                 }
-                result = client.ListCaches(successResult.NextPageToken);
+                result = await client.ListCachesAsync(successResult.NextPageToken);
             }
         }
 
@@ -127,9 +127,9 @@ public class SimpleCacheControlTest
     }
 
     [Fact]
-    public void ListCaches_BadNextToken_NoException()
+    public async Task ListCachesAsync_BadNextToken_NoException()
     {
         // A bad next token does not throw an exception
-        client.ListCaches(nextPageToken: "hello world");
+        await client.ListCachesAsync(nextPageToken: "hello world");
     }
 }

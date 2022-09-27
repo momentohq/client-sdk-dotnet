@@ -51,12 +51,12 @@ internal sealed class ScsControlClient : IDisposable
         }
     }
 
-    public ListCachesResponse ListCaches(string? nextPageToken = null)
+    public async Task<ListCachesResponse> ListCachesAsync(string? nextPageToken = null)
     {
         _ListCachesRequest request = new _ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
         try
         {
-            _ListCachesResponse result = this.grpcManager.Client.ListCaches(request, deadline: CalculateDeadline());
+            _ListCachesResponse result = await this.grpcManager.Client.ListCachesAsync(request, deadline: CalculateDeadline());
             return new ListCachesResponse.Success(result);
         }
         catch (Exception e)
