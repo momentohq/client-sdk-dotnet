@@ -57,7 +57,7 @@ public class Configurations
                     /*retryableStatusCodes = DEFAULT_RETRYABLE_STATUS_CODES,*/
                     IRetryStrategy retryStrategy = new FixedCountRetryStrategy(maxAttempts: 3);
                     ITransportStrategy transportStrategy = new StaticTransportStrategy(
-                        maxConcurrentRequests: 1,
+                        maxConcurrentRequests: 200,
                         // TODO: tune the timeout value
                         grpcConfig: new StaticGrpcConfiguration(deadlineMilliseconds: 1000));
                     return new Default(retryStrategy, transportStrategy);
@@ -85,7 +85,7 @@ public class Configurations
                     /*retryableStatusCodes = DEFAULT_RETRYABLE_STATUS_CODES,*/
                     IRetryStrategy retryStrategy = new FixedCountRetryStrategy(maxAttempts: 3);
                     ITransportStrategy transportStrategy = new StaticTransportStrategy(
-                        maxConcurrentRequests: 200,
+                        maxConcurrentRequests: 20,
                         // TODO: tune the timeout value
                         grpcConfig: new StaticGrpcConfiguration(deadlineMilliseconds: 1000)
                     );
