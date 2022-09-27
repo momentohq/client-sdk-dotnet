@@ -43,21 +43,21 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <inheritdoc />
-    public CreateCacheResponse CreateCache(string cacheName)
+    public async Task<CreateCacheResponse> CreateCacheAsync(string cacheName)
     {
-        return this.controlClient.CreateCache(cacheName);
+        return await this.controlClient.CreateCacheAsync(cacheName);
     }
 
     /// <inheritdoc />
-    public DeleteCacheResponse DeleteCache(string cacheName)
+    public async Task<DeleteCacheResponse> DeleteCacheAsync(string cacheName)
     {
-        return this.controlClient.DeleteCache(cacheName);
+        return await this.controlClient.DeleteCacheAsync(cacheName);
     }
 
     /// <inheritdoc />
-    public ListCachesResponse ListCaches(string? nextPageToken = null)
+    public async Task<ListCachesResponse> ListCachesAsync(string? nextPageToken = null)
     {
-        return this.controlClient.ListCaches(nextPageToken);
+        return await this.controlClient.ListCachesAsync(nextPageToken);
     }
 
     /// <inheritdoc />

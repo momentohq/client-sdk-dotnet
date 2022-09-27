@@ -16,22 +16,22 @@ public interface ISimpleCacheClient : IDisposable
     /// Creates a cache if it doesn't exist.
     /// </summary>
     /// <param name="cacheName">Name of the cache to be created.</param>
-    /// <returns>The result of the create cache operation</returns>
-    public CreateCacheResponse CreateCache(string cacheName);
+    /// <returns>Task representing the result of the create cache operation</returns>
+    public Task<CreateCacheResponse> CreateCacheAsync(string cacheName);
 
     /// <summary>
     /// Deletes a cache and all of the items within it.
     /// </summary>
     /// <param name="cacheName">Name of the cache to be deleted.</param>
-    /// <returns>Result of the delete cache operation.</returns>
-    public DeleteCacheResponse DeleteCache(string cacheName);
+    /// <returns>Task representing the result of the delete cache operation.</returns>
+    public Task<DeleteCacheResponse> DeleteCacheAsync(string cacheName);
 
     /// <summary>
     /// List all caches.
     /// </summary>
     /// <param name="nextPageToken">A token to specify where to start paginating. This is the NextToken from a previous response.</param>
-    /// <returns>Result of the list cache operation.</returns>
-    public ListCachesResponse ListCaches(string? nextPageToken = null);
+    /// <returns>Task representing the result of the list cache operation.</returns>
+    public Task<ListCachesResponse> ListCachesAsync(string? nextPageToken = null);
 
     /// <summary>
     /// Set the value in cache with a given time to live (TTL) seconds.
