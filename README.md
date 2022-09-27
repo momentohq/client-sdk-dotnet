@@ -38,10 +38,7 @@ Checkout our [examples](./examples/README.md) directory for complete examples of
 Here is a quickstart you can use in your own project:
 
 ```csharp
-﻿//// See https://aka.ms/new-console-template for more information
-//Console.WriteLine("Hello, World!");
-
-using Momento.Sdk;
+﻿using Momento.Sdk;
 using Momento.Sdk.Config;
 using Momento.Sdk.Responses;
 
