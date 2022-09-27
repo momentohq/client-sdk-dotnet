@@ -7,7 +7,9 @@ using Grpc.Core;
 using HdrHistogram;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk;
+using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
+using Momento.Sdk.Responses;
 
 namespace MomentoLoadGen
 {
@@ -67,13 +69,17 @@ namespace MomentoLoadGen
         const string CACHE_NAME = "momento-loadgen";
         const int NUM_REQUESTS_PER_OPERATION = 2;
 
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<CsharpLoadGenerator> _logger;
+        private readonly IConfiguration _momentoClientConfig;
         private readonly CsharpLoadGeneratorOptions _options;
         private readonly string _cacheValue;
 
-        public CsharpLoadGenerator(ILoggerFactory loggerFactory, CsharpLoadGeneratorOptions options)
+        public CsharpLoadGenerator(ILoggerFactory loggerFactory, IConfiguration momentoClientConfig, CsharpLoadGeneratorOptions options)
         {
+            _loggerFactory = loggerFactory;
             _logger = loggerFactory.CreateLogger<CsharpLoadGenerator>();
+            _momentoClientConfig = momentoClientConfig;
 
             _options = options;
 
@@ -90,9 +96,10 @@ namespace MomentoLoadGen
             }
 
             var momento = new SimpleCacheClient(
+                _momentoClientConfig,
                 authToken,
                 CACHE_ITEM_TTL_SECONDS,
-                _options.requestTimeoutMs
+                _loggerFactory
             );
 
             try
@@ -232,9 +239,9 @@ cumulative get latencies:
 
                 string valueString;
 
-                if (getResult.Status == Momento.Sdk.Responses.CacheGetStatus.HIT)
+                if (getResult is CacheGetResponse.Hit hitResponse)
                 {
-                    string value = getResult.String()!;
+                    string value = hitResponse.String();
                     valueString = $"{value.Substring(0, 10)}... (len: {value.Length})";
                 }
                 else
@@ -249,7 +256,7 @@ cumulative get latencies:
                     if (lastPrintCount != globalRequestCount)
                     {
                         Console.WriteLine($"worker: {workerId} last print count: {lastPrintCount} global request count: {globalRequestCount}");
-                        _logger.LogInformation($"worker: {workerId}, worker request: {operationId}, global request: {context.GlobalRequestCount}, status: {getResult.Status}, val: {valueString}");
+                        _logger.LogInformation($"worker: {workerId}, worker request: {operationId}, global request: {context.GlobalRequestCount}, status: {getResult.GetType()}, val: {valueString}");
                     }
                 }
             }
@@ -423,8 +430,16 @@ If you have questions or need help experimenting further, please reach out to us
               totalNumberOfOperationsToExecute: 500_000
             );
 
+            /// 
+            /// This is the configuration that will be used for the Momento client.  Choose from
+            /// our pre-built configurations that are optimized for Laptop vs InRegion environments,
+            /// or build your own.
+            ///
+            IConfiguration config = Configurations.Laptop.Latest;
+
             CsharpLoadGenerator loadGenerator = new CsharpLoadGenerator(
                 loggerFactory,
+                config,
                 loadGeneratorOptions
                 );
             try
