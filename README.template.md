@@ -39,11 +39,29 @@ CacheGetResponse getResponse = await client.GetAsync(CACHE_NAME, KEY);
 if (getResponse is CacheGetResponse.Hit hitResponse)
 {
     Console.WriteLine($"\nLookedup value: {hitResponse.String()}, Stored value: {VALUE}");
+} else {
+      // you can handle other cases via pattern matching in `else if` blocks, or a default case
+      // via the `else` block.  For each return value your IDE should be able to give you code
+      // completion indicating the other possible types; in this case, `CacheGetResponse.Miss` and
+      // `CacheGetResponse.Error`.
 }
 ```
 
 Using this approach, you get a type-safe `hitResponse` object in the case of a cache hit.  But if the cache read
 results in a Miss or an error, you'll also get a type-safe object that you can use to get more info about what happened.
+
+In cases where you get an error response, `Error` types will always include an `ErrorCode` that you can use to check
+the error type:
+
+```csharp
+CacheGetResponse getResponse = await client.GetAsync(CACHE_NAME, KEY);
+if (getResponse is CacheGetResponse.Error errorResponse)
+{
+    if (errorResponse.ErrorCode == MomentoErrorCode.TIMEOUT_ERROR) {
+       // this would represent a client-side timeout, and you could fall back to your original data source
+    }
+}
+```
 
 ### Tuning
 
