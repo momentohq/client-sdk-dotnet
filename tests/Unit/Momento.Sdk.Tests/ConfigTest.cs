@@ -7,6 +7,6 @@ public class ConfigTest
     [Fact]
     public void StaticGrpcConfiguration_BadDeadline_ThrowsException()
     {
-        Assert.Throws<ArgumentException>(() => new StaticGrpcConfiguration(5, 128, true, 0));
+        Assert.Throws<ArgumentException>(() => new StaticGrpcConfiguration(0));
     }
 }

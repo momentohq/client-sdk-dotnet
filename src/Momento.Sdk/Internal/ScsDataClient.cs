@@ -7,9 +7,7 @@ using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient;
 using Momento.Sdk.Config;
-using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Exceptions;
-using Momento.Sdk.Internal;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Responses;
 
@@ -22,12 +20,12 @@ public class ScsDataClientBase : IDisposable
     protected readonly uint dataClientOperationTimeoutMilliseconds;
     protected readonly ILogger _logger;
 
-    public ScsDataClientBase(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds, ILoggerFactory? loggerFactory = null)
+    public ScsDataClientBase(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds, ILoggerFactory loggerFactory)
     {
         this.grpcManager = new(config, authToken, endpoint, loggerFactory);
         this.defaultTtlSeconds = defaultTtlSeconds;
         this.dataClientOperationTimeoutMilliseconds = config.TransportStrategy.GrpcConfig.DeadlineMilliseconds;
-        this._logger = Utils.CreateOrNullLogger<ScsDataClient>(loggerFactory);
+        this._logger = loggerFactory.CreateLogger<ScsDataClient>();
     }
 
     protected Metadata MetadataWithCache(string cacheName)
@@ -57,7 +55,7 @@ public class ScsDataClientBase : IDisposable
 
 internal sealed class ScsDataClient : ScsDataClientBase
 {
-    public ScsDataClient(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds, ILoggerFactory? loggerFactory = null)
+    public ScsDataClient(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds, ILoggerFactory loggerFactory)
         : base(config, authToken, endpoint, defaultTtlSeconds, loggerFactory)
     {
 

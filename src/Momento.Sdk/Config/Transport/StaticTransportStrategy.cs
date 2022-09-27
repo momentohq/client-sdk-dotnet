@@ -1,60 +1,32 @@
 using System;
-using System.Collections.Generic;
-using Momento.Sdk.Internal.ExtensionMethods;
+using Grpc.Net.Client;
 
 namespace Momento.Sdk.Config.Transport;
 
 
 public class StaticGrpcConfiguration : IGrpcConfiguration
 {
-    public int NumChannels { get; }
-
-    public int MaxSessionMemory { get; }
-    public bool UseLocalSubChannelPool { get; }
     public uint DeadlineMilliseconds { get; }
+    public GrpcChannelOptions GrpcChannelOptions { get; }
 
-    public IDictionary<string, string> GrpcChannelConfig { get; }
-
-    public StaticGrpcConfiguration(int numChannels, int maxSessionMemory, bool useLocalSubChannelPool, uint deadlineMilliseconds, IDictionary<string, string> grpcChannelConfig)
+    public StaticGrpcConfiguration(uint deadlineMilliseconds, GrpcChannelOptions? grpcChannelOptions = null)
     {
-        this.NumChannels = numChannels;
-        this.MaxSessionMemory = maxSessionMemory;
-        this.UseLocalSubChannelPool = useLocalSubChannelPool;
-
         if (deadlineMilliseconds <= 0)
         {
             throw new ArgumentException($"Deadline must be strictly positive. Value was: {deadlineMilliseconds}", "DeadlineMilliseconds");
         }
         this.DeadlineMilliseconds = deadlineMilliseconds;
-        this.GrpcChannelConfig = grpcChannelConfig;
+        this.GrpcChannelOptions = grpcChannelOptions ?? new GrpcChannelOptions();
     }
 
-    public StaticGrpcConfiguration(int numChannels, int maxSessionMemory, bool useLocalSubChannelPool, uint deadlineMilliseconds)
-        : this(numChannels, maxSessionMemory, useLocalSubChannelPool, deadlineMilliseconds, new Dictionary<string, string>())
-    {
-
-    }
-
-    public IGrpcConfiguration WithNumChannels(int numChannels)
-    {
-        return new StaticGrpcConfiguration(numChannels, MaxSessionMemory, UseLocalSubChannelPool, DeadlineMilliseconds, GrpcChannelConfig.Clone());
-    }
-
-    public IGrpcConfiguration WithMaxSessionMemory(int maxSessionMemory)
-    {
-        return new StaticGrpcConfiguration(NumChannels, maxSessionMemory, UseLocalSubChannelPool, DeadlineMilliseconds, GrpcChannelConfig.Clone());
-    }
-    public IGrpcConfiguration WithUseLocalSubChannelPool(bool useLocalSubChannelPool)
-    {
-        return new StaticGrpcConfiguration(NumChannels, MaxSessionMemory, useLocalSubChannelPool, DeadlineMilliseconds, GrpcChannelConfig.Clone());
-    }
     public IGrpcConfiguration WithDeadlineMilliseconds(uint deadlineMilliseconds)
     {
-        return new StaticGrpcConfiguration(NumChannels, MaxSessionMemory, UseLocalSubChannelPool, deadlineMilliseconds, GrpcChannelConfig.Clone());
+        return new StaticGrpcConfiguration(deadlineMilliseconds, this.GrpcChannelOptions);
     }
-    public IGrpcConfiguration WithGrpcChannelConfig(IDictionary<string, string> grpcChannelConfig)
+
+    public IGrpcConfiguration WithGrpcChannelOptions(GrpcChannelOptions grpcChannelOptions)
     {
-        return new StaticGrpcConfiguration(NumChannels, MaxSessionMemory, UseLocalSubChannelPool, DeadlineMilliseconds, grpcChannelConfig);
+        return new StaticGrpcConfiguration(this.DeadlineMilliseconds, grpcChannelOptions);
     }
 }
 

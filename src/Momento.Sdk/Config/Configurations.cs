@@ -7,8 +7,6 @@ namespace Momento.Sdk.Config;
 
 public class Configurations
 {
-    public static readonly uint DEFAULT_DEADLINE_MILLISECONDS = 5000;
-
     /// <summary>
     /// Laptop config provides defaults suitable for a medium-to-high-latency dev environment.  Permissive timeouts, retries, potentially
     /// a higher number of connections, etc.
@@ -29,7 +27,7 @@ public class Configurations
                 IRetryStrategy retryStrategy = new FixedCountRetryStrategy(maxAttempts: 3);
                 ITransportStrategy transportStrategy = new StaticTransportStrategy(
                     maxConcurrentRequests: 200,
-                    grpcConfig: new StaticGrpcConfiguration(numChannels: 6, maxSessionMemory: 128, useLocalSubChannelPool: true, deadlineMilliseconds: DEFAULT_DEADLINE_MILLISECONDS));
+                    grpcConfig: new StaticGrpcConfiguration(deadlineMilliseconds: 5000));
                 return new Laptop(retryStrategy, transportStrategy);
             }
         }
@@ -59,8 +57,9 @@ public class Configurations
                     /*retryableStatusCodes = DEFAULT_RETRYABLE_STATUS_CODES,*/
                     IRetryStrategy retryStrategy = new FixedCountRetryStrategy(maxAttempts: 3);
                     ITransportStrategy transportStrategy = new StaticTransportStrategy(
-                        maxConcurrentRequests: 1,
-                        grpcConfig: new StaticGrpcConfiguration(numChannels: 6, maxSessionMemory: 128, useLocalSubChannelPool: true, deadlineMilliseconds: DEFAULT_DEADLINE_MILLISECONDS));
+                        maxConcurrentRequests: 200,
+                        // TODO: tune the timeout value
+                        grpcConfig: new StaticGrpcConfiguration(deadlineMilliseconds: 1000));
                     return new Default(retryStrategy, transportStrategy);
                 }
             }
@@ -86,8 +85,9 @@ public class Configurations
                     /*retryableStatusCodes = DEFAULT_RETRYABLE_STATUS_CODES,*/
                     IRetryStrategy retryStrategy = new FixedCountRetryStrategy(maxAttempts: 3);
                     ITransportStrategy transportStrategy = new StaticTransportStrategy(
-                        maxConcurrentRequests: 200,
-                        grpcConfig: new StaticGrpcConfiguration(numChannels: 6, maxSessionMemory: 128, useLocalSubChannelPool: true, deadlineMilliseconds: DEFAULT_DEADLINE_MILLISECONDS)
+                        maxConcurrentRequests: 20,
+                        // TODO: tune the timeout value
+                        grpcConfig: new StaticGrpcConfiguration(deadlineMilliseconds: 1000)
                     );
                     return new LowLatency(retryStrategy, transportStrategy);
                 }

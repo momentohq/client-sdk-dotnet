@@ -14,22 +14,6 @@ public abstract class CacheGetBatchResponse
             this.Responses = new(responses);
         }
 
-        public IEnumerable<CacheGetStatus> Status
-        {
-            get
-            {
-                var ret = new List<CacheGetStatus>();
-                foreach (CacheGetResponse response in Responses) {
-                    if (response is CacheGetResponse.Hit hitResponse) {
-                        ret.Add(hitResponse.Status);
-                    } else if (response is CacheGetResponse.Miss missResponse) {
-                        ret.Add(missResponse.Status);
-                    }
-                }
-                return ret;
-            }
-        }
-
         public IEnumerable<string?> Strings()
         {
             var ret = new List<string?>();
