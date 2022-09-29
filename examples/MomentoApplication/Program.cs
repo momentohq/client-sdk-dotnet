@@ -8,7 +8,7 @@ using Momento.Sdk.Responses;
 
 string MOMENTO_AUTH_TOKEN = Environment.GetEnvironmentVariable("MOMENTO_AUTH_TOKEN");
 // Use a GUID for the cache name so it's unlikely to exist already.
-string CACHE_NAME = Guid.NewGuid().ToString();
+const string CACHE_NAME = "cache";
 const string KEY = "MyKey";
 const string VALUE = "MyData";
 const uint DEFAULT_TTL_SECONDS = 60;
@@ -30,11 +30,10 @@ using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.La
         // Any error is considered fatal.
         Environment.Exit(1);
     }
-    // If there's already a cache by this name, we don't want to modify it.
+    // If there's already a cache by this name, alert the user.
     if (createCacheResponse is CreateCacheResponse.CacheAlreadyExists)
     {
-        Console.WriteLine($"Error: strangely, a cache with the name {CACHE_NAME} already exists. Exiting.");
-        Environment.Exit(1);
+        Console.WriteLine($"A cache with the name {CACHE_NAME} already exists");
     }
 
     Console.WriteLine("\nListing caches:");
