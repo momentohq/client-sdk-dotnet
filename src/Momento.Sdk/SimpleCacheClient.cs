@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -36,8 +35,15 @@ public class SimpleCacheClient : ISimpleCacheClient
         var _loggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
         this._logger = _loggerFactory.CreateLogger<SimpleCacheClient>();
         ValidateRequestTimeout(config.TransportStrategy.GrpcConfig.DeadlineMilliseconds);
-        Claims claims = JwtUtils.DecodeJwt(authToken);
-
+        Claims claims;
+        try {
+            claims = JwtUtils.DecodeJwt(authToken);
+        } catch (InvalidArgumentException) {
+            if (authToken == null) {
+                throw new InvalidArgumentException("The supplied Momento authToken is null.");
+            }
+            throw new InvalidArgumentException("The supplied Momento authToken is not valid.");
+        }
         this.controlClient = new(authToken, claims.ControlEndpoint, _loggerFactory);
         this.dataClient = new(config, authToken, claims.CacheEndpoint, defaultTtlSeconds, _loggerFactory);
     }

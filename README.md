@@ -20,14 +20,21 @@ any of the operational overhead required by traditional caching solutions!
 
 ### Requirements
 
-- brew install nuget 
-- brew install --cask dotnet
-- [Visual Studio](https://visualstudio.microsoft.com/vs/mac/)
-- [.NET](https://docs.microsoft.com/en-us/dotnet/core/install/macos)
+- You will most likely want an IDE that supports .NET development, such as [Microsoft Visual Studio](https://visualstudio.microsoft.com/vs),
+  [JetBrains Rider](https://www.jetbrains.com/rider/), or [Microsoft Visual Studio Code](https://code.visualstudio.com/).
+- You will need the [`dotnet` runtime and command line tools](https://dotnet.microsoft.com/en-us/download).  After installing them,
+  you should have the `dotnet` command on your PATH.
 
 ### Installation
 
+If you'd like to see a complete working example, check out our [examples](./examples/README.md) page.
+
+To create a new .NET project and add the Momento client library as a dependency:
+
 ```bash
+mkdir my-momento-dotnet-project
+cd my-momento-dotnet-project
+dotnet new console 
 dotnet add package Momento.Sdk
 ```
 
@@ -42,23 +49,34 @@ Here is a quickstart you can use in your own project:
 using Momento.Sdk.Config;
 using Momento.Sdk.Responses;
 
-String MOMENTO_AUTH_TOKEN = Environment.GetEnvironmentVariable("MOMENTO_AUTH_TOKEN");
-String CACHE_NAME = "cache";
-String KEY = "MyKey";
-String VALUE = "MyData";
-uint DEFAULT_TTL_SECONDS = 60;
+string MOMENTO_AUTH_TOKEN = Environment.GetEnvironmentVariable("MOMENTO_AUTH_TOKEN") ?? "";
+const string CACHE_NAME = "cache";
+const string KEY = "MyKey";
+const string VALUE = "MyData";
+const uint DEFAULT_TTL_SECONDS = 60;
 
 using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.Latest, MOMENTO_AUTH_TOKEN, DEFAULT_TTL_SECONDS))
 {
-    var createCacheResult = await client.CreateCacheAsync(CACHE_NAME);
+    var createCacheResponse = await client.CreateCacheAsync(CACHE_NAME);
+    if (createCacheResponse is CreateCacheResponse.Error createError) {
+        Console.WriteLine($"Error creating cache: {createError.Message}. Exiting.");
+        Environment.Exit(1);
+    }
 
-    Console.WriteLine($"\nSetting key: {KEY} with value: {VALUE}");
-    await client.SetAsync(CACHE_NAME, KEY, VALUE);
-    Console.WriteLine($"\nGet value for  key: {KEY}");
+    Console.WriteLine($"Setting key: {KEY} with value: {VALUE}");
+    var setResponse = await client.SetAsync(CACHE_NAME, KEY, VALUE);
+    if (setResponse is CacheSetResponse.Error setError) {
+        Console.WriteLine($"Error setting value: {setError.Message}. Exiting.");
+        Environment.Exit(1);
+    }
+
+    Console.WriteLine($"Get value for key: {KEY}");
     CacheGetResponse getResponse = await client.GetAsync(CACHE_NAME, KEY);
     if (getResponse is CacheGetResponse.Hit hitResponse)
     {
-        Console.WriteLine($"\nLookedup value: {hitResponse.String()}, Stored value: {VALUE}");
+        Console.WriteLine($"Looked up value: {hitResponse.String()}, Stored value: {VALUE}");
+    } else if (getResponse is CacheGetResponse.Error getError) {
+        Console.WriteLine($"Error getting value: {getError.Message}");
     }
 }
 
