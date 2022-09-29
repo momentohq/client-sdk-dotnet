@@ -18,14 +18,14 @@ using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.La
     Console.WriteLine($"Creating cache {CACHE_NAME}");
     var createCacheResponse = await client.CreateCacheAsync(CACHE_NAME);
     // Check the create response for an error and handle as appropriate.
-    if (createCacheResponse is CreateCacheResponse.Error createError)
+    if (createCacheResponse is CreateCacheResponse.Error createCacheError)
     {
-        if (createError.ErrorCode == MomentoErrorCode.LIMIT_EXCEEDED_ERROR)
+        if (createCacheError.ErrorCode == MomentoErrorCode.LIMIT_EXCEEDED_ERROR)
         {
             Console.WriteLine("Error: cache limit exceeded. We need to talk to support@moentohq.com! Exiting.");
         } else
         {
-            Console.WriteLine($"Error creating cache: {createError.Message}. Exiting.");
+            Console.WriteLine($"Error creating cache: {createCacheError.Message}. Exiting.");
         }
         // Any error is considered fatal.
         Environment.Exit(1);
@@ -42,13 +42,13 @@ using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.La
     do
     {
         ListCachesResponse response = await client.ListCachesAsync(token);
-        if (response is ListCachesResponse.Success successResponse)
+        if (response is ListCachesResponse.Success listSuccess)
         {
-            foreach (CacheInfo cacheInfo in successResponse.Caches)
+            foreach (CacheInfo cacheInfo in listSuccess.Caches)
             {
                 Console.WriteLine($"- {cacheInfo.Name}");
             }
-            token = successResponse.NextPageToken;
+            token = listSuccess.NextPageToken;
         } else if (response is ListCachesResponse.Error listError)
         {
             // We do not consider this a fatal error, so we just report it.
@@ -68,9 +68,9 @@ using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.La
 
     Console.WriteLine($"\nGetting value for  key: {KEY}");
     CacheGetResponse getResponse = await client.GetAsync(CACHE_NAME, KEY);
-    if (getResponse is CacheGetResponse.Hit hitResponse)
+    if (getResponse is CacheGetResponse.Hit getHit)
     {
-        Console.WriteLine($"Looked up value: {hitResponse.String()}, Stored value: {VALUE}");
+        Console.WriteLine($"Looked up value: {getHit.String()}, Stored value: {VALUE}");
     } else if (getResponse is CacheGetResponse.Miss)
     {
         // This shouldn't be fatal but should be reported.
