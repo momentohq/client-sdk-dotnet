@@ -39,6 +39,9 @@ public class SimpleCacheClient : ISimpleCacheClient
         try {
             claims = JwtUtils.DecodeJwt(authToken);
         } catch (InvalidArgumentException) {
+            if (authToken == null) {
+                throw new InvalidArgumentException("The supplied Momento authToken is null.");
+            }
             throw new InvalidArgumentException("The supplied Momento authToken is not valid.");
         }
         this.controlClient = new(authToken, claims.ControlEndpoint, _loggerFactory);
