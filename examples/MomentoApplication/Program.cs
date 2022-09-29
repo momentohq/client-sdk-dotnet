@@ -38,21 +38,21 @@ using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.La
     }
 
     Console.WriteLine("\nListing caches:");
-    String token = null;
+    string token = null;
     do
     {
-        ListCachesResponse response = await client.ListCachesAsync(token);
-        if (response is ListCachesResponse.Success listSuccess)
+        ListCachesResponse listCachesResponse = await client.ListCachesAsync(token);
+        if (listCachesResponse is ListCachesResponse.Success listCachesSuccess)
         {
-            foreach (CacheInfo cacheInfo in listSuccess.Caches)
+            foreach (CacheInfo cacheInfo in listCachesSuccess.Caches)
             {
                 Console.WriteLine($"- {cacheInfo.Name}");
             }
-            token = listSuccess.NextPageToken;
-        } else if (response is ListCachesResponse.Error listError)
+            token = listCachesSuccess.NextPageToken;
+        } else if (listCachesResponse is ListCachesResponse.Error listCachesError)
         {
             // We do not consider this a fatal error, so we just report it.
-            Console.WriteLine($"Error listing caches: {listError.Message}");
+            Console.WriteLine($"Error listing caches: {listCachesError.Message}");
             break;
         }
     } while (!String.IsNullOrEmpty(token));
@@ -66,7 +66,7 @@ using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.La
         Environment.Exit(1);
     }
 
-    Console.WriteLine($"\nGetting value for  key: {KEY}");
+    Console.WriteLine($"\nGetting value for key: {KEY}");
     CacheGetResponse getResponse = await client.GetAsync(CACHE_NAME, KEY);
     if (getResponse is CacheGetResponse.Hit getHit)
     {
@@ -88,8 +88,8 @@ using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.La
     }
 
     Console.WriteLine($"\nDeleting cache {CACHE_NAME}");
-    var deleteResponse = await client.DeleteCacheAsync(CACHE_NAME);
-    if (deleteResponse is DeleteCacheResponse.Error deleteCacheError)
+    var deleteCacheResponse = await client.DeleteCacheAsync(CACHE_NAME);
+    if (deleteCacheResponse is DeleteCacheResponse.Error deleteCacheError)
     {
         // Report fatal error and exit
         Console.WriteLine("Error deleting cache: {deleteCacheError.Message}. Exiting.");
