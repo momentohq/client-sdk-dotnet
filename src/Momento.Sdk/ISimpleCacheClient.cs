@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Momento.Sdk.Responses;
 
@@ -70,27 +69,4 @@ public interface ISimpleCacheClient : IDisposable
 
     /// <inheritdoc cref="SetAsync(string, byte[], byte[], uint?)"/>
     public Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint? ttlSeconds = null);
-
-    /// <summary>
-    /// Gets multiple values from the cache.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-    /// <param name="keys">The keys to get.</param>
-    /// <returns>Task object representing the statuses of the get operation and the associated values.</returns>
-    public Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<byte[]> keys);
-
-    /// <inheritdoc cref="GetBatchAsync(string, IEnumerable{byte[]})"/>
-    public Task<CacheGetBatchResponse> GetBatchAsync(string cacheName, IEnumerable<string> keys);
-
-    /// <summary>
-    /// Sets multiple items in the cache. Overwrites existing items.
-    /// </summary>
-    /// <param name="cacheName">Name of the cache to store the items in.</param>
-    /// <param name="items">The items to set.</param>
-    /// <param name="ttlSeconds">TTL for the item in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
-    /// <returns>Task object representing the result of the set operation.</returns>
-    public Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<byte[], byte[]>> items, uint? ttlSeconds = null);
-
-    /// <inheritdoc cref="SetBatchAsync(string, IEnumerable{KeyValuePair{byte[], byte[]}}, uint?)"/>
-    public Task<CacheSetBatchResponse> SetBatchAsync(string cacheName, IEnumerable<KeyValuePair<string, string>> items, uint? ttlSeconds = null);
 }

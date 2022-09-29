@@ -7,6 +7,8 @@ public abstract class CreateCacheResponse
 
     public class Success : CreateCacheResponse { }
 
+    public class CacheAlreadyExists : CreateCacheResponse { }
+
     public class Error : CreateCacheResponse
     {
         private readonly SdkException _error;

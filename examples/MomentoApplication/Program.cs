@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Momento.Sdk;
+using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Responses;
-using Momento.Sdk.Config;
-using Microsoft.Extensions.Logging;
 
 namespace MomentoApplication
 {
@@ -19,13 +19,13 @@ namespace MomentoApplication
         async static Task Main(string[] args)
         {
             using SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.Latest, MOMENTO_AUTH_TOKEN, DEFAULT_TTL_SECONDS);
-            var createCacheResult = client.CreateCache(CACHE_NAME);
-            
+            var createCacheResult = await client.CreateCacheAsync(CACHE_NAME);
+
             Console.WriteLine("Listing caches:");
             String token = null;
             do
             {
-                ListCachesResponse resp = client.ListCaches(token);
+                ListCachesResponse resp = await client.ListCachesAsync(token);
                 if (resp is ListCachesResponse.Success successResult)
                 {
                     foreach (CacheInfo cacheInfo in successResult.Caches)

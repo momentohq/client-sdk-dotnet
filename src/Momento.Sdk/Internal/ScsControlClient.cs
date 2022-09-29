@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.ControlClient;
 using Momento.Sdk.Exceptions;
@@ -32,6 +33,9 @@ internal sealed class ScsControlClient : IDisposable
         }
         catch (Exception e)
         {
+            if (e is RpcException ex && ex.StatusCode == StatusCode.AlreadyExists) {
+                return new CreateCacheResponse.CacheAlreadyExists();
+            }
             return new CreateCacheResponse.Error(CacheExceptionMapper.Convert(e));
         }
     }
