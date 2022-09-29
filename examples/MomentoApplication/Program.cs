@@ -8,7 +8,7 @@ using Momento.Sdk.Responses;
 
 string MOMENTO_AUTH_TOKEN = Environment.GetEnvironmentVariable("MOMENTO_AUTH_TOKEN");
 // Use a GUID for the cache name so it's unlikely to exist already.
-const string CACHE_NAME = "cache";
+const string CACHE_NAME = "momento-example";
 const string KEY = "MyKey";
 const string VALUE = "MyData";
 const uint DEFAULT_TTL_SECONDS = 60;
