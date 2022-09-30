@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<docs>
+  <class name="Error">
+    <description>
+      <summary>
+        Class <c>Error</c> contains information about an error
+        returned from the request:
+        <list type="bullet">
+          <item>
+            <term>ErrorCode: </term>
+            <description>
+              <c>Momento.Sdk.Exceptions.MomentoErrorCode</c> value for the error.
+            </description>
+          </item>
+          <item>
+            <term>Message: </term>
+            <description>
+              A detailed error message. 
+            </description>
+        </list>
+      </summary>
+    </description>
+    <prop name="ErrorCode">
+      <summary>
+        The <c>Momento.Sdk.Exceptions.MomentoErrorCode</c> value for the
+        <c>Error</c> object. Example:<br/>
+        <code>
+          if (errorResponse.ErrorCode == MomentoErrorCode.TIMEOUT_ERROR)
+          {
+            // handle timeout error
+          }
+        </code>
+      </summary>
+    </prop>
+    <prop name="Exception">
+      <summary>
+        The <c>SdkException</c> object used to construct the response.
+      </summary>
+    </prop>
+    <prop name="Message">
+      <summary>
+        An explanation of conditions that caused and potential
+        ways to resolve the error.
+      </summary>
+    </prop>
+  </class>
+  <class name="Success">
+    <description>
+      <summary>
+        Class <c>Success</c> indicates that the request that generated
+        it was successful.
+      </summary>
+    </description>
+  </class>
+</docs>
