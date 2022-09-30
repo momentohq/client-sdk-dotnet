@@ -94,11 +94,4 @@ public class Configurations
             }
         }
     }
-
-    /// <inheritDoc cref="Laptop" />
-    public static readonly IConfiguration DevConfig = Laptop.Latest;
-    /// <inheritDoc cref="InRegion.Default" />
-    public static readonly IConfiguration ProdConfig = InRegion.Default.Latest;
-    /// <inheritDoc cref="InRegion.LowLatency" />    
-    public static readonly IConfiguration ProdLowLatencyConfig = InRegion.LowLatency.Latest;
 }
