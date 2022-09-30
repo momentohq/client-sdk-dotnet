@@ -30,5 +30,10 @@ public abstract class DeleteCacheResponse
             get => $"{_error.MessageWrapper}: {_error.Message}";
         }
 
+        public override string ToString()
+        {
+            return $"{base.ToString()}: {this.Message}";
+        }
+
     }
 }
