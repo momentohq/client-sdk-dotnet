@@ -6,8 +6,10 @@ using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Responses;
 
-string MOMENTO_AUTH_TOKEN = Environment.GetEnvironmentVariable("MOMENTO_AUTH_TOKEN");
-// Use a GUID for the cache name so it's unlikely to exist already.
+string? MOMENTO_AUTH_TOKEN = Environment.GetEnvironmentVariable("MOMENTO_AUTH_TOKEN");
+if (MOMENTO_AUTH_TOKEN == null) {
+    throw new System.Exception("Please set your 'MOMENTO_AUTH_TOKEN' environment variable.");
+}
 const string CACHE_NAME = "momento-example";
 const string KEY = "MyKey";
 const string VALUE = "MyData";
@@ -37,7 +39,7 @@ using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.La
     }
 
     Console.WriteLine("\nListing caches:");
-    string token = null;
+    string? token = null;
     do
     {
         ListCachesResponse listCachesResponse = await client.ListCachesAsync(token);

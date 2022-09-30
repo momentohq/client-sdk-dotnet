@@ -45,11 +45,15 @@ Checkout our [examples](./examples/README.md) directory for complete examples of
 Here is a quickstart you can use in your own project:
 
 ```csharp
-﻿using Momento.Sdk;
+﻿using System;
+using Momento.Sdk;
 using Momento.Sdk.Config;
 using Momento.Sdk.Responses;
 
-string MOMENTO_AUTH_TOKEN = Environment.GetEnvironmentVariable("MOMENTO_AUTH_TOKEN") ?? "";
+string? MOMENTO_AUTH_TOKEN = Environment.GetEnvironmentVariable("MOMENTO_AUTH_TOKEN");
+if (MOMENTO_AUTH_TOKEN == null) {
+    throw new Exception("Please set your 'MOMENTO_AUTH_TOKEN' environment variable.");
+}
 const string CACHE_NAME = "cache";
 const string KEY = "MyKey";
 const string VALUE = "MyData";
