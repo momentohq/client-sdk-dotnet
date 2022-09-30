@@ -21,6 +21,21 @@ public interface IDataClient
     public Task<_GetResponse> GetAsync(_GetRequest request, CallOptions callOptions);
     public Task<_SetResponse> SetAsync(_SetRequest request, CallOptions callOptions);
     public Task<_DeleteResponse> DeleteAsync(_DeleteRequest request, CallOptions callOptions);
+    public Task<_DictionarySetResponse> DictionarySetAsync(_DictionarySetRequest request, CallOptions callOptions);
+    public Task<_DictionaryIncrementResponse> DictionaryIncrementAsync(_DictionaryIncrementRequest request, CallOptions callOptions);
+    public Task<_DictionaryGetResponse> DictionaryGetAsync(_DictionaryGetRequest request, CallOptions callOptions);
+    public Task<_DictionaryFetchResponse> DictionaryFetchAsync(_DictionaryFetchRequest request, CallOptions callOptions);
+    public Task<_DictionaryDeleteResponse> DictionaryDeleteAsync(_DictionaryDeleteRequest request, CallOptions callOptions);
+    public Task<_SetUnionResponse> SetUnionAsync(_SetUnionRequest request, CallOptions callOptions);
+    public Task<_SetDifferenceResponse> SetDifferenceAsync(_SetDifferenceRequest request, CallOptions callOptions);
+    public Task<_SetFetchResponse> SetFetchAsync(_SetFetchRequest request, CallOptions callOptions);
+    public Task<_ListPushFrontResponse> ListPushFrontAsync(_ListPushFrontRequest request, CallOptions callOptions);
+    public Task<_ListPushBackResponse> ListPushBackAsync(_ListPushBackRequest request, CallOptions callOptions);
+    public Task<_ListPopFrontResponse> ListPopFrontAsync(_ListPopFrontRequest request, CallOptions callOptions);
+    public Task<_ListPopBackResponse> ListPopBackAsync(_ListPopBackRequest request, CallOptions callOptions);
+    public Task<_ListFetchResponse> ListFetchAsync(_ListFetchRequest request, CallOptions callOptions);
+    public Task<_ListRemoveResponse> ListRemoveAsync(_ListRemoveRequest request, CallOptions callOptions);
+    public Task<_ListLengthResponse> ListLengthAsync(_ListLengthRequest request, CallOptions callOptions);
 }
 
 
@@ -61,6 +76,95 @@ internal class DataClientWithMiddleware : IDataClient
         return await wrapped.ResponseAsync;
     }
 
+    public async Task<_DictionarySetResponse> DictionarySetAsync(_DictionarySetRequest request, CallOptions callOptions)
+    {
+        var wrapped = await WrapWithMiddleware(request, callOptions, (r, o) => _generatedClient.DictionarySetAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_DictionaryIncrementResponse> DictionaryIncrementAsync(_DictionaryIncrementRequest request, CallOptions callOptions)
+    {
+        var wrapped = await WrapWithMiddleware(request, callOptions, (r, o) => _generatedClient.DictionaryIncrementAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_DictionaryGetResponse> DictionaryGetAsync(_DictionaryGetRequest request, CallOptions callOptions)
+    {
+        var wrapped = await WrapWithMiddleware(request, callOptions, (r, o) => _generatedClient.DictionaryGetAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_DictionaryFetchResponse> DictionaryFetchAsync(_DictionaryFetchRequest request, CallOptions callOptions)
+    {
+        var wrapped = await WrapWithMiddleware(request, callOptions, (r, o) => _generatedClient.DictionaryFetchAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_DictionaryDeleteResponse> DictionaryDeleteAsync(_DictionaryDeleteRequest request, CallOptions callOptions)
+    {
+        var wrapped = await WrapWithMiddleware(request, callOptions, (r, o) => _generatedClient.DictionaryDeleteAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_SetUnionResponse> SetUnionAsync(_SetUnionRequest request, CallOptions callOptions)
+    {
+        var wrapped = await WrapWithMiddleware(request, callOptions, (r, o) => _generatedClient.SetUnionAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_SetDifferenceResponse> SetDifferenceAsync(_SetDifferenceRequest request, CallOptions callOptions)
+    {
+        var wrapped = await WrapWithMiddleware(request, callOptions, (r, o) => _generatedClient.SetDifferenceAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_SetFetchResponse> SetFetchAsync(_SetFetchRequest request, CallOptions callOptions)
+    {
+        var wrapped = await WrapWithMiddleware(request, callOptions, (r, o) => _generatedClient.SetFetchAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_ListPushFrontResponse> ListPushFrontAsync(_ListPushFrontRequest request, CallOptions callOptions)
+    {
+        var wrapped = await WrapWithMiddleware(request, callOptions, (r, o) => _generatedClient.ListPushFrontAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_ListPushBackResponse> ListPushBackAsync(_ListPushBackRequest request, CallOptions callOptions)
+    {
+        var wrapped = await WrapWithMiddleware(request, callOptions, (r, o) => _generatedClient.ListPushBackAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_ListPopFrontResponse> ListPopFrontAsync(_ListPopFrontRequest request, CallOptions callOptions)
+    {
+        var wrapped = await WrapWithMiddleware(request, callOptions, (r, o) => _generatedClient.ListPopFrontAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_ListPopBackResponse> ListPopBackAsync(_ListPopBackRequest request, CallOptions callOptions)
+    {
+        var wrapped = await WrapWithMiddleware(request, callOptions, (r, o) => _generatedClient.ListPopBackAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_ListFetchResponse> ListFetchAsync(_ListFetchRequest request, CallOptions callOptions)
+    {
+        var wrapped = await WrapWithMiddleware(request, callOptions, (r, o) => _generatedClient.ListFetchAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_ListRemoveResponse> ListRemoveAsync(_ListRemoveRequest request, CallOptions callOptions)
+    {
+        var wrapped = await WrapWithMiddleware(request, callOptions, (r, o) => _generatedClient.ListRemoveAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_ListLengthResponse> ListLengthAsync(_ListLengthRequest request, CallOptions callOptions)
+    {
+        var wrapped = await WrapWithMiddleware(request, callOptions, (r, o) => _generatedClient.ListLengthAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
 
     private async Task<MiddlewareResponseState<TResponse>> WrapWithMiddleware<TRequest, TResponse>(
         TRequest request,
