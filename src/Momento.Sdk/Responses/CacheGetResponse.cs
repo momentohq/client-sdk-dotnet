@@ -20,6 +20,11 @@ public abstract class CacheGetResponse
         }
 
         public string String() => value.ToStringUtf8();
+
+        public override string ToString()
+        {
+            return $"{base.ToString()}: {this.String()}";
+        }
     }
 
     public class Miss : CacheGetResponse
@@ -48,6 +53,11 @@ public abstract class CacheGetResponse
         public string Message
         {
             get => $"{_error.MessageWrapper}: {_error.Message}";
+        }
+
+        public override string ToString()
+        {
+            return $"{base.ToString()}: {this.Message}";
         }
 
     }
