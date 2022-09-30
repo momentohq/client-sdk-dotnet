@@ -5,8 +5,13 @@
 		<TargetFramework>netstandard2.1</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
+		<!-- Include documentation in build -->
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<NoWarn>1591</NoWarn> <!-- TODO: Address public-facing documentation -->
+		<!-- Include source and debug symbols-->
+		<IncludeSource>true</IncludeSource>
+		<IncludeSymbols>true</IncludeSymbols>
+		<!-- TODO: Address public-facing documentation -->
+		<NoWarn>1591</NoWarn>
 
 		<!-- Package metadata -->
 		<PackageId>Momento.Sdk</PackageId>
