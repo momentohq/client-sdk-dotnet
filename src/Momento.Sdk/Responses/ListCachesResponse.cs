@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Momento.Protos.ControlClient;
 using Momento.Sdk.Exceptions;
 
@@ -20,6 +21,17 @@ public abstract class ListCachesResponse
                 Caches.Add(new CacheInfo(c.CacheName));
             }
         }
+
+        public override string ToString()
+        {
+            List<string> cacheNames = new List<string>();
+            foreach (CacheInfo cacheInfo in Caches)
+            {
+                cacheNames.Add(cacheInfo.Name);
+            }
+            return $"{base.ToString()}: {String.Join(", ", cacheNames)}";
+        }
+
     }
 
     public class Error : ListCachesResponse
@@ -43,6 +55,11 @@ public abstract class ListCachesResponse
         public string Message
         {
             get => $"{_error.MessageWrapper}: {_error.Message}";
+        }
+
+        public override string ToString()
+        {
+            return $"{base.ToString()}: {this.Message}";
         }
 
     }

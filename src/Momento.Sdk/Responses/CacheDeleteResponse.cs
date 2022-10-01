@@ -2,7 +2,7 @@
 
 using Momento.Sdk.Exceptions;
 
-public class CacheDeleteResponse
+public abstract class CacheDeleteResponse
 {
     public class Success : CacheDeleteResponse { }
 
@@ -28,5 +28,11 @@ public class CacheDeleteResponse
         {
             get => $"{_error.MessageWrapper}: {_error.Message}";
         }
+
+        public override string ToString()
+        {
+            return $"{base.ToString()}: {this.Message}";
+        }
     }
+
 }
