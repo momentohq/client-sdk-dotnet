@@ -3,7 +3,7 @@ namespace Momento.Sdk.Exceptions;
 using System;
 
 /// <summary>
-/// Server was unable to handle the request
+/// Server was unable to handle the request.
 /// </summary>
 public class ServerUnavailableException : SdkException
 {
