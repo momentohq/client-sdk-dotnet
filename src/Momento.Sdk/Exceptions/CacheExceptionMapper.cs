@@ -23,6 +23,8 @@ public class CacheExceptionMapper
             switch (ex.StatusCode)
             {
                 case StatusCode.InvalidArgument:
+                    return new InvalidArgumentException(ex.Message, transportDetails);
+
                 case StatusCode.OutOfRange:
                 case StatusCode.Unimplemented:
                     return new BadRequestException(ex.Message, transportDetails);
@@ -51,8 +53,12 @@ public class CacheExceptionMapper
                 case StatusCode.Cancelled:
                     return new CancelledException(ex.Message, transportDetails);
 
-                case StatusCode.Unknown:
                 case StatusCode.Unavailable:
+                    return new ServerUnavailableException(ex.Message, transportDetails);
+
+                case StatusCode.Unknown:
+                    return new UnknownServiceException(ex.Message, transportDetails);
+
                 case StatusCode.Aborted:
                 case StatusCode.DataLoss:
                 default: return new InternalServerException(INTERNAL_SERVER_ERROR_MESSAGE, transportDetails, e);
