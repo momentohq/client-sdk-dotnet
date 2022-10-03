@@ -16,7 +16,6 @@ namespace MomentoLoadGen
     public record CsharpLoadGeneratorOptions
     (
         int printStatsEveryNRequests,
-        uint requestTimeoutMs,
         int cacheItemPayloadBytes,
         int numberOfConcurrentRequests,
         int maxRequestsPerSecond,
@@ -27,8 +26,8 @@ namespace MomentoLoadGen
     {
         SUCCESS,
         UNAVAILABLE,
-        DEADLINE_EXCEEDED,
-        RESOURCE_EXHAUSTED,
+        TIMEOUT,
+        LIMIT_EXCEEDED,
         RST_STREAM
     };
 
@@ -42,8 +41,8 @@ namespace MomentoLoadGen
         public int LastWorkerStatsPrintRequestCount;
         public int GlobalSuccessCount;
         public int GlobalUnavailableCount;
-        public int GlobalDeadlineExceededCount;
-        public int GlobalResourceExhaustedCount;
+        public int GlobalTimeoutExceededCount;
+        public int GlobalLimitExceededCount;
         public int GlobalRstStreamCount;
 
         public CsharpLoadGeneratorContext()
@@ -55,8 +54,8 @@ namespace MomentoLoadGen
             GlobalRequestCount = 0;
             LastWorkerStatsPrintRequestCount = 0;
             GlobalSuccessCount = 0;
-            GlobalDeadlineExceededCount = 0;
-            GlobalResourceExhaustedCount = 0;
+            GlobalTimeoutExceededCount = 0;
+            GlobalLimitExceededCount = 0;
             GlobalRstStreamCount = 0;
             GlobalUnavailableCount = 0;
         }
@@ -188,10 +187,10 @@ namespace MomentoLoadGen
             Console.WriteLine($@"
 cumulative stats:
         total requests: {context.GlobalRequestCount} ({Tps(context, context.GlobalRequestCount)} tps)
-                success: {context.GlobalSuccessCount} ({PercentRequests(context, context.GlobalSuccessCount)}%) ({Tps(context, context.GlobalSuccessCount)} tps)
-            unavailable: {context.GlobalUnavailableCount} ({PercentRequests(context, context.GlobalUnavailableCount)}%)
-        deadline exceeded: {context.GlobalDeadlineExceededCount} ({PercentRequests(context, context.GlobalDeadlineExceededCount)}%)
-    resource exhausted: {context.GlobalResourceExhaustedCount} ({PercentRequests(context, context.GlobalResourceExhaustedCount)}%)
+               success: {context.GlobalSuccessCount} ({PercentRequests(context, context.GlobalSuccessCount)}%) ({Tps(context, context.GlobalSuccessCount)} tps)
+           unavailable: {context.GlobalUnavailableCount} ({PercentRequests(context, context.GlobalUnavailableCount)}%)
+      timeout exceeded: {context.GlobalTimeoutExceededCount} ({PercentRequests(context, context.GlobalTimeoutExceededCount)}%)
+        limit exceeded: {context.GlobalLimitExceededCount} ({PercentRequests(context, context.GlobalLimitExceededCount)}%)
             rst stream: {context.GlobalRstStreamCount} ({PercentRequests(context, context.GlobalRstStreamCount)}%)
 
 cumulative set latencies:
@@ -210,9 +209,9 @@ cumulative get latencies:
             var setStartTime = System.Diagnostics.Stopwatch.StartNew();
             var result = await ExecuteRequestAndUpdateContextCounts(
                 context,
-                () => client.SetAsync(CACHE_NAME, cacheKey, _cacheValue)
+                () => IssueSetRequest(client, cacheKey, _cacheValue)
                 );
-            if (result != null)
+            if (result is CacheSetResponse.Success setSuccess)
             {
                 var setDuration = setStartTime.ElapsedMilliseconds;
                 context.SetLatencies.RecordValue(setDuration);
@@ -223,12 +222,12 @@ cumulative get latencies:
             }
 
             var getStartTime = System.Diagnostics.Stopwatch.StartNew();
-            var getResult = await ExecuteRequestAndUpdateContextCounts(
-                context,
-                () => client.GetAsync(CACHE_NAME, cacheKey)
+            var getResponse = await ExecuteRequestAndUpdateContextCounts(
+                context,             
+                () => IssueGetRequest(client, cacheKey)
                 );
 
-            if (getResult != null)
+            if (getResponse is CacheGetResponse.Hit hitResponse)
             {
                 var getDuration = getStartTime.ElapsedMilliseconds;
                 context.GetLatencies.RecordValue(getDuration);
@@ -237,18 +236,9 @@ cumulative get latencies:
                     await Task.Delay((int)(delayMillisBetweenRequests - getDuration));
                 }
 
-                string valueString;
-
-                if (getResult is CacheGetResponse.Hit hitResponse)
-                {
-                    string value = hitResponse.String();
-                    valueString = $"{value.Substring(0, 10)}... (len: {value.Length})";
-                }
-                else
-                {
-                    valueString = "n/a";
-                }
-
+                string value = hitResponse.String();
+                string valueString = $"{value.Substring(0, 10)}... (len: {value.Length})";
+                
                 var globalRequestCount = context.GlobalRequestCount;
                 if (globalRequestCount % printStatsEveryNRequests == 0)
                 {
@@ -256,58 +246,77 @@ cumulative get latencies:
                     if (lastPrintCount != globalRequestCount)
                     {
                         Console.WriteLine($"worker: {workerId} last print count: {lastPrintCount} global request count: {globalRequestCount}");
-                        _logger.LogInformation($"worker: {workerId}, worker request: {operationId}, global request: {context.GlobalRequestCount}, status: {getResult.GetType()}, val: {valueString}");
+                        _logger.LogInformation($"worker: {workerId}, worker request: {operationId}, global request: {context.GlobalRequestCount}, status: {getResponse.GetType()}, val: {valueString}");
                     }
                 }
             }
         }
 
-        private async Task<TResult?> ExecuteRequestAndUpdateContextCounts<TResult>(
+        private async Task<TResult> ExecuteRequestAndUpdateContextCounts<TResult>(
             CsharpLoadGeneratorContext context,
-            Func<Task<TResult>> block
+            Func<Task<Tuple<AsyncSetGetResult, TResult>>> block
             )
-        {
-            var result = await ExecuteRequest(block);
+        {            
+            var result = await block();
             UpdateContextCountsForRequest(context, result.Item1);
             return result.Item2;
         }
 
-
-        private async Task<Tuple<AsyncSetGetResult, T?>> ExecuteRequest<T>(
-            Func<Task<T>> block
-            )
+        private async Task<Tuple<AsyncSetGetResult, CacheGetResponse?>> IssueGetRequest(SimpleCacheClient client, String cacheKey)
         {
-            try
+            var getResponse = await client.GetAsync(CACHE_NAME, cacheKey);
+            if (getResponse is CacheGetResponse.Hit hit)
             {
-                T result = await block();
-                return Tuple.Create(AsyncSetGetResult.SUCCESS, (T?)result);
+                return Tuple.Create<AsyncSetGetResult, CacheGetResponse?>(AsyncSetGetResult.SUCCESS, hit);
+            } else if (getResponse is CacheGetResponse.Miss miss)
+            {
+                return Tuple.Create<AsyncSetGetResult, CacheGetResponse?>(AsyncSetGetResult.SUCCESS, miss);
+            } else if (getResponse is CacheGetResponse.Error error)
+            {
+                return Tuple.Create<AsyncSetGetResult, CacheGetResponse?>(ConvertErrorToAsyncSetGetResult(error.ErrorCode, error.Exception), null);
+            } else
+            {
+                throw new ApplicationException($"Unsupported get response: {getResponse}");
             }
-            catch (InternalServerException e)
-            {
-                var innerException = e.InnerException as RpcException;
-                _logger.LogWarning("CAUGHT AN EXCEPTION WHILE EXECUTING REQUEST: {0}", innerException);
-                switch (innerException!.StatusCode)
-                {
+        }
 
-                    case StatusCode.Unavailable:
-                        return Tuple.Create(AsyncSetGetResult.UNAVAILABLE, default(T));
-                    default:
-                        throw e;
-                }
-            }
-            catch (Momento.Sdk.Exceptions.TimeoutException)
+        private async Task<Tuple<AsyncSetGetResult, CacheSetResponse?>> IssueSetRequest(SimpleCacheClient client, String cacheKey, String cacheValue)
+        {
+            var setResponse = await client.SetAsync(CACHE_NAME, cacheKey, cacheValue);
+            if (setResponse is CacheSetResponse.Success success)
             {
-                return Tuple.Create(AsyncSetGetResult.DEADLINE_EXCEEDED, default(T));
+                return Tuple.Create<AsyncSetGetResult, CacheSetResponse?>(AsyncSetGetResult.SUCCESS, success);
             }
-            catch (LimitExceededException)
+            else if (setResponse is CacheSetResponse.Error error)
             {
-                return Tuple.Create(AsyncSetGetResult.RESOURCE_EXHAUSTED, default(T));
+                return Tuple.Create<AsyncSetGetResult, CacheSetResponse?>(ConvertErrorToAsyncSetGetResult(error.ErrorCode, error.Exception), null);
             }
-            catch (Exception e)
+            else
             {
-                _logger.LogError("CAUGHT AN EXCEPTION WHILE EXECUTING REQUEST: {0}", e);
-                throw;
+                throw new ApplicationException($"Unsupported set response: {setResponse}");
             }
+        }
+
+        private AsyncSetGetResult ConvertErrorToAsyncSetGetResult(MomentoErrorCode errorCode, SdkException ex)
+        {
+            if (errorCode == MomentoErrorCode.SERVER_UNAVAILABLE)
+            {
+                _logger.LogError("SERVER UNAVAILABLE", ex);
+                return AsyncSetGetResult.UNAVAILABLE;
+            } else if (errorCode == MomentoErrorCode.INTERNAL_SERVER_ERROR) {
+                _logger.LogError("INTERNAL SERVER ERROR", ex);
+                return AsyncSetGetResult.UNAVAILABLE;
+            } else if (errorCode == MomentoErrorCode.TIMEOUT_ERROR)
+            {
+                _logger.LogError("TIMEOUT ERROR", ex);
+                return AsyncSetGetResult.TIMEOUT;
+            } else if (errorCode == MomentoErrorCode.LIMIT_EXCEEDED_ERROR)
+            {
+                return AsyncSetGetResult.LIMIT_EXCEEDED;
+            }
+            _logger.LogError("UNCAUGHT EXCEPTION", ex);
+            throw new ApplicationException($"Unsupported error code: {errorCode}");
+
         }
 
         private static void UpdateContextCountsForRequest(
@@ -320,8 +329,8 @@ cumulative get latencies:
             {
                 AsyncSetGetResult.SUCCESS => Interlocked.Increment(ref context.GlobalSuccessCount),
                 AsyncSetGetResult.UNAVAILABLE => Interlocked.Increment(ref context.GlobalUnavailableCount),
-                AsyncSetGetResult.DEADLINE_EXCEEDED => Interlocked.Increment(ref context.GlobalDeadlineExceededCount),
-                AsyncSetGetResult.RESOURCE_EXHAUSTED => Interlocked.Increment(ref context.GlobalResourceExhaustedCount),
+                AsyncSetGetResult.TIMEOUT => Interlocked.Increment(ref context.GlobalTimeoutExceededCount),
+                AsyncSetGetResult.LIMIT_EXCEEDED => Interlocked.Increment(ref context.GlobalLimitExceededCount),
                 AsyncSetGetResult.RST_STREAM => Interlocked.Increment(ref context.GlobalRstStreamCount),
                 _ => throw new Exception($"Unrecognized result: {result}"),
             };
@@ -344,6 +353,7 @@ cumulative get latencies:
 
         private static string OutputHistogramSummary(HistogramBase histogram)
         {
+            Console.WriteLine($"Histogram totalcount: {histogram.TotalCount}");
             return $@"
 count: {histogram.TotalCount}
         p50: {histogram.GetValueAtPercentile(50)}
@@ -360,13 +370,16 @@ count: {histogram.TotalCount}
     {
         static ILoggerFactory InitializeLogging()
         {
-            return LoggerFactory.Create(builder =>
-                   builder.AddSimpleConsole(options =>
-                   {
-                       options.IncludeScopes = true;
-                       options.SingleLine = true;
-                       options.TimestampFormat = "hh:mm:ss ";
-                   }));
+            return LoggerFactory.Create(builder => {
+                builder.AddSimpleConsole(options =>
+                {
+                    options.IncludeScopes = true;
+                    options.SingleLine = true;
+                    options.TimestampFormat = "hh:mm:ss ";
+                });
+                builder.AddFilter("Grpc.Net.Client.Internal.GrpcCall", LogLevel.Error);
+                builder.SetMinimumLevel(LogLevel.Information);
+            });
         }
 
         const string PERFORMANCE_INFORMATION_MESSAGE = @"
@@ -395,12 +408,8 @@ If you have questions or need help experimenting further, please reach out to us
               /// Each time the load generator has executed this many requests, it will
               /// print out some statistics about throughput and latency.
               ///
-              printStatsEveryNRequests: 1000,
-              ///
-              /// Configures the Momento client to timeout if a request exceeds this limit.
-              /// Momento client default is 5 seconds.
-              ///
-              requestTimeoutMs: 5 * 1000,
+              printStatsEveryNRequests: 5000,
+              
               ///
               /// Controls the size of the payload that will be used for the cache items in
               /// the load test.  Smaller payloads will generally provide lower latencies than
@@ -435,7 +444,7 @@ If you have questions or need help experimenting further, please reach out to us
             /// our pre-built configurations that are optimized for Laptop vs InRegion environments,
             /// or build your own.
             ///
-            IConfiguration config = Configurations.Laptop.Latest;
+            IConfiguration config = Configurations.Laptop.Latest.WithClientTimeoutMillis(1000);
 
             CsharpLoadGenerator loadGenerator = new CsharpLoadGenerator(
                 loggerFactory,
