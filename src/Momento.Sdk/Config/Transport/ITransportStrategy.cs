@@ -10,4 +10,5 @@ public interface ITransportStrategy
 
     public ITransportStrategy WithMaxConcurrentRequests(int maxConcurrentRequests);
     public ITransportStrategy WithGrpcConfig(IGrpcConfiguration grpcConfig);
+    public ITransportStrategy WithClientTimeoutMillis(uint clientTimeoutMillis);
 }

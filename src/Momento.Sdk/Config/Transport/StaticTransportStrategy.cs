@@ -50,4 +50,9 @@ public class StaticTransportStrategy : ITransportStrategy
     {
         return new StaticTransportStrategy(MaxConcurrentRequests, grpcConfig);
     }
+
+    public ITransportStrategy WithClientTimeoutMillis(uint clientTimeoutMillis)
+    {
+        return new StaticTransportStrategy(MaxConcurrentRequests, GrpcConfig.WithDeadlineMilliseconds(clientTimeoutMillis));
+    }
 }
