@@ -125,7 +125,7 @@ public interface ISimpleCacheClient : IDisposable
     /// <code>
     /// if (response is CacheGetResponse.Hit hitResponse)
     /// {
-    ///     return hitResponse.String();
+    ///     return hitResponse.StringValue;
     /// } else if (response is CacheGetResponse.Error errorResponse)
     /// {
     ///     // handle error as appropriate
