@@ -25,6 +25,7 @@ public class SimpleCacheControlTest
         Assert.Throws<InvalidArgumentException>(
             () => new EnvironmentTokenProvider("BAD_MOMENTO_AUTH_TOKEN")
         );
+        Environment.SetEnvironmentVariable("BAD_MOMENTO_AUTH_TOKEN", null);
     }
 
     [Fact]
