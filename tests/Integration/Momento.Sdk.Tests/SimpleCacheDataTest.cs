@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 
 namespace Momento.Sdk.Tests;
@@ -8,7 +9,7 @@ namespace Momento.Sdk.Tests;
 [Collection("SimpleCacheClient")]
 public class SimpleCacheDataTest
 {
-    private readonly string authToken;
+    private readonly ICredentialProvider authProvider;
     private readonly string cacheName;
     private const uint DefaultTtlSeconds = SimpleCacheClientFixture.DefaultTtlSeconds;
     private SimpleCacheClient client;
@@ -17,7 +18,7 @@ public class SimpleCacheDataTest
     public SimpleCacheDataTest(SimpleCacheClientFixture fixture)
     {
         client = fixture.Client;
-        authToken = fixture.AuthToken;
+        authProvider = fixture.AuthProvider;
         cacheName = fixture.CacheName;
     }
 
