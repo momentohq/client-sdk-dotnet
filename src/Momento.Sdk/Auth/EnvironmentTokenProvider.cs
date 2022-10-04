@@ -6,13 +6,9 @@ using Momento.Sdk.Internal;
 
 public class EnvironmentTokenProvider : ICredentialProvider
 {
-
-    private string _authToken;
-    private string _controlEndpoint;
-    private string _cacheEndpoint;
-    public string AuthToken { get => _authToken; }
-    public string ControlEndpoint {get => _controlEndpoint; }
-    public string CacheEndpoint { get => _cacheEndpoint; }
+    public string AuthToken { get; private set; }
+    public string ControlEndpoint {get; private set; }
+    public string CacheEndpoint { get; private set; }
 
     /// <summary>
     /// Reads and parses a JWT token stored as an environment variable.
@@ -20,7 +16,7 @@ public class EnvironmentTokenProvider : ICredentialProvider
     /// </summary>
     public EnvironmentTokenProvider(string name)
     {
-        _authToken =  Environment.GetEnvironmentVariable(name);
+        AuthToken =  Environment.GetEnvironmentVariable(name);
         if (String.IsNullOrEmpty(AuthToken))
         {
             throw new InvalidArgumentException($"Environment variable '{name}' is empty or null.");
@@ -28,11 +24,11 @@ public class EnvironmentTokenProvider : ICredentialProvider
 
         Claims claims;
         try {
-            claims = JwtUtils.DecodeJwt(_authToken);
+            claims = JwtUtils.DecodeJwt(AuthToken);
         } catch (InvalidArgumentException) {
             throw new InvalidArgumentException("The supplied Momento authToken is not valid.");
         }
-        _controlEndpoint = claims.ControlEndpoint;
-        _cacheEndpoint = claims.CacheEndpoint;
+        ControlEndpoint = claims.ControlEndpoint;
+        CacheEndpoint = claims.CacheEndpoint;
     }
 }
