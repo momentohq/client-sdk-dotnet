@@ -39,6 +39,8 @@
 	  <None Remove="Momento.Protos" />
 	  <None Remove="JWT" />
 	  <None Remove="System.IdentityModel.Tokens.Jwt" />
+	  <None Remove="Microsoft.Extensions.Logging" />
+	  <None Remove="Microsoft.SourceLink.GitHub" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Internal\Middleware\" />
@@ -49,5 +51,10 @@
 	  <PackageReference Include="JWT" Version="9.0.3" />
 	  <PackageReference Include="System.Threading.Channels" Version="6.0.0" />
 	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />
+	  <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+	  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	    <PrivateAssets>all</PrivateAssets>
+	  </PackageReference>
 	</ItemGroup>
 </Project>
