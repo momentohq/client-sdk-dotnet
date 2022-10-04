@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 
 namespace Momento.Sdk.Tests;
@@ -9,24 +10,31 @@ namespace Momento.Sdk.Tests;
 public class SimpleCacheControlTest
 {
     private SimpleCacheClient client;
-    private string authToken;
+    private ICredentialProvider authProvider;
 
     public SimpleCacheControlTest(SimpleCacheClientFixture fixture)
     {
         client = fixture.Client;
-        authToken = fixture.AuthToken;
+        authProvider = fixture.AuthProvider;
     }
 
     [Fact]
     public void SimpleCacheClientConstructor_BadJWT_InvalidJwtException()
     {
-        Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(Configurations.Laptop.Latest, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs", defaultTtlSeconds: 10));
+        Environment.SetEnvironmentVariable("BAD_MOMENTO_AUTH_TOKEN", "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs");
+        Assert.Throws<InvalidArgumentException>(
+            () => new EnvMomentoTokenProvider("BAD_MOMENTO_AUTH_TOKEN")
+        );
+        Environment.SetEnvironmentVariable("BAD_MOMENTO_AUTH_TOKEN", null);
     }
 
     [Fact]
     public void SimpleCacheClientConstructor_NullJWT_InvalidJwtException()
     {
-        Assert.Throws<InvalidArgumentException>(() => new SimpleCacheClient(Configurations.Laptop.Latest, null!, defaultTtlSeconds: 10));
+        Environment.SetEnvironmentVariable("BAD_MOMENTO_AUTH_TOKEN", null);
+        Assert.Throws<InvalidArgumentException>(
+            () => new EnvMomentoTokenProvider("BAD_MOMENTO_AUTH_TOKEN")
+        );
     }
 
     [Fact]

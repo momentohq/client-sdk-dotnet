@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal;
@@ -26,26 +27,17 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// Client to perform operations against the Simple Cache Service.
     /// </summary>
     /// <param name="config">Configuration to use for the transport, retries, middlewares. See <see cref="Configurations"/> for out-of-the-box configuration choices, eg <see cref="Configurations.Laptop.Latest"/></param>
-    /// <param name="authToken">Momento JWT.</param>
+    /// <param name="authProvider">Momento auth provider.</param>
     /// <param name="defaultTtlSeconds">Default time to live for the item in cache.</param>
     /// <param name="loggerFactory">Logger factory to create loggers for contained instances.</param>
-    public SimpleCacheClient(IConfiguration config, string authToken, uint defaultTtlSeconds, ILoggerFactory? loggerFactory = null)
+    public SimpleCacheClient(IConfiguration config, ICredentialProvider authProvider, uint defaultTtlSeconds, ILoggerFactory? loggerFactory = null)
     {
         this.config = config;
         var _loggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
         this._logger = _loggerFactory.CreateLogger<SimpleCacheClient>();
         ValidateRequestTimeout(config.TransportStrategy.GrpcConfig.DeadlineMilliseconds);
-        Claims claims;
-        try {
-            claims = JwtUtils.DecodeJwt(authToken);
-        } catch (InvalidArgumentException) {
-            if (authToken == null) {
-                throw new InvalidArgumentException("The supplied Momento authToken is null.");
-            }
-            throw new InvalidArgumentException("The supplied Momento authToken is not valid.");
-        }
-        this.controlClient = new(authToken, claims.ControlEndpoint, _loggerFactory);
-        this.dataClient = new(config, authToken, claims.CacheEndpoint, defaultTtlSeconds, _loggerFactory);
+        this.controlClient = new(authProvider.AuthToken, authProvider.ControlEndpoint, _loggerFactory);
+        this.dataClient = new(config, authProvider.AuthToken, authProvider.CacheEndpoint, defaultTtlSeconds, _loggerFactory);
     }
 
     /// <inheritdoc />
