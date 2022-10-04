@@ -23,7 +23,7 @@ public class SimpleCacheControlTest
     {
         Environment.SetEnvironmentVariable("BAD_MOMENTO_AUTH_TOKEN", "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs");
         Assert.Throws<InvalidArgumentException>(
-            () => new EnvironmentTokenProvider("BAD_MOMENTO_AUTH_TOKEN")
+            () => new EnvMomentoTokenProvider("BAD_MOMENTO_AUTH_TOKEN")
         );
         Environment.SetEnvironmentVariable("BAD_MOMENTO_AUTH_TOKEN", null);
     }
@@ -33,7 +33,7 @@ public class SimpleCacheControlTest
     {
         Environment.SetEnvironmentVariable("BAD_MOMENTO_AUTH_TOKEN", null);
         Assert.Throws<InvalidArgumentException>(
-            () => new EnvironmentTokenProvider("BAD_MOMENTO_AUTH_TOKEN")
+            () => new EnvMomentoTokenProvider("BAD_MOMENTO_AUTH_TOKEN")
         );
     }
 

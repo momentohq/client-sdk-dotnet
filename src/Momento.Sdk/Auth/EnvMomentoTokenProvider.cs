@@ -4,7 +4,7 @@ using System;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal;
 
-public class EnvironmentTokenProvider : ICredentialProvider
+public class EnvMomentoTokenProvider : ICredentialProvider
 {
     public string AuthToken { get; private set; }
     public string ControlEndpoint {get; private set; }
@@ -14,7 +14,7 @@ public class EnvironmentTokenProvider : ICredentialProvider
     /// Reads and parses a JWT token stored as an environment variable.
     /// <param name="name">Name of the environment variable that contains the JWT token.</param>
     /// </summary>
-    public EnvironmentTokenProvider(string name)
+    public EnvMomentoTokenProvider(string name)
     {
         AuthToken =  Environment.GetEnvironmentVariable(name);
         if (String.IsNullOrEmpty(AuthToken))

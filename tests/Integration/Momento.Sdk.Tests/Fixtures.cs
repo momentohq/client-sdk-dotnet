@@ -18,7 +18,7 @@ public class SimpleCacheClientFixture : IDisposable
 
     public SimpleCacheClientFixture()
     {
-        AuthProvider = new EnvironmentTokenProvider("TEST_AUTH_TOKEN");
+        AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
         CacheName = Environment.GetEnvironmentVariable("TEST_CACHE_NAME") ??
             throw new NullReferenceException("TEST_CACHE_NAME environment variable must be set.");
         Client = new(Configurations.Laptop.Latest, AuthProvider, defaultTtlSeconds: DefaultTtlSeconds);
