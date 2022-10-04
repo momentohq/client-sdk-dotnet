@@ -48,4 +48,13 @@ public class Configuration : IConfiguration
             transportStrategy: TransportStrategy
         );
     }
+
+    public Configuration WithClientTimeoutMillis(uint clientTimeoutMillis)
+    {
+        return new(
+            retryStrategy: RetryStrategy,
+            middlewares: Middlewares,
+            transportStrategy: TransportStrategy.WithClientTimeoutMillis(clientTimeoutMillis)
+        );
+    }
 }

@@ -26,9 +26,12 @@ public class SimpleCacheDataTest
     public async Task SetAsync_NullChecksByteArrayByteArray_ThrowsException(string cacheName, byte[] key, byte[] value)
     {
         CacheSetResponse response = await client.SetAsync(cacheName, key, value);
+        Assert.True(response is CacheSetResponse.Error);
         var errorResponse = (CacheSetResponse.Error)response;
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errorResponse.ErrorCode);
+
         response = await client.SetAsync(cacheName, key, value, DefaultTtlSeconds);
+        Assert.True(response is CacheSetResponse.Error);
         errorResponse = (CacheSetResponse.Error)response;
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errorResponse.ErrorCode);
     }
@@ -41,6 +44,7 @@ public class SimpleCacheDataTest
         byte[] value = Utils.NewGuidByteArray();
         await client.SetAsync(cacheName, key, value);
         CacheGetResponse response = await client.GetAsync(cacheName, key);
+        Assert.True(response is CacheGetResponse.Hit);
         var goodResponse = (CacheGetResponse.Hit)response;
         byte[]? setValue = goodResponse.ByteArray;
         Assert.Equal(value, setValue);
@@ -49,6 +53,7 @@ public class SimpleCacheDataTest
         value = Utils.NewGuidByteArray();
         await client.SetAsync(cacheName, key, value, ttlSeconds: 15);
         response = await client.GetAsync(cacheName, key);
+        Assert.True(response is CacheGetResponse.Hit);
         goodResponse = (CacheGetResponse.Hit)response;
         setValue = goodResponse.ByteArray;
         Assert.Equal(value, setValue);
@@ -60,6 +65,7 @@ public class SimpleCacheDataTest
     public async Task GetAsync_NullChecksByteArray_ThrowsException(string cacheName, byte[] key)
     {
         CacheGetResponse response = await client.GetAsync(cacheName, key);
+        Assert.True(response is CacheGetResponse.Error);
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheGetResponse.Error)response).ErrorCode);
     }
 
@@ -70,8 +76,11 @@ public class SimpleCacheDataTest
     public async Task SetAsync_NullChecksStringString_ThrowsException(string cacheName, string key, string value)
     {
         CacheSetResponse response = await client.SetAsync(cacheName, key, value);
+        Assert.True(response is CacheSetResponse.Error);
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheSetResponse.Error)response).ErrorCode);
+
         response = await client.SetAsync(cacheName, key, value, DefaultTtlSeconds);
+        Assert.True(response is CacheSetResponse.Error);
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheSetResponse.Error)response).ErrorCode);
     }
 
@@ -79,18 +88,26 @@ public class SimpleCacheDataTest
     [Fact]
     public async Task SetAsync_KeyIsStringValueIsString_HappyPath()
     {
+        // Set without TTL
         string key = Utils.NewGuidString();
         string value = Utils.NewGuidString();
-        await client.SetAsync(cacheName, key, value);
+        var setResponse = await client.SetAsync(cacheName, key, value);
+        Assert.True(setResponse is CacheSetResponse.Success);
+
         CacheGetResponse response = await client.GetAsync(cacheName, key);
+        Assert.True(response is CacheGetResponse.Hit);
         var goodResponse = (CacheGetResponse.Hit)response;
         string? setValue = goodResponse.String();
         Assert.Equal(value, setValue);
 
+        // Set with TTL
         key = Utils.NewGuidString();
         value = Utils.NewGuidString();
-        await client.SetAsync(cacheName, key, value, ttlSeconds: 15);
+        setResponse = await client.SetAsync(cacheName, key, value, ttlSeconds: 15);
+        Assert.True(setResponse is CacheSetResponse.Success);
+
         response = await client.GetAsync(cacheName, key);
+        Assert.True(response is CacheGetResponse.Hit);
         goodResponse = (CacheGetResponse.Hit)response;
         setValue = goodResponse.String();
         Assert.Equal(value, setValue);
@@ -102,6 +119,7 @@ public class SimpleCacheDataTest
     public async Task GetAsync_NullChecksString_ThrowsException(string cacheName, string key)
     {
         CacheGetResponse response = await client.GetAsync(cacheName, key);
+        Assert.True(response is CacheGetResponse.Error);
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheGetResponse.Error)response).ErrorCode);
     }
 
@@ -112,8 +130,11 @@ public class SimpleCacheDataTest
     public async Task SetAsync_NullChecksStringByteArray_ThrowsException(string cacheName, string key, byte[] value)
     {
         CacheSetResponse response = await client.SetAsync(cacheName, key, value);
+        Assert.True(response is CacheSetResponse.Error);
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheSetResponse.Error)response).ErrorCode);
+
         response = await client.SetAsync(cacheName, key, value, DefaultTtlSeconds);
+        Assert.True(response is CacheSetResponse.Error);
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheSetResponse.Error)response).ErrorCode);
     }
 
@@ -121,17 +142,23 @@ public class SimpleCacheDataTest
     [Fact]
     public async Task SetAsync_KeyIsStringValueIsByteArray_HappyPath()
     {
+        // Set without TTL
         string key = Utils.NewGuidString();
         byte[] value = Utils.NewGuidByteArray();
-        await client.SetAsync(cacheName, key, value);
+        var setResponse = await client.SetAsync(cacheName, key, value);
+        Assert.True(setResponse is CacheSetResponse.Success);
+
         CacheGetResponse response = await client.GetAsync(cacheName, key);
         var goodResponse = (CacheGetResponse.Hit)response;
         byte[]? setValue = goodResponse.ByteArray;
         Assert.Equal(value, setValue);
 
+        // Set with TTL
         key = Utils.NewGuidString();
         value = Utils.NewGuidByteArray();
-        await client.SetAsync(cacheName, key, value, ttlSeconds: 15);
+        setResponse = await client.SetAsync(cacheName, key, value, ttlSeconds: 15);
+        Assert.True(setResponse is CacheSetResponse.Success);
+
         response = await client.GetAsync(cacheName, key);
         var anotherGoodResponse = (CacheGetResponse.Hit)response;
         byte[]? anotherSetValue = anotherGoodResponse.ByteArray;
@@ -143,7 +170,8 @@ public class SimpleCacheDataTest
     {
         string key = Utils.NewGuidString();
         string value = Utils.NewGuidString();
-        await client.SetAsync(cacheName, key, value, 1);
+        var setResponse = await client.SetAsync(cacheName, key, value, 1);
+        Assert.True(setResponse is CacheSetResponse.Success);
         await Task.Delay(3000);
         CacheGetResponse result = await client.GetAsync(cacheName, key);
         Assert.True(result is CacheGetResponse.Miss);
@@ -155,6 +183,7 @@ public class SimpleCacheDataTest
     public async Task DeleteAsync_NullChecksByte_ThrowsException(string cacheName, byte[] key)
     {
         CacheDeleteResponse result = await client.DeleteAsync(cacheName, key);
+        Assert.True(result is CacheDeleteResponse.Error);
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheDeleteResponse.Error)result).ErrorCode);
     }
 
@@ -164,12 +193,14 @@ public class SimpleCacheDataTest
         // Set a key to then delete
         byte[] key = new byte[] { 0x01, 0x02, 0x03, 0x04 };
         byte[] value = new byte[] { 0x05, 0x06, 0x07, 0x08 };
-        await client.SetAsync(cacheName, key, value, ttlSeconds: 60);
+        var setResponse = await client.SetAsync(cacheName, key, value, ttlSeconds: 60);
+        Assert.True(setResponse is CacheSetResponse.Success);
         CacheGetResponse getResponse = await client.GetAsync(cacheName, key);
         Assert.True(getResponse is CacheGetResponse.Hit);
 
         // Delete
-        await client.DeleteAsync(cacheName, key);
+        var deleteResponse = await client.DeleteAsync(cacheName, key);
+        Assert.True(deleteResponse is CacheDeleteResponse.Success);
 
         // Check deleted
         getResponse = await client.GetAsync(cacheName, key);
@@ -182,6 +213,7 @@ public class SimpleCacheDataTest
     public async Task DeleteAsync_NullChecksString_ThrowsException(string cacheName, string key)
     {
         CacheDeleteResponse response = await client.DeleteAsync(cacheName, key);
+        Assert.True(response is CacheDeleteResponse.Error);
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheDeleteResponse.Error)response).ErrorCode);
     }
 
@@ -191,7 +223,8 @@ public class SimpleCacheDataTest
         // Set a key to then delete
         string key = Utils.NewGuidString();
         string value = Utils.NewGuidString();
-        await client.SetAsync(cacheName, key, value, ttlSeconds: 60);
+        var setResponse = await client.SetAsync(cacheName, key, value, ttlSeconds: 60);
+        Assert.True(setResponse is CacheSetResponse.Success);
         CacheGetResponse getResponse = await client.GetAsync(cacheName, key);
         Assert.True(getResponse is CacheGetResponse.Hit);
 
