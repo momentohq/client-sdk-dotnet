@@ -32,10 +32,10 @@ public class SimpleCacheControlTest
     [Fact]
     public async Task DeleteCacheAsync_NullCache_InvalidArgumentError()
     {
-        DeleteCacheResponse response = await client.DeleteCacheAsync(null!);
-        Assert.True(response is DeleteCacheResponse.Error);
-        DeleteCacheResponse.Error errResp = (DeleteCacheResponse.Error)response;
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errResp.Exception.ErrorCode);
+        DeleteCacheResponse deleteResponse = await client.DeleteCacheAsync(null!);
+        Assert.True(deleteResponse is DeleteCacheResponse.Error);
+        DeleteCacheResponse.Error errorResponse = (DeleteCacheResponse.Error)deleteResponse;
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errorResponse.Exception.ErrorCode);
     }
 
     [Fact]
@@ -43,8 +43,8 @@ public class SimpleCacheControlTest
     {
         DeleteCacheResponse response = await client.DeleteCacheAsync("non-existent cache");
         Assert.True(response is DeleteCacheResponse.Error);
-        DeleteCacheResponse.Error errResp = (DeleteCacheResponse.Error)response;
-        Assert.Equal(MomentoErrorCode.NOT_FOUND_ERROR, errResp.Exception.ErrorCode);
+        var errorResponse = (DeleteCacheResponse.Error)response;
+        Assert.Equal(MomentoErrorCode.NOT_FOUND_ERROR, errorResponse.Exception.ErrorCode);
     }
 
     [Fact]
@@ -52,8 +52,8 @@ public class SimpleCacheControlTest
     {
         CreateCacheResponse response = await client.CreateCacheAsync(null!);
         Assert.True(response is CreateCacheResponse.Error);
-        CreateCacheResponse.Error errResp = (CreateCacheResponse.Error)response;
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errResp.Exception.ErrorCode);
+        CreateCacheResponse.Error errorResponse = (CreateCacheResponse.Error)response;
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errorResponse.Exception.ErrorCode);
     }
 
     // Tests: creating a cache, listing a cache, and deleting a cache.
