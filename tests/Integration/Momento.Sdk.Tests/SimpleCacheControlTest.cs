@@ -32,27 +32,28 @@ public class SimpleCacheControlTest
     [Fact]
     public async Task DeleteCacheAsync_NullCache_InvalidArgumentError()
     {
-        DeleteCacheResponse resp = await client.DeleteCacheAsync(null!);
-        DeleteCacheResponse.Error errResp = (DeleteCacheResponse.Error)resp;
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errResp.Exception.ErrorCode);
+        DeleteCacheResponse deleteResponse = await client.DeleteCacheAsync(null!);
+        Assert.True(deleteResponse is DeleteCacheResponse.Error);
+        DeleteCacheResponse.Error errorResponse = (DeleteCacheResponse.Error)deleteResponse;
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errorResponse.Exception.ErrorCode);
     }
 
     [Fact]
     public async Task DeleteCacheAsync_CacheDoesntExist_NotFoundException()
     {
-        // Assert.Throws<NotFoundException>(() => client.DeleteCache("non-existent cache"));
-        DeleteCacheResponse resp = await client.DeleteCacheAsync("non-existent cache");
-        Assert.True(resp is DeleteCacheResponse.Error);
-        DeleteCacheResponse.Error errResp = (DeleteCacheResponse.Error)resp;
-        Assert.Equal(MomentoErrorCode.NOT_FOUND_ERROR, errResp.Exception.ErrorCode);
+        DeleteCacheResponse response = await client.DeleteCacheAsync("non-existent cache");
+        Assert.True(response is DeleteCacheResponse.Error);
+        var errorResponse = (DeleteCacheResponse.Error)response;
+        Assert.Equal(MomentoErrorCode.NOT_FOUND_ERROR, errorResponse.Exception.ErrorCode);
     }
 
     [Fact]
     public async Task CreateCacheAsync_NullCache_InvalidArgumentError()
     {
-        CreateCacheResponse resp = await client.CreateCacheAsync(null!);
-        CreateCacheResponse.Error errResp = (CreateCacheResponse.Error)resp;
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errResp.Exception.ErrorCode);
+        CreateCacheResponse response = await client.CreateCacheAsync(null!);
+        Assert.True(response is CreateCacheResponse.Error);
+        CreateCacheResponse.Error errorResponse = (CreateCacheResponse.Error)response;
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errorResponse.Exception.ErrorCode);
     }
 
     // Tests: creating a cache, listing a cache, and deleting a cache.
@@ -65,20 +66,18 @@ public class SimpleCacheControlTest
 
         // Test cache exists
         ListCachesResponse result = await client.ListCachesAsync();
-        if (result is ListCachesResponse.Success successResult)
-        {
-            List<CacheInfo> caches = successResult.Caches;
-            Assert.Contains(new CacheInfo(cacheName), caches);
-        }
+        Assert.True(result is ListCachesResponse.Success);
+        var successResult = (ListCachesResponse.Success)result;
+        List<CacheInfo> caches = successResult.Caches;
+        Assert.Contains(new CacheInfo(cacheName), caches);
 
         // Test deleting cache
         await client.DeleteCacheAsync(cacheName);
         result = await client.ListCachesAsync();
-        if (result is ListCachesResponse.Success successResult2)
-        {
-            var caches = successResult2.Caches;
-            Assert.DoesNotContain(new CacheInfo(cacheName), caches);
-        }
+        Assert.True(result is ListCachesResponse.Success);
+        var successResult2 = (ListCachesResponse.Success)result;
+        var caches2 = successResult2.Caches;
+        Assert.DoesNotContain(new CacheInfo(cacheName), caches2);
     }
 
     [Fact]
@@ -100,18 +99,17 @@ public class SimpleCacheControlTest
         ListCachesResponse result = await client.ListCachesAsync();
         while (true)
         {
-            if (result is ListCachesResponse.Success successResult)
+            Assert.True(result is ListCachesResponse.Success);
+            var successResult = (ListCachesResponse.Success)result;
+            foreach (CacheInfo cache in successResult.Caches)
             {
-                foreach (CacheInfo cache in successResult.Caches)
-                {
-                    retrievedCaches.Add(cache.Name);
-                }
-                if (successResult.NextPageToken == null)
-                {
-                    break;
-                }
-                result = await client.ListCachesAsync(successResult.NextPageToken);
+                retrievedCaches.Add(cache.Name);
             }
+            if (successResult.NextPageToken == null)
+            {
+                break;
+            }
+            result = await client.ListCachesAsync(successResult.NextPageToken);
         }
 
 
