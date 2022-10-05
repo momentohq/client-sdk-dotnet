@@ -74,7 +74,6 @@ jobs:
           pushd examples
             dotnet build MomentoApplication
             dotnet run --project MomentoApplication
-            dotnet build MomentoApplicationPresignedUrl
           popd
         shell: bash
 
