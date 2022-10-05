@@ -12,8 +12,8 @@ public class EnvMomentoTokenProvider : ICredentialProvider
 
     /// <summary>
     /// Reads and parses a JWT token stored as an environment variable.
-    /// <param name="name">Name of the environment variable that contains the JWT token.</param>
     /// </summary>
+    /// <param name="name">Name of the environment variable that contains the JWT token.</param>
     public EnvMomentoTokenProvider(string name)
     {
         AuthToken =  Environment.GetEnvironmentVariable(name);
