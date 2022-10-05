@@ -47,19 +47,17 @@ Here is a quickstart you can use in your own project:
 ```csharp
 ﻿using System;
 using Momento.Sdk;
+using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Responses;
 
-string? MOMENTO_AUTH_TOKEN = Environment.GetEnvironmentVariable("MOMENTO_AUTH_TOKEN");
-if (MOMENTO_AUTH_TOKEN == null) {
-    throw new Exception("Please set your 'MOMENTO_AUTH_TOKEN' environment variable.");
-}
+ICredentialProvider authProvider = new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN");
 const string CACHE_NAME = "cache";
 const string KEY = "MyKey";
 const string VALUE = "MyData";
 const uint DEFAULT_TTL_SECONDS = 60;
 
-using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.Latest, MOMENTO_AUTH_TOKEN, DEFAULT_TTL_SECONDS))
+using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.Latest, authProvider, DEFAULT_TTL_SECONDS))
 {
     var createCacheResponse = await client.CreateCacheAsync(CACHE_NAME);
     if (createCacheResponse is CreateCacheResponse.Error createError) {
