@@ -36,7 +36,7 @@ public record struct MiddlewareResponseState<TResponse>(
 /// </summary>
 public interface IMiddleware
 {
-    public ILoggerFactory LoggerFactory { get; }
+    public ILoggerFactory? LoggerFactory { get; }
 
     public IMiddleware WithLoggerFactory(ILoggerFactory loggerFactory);
 

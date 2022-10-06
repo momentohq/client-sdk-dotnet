@@ -215,12 +215,15 @@ public class DataGrpcManager : IDisposable
 
         this.channel = GrpcChannel.ForAddress(url, channelOptions);
         List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version), new Header(name: Header.RuntimeVersionKey, value: runtimeVersion) };
+
         this._logger = config.LoggerFactory.CreateLogger<DataGrpcManager>();
-        CallInvoker invoker = this.channel.Intercept(new HeaderInterceptor(headers));
+        
+        CallInvoker invoker = this.channel.CreateCallInvoker();
 
         var middlewares = config.Middlewares.Concat(
             new List<IMiddleware> {
-                new MaxConcurrentRequestsMiddleware(config.LoggerFactory, config.TransportStrategy.MaxConcurrentRequests)
+                new MaxConcurrentRequestsMiddleware(config.LoggerFactory, config.TransportStrategy.MaxConcurrentRequests),
+                new HeaderMiddleware(config.LoggerFactory, headers)
             }
         ).ToList();
 
