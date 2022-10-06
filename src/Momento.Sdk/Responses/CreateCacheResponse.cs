@@ -26,6 +26,7 @@ public abstract class CreateCacheResponse
 
     public class CacheAlreadyExists : CreateCacheResponse { }
 
+    /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : CreateCacheResponse
     {
         private readonly SdkException _error;
