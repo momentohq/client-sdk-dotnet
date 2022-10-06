@@ -69,7 +69,7 @@ using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.La
     CacheGetResponse getResponse = await client.GetAsync(CACHE_NAME, KEY);
     if (getResponse is CacheGetResponse.Hit getHit)
     {
-        Console.WriteLine($"Looked up value: {getHit.String()}, Stored value: {VALUE}");
+        Console.WriteLine($"Looked up value: {getHit.ValueString}, Stored value: {VALUE}");
     } else if (getResponse is CacheGetResponse.Miss)
     {
         // This shouldn't be fatal but should be reported.
