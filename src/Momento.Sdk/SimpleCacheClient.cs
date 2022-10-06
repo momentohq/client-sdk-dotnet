@@ -29,15 +29,14 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// <param name="config">Configuration to use for the transport, retries, middlewares. See <see cref="Configurations"/> for out-of-the-box configuration choices, eg <see cref="Configurations.Laptop.Latest"/></param>
     /// <param name="authProvider">Momento auth provider.</param>
     /// <param name="defaultTtlSeconds">Default time to live for the item in cache.</param>
-    /// <param name="loggerFactory">Logger factory to create loggers for contained instances.</param>
-    public SimpleCacheClient(IConfiguration config, ICredentialProvider authProvider, uint defaultTtlSeconds, ILoggerFactory? loggerFactory = null)
+    public SimpleCacheClient(IConfiguration config, ICredentialProvider authProvider, uint defaultTtlSeconds)
     {
         this.config = config;
-        var _loggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
+        var _loggerFactory = config.LoggerFactory;
         this._logger = _loggerFactory.CreateLogger<SimpleCacheClient>();
         ValidateRequestTimeout(config.TransportStrategy.GrpcConfig.DeadlineMilliseconds);
         this.controlClient = new(authProvider.AuthToken, authProvider.ControlEndpoint, _loggerFactory);
-        this.dataClient = new(config, authProvider.AuthToken, authProvider.CacheEndpoint, defaultTtlSeconds, _loggerFactory);
+        this.dataClient = new(config, authProvider.AuthToken, authProvider.CacheEndpoint, defaultTtlSeconds);
     }
 
     /// <inheritdoc />
