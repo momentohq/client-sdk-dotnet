@@ -34,7 +34,7 @@ To create a new .NET project and add the Momento client library as a dependency:
 ```bash
 mkdir my-momento-dotnet-project
 cd my-momento-dotnet-project
-dotnet new console 
+dotnet new console
 dotnet add package Momento.Sdk
 ```
 
@@ -84,20 +84,24 @@ using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.La
 
 ```
 
+Note that the above code requires an environment variable named MOMENTO_AUTH_TOKEN which must
+be set to a valid [Momento authentication token](https://docs.momentohq.com/docs/getting-started#obtain-an-auth-token).
+
 ### Error Handling
 
-Error cases in Momento are surfaced to developers as part of the return values of the method calls, as opposed
-to by throwing exceptions.  This makes them more visible, and allows your IDE to be more helpful in ensuring that
-you've handled the ones you care about.  (For more on our philosophy about this, see our blog post on why
-[Exceptions are bugs](https://www.gomomento.com/blog/exceptions-are-bugs).  And send us any feedback you have!)
+Error that occur in calls to SimpleCacheClient methods are surfaced to developers as part of the return values of
+the calls, as opposed to by throwing exceptions.  This makes them more visible, and allows your IDE to be more
+helpful in ensuring that you've handled the ones you care about.  (For more on our philosophy about this, see our
+blog post on why [Exceptions are bugs](https://www.gomomento.com/blog/exceptions-are-bugs).  And send us any
+feedback you have!)
 
-The preferred way of interpreting the return values from the Momento .NET methods is using [Pattern matching](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/pattern-matching).  Here's a quick example:
+The preferred way of interpreting the return values from SimpleCacheClient methods is using [Pattern matching](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/pattern-matching).  Here's a quick example:
 
 ```csharp
 CacheGetResponse getResponse = await client.GetAsync(CACHE_NAME, KEY);
 if (getResponse is CacheGetResponse.Hit hitResponse)
 {
-    Console.WriteLine($"\nLookedup value: {hitResponse.String()}, Stored value: {VALUE}");
+    Console.WriteLine($"\nLooked up value: {hitResponse.String()}, Stored value: {VALUE}");
 } else {
       // you can handle other cases via pattern matching in `else if` blocks, or a default case
       // via the `else` block.  For each return value your IDE should be able to give you code
@@ -121,6 +125,9 @@ if (getResponse is CacheGetResponse.Error errorResponse)
     }
 }
 ```
+
+Note that, outside of SimpleCacheClient responses, exceptions can occur and should be handled as usual. For example, trying to instantiate a SimpleCacheClient with an invalid authentication token will result in an
+IllegalArgumentException being thrown.
 
 ### Tuning
 
