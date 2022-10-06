@@ -30,7 +30,8 @@ public class Configurations
                 IRetryStrategy retryStrategy = new FixedCountRetryStrategy(maxAttempts: 3);
                 ITransportStrategy transportStrategy = new StaticTransportStrategy(
                     maxConcurrentRequests: 200,
-                    grpcConfig: new StaticGrpcConfiguration(deadlineMilliseconds: 5000));
+                    grpcConfig: new StaticGrpcConfiguration(deadlineMilliseconds: 5000)
+                );
                 return new Laptop(retryStrategy, transportStrategy);
             }
         }

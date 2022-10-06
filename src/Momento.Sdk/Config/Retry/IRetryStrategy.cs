@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 namespace Momento.Sdk.Config.Retry;
 
 /// <summary>
@@ -5,6 +7,9 @@ namespace Momento.Sdk.Config.Retry;
 /// </summary>
 public interface IRetryStrategy
 {
+    public ILoggerFactory? LoggerFactory { get; }
+
+
     /// <summary>
     /// Calculates whether or not to retry a request based on the type of request and number of attempts.
     /// </summary>
@@ -13,4 +18,6 @@ public interface IRetryStrategy
     /// <param name="attemptNumber"></param>
     /// <returns>Returns number of milliseconds after which the request should be retried, or <see langword="null"/> if the request should not be retried.</returns>
     public int? DetermineWhenToRetryRequest(IGrpcResponse grpcResponse, IGrpcRequest grpcRequest, int attemptNumber);
+
+    public IRetryStrategy WithLoggerFactory(ILoggerFactory loggerFactory);
 }

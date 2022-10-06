@@ -76,7 +76,7 @@ using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.La
     CacheGetResponse getResponse = await client.GetAsync(CACHE_NAME, KEY);
     if (getResponse is CacheGetResponse.Hit hitResponse)
     {
-        Console.WriteLine($"Looked up value: {hitResponse.String()}, Stored value: {VALUE}");
+        Console.WriteLine($"Looked up value: {hitResponse.ValueString}, Stored value: {VALUE}");
     } else if (getResponse is CacheGetResponse.Error getError) {
         Console.WriteLine($"Error getting value: {getError.Message}");
     }
@@ -101,7 +101,7 @@ The preferred way of interpreting the return values from SimpleCacheClient metho
 CacheGetResponse getResponse = await client.GetAsync(CACHE_NAME, KEY);
 if (getResponse is CacheGetResponse.Hit hitResponse)
 {
-    Console.WriteLine($"\nLooked up value: {hitResponse.String()}, Stored value: {VALUE}");
+    Console.WriteLine($"\nLooked up value: {hitResponse.ValueString}, Stored value: {VALUE}");
 } else {
       // you can handle other cases via pattern matching in `else if` blocks, or a default case
       // via the `else` block.  For each return value your IDE should be able to give you code
