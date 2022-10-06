@@ -46,7 +46,7 @@ public class SimpleCacheDataTest
         CacheGetResponse response = await client.GetAsync(cacheName, key);
         Assert.True(response is CacheGetResponse.Hit);
         var goodResponse = (CacheGetResponse.Hit)response;
-        byte[]? setValue = goodResponse.ByteArray;
+        byte[] setValue = goodResponse.ValueByteArray;
         Assert.Equal(value, setValue);
 
         key = Utils.NewGuidByteArray();
@@ -55,7 +55,7 @@ public class SimpleCacheDataTest
         response = await client.GetAsync(cacheName, key);
         Assert.True(response is CacheGetResponse.Hit);
         goodResponse = (CacheGetResponse.Hit)response;
-        setValue = goodResponse.ByteArray;
+        setValue = goodResponse.ValueByteArray;
         Assert.Equal(value, setValue);
     }
 
@@ -97,7 +97,7 @@ public class SimpleCacheDataTest
         CacheGetResponse response = await client.GetAsync(cacheName, key);
         Assert.True(response is CacheGetResponse.Hit);
         var goodResponse = (CacheGetResponse.Hit)response;
-        string? setValue = goodResponse.String();
+        string setValue = goodResponse.ValueString;
         Assert.Equal(value, setValue);
 
         // Set with TTL
@@ -109,7 +109,7 @@ public class SimpleCacheDataTest
         response = await client.GetAsync(cacheName, key);
         Assert.True(response is CacheGetResponse.Hit);
         goodResponse = (CacheGetResponse.Hit)response;
-        setValue = goodResponse.String();
+        setValue = goodResponse.ValueString;
         Assert.Equal(value, setValue);
     }
 
@@ -150,7 +150,7 @@ public class SimpleCacheDataTest
 
         CacheGetResponse response = await client.GetAsync(cacheName, key);
         var goodResponse = (CacheGetResponse.Hit)response;
-        byte[]? setValue = goodResponse.ByteArray;
+        byte[] setValue = goodResponse.ValueByteArray;
         Assert.Equal(value, setValue);
 
         // Set with TTL
@@ -161,7 +161,7 @@ public class SimpleCacheDataTest
 
         response = await client.GetAsync(cacheName, key);
         var anotherGoodResponse = (CacheGetResponse.Hit)response;
-        byte[]? anotherSetValue = anotherGoodResponse.ByteArray;
+        byte[] anotherSetValue = anotherGoodResponse.ValueByteArray;
         Assert.Equal(value, anotherSetValue);
     }
 
