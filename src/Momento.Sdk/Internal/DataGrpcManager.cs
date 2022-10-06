@@ -203,23 +203,23 @@ public class DataGrpcManager : IDisposable
     private readonly string runtimeVersion = "dotnet:" + Environment.Version;
     private readonly ILogger _logger;
 
-    internal DataGrpcManager(IConfiguration config, string authToken, string host, ILoggerFactory loggerFactory)
+    internal DataGrpcManager(IConfiguration config, string authToken, string host)
     {
         var url = $"https://{host}";
         var channelOptions = config.TransportStrategy.GrpcConfig.GrpcChannelOptions;
         if (channelOptions.LoggerFactory == null)
         {
-            channelOptions.LoggerFactory = loggerFactory;
+            channelOptions.LoggerFactory = config.LoggerFactory;
         }
         channelOptions.Credentials = ChannelCredentials.SecureSsl;
 
         this.channel = GrpcChannel.ForAddress(url, channelOptions);
         List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version), new Header(name: Header.RuntimeVersionKey, value: runtimeVersion) };
-        this._logger = loggerFactory.CreateLogger<DataGrpcManager>();
+        this._logger = config.LoggerFactory.CreateLogger<DataGrpcManager>();
         CallInvoker invoker = this.channel.Intercept(new HeaderInterceptor(headers));
 
         var middlewares = config.Middlewares.Concat(
-            new List<IMiddleware> { new MaxConcurrentRequestsMiddleware(config.TransportStrategy.MaxConcurrentRequests) }
+            new List<IMiddleware> { new MaxConcurrentRequestsMiddleware(config.LoggerFactory, config.TransportStrategy.MaxConcurrentRequests) }
         ).ToList();
 
         Client = new DataClientWithMiddleware(new Scs.ScsClient(invoker), middlewares);

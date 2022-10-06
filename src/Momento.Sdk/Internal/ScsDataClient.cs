@@ -20,12 +20,12 @@ public class ScsDataClientBase : IDisposable
     protected readonly uint dataClientOperationTimeoutMilliseconds;
     protected readonly ILogger _logger;
 
-    public ScsDataClientBase(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds, ILoggerFactory loggerFactory)
+    public ScsDataClientBase(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds)
     {
-        this.grpcManager = new(config, authToken, endpoint, loggerFactory);
+        this.grpcManager = new(config, authToken, endpoint);
         this.defaultTtlSeconds = defaultTtlSeconds;
         this.dataClientOperationTimeoutMilliseconds = config.TransportStrategy.GrpcConfig.DeadlineMilliseconds;
-        this._logger = loggerFactory.CreateLogger<ScsDataClient>();
+        this._logger = config.LoggerFactory.CreateLogger<ScsDataClient>();
     }
 
     protected Metadata MetadataWithCache(string cacheName)
@@ -55,8 +55,8 @@ public class ScsDataClientBase : IDisposable
 
 internal sealed class ScsDataClient : ScsDataClientBase
 {
-    public ScsDataClient(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds, ILoggerFactory loggerFactory)
-        : base(config, authToken, endpoint, defaultTtlSeconds, loggerFactory)
+    public ScsDataClient(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds)
+        : base(config, authToken, endpoint, defaultTtlSeconds)
     {
 
     }
