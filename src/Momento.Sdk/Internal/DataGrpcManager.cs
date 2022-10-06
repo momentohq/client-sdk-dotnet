@@ -219,7 +219,9 @@ public class DataGrpcManager : IDisposable
         CallInvoker invoker = this.channel.Intercept(new HeaderInterceptor(headers));
 
         var middlewares = config.Middlewares.Concat(
-            new List<IMiddleware> { new MaxConcurrentRequestsMiddleware(config.LoggerFactory, config.TransportStrategy.MaxConcurrentRequests) }
+            new List<IMiddleware> {
+                new MaxConcurrentRequestsMiddleware(config.LoggerFactory, config.TransportStrategy.MaxConcurrentRequests)
+            }
         ).ToList();
 
         Client = new DataClientWithMiddleware(new Scs.ScsClient(invoker), middlewares);
