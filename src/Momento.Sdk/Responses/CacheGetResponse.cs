@@ -17,7 +17,7 @@ namespace Momento.Sdk.Responses;
 /// <code>
 /// if (response is CacheGetResponse.Hit hitResponse)
 /// {
-///     return hitResponse.StringValue;
+///     return hitResponse.ValueString;
 /// } else if (response is CacheGetResponse.Error errorResponse)
 /// {
 ///     // handle error as appropriate
@@ -41,7 +41,7 @@ public abstract class CacheGetResponse
         /// <summary>
         /// Value from the cache as a byte array.
         /// </summary>
-        public byte[] ByteArrayValue
+        public byte[] ValueByteArray
         {
             get => value.ToByteArray();
         }
@@ -49,14 +49,14 @@ public abstract class CacheGetResponse
         /// <summary>
         /// Value from the cache as a string.
         /// </summary>
-        public string StringValue
+        public string ValueString
         {
             get => value.ToStringUtf8();
         }
 
         public override string ToString()
         {
-            return $"{base.ToString()}: {this.StringValue}";
+            return $"{base.ToString()}: {this.ValueString}";
         }
     }
 
