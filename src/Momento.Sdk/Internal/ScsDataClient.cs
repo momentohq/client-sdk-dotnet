@@ -19,6 +19,7 @@ public class ScsDataClientBase : IDisposable
     protected readonly uint defaultTtlSeconds;
     protected readonly uint dataClientOperationTimeoutMilliseconds;
     protected readonly ILogger _logger;
+    protected readonly CacheExceptionMapper _exceptionMapper;
 
     public ScsDataClientBase(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds)
     {
@@ -26,6 +27,7 @@ public class ScsDataClientBase : IDisposable
         this.defaultTtlSeconds = defaultTtlSeconds;
         this.dataClientOperationTimeoutMilliseconds = config.TransportStrategy.GrpcConfig.DeadlineMilliseconds;
         this._logger = config.LoggerFactory.CreateLogger<ScsDataClient>();
+        this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
     }
 
     protected Metadata MetadataWithCache(string cacheName)
@@ -105,7 +107,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            var exc = CacheExceptionMapper.Convert(e);
+            var exc = _exceptionMapper.Convert(e);
             if (exc.TransportDetails != null)
             {
                 exc.TransportDetails.Grpc.Metadata = MetadataWithCache(cacheName);
@@ -125,7 +127,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            var exc = CacheExceptionMapper.Convert(e);
+            var exc = _exceptionMapper.Convert(e);
             if (exc.TransportDetails != null)
             {
                 exc.TransportDetails.Grpc.Metadata = MetadataWithCache(cacheName);
@@ -149,7 +151,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            var exc = CacheExceptionMapper.Convert(e);
+            var exc = _exceptionMapper.Convert(e);
             if (exc.TransportDetails != null)
             {
                 exc.TransportDetails.Grpc.Metadata = MetadataWithCache(cacheName);
