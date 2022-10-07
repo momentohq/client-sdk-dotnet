@@ -36,6 +36,15 @@ public class SimpleCacheDataTest
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errorResponse.ErrorCode);
     }
 
+    [Fact]
+    public async Task SetAsync_InvalidTTLByteArrayByteArray_ThrowsException()
+    {
+        CacheSetResponse response = await client.SetAsync(cacheName, new byte[] { 0x00 }, new byte[] { 0x00 }, -10);
+        Assert.True(response is CacheSetResponse.Error);
+        var errorResponse = (CacheSetResponse.Error)response;
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errorResponse.ErrorCode);
+    }
+
     // Tests SetAsyc(cacheName, byte[], byte[]) as well as GetAsync(cacheName, byte[])
     [Fact]
     public async Task SetAsync_KeyIsByteArrayValueIsByteArray_HappyPath()
@@ -82,6 +91,15 @@ public class SimpleCacheDataTest
         response = await client.SetAsync(cacheName, key, value, DefaultTtlSeconds);
         Assert.True(response is CacheSetResponse.Error);
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheSetResponse.Error)response).ErrorCode);
+    }
+
+    [Fact]
+    public async Task SetAsync_InvalidTTLStringString_ThrowsException()
+    {
+        CacheSetResponse response = await client.SetAsync(cacheName, "hello", "world", -10);
+        Assert.True(response is CacheSetResponse.Error);
+        var errorResponse = (CacheSetResponse.Error)response;
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errorResponse.ErrorCode);
     }
 
     // Also tests GetAsync(cacheName, string)
@@ -136,6 +154,15 @@ public class SimpleCacheDataTest
         response = await client.SetAsync(cacheName, key, value, DefaultTtlSeconds);
         Assert.True(response is CacheSetResponse.Error);
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheSetResponse.Error)response).ErrorCode);
+    }
+
+    [Fact]
+    public async Task SetAsync_InvalidTTLStringByteArray_ThrowsException()
+    {
+        CacheSetResponse response = await client.SetAsync(cacheName, "hello", new byte[] { 0x00 }, -10);
+        Assert.True(response is CacheSetResponse.Error);
+        var errorResponse = (CacheSetResponse.Error)response;
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errorResponse.ErrorCode);
     }
 
     // Also tests GetAsync(cacheName, string)
