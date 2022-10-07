@@ -8,34 +8,23 @@ namespace Momento.Sdk.Config.Retry;
 
 public class FixedCountRetryStrategy : IRetryStrategy
 {
-    public ILoggerFactory? LoggerFactory { get; }
-
+    private ILoggerFactory _loggerFactory;
     private ILogger _logger;
     private readonly IRetryEligibilityStrategy _eligibilityStrategy;
 
     public int MaxAttempts { get; }
 
-    public FixedCountRetryStrategy(int maxAttempts, IRetryEligibilityStrategy? eligibilityStrategy = null, ILoggerFactory? loggerFactory = null)
+    public FixedCountRetryStrategy(ILoggerFactory loggerFactory, int maxAttempts, IRetryEligibilityStrategy? eligibilityStrategy = null)
     {
-        LoggerFactory = loggerFactory;
-        _logger = (loggerFactory ?? NullLoggerFactory.Instance).CreateLogger<FixedCountRetryStrategy>();
+        _loggerFactory = loggerFactory;
+        _logger = loggerFactory.CreateLogger<FixedCountRetryStrategy>();
         _eligibilityStrategy = eligibilityStrategy ?? new DefaultRetryEligibilityStrategy(loggerFactory);
         MaxAttempts = maxAttempts;
     }
 
-    public FixedCountRetryStrategy WithLoggerFactory(ILoggerFactory loggerFactory)
-    {
-        return new(MaxAttempts, _eligibilityStrategy.WithLoggerFactory(loggerFactory), loggerFactory);
-    }
-
-    IRetryStrategy IRetryStrategy.WithLoggerFactory(ILoggerFactory loggerFactory)
-    {
-        return WithLoggerFactory(loggerFactory);
-    }
-
     public FixedCountRetryStrategy WithMaxAttempts(int maxAttempts)
     {
-        return new(maxAttempts, _eligibilityStrategy, LoggerFactory);
+        return new(_loggerFactory, maxAttempts, _eligibilityStrategy);
     }
 
     public int? DetermineWhenToRetryRequest<TRequest>(Status grpcStatus, TRequest grpcRequest, int attemptNumber) where TRequest : class
