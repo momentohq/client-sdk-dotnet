@@ -104,7 +104,7 @@ public interface ISimpleCacheClient : IDisposable
     /// }
     /// </code>
     /// </returns>
-    public Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, int? ttlSeconds = null);
+    public Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, TimeSpan? ttlSeconds = null);
 
     /// <summary>
     /// Get the cache value stored for the given key.
@@ -158,8 +158,8 @@ public interface ISimpleCacheClient : IDisposable
     /// </returns>
     public Task<CacheDeleteResponse> DeleteAsync(string cacheName, byte[] key);
 
-    /// <inheritdoc cref="SetAsync(string, byte[], byte[], int?)"/>
-    public Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, int? ttlSeconds = null);
+    /// <inheritdoc cref="SetAsync(string, byte[], byte[], TimeSpan?)"/>
+    public Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, TimeSpan? ttlSeconds = null);
 
     /// <inheritdoc cref="GetAsync(string, byte[])"/>
     public Task<CacheGetResponse> GetAsync(string cacheName, string key);
@@ -167,6 +167,6 @@ public interface ISimpleCacheClient : IDisposable
     /// <inheritdoc cref="DeleteAsync(string, byte[])"/>
     public Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key);
 
-    /// <inheritdoc cref="SetAsync(string, byte[], byte[], int?)"/>
-    public Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, int? ttlSeconds = null);
+    /// <inheritdoc cref="SetAsync(string, byte[], byte[], TimeSpan?)"/>
+    public Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, TimeSpan? ttlSeconds = null);
 }

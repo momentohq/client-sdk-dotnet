@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using Grpc.Net.Client;
 
 namespace Momento.Sdk.Config.Transport;
@@ -11,7 +11,7 @@ public interface IGrpcConfiguration
     /// <summary>
     /// How long the client is willing to wait for an RPC to complete before it is terminated with <see cref="Grpc.Core.StatusCode.DeadlineExceeded"/>
     /// </summary>
-    public int DeadlineMilliseconds { get; }
+    public TimeSpan Deadline { get; }
 
     /// <summary>
     /// Override the default .NET GrpcChannelOptions.  (.NET only povides a strongly-typed
@@ -20,6 +20,6 @@ public interface IGrpcConfiguration
     /// </summary>
     public GrpcChannelOptions GrpcChannelOptions { get; }
 
-    public IGrpcConfiguration WithDeadlineMilliseconds(int deadlineMilliseconds);
+    public IGrpcConfiguration WithDeadline(TimeSpan deadline);
     public IGrpcConfiguration WithGrpcChannelOptions(GrpcChannelOptions grpcChannelOptions);
 }

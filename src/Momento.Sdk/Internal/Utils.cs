@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Google.Protobuf;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Momento.Sdk.Internal
 {
@@ -79,16 +77,16 @@ namespace Momento.Sdk.Internal
         }
 
         /// <summary>
-        /// Throw an exception if the argument is zero.
+        /// Throw an exception if the time span is zero or negative.
         /// </summary>
-        /// <param name="argument">The integer to zero test.</param>
-        /// <param name="paramName">Name of the integer to propagate to the exception.</param>
+        /// <param name="argument">The time span to test.</param>
+        /// <param name="paramName">Name of the time span to propagate to the exception.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="argument"/> is zero or negative.</exception>
-        public static void ArgumentStrictlyPositive(int? argument, string paramName)
+        public static void ArgumentStrictlyPositive(TimeSpan? argument, string paramName)
         {
-            if (argument <= 0)
+            if (argument <= TimeSpan.Zero)
             {
-                throw new ArgumentOutOfRangeException(paramName, "Number must be strictly positive.");
+                throw new ArgumentOutOfRangeException(paramName, "TimeSpan must be strictly positive.");
             }
         }
 

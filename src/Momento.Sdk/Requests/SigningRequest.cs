@@ -47,7 +47,7 @@ public class SigningRequest
     /// <summary>
     /// The timestamp that the pre-signed URL is valid until.
     /// </summary>
-    public int ExpiryEpochSeconds
+    public TimeSpan ExpiryEpoch
     {
         get;
     }
@@ -67,14 +67,14 @@ public class SigningRequest
     /// <param name="cacheName">The cache where the key to pre-sign is.</param>
     /// <param name="cacheKey">The key to pre-sign.</param>
     /// <param name="cacheOperation">Type of operation (eg `get`, `set`) to pre-sign.</param>
-    /// <param name="expiryEpochSeconds">Duration the pre-signed URL is valid for.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="expiryEpochSeconds" /> is 0 or negative.</exception>
-    public SigningRequest(string cacheName, string cacheKey, CacheOperation cacheOperation, int expiryEpochSeconds)
+    /// <param name="expiryEpoch">Duration the pre-signed URL is valid for.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="expiryEpoch" /> is 0 or negative.</exception>
+    public SigningRequest(string cacheName, string cacheKey, CacheOperation cacheOperation, TimeSpan expiryEpoch)
     {
         CacheName = cacheName;
         CacheKey = cacheKey;
         CacheOperation = cacheOperation;
-        Utils.ArgumentStrictlyPositive(expiryEpochSeconds, nameof(expiryEpochSeconds));
-        ExpiryEpochSeconds = expiryEpochSeconds;
+        Utils.ArgumentStrictlyPositive(expiryEpoch, nameof(expiryEpoch));
+        ExpiryEpoch = expiryEpoch;
     }
 }

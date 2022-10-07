@@ -9,7 +9,7 @@ public class SigningRequestTest
     [Fact]
     public void Constructor_InvalidTTL_Throws()
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => new SigningRequest("testCacheName", "testCacheKey", CacheOperation.GET, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new SigningRequest("testCacheName", "testCacheKey", CacheOperation.GET, 0));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new SigningRequest("testCacheName", "testCacheKey", CacheOperation.GET, TimeSpan.FromSeconds(-1)));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new SigningRequest("testCacheName", "testCacheKey", CacheOperation.GET, TimeSpan.FromSeconds(0)));
     }
 }

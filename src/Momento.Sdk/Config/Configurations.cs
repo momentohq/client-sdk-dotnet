@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using Momento.Sdk.Config.Middleware;
+using System;
 using Momento.Sdk.Config.Retry;
 using Momento.Sdk.Config.Transport;
 
@@ -30,7 +29,7 @@ public class Configurations
                 IRetryStrategy retryStrategy = new FixedCountRetryStrategy(maxAttempts: 3);
                 ITransportStrategy transportStrategy = new StaticTransportStrategy(
                     maxConcurrentRequests: 200,
-                    grpcConfig: new StaticGrpcConfiguration(deadlineMilliseconds: 5000)
+                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromSeconds(5))
                 );
                 return new Laptop(retryStrategy, transportStrategy);
             }
@@ -63,7 +62,7 @@ public class Configurations
                     ITransportStrategy transportStrategy = new StaticTransportStrategy(
                         maxConcurrentRequests: 200,
                         // TODO: tune the timeout value
-                        grpcConfig: new StaticGrpcConfiguration(deadlineMilliseconds: 1000));
+                        grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromSeconds(1)));
                     return new Default(retryStrategy, transportStrategy);
                 }
             }
@@ -91,7 +90,7 @@ public class Configurations
                     ITransportStrategy transportStrategy = new StaticTransportStrategy(
                         maxConcurrentRequests: 20,
                         // TODO: tune the timeout value
-                        grpcConfig: new StaticGrpcConfiguration(deadlineMilliseconds: 1000)
+                        grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromSeconds(1))
                     );
                     return new LowLatency(retryStrategy, transportStrategy);
                 }

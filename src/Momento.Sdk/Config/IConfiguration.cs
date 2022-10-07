@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config.Middleware;
@@ -23,5 +24,5 @@ public interface IConfiguration
     public IConfiguration WithMiddlewares(IList<IMiddleware> middlewares);
     public IConfiguration WithTransportStrategy(ITransportStrategy transportStrategy);
 
-    public IConfiguration WithClientTimeoutMillis(int clientTimeoutMillis);
+    public IConfiguration WithClientTimeout(TimeSpan clientTimeout);
 }

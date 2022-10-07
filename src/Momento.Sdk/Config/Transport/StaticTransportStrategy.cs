@@ -1,33 +1,31 @@
 using System;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
+using Momento.Sdk.Internal;
 
 namespace Momento.Sdk.Config.Transport;
 
 
 public class StaticGrpcConfiguration : IGrpcConfiguration
 {
-    public int DeadlineMilliseconds { get; }
+    public TimeSpan Deadline { get; }
     public GrpcChannelOptions GrpcChannelOptions { get; }
 
-    public StaticGrpcConfiguration(int deadlineMilliseconds, GrpcChannelOptions? grpcChannelOptions = null)
+    public StaticGrpcConfiguration(TimeSpan deadline, GrpcChannelOptions? grpcChannelOptions = null)
     {
-        if (deadlineMilliseconds <= 0)
-        {
-            throw new ArgumentException($"Deadline must be strictly positive. Value was: {deadlineMilliseconds}", "DeadlineMilliseconds");
-        }
-        this.DeadlineMilliseconds = deadlineMilliseconds;
+        Utils.ArgumentStrictlyPositive(deadline, nameof(deadline));
+        this.Deadline = deadline;
         this.GrpcChannelOptions = grpcChannelOptions ?? new GrpcChannelOptions();
     }
 
-    public IGrpcConfiguration WithDeadlineMilliseconds(int deadlineMilliseconds)
+    public IGrpcConfiguration WithDeadline(TimeSpan deadline)
     {
-        return new StaticGrpcConfiguration(deadlineMilliseconds, this.GrpcChannelOptions);
+        return new StaticGrpcConfiguration(deadline, this.GrpcChannelOptions);
     }
 
     public IGrpcConfiguration WithGrpcChannelOptions(GrpcChannelOptions grpcChannelOptions)
     {
-        return new StaticGrpcConfiguration(this.DeadlineMilliseconds, grpcChannelOptions);
+        return new StaticGrpcConfiguration(this.Deadline, grpcChannelOptions);
     }
 }
 
@@ -64,9 +62,8 @@ public class StaticTransportStrategy : ITransportStrategy
         return new StaticTransportStrategy(MaxConcurrentRequests, grpcConfig, LoggerFactory);
     }
 
-    public ITransportStrategy WithClientTimeoutMillis(int clientTimeoutMillis)
+    public ITransportStrategy WithClientTimeout(TimeSpan clientTimeout)
     {
-        return new StaticTransportStrategy(MaxConcurrentRequests, GrpcConfig.WithDeadlineMilliseconds(clientTimeoutMillis), LoggerFactory);
+        return new StaticTransportStrategy(MaxConcurrentRequests, GrpcConfig.WithDeadline(clientTimeout), LoggerFactory);
     }
-
 }

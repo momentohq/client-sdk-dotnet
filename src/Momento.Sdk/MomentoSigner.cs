@@ -62,7 +62,7 @@ public class MomentoSigner
     /// <returns></returns>
     public string SignAccessToken(SigningRequest signingRequest)
     {
-        var payload = CommonJwtBody(signingRequest.CacheName, signingRequest.CacheKey, signingRequest.ExpiryEpochSeconds);
+        var payload = CommonJwtBody(signingRequest.CacheName, signingRequest.CacheKey, signingRequest.ExpiryEpoch);
         switch (signingRequest.CacheOperation)
         {
             case CacheOperation.GET:
@@ -99,11 +99,11 @@ public class MomentoSigner
     }
 
 
-    private JwtPayload CommonJwtBody(string cacheName, string cacheKey, int expiryEpochSeconds)
+    private JwtPayload CommonJwtBody(string cacheName, string cacheKey, TimeSpan expiryEpoch)
     {
         return new JwtPayload()
             {
-                { "exp", expiryEpochSeconds },
+                { "exp", (int)expiryEpoch.TotalSeconds },
                 { "cache", cacheName },
                 { "key", cacheKey }
             };

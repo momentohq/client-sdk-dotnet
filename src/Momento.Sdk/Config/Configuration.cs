@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
@@ -110,20 +111,20 @@ public class Configuration : IConfiguration
     /// <summary>
     ///  Configures client timeout for transport strategy
     /// </summary>
-    /// <param name="clientTimeoutMillis">Client timeout in milliseconds.</param>
+    /// <param name="clientTimeout">Client timeout.</param>
     /// <returns>Configuration object with client timeout provided</returns>
-    public Configuration WithClientTimeoutMillis(int clientTimeoutMillis)
+    public Configuration WithClientTimeout(TimeSpan clientTimeout)
     {
         return new(
             retryStrategy: RetryStrategy,
             middlewares: Middlewares,
-            transportStrategy: TransportStrategy.WithClientTimeoutMillis(clientTimeoutMillis),
+            transportStrategy: TransportStrategy.WithClientTimeout(clientTimeout),
             loggerFactory: LoggerFactory
         );
     }
 
-    IConfiguration IConfiguration.WithClientTimeoutMillis(int clientTimeoutMillis)
+    IConfiguration IConfiguration.WithClientTimeout(TimeSpan clientTimeout)
     {
-        return WithClientTimeoutMillis(clientTimeoutMillis);
+        return WithClientTimeout(clientTimeout);
     }
 }
