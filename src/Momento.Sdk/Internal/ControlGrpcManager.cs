@@ -45,44 +45,20 @@ internal class ControlClientWithMiddleware : IControlClient
 
     public async Task<_CreateCacheResponse> CreateCacheAsync(_CreateCacheRequest request, CallOptions callOptions)
     {
-        var wrapped = await WrapWithMiddleware(request, callOptions, (r, o) => _generatedClient.CreateCacheAsync(r, o));
+        var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.CreateCacheAsync(r, o));
         return await wrapped.ResponseAsync;
     }
 
     public async Task<_DeleteCacheResponse> DeleteCacheAsync(_DeleteCacheRequest request, CallOptions callOptions)
     {
-        var wrapped = await WrapWithMiddleware(request, callOptions, (r, o) => _generatedClient.DeleteCacheAsync(r, o));
+        var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.DeleteCacheAsync(r, o));
         return await wrapped.ResponseAsync;
     }
 
     public async Task<_ListCachesResponse> ListCachesAsync(_ListCachesRequest request, CallOptions callOptions)
     {
-        var wrapped = await WrapWithMiddleware(request, callOptions, (r, o) => _generatedClient.ListCachesAsync(r, o));
+        var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.ListCachesAsync(r, o));
         return await wrapped.ResponseAsync;
-    }
-
-    private async Task<MiddlewareResponseState<TResponse>> WrapWithMiddleware<TRequest, TResponse>(
-        TRequest request,
-        CallOptions callOptions,
-        Func<TRequest, CallOptions, AsyncUnaryCall<TResponse>> continuation
-    )
-    {
-        Func<TRequest, CallOptions, Task<MiddlewareResponseState<TResponse>>> continuationWithMiddlewareResponseState = (r, o) =>
-        {
-            var result = continuation(r, o);
-            return Task.FromResult(new MiddlewareResponseState<TResponse>(
-                ResponseAsync: result.ResponseAsync,
-                ResponseHeadersAsync: result.ResponseHeadersAsync,
-                GetStatus: result.GetStatus,
-                GetTrailers: result.GetTrailers
-            ));
-        };
-
-        var wrapped = _middlewares.Aggregate(continuationWithMiddlewareResponseState, (acc, middleware) =>
-        {
-            return (r, o) => middleware.WrapRequest(r, o, acc);
-        });
-        return await wrapped(request, callOptions);
     }
 }
 
