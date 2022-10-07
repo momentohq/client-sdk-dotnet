@@ -10,9 +10,16 @@ You will need the [`dotnet` runtime and command line tools](https://dotnet.micro
 
 You will most likely want an IDE that supports .NET development, such as [Microsoft Visual Studio](https://visualstudio.microsoft.com/vs), [JetBrains Rider](https://www.jetbrains.com/rider/), or [Microsoft Visual Studio Code](https://code.visualstudio.com/).
 
-### Examples
+### Installation
 
-If you'd like to see some complete working examples, check out our [examples](./examples/README.md) page.
+To create a new .NET project and add the Momento client library as a dependency:
+
+```bash
+mkdir my-momento-dotnet-project
+cd my-momento-dotnet-project
+dotnet new console
+dotnet add package Momento.Sdk
+```
 
 ### Usage
 
@@ -26,15 +33,6 @@ Here is a quickstart you can use in your own project:
 
 Note that the above code requires an environment variable named MOMENTO_AUTH_TOKEN which must
 be set to a valid [Momento authentication token](https://docs.momentohq.com/docs/getting-started#obtain-an-auth-token).
-
-To create a new .NET project and add the Momento client library as a dependency:
-
-```bash
-mkdir my-momento-dotnet-project
-cd my-momento-dotnet-project
-dotnet new console
-dotnet add package Momento.Sdk
-```
 
 ### Error Handling
 
