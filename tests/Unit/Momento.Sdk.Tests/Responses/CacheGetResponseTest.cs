@@ -1,6 +1,5 @@
 ﻿using Google.Protobuf;
 using Momento.Protos.CacheClient;
-using Momento.Sdk.Exceptions;
 using Momento.Sdk.Responses;
 using Xunit;
 
