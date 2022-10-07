@@ -1,3 +1,6 @@
+<head>
+  <meta name="Momento .NET Client Library Documentation" content=".NET client software development kit for Momento Serverless Cache">
+</head>
 <img src="https://docs.momentohq.com/img/logo.svg" alt="logo" width="400"/>
 
 [![project status](https://momentohq.github.io/standards-and-practices/badges/project-status-official.svg)](https://github.com/momentohq/standards-and-practices/blob/main/docs/momento-on-github.md)

@@ -13,13 +13,16 @@ internal sealed class ScsControlClient : IDisposable
     private readonly ControlGrpcManager grpcManager;
     private readonly string authToken;
     private const int DEADLINE_SECONDS = 60;
+
     private readonly ILogger _logger;
+    private readonly CacheExceptionMapper _exceptionMapper;
 
     public ScsControlClient(string authToken, string endpoint, ILoggerFactory loggerFactory)
     {
         this.grpcManager = new ControlGrpcManager(authToken, endpoint, loggerFactory);
         this.authToken = authToken;
         this._logger = loggerFactory.CreateLogger<ScsControlClient>();
+        this._exceptionMapper = new CacheExceptionMapper(loggerFactory);
     }
 
     public async Task<CreateCacheResponse> CreateCacheAsync(string cacheName)
@@ -37,7 +40,7 @@ internal sealed class ScsControlClient : IDisposable
             {
                 return new CreateCacheResponse.CacheAlreadyExists();
             }
-            return new CreateCacheResponse.Error(CacheExceptionMapper.Convert(e));
+            return new CreateCacheResponse.Error(_exceptionMapper.Convert(e));
         }
     }
 
@@ -52,7 +55,7 @@ internal sealed class ScsControlClient : IDisposable
         }
         catch (Exception e)
         {
-            return new DeleteCacheResponse.Error(CacheExceptionMapper.Convert(e));
+            return new DeleteCacheResponse.Error(_exceptionMapper.Convert(e));
         }
     }
 
@@ -66,7 +69,7 @@ internal sealed class ScsControlClient : IDisposable
         }
         catch (Exception e)
         {
-            return new ListCachesResponse.Error(CacheExceptionMapper.Convert(e));
+            return new ListCachesResponse.Error(_exceptionMapper.Convert(e));
         }
     }
 
