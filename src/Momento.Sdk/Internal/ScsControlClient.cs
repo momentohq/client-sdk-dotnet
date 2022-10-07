@@ -17,9 +17,9 @@ internal sealed class ScsControlClient : IDisposable
     private readonly ILogger _logger;
     private readonly CacheExceptionMapper _exceptionMapper;
 
-    public ScsControlClient(string authToken, string endpoint, ILoggerFactory loggerFactory)
+    public ScsControlClient(ILoggerFactory loggerFactory, string authToken, string endpoint)
     {
-        this.grpcManager = new ControlGrpcManager(authToken, endpoint, loggerFactory);
+        this.grpcManager = new ControlGrpcManager(loggerFactory, authToken, endpoint);
         this.authToken = authToken;
         this._logger = loggerFactory.CreateLogger<ScsControlClient>();
         this._exceptionMapper = new CacheExceptionMapper(loggerFactory);
@@ -31,7 +31,7 @@ internal sealed class ScsControlClient : IDisposable
         {
             CheckValidCacheName(cacheName);
             _CreateCacheRequest request = new _CreateCacheRequest() { CacheName = cacheName };
-            await this.grpcManager.Client.CreateCacheAsync(request, deadline: CalculateDeadline());
+            await this.grpcManager.Client.CreateCacheAsync(request, new CallOptions(deadline: CalculateDeadline()));
             return new CreateCacheResponse.Success();
         }
         catch (Exception e)
@@ -49,7 +49,7 @@ internal sealed class ScsControlClient : IDisposable
         {
             CheckValidCacheName(cacheName);
             _DeleteCacheRequest request = new _DeleteCacheRequest() { CacheName = cacheName };
-            await this.grpcManager.Client.DeleteCacheAsync(request, deadline: CalculateDeadline());
+            await this.grpcManager.Client.DeleteCacheAsync(request, new CallOptions(deadline: CalculateDeadline()));
             return new DeleteCacheResponse.Success();
         }
         catch (Exception e)
@@ -63,7 +63,7 @@ internal sealed class ScsControlClient : IDisposable
         _ListCachesRequest request = new _ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
         try
         {
-            _ListCachesResponse result = await this.grpcManager.Client.ListCachesAsync(request, deadline: CalculateDeadline());
+            _ListCachesResponse result = await this.grpcManager.Client.ListCachesAsync(request, new CallOptions(deadline: CalculateDeadline()));
             return new ListCachesResponse.Success(result);
         }
         catch (Exception e)
