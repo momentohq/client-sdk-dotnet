@@ -20,12 +20,7 @@ public class Configuration : IConfiguration
     /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration.TransportStrategy" />
     public ITransportStrategy TransportStrategy { get; }
 
-    /// <summary>
     /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration" />
-    /// </summary>
-    /// <param name="retryStrategy">Defines a contract for how and when to retry a request</param>
-    /// <param name="transportStrategy">This is responsible for configuring network tunables.</param>
-    /// <param name="loggerFactory">This is responsible for configuraing logging.</param>
     public Configuration(IRetryStrategy retryStrategy, ITransportStrategy transportStrategy, ILoggerFactory? loggerFactory = null)
         : this(retryStrategy, new List<IMiddleware>(), transportStrategy, loggerFactory)
     {
@@ -33,7 +28,7 @@ public class Configuration : IConfiguration
     }
 
     /// <summary>
-    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration" />
+    /// Create a new instance of Configuration obejct with provided arguments: <see cref="Momento.Sdk.Config.IConfiguration.RetryStrategy">, <see cref="Momento.Sdk.Config.IConfiguration.Middlewares">, <see cref="Momento.Sdk.Config.IConfiguration.TransportStrategy"/>, and <see cref="Momento.Sdk.Config.IConfiguration.LoggerFactory"/>
     /// </summary>
     /// <param name="retryStrategy">Defines a contract for how and when to retry a request</param>
     /// <param name="middlewares">The Middleware interface allows the Configuration to provide a higher-order function that wraps all requests.</param>

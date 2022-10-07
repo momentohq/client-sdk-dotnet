@@ -12,10 +12,13 @@ namespace Momento.Sdk.Config;
 /// </summary>
 public interface IConfiguration
 {
+    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration.LoggerFactory" />
     public ILoggerFactory LoggerFactory { get; }
-
+    /// <inheritdoc cref="Momento.Sdk.Config.Retry.IRetryStrategy" />
     public IRetryStrategy RetryStrategy { get; }
+    /// <inheritdoc cref="Momento.Sdk.Config.Middleware.IMiddleware" />
     public IList<IMiddleware> Middlewares { get; }
+    /// <inheritdoc cref="Momento.Sdk.Config.Transport.ITransportStrategy" />
     public ITransportStrategy TransportStrategy { get; }
 
     /// <summary>
