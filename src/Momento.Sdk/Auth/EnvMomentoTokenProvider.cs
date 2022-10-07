@@ -9,11 +9,11 @@ using Momento.Sdk.Internal;
 /// </summary>
 public class EnvMomentoTokenProvider : ICredentialProvider
 {
-    /// <inheritdoc cref="Momento.Sdk.Auth.ICredentialProvider.AuthToken" />
+    /// <inheritdoc />
     public string AuthToken { get; private set; }
-    /// <inheritdoc cref="Momento.Sdk.Auth.ICredentialProvider.ControlEndpoint" />
+    /// <inheritdoc />
     public string ControlEndpoint { get; private set; }
-    /// <inheritdoc cref="Momento.Sdk.Auth.ICredentialProvider.CacheEndpoint" />
+    /// <inheritdoc />
     public string CacheEndpoint { get; private set; }
 
     /// <summary>

@@ -11,13 +11,13 @@ namespace Momento.Sdk.Config;
 /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration" />
 public class Configuration : IConfiguration
 {
-    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration.LoggerFactory" />
+    /// <inheritdoc />
     public ILoggerFactory LoggerFactory { get; }
-    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration.RetryStrategy" />
+    /// <inheritdoc />
     public IRetryStrategy RetryStrategy { get; }
-    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration.Middlewares" />
+    /// <inheritdoc />
     public IList<IMiddleware> Middlewares { get; }
-    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration.TransportStrategy" />
+    /// <inheritdoc />
     public ITransportStrategy TransportStrategy { get; }
 
     /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration" />
@@ -47,25 +47,25 @@ public class Configuration : IConfiguration
         this.TransportStrategy = transportStrategy;
     }
 
-    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration.WithLoggerFactory(ILoggerFactory)" />
+    /// <inheritdoc />
     public IConfiguration WithLoggerFactory(ILoggerFactory loggerFactory)
     {
         return new Configuration(RetryStrategy, Middlewares, TransportStrategy, loggerFactory);
     }
 
-    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration.WithRetryStrategy(IRetryStrategy)" />
+    /// <inheritdoc />
     public IConfiguration WithRetryStrategy(IRetryStrategy retryStrategy)
     {
         return new Configuration(retryStrategy, Middlewares, TransportStrategy, LoggerFactory);
     }
 
-    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration.WithMiddlewares(IList{IMiddleware})" />
+    /// <inheritdoc />
     public IConfiguration WithMiddlewares(IList<IMiddleware> middlewares)
     {
         return new Configuration(RetryStrategy, middlewares, TransportStrategy, LoggerFactory);
     }
 
-    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration.WithTransportStrategy(ITransportStrategy)" />
+    /// <inheritdoc />
     public IConfiguration WithTransportStrategy(ITransportStrategy transportStrategy)
     {
         return new Configuration(RetryStrategy, Middlewares, transportStrategy, LoggerFactory);
