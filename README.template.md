@@ -6,9 +6,7 @@
 
 You will need the [`dotnet` runtime and command line tools](https://dotnet.microsoft.com/en-us/download).  After installing them, you should have the `dotnet` command on your PATH.
 
-**IDE Notes**
-
-You will most likely want an IDE that supports .NET development, such as [Microsoft Visual Studio](https://visualstudio.microsoft.com/vs), [JetBrains Rider](https://www.jetbrains.com/rider/), or [Microsoft Visual Studio Code](https://code.visualstudio.com/).
+**IDE Notes**: You will most likely want an IDE that supports .NET development, such as [Microsoft Visual Studio](https://visualstudio.microsoft.com/vs), [JetBrains Rider](https://www.jetbrains.com/rider/), or [Microsoft Visual Studio Code](https://code.visualstudio.com/).
 
 ### Installation
 
