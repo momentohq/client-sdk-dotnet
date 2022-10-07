@@ -36,7 +36,7 @@ public record struct MiddlewareResponseState<TResponse>(
 /// </summary>
 public interface IMiddleware
 {
-    public ILoggerFactory LoggerFactory { get; }
+    public ILoggerFactory? LoggerFactory { get; }
 
     public IMiddleware WithLoggerFactory(ILoggerFactory loggerFactory);
 
@@ -54,6 +54,6 @@ public interface IMiddleware
         TRequest request,
         CallOptions callOptions,
         Func<TRequest, CallOptions, Task<MiddlewareResponseState<TResponse>>> continuation
-    );
+    ) where TRequest : class where TResponse: class;
 
 }

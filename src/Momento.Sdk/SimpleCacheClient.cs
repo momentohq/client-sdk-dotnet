@@ -35,7 +35,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         var _loggerFactory = config.LoggerFactory;
         this._logger = _loggerFactory.CreateLogger<SimpleCacheClient>();
         Utils.ArgumentStrictlyPositive(config.TransportStrategy.GrpcConfig.DeadlineMilliseconds, "config.TransportStrategy.GrpcConfig.DeadlineMilliseconds");
-        this.controlClient = new(authProvider.AuthToken, authProvider.ControlEndpoint, _loggerFactory);
+        this.controlClient = new(_loggerFactory, authProvider.AuthToken, authProvider.ControlEndpoint);
         this.dataClient = new(config, authProvider.AuthToken, authProvider.CacheEndpoint, defaultTtlSeconds);
     }
 
