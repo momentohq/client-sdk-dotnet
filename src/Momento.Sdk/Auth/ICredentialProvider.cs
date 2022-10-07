@@ -12,11 +12,11 @@ public interface ICredentialProvider
     /// </summary>
     string AuthToken { get; }
     /// <summary>
-    /// Control endpoint extracted from JWT
+    /// Control endpoint
     /// </summary>
     string ControlEndpoint { get; }
     /// <summary>
-    /// Cache endpoint extracted from JWT
+    /// Cache endpoint
     /// </summary>
     string CacheEndpoint { get; }
 }
