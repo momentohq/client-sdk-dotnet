@@ -6,46 +6,13 @@
 
 You will need the [`dotnet` runtime and command line tools](https://dotnet.microsoft.com/en-us/download).  After installing them, you should have the `dotnet` command on your PATH.
 
-### IDE
+**IDE Notes**
 
 You will most likely want an IDE that supports .NET development, such as [Microsoft Visual Studio](https://visualstudio.microsoft.com/vs), [JetBrains Rider](https://www.jetbrains.com/rider/), or [Microsoft Visual Studio Code](https://code.visualstudio.com/).
-
-### Momento Response Types
-
-The Momento `SimpleCacheClient` uses response types in a way you may not be familiar with and deserves
-a word of explanation upfront. Each response object's actual type will be a subtype (e.g., `CacheGetResponse.Hit`) of the requested response type (e.g., `CacheGetResponse`) and must be resolved to the correct subtype before accessing its properties. We recommend using [pattern matching](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/pattern-matching) to resolve the response's subtype and allow us to access the appropriate properties for that type:
-
-```csharp
-CreateCacheResponse createResponse = client.CreateCacheAsync("example-cache");
-if (createResponse is CreateCacheResponse.CacheAlreadyExists)
-{
-      // this may or may not be expected; handle as appropriate.
-}
-else if (createResponse is CreateCacheResponse.Error createError)
-{
-      if (createError.ErrorCode == MomentoErrorCode.LIMIT_EXCEEDED_ERROR)
-      {
-            // we've used our quota of caches; we should contact support@momentohq.com!
-      }
-}
-```
-
-See the "Error Handling" section below for more details.
 
 ### Examples
 
 If you'd like to see some complete working examples, check out our [examples](./examples/README.md) page.
-
-### Using Momento in your project
-
-To create a new .NET project and add the Momento client library as a dependency:
-
-```bash
-mkdir my-momento-dotnet-project
-cd my-momento-dotnet-project
-dotnet new console
-dotnet add package Momento.Sdk
-```
 
 ### Usage
 
@@ -59,6 +26,15 @@ Here is a quickstart you can use in your own project:
 
 Note that the above code requires an environment variable named MOMENTO_AUTH_TOKEN which must
 be set to a valid [Momento authentication token](https://docs.momentohq.com/docs/getting-started#obtain-an-auth-token).
+
+To create a new .NET project and add the Momento client library as a dependency:
+
+```bash
+mkdir my-momento-dotnet-project
+cd my-momento-dotnet-project
+dotnet new console
+dotnet add package Momento.Sdk
+```
 
 ### Error Handling
 
