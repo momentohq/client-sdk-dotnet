@@ -1,4 +1,7 @@
-﻿namespace Momento.Sdk.Requests;
+﻿using System;
+using Momento.Sdk.Internal;
+
+namespace Momento.Sdk.Requests;
 
 /// <summary>
 /// Type of operation to performed on the cache for the signed url.
@@ -44,7 +47,7 @@ public class SigningRequest
     /// <summary>
     /// The timestamp that the pre-signed URL is valid until.
     /// </summary>
-    public uint ExpiryEpochSeconds
+    public int ExpiryEpochSeconds
     {
         get;
     }
@@ -52,7 +55,7 @@ public class SigningRequest
     /// Time to Live for the item in Cache.
     /// This is an optional property that will only be used for CacheOperation.SET
     /// </summary>
-    public uint TtlSeconds
+    public int TtlSeconds
     {
         get;
         set;
@@ -65,11 +68,13 @@ public class SigningRequest
     /// <param name="cacheKey">The key to pre-sign.</param>
     /// <param name="cacheOperation">Type of operation (eg `get`, `set`) to pre-sign.</param>
     /// <param name="expiryEpochSeconds">Duration the pre-signed URL is valid for.</param>
-    public SigningRequest(string cacheName, string cacheKey, CacheOperation cacheOperation, uint expiryEpochSeconds)
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="expiryEpochSeconds" /> is 0 or negative.</exception>
+    public SigningRequest(string cacheName, string cacheKey, CacheOperation cacheOperation, int expiryEpochSeconds)
     {
         CacheName = cacheName;
         CacheKey = cacheKey;
         CacheOperation = cacheOperation;
+        Utils.ArgumentStrictlyPositive(expiryEpochSeconds, nameof(expiryEpochSeconds));
         ExpiryEpochSeconds = expiryEpochSeconds;
     }
 }

@@ -8,7 +8,7 @@ public class SimpleCacheDataTest
 {
     private readonly ICredentialProvider authProvider;
     private readonly string cacheName;
-    private const uint DefaultTtlSeconds = SimpleCacheClientFixture.DefaultTtlSeconds;
+    private const int DefaultTtlSeconds = SimpleCacheClientFixture.DefaultTtlSeconds;
     private SimpleCacheClient client;
 
     // Test initialization

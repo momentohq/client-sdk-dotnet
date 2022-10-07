@@ -83,10 +83,10 @@ namespace Momento.Sdk.Internal
         /// </summary>
         /// <param name="argument">The integer to zero test.</param>
         /// <param name="paramName">Name of the integer to propagate to the exception.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="argument"/> is zero.</exception>
-        public static void ArgumentStrictlyPositive(uint? argument, string paramName)
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="argument"/> is zero or negative.</exception>
+        public static void ArgumentStrictlyPositive(int? argument, string paramName)
         {
-            if (argument == 0)
+            if (argument <= 0)
             {
                 throw new ArgumentOutOfRangeException(paramName, "Number must be strictly positive.");
             }

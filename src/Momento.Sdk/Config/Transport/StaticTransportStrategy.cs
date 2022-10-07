@@ -7,10 +7,10 @@ namespace Momento.Sdk.Config.Transport;
 
 public class StaticGrpcConfiguration : IGrpcConfiguration
 {
-    public uint DeadlineMilliseconds { get; }
+    public int DeadlineMilliseconds { get; }
     public GrpcChannelOptions GrpcChannelOptions { get; }
 
-    public StaticGrpcConfiguration(uint deadlineMilliseconds, GrpcChannelOptions? grpcChannelOptions = null)
+    public StaticGrpcConfiguration(int deadlineMilliseconds, GrpcChannelOptions? grpcChannelOptions = null)
     {
         if (deadlineMilliseconds <= 0)
         {
@@ -20,7 +20,7 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
         this.GrpcChannelOptions = grpcChannelOptions ?? new GrpcChannelOptions();
     }
 
-    public IGrpcConfiguration WithDeadlineMilliseconds(uint deadlineMilliseconds)
+    public IGrpcConfiguration WithDeadlineMilliseconds(int deadlineMilliseconds)
     {
         return new StaticGrpcConfiguration(deadlineMilliseconds, this.GrpcChannelOptions);
     }
@@ -64,7 +64,7 @@ public class StaticTransportStrategy : ITransportStrategy
         return new StaticTransportStrategy(MaxConcurrentRequests, grpcConfig, LoggerFactory);
     }
 
-    public ITransportStrategy WithClientTimeoutMillis(uint clientTimeoutMillis)
+    public ITransportStrategy WithClientTimeoutMillis(int clientTimeoutMillis)
     {
         return new StaticTransportStrategy(MaxConcurrentRequests, GrpcConfig.WithDeadlineMilliseconds(clientTimeoutMillis), LoggerFactory);
     }

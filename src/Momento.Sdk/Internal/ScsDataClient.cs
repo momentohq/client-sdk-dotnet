@@ -16,11 +16,11 @@ namespace Momento.Sdk.Internal;
 public class ScsDataClientBase : IDisposable
 {
     protected readonly DataGrpcManager grpcManager;
-    protected readonly uint defaultTtlSeconds;
-    protected readonly uint dataClientOperationTimeoutMilliseconds;
+    protected readonly int defaultTtlSeconds;
+    protected readonly int dataClientOperationTimeoutMilliseconds;
     protected readonly ILogger _logger;
 
-    public ScsDataClientBase(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds)
+    public ScsDataClientBase(IConfiguration config, string authToken, string endpoint, int defaultTtlSeconds)
     {
         this.grpcManager = new(config, authToken, endpoint);
         this.defaultTtlSeconds = defaultTtlSeconds;
@@ -42,9 +42,9 @@ public class ScsDataClientBase : IDisposable
     /// </summary>
     /// <param name="ttlSeconds">The TTL to convert. Defaults to defaultTtlSeconds</param>
     /// <returns></returns>
-    protected uint TtlSecondsToMilliseconds(uint? ttlSeconds = null)
+    protected ulong TtlSecondsToMilliseconds(int? ttlSeconds = null)
     {
-        return (ttlSeconds ?? defaultTtlSeconds) * 1000;
+        return (ulong)((ttlSeconds ?? defaultTtlSeconds) * 1000);
     }
 
     public void Dispose()
@@ -55,13 +55,13 @@ public class ScsDataClientBase : IDisposable
 
 internal sealed class ScsDataClient : ScsDataClientBase
 {
-    public ScsDataClient(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds)
+    public ScsDataClient(IConfiguration config, string authToken, string endpoint, int defaultTtlSeconds)
         : base(config, authToken, endpoint, defaultTtlSeconds)
     {
 
     }
 
-    public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
+    public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, int? ttlSeconds = null)
     {
         return await this.SendSetAsync(cacheName, value: value.ToByteString(), key: key.ToByteString(), ttlSeconds: ttlSeconds);
     }
@@ -76,7 +76,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return await this.SendDeleteAsync(cacheName, key.ToByteString());
     }
 
-    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint? ttlSeconds = null)
+    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, int? ttlSeconds = null)
     {
         return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttlSeconds: ttlSeconds);
     }
@@ -91,12 +91,12 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return await this.SendDeleteAsync(cacheName, key.ToByteString());
     }
 
-    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
+    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, int? ttlSeconds = null)
     {
         return await this.SendSetAsync(cacheName, value: value.ToByteString(), key: key.ToByteString(), ttlSeconds: ttlSeconds);
     }
 
-    private async Task<CacheSetResponse> SendSetAsync(string cacheName, ByteString key, ByteString value, uint? ttlSeconds = null)
+    private async Task<CacheSetResponse> SendSetAsync(string cacheName, ByteString key, ByteString value, int? ttlSeconds = null)
     {
         _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = TtlSecondsToMilliseconds(ttlSeconds) };
         try

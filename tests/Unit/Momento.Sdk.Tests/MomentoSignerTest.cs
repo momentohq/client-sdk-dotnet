@@ -21,7 +21,7 @@ public class MomentoSignerTest
     public void TestJwkRoundTrip(string jwk)
     {
         MomentoSigner signer = new MomentoSigner(jwk);
-        uint expiryEpochSeconds = uint.MaxValue;
+        int expiryEpochSeconds = int.MaxValue;
         var url = signer.CreatePresignedUrl("foobar.com", new SigningRequest("testCacheName", "testCacheKey", CacheOperation.GET, expiryEpochSeconds)); ;
 
         string? jwt = HttpUtility.ParseQueryString(new Uri(url).Query).Get("token");
@@ -36,14 +36,14 @@ public class MomentoSignerTest
         };
         SecurityToken validatedToken;
         new JwtSecurityTokenHandler().ValidateToken(jwt, validationParameters, out validatedToken);
-        Assert.Equal(new DateTime(2106, 02, 07, 06, 28, 15), validatedToken.ValidTo);
+        Assert.Equal(new DateTime(2038, 01, 19, 03, 14, 07), validatedToken.ValidTo);
     }
 
     [Fact]
     public void TestPresignedUrlForGet()
     {
         MomentoSigner signer = new MomentoSigner(RS256_JWK);
-        uint expiryEpochSeconds = uint.MaxValue;
+        int expiryEpochSeconds = int.MaxValue;
         var url = signer.CreatePresignedUrl("foobar.com", new SigningRequest("testCacheName", "testCacheKey", CacheOperation.GET, expiryEpochSeconds));
 
         Uri? uriResult;
@@ -57,10 +57,10 @@ public class MomentoSignerTest
     public void TestPresignedUrlForSet()
     {
         MomentoSigner signer = new MomentoSigner(RS256_JWK);
-        uint expiryEpochSeconds = uint.MaxValue;
+        int expiryEpochSeconds = int.MaxValue;
         var req = new SigningRequest("testCacheName", "testCacheKey", CacheOperation.SET, expiryEpochSeconds)
         {
-            TtlSeconds = uint.MaxValue
+            TtlSeconds = int.MaxValue
         };
         var url = signer.CreatePresignedUrl("foobar.com", req);
 
@@ -68,14 +68,14 @@ public class MomentoSignerTest
         bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult);
         Assert.True(result);
         Assert.Equal(Uri.UriSchemeHttps, uriResult?.Scheme);
-        Assert.StartsWith("https://rest.foobar.com/cache/set/testCacheName/testCacheKey?ttl_milliseconds=4294967295000&token=", url);
+        Assert.StartsWith("https://rest.foobar.com/cache/set/testCacheName/testCacheKey?ttl_milliseconds=2147483647000&token=", url);
     }
 
     [Fact]
     public void TestUrlEncoding()
     {
         MomentoSigner signer = new MomentoSigner(RS256_JWK);
-        uint expiryEpochSeconds = uint.MaxValue;
+        int expiryEpochSeconds = int.MaxValue;
         var testCacheKey = "#$&\\'+,/:;=?@[]";
         var url = signer.CreatePresignedUrl("foobar.com", new SigningRequest("testCacheName", testCacheKey, CacheOperation.GET, expiryEpochSeconds));
 
@@ -89,7 +89,7 @@ public class MomentoSignerTest
     [Fact]
     public void TestJwkError()
     {
-        uint expiryEpochSeconds = uint.MaxValue;
+        int expiryEpochSeconds = int.MaxValue;
         var invalidJwk = "{\"alg\":\"foo\"}";
         MomentoSigner signer = new MomentoSigner(invalidJwk);
 

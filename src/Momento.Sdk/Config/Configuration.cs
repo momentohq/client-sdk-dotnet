@@ -112,7 +112,7 @@ public class Configuration : IConfiguration
     /// </summary>
     /// <param name="clientTimeoutMillis">Client timeout in milliseconds.</param>
     /// <returns>Configuration object with client timeout provided</returns>
-    public Configuration WithClientTimeoutMillis(uint clientTimeoutMillis)
+    public Configuration WithClientTimeoutMillis(int clientTimeoutMillis)
     {
         return new(
             retryStrategy: RetryStrategy,
@@ -122,7 +122,7 @@ public class Configuration : IConfiguration
         );
     }
 
-    IConfiguration IConfiguration.WithClientTimeoutMillis(uint clientTimeoutMillis)
+    IConfiguration IConfiguration.WithClientTimeoutMillis(int clientTimeoutMillis)
     {
         return WithClientTimeoutMillis(clientTimeoutMillis);
     }

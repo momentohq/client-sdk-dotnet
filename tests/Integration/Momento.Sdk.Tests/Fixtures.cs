@@ -14,7 +14,7 @@ public class SimpleCacheClientFixture : IDisposable
     public ICredentialProvider AuthProvider { get; private set; }
     public string CacheName { get; private set; }
 
-    public const uint DefaultTtlSeconds = 10;
+    public const int DefaultTtlSeconds = 10;
 
     public SimpleCacheClientFixture()
     {

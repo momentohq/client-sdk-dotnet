@@ -23,5 +23,5 @@ public interface IConfiguration
     public IConfiguration WithMiddlewares(IList<IMiddleware> middlewares);
     public IConfiguration WithTransportStrategy(ITransportStrategy transportStrategy);
 
-    public IConfiguration WithClientTimeoutMillis(uint clientTimeoutMillis);
+    public IConfiguration WithClientTimeoutMillis(int clientTimeoutMillis);
 }

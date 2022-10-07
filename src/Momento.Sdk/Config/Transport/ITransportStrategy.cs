@@ -13,5 +13,5 @@ public interface ITransportStrategy
     public ITransportStrategy WithLoggerFactory(ILoggerFactory loggerFactory);
     public ITransportStrategy WithMaxConcurrentRequests(int maxConcurrentRequests);
     public ITransportStrategy WithGrpcConfig(IGrpcConfiguration grpcConfig);
-    public ITransportStrategy WithClientTimeoutMillis(uint clientTimeoutMillis);
+    public ITransportStrategy WithClientTimeoutMillis(int clientTimeoutMillis);
 }
