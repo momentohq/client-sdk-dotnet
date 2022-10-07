@@ -12,7 +12,7 @@ namespace Momento.Sdk.Config;
 /// </summary>
 public interface IConfiguration
 {
-    /// <inheritdoc />
+    /// <inheritdoc cref="Microsoft.Extensions.Logging.ILoggerFactory" />
     public ILoggerFactory LoggerFactory { get; }
     /// <inheritdoc cref="Momento.Sdk.Config.Retry.IRetryStrategy" />
     public IRetryStrategy RetryStrategy { get; }
