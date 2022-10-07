@@ -39,9 +39,11 @@
 	  <None Remove="System.IdentityModel.Tokens.Jwt" />
 	  <None Remove="Microsoft.Extensions.Logging" />
 	  <None Remove="Microsoft.SourceLink.GitHub" />
+	  <None Remove="Internal\Retry\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Internal\Middleware\" />
+	  <Folder Include="Internal\Retry\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <PackageReference Include="Grpc.Net.Client" Version="2.49.0" />
