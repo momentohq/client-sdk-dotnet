@@ -36,14 +36,14 @@ namespace Momento.Sdk.Config.Middleware
             TRequest request,
             CallOptions callOptions,
             Func<TRequest, CallOptions, Task<MiddlewareResponseState<TResponse>>> continuation
-        )
+        ) where TRequest : class where TResponse : class
         {
-            _logger.LogDebug("Executing request of type: {}", request?.GetType());
+            _logger.LogDebug("Executing request of type: {}", request.GetType());
             var nextState = await continuation(request, callOptions);
             return new MiddlewareResponseState<TResponse>(
                 ResponseAsync: nextState.ResponseAsync.ContinueWith(r =>
                 {
-                    _logger.LogDebug("Got response for request of type: {}", request?.GetType());
+                    _logger.LogDebug("Got response for request of type: {}", request.GetType());
                     return r.Result;
                 }),
                 ResponseHeadersAsync: nextState.ResponseHeadersAsync,

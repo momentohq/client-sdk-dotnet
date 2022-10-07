@@ -54,6 +54,6 @@ public interface IMiddleware
         TRequest request,
         CallOptions callOptions,
         Func<TRequest, CallOptions, Task<MiddlewareResponseState<TResponse>>> continuation
-    );
+    ) where TRequest : class where TResponse: class;
 
 }

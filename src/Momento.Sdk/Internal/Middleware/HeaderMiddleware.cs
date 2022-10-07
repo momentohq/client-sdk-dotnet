@@ -9,7 +9,7 @@ using Momento.Sdk.Config.Middleware;
 
 namespace Momento.Sdk.Internal.Middleware
 {
-    class Header
+    internal class Header
     {
         public const string AuthorizationKey = "Authorization";
         public const string AgentKey = "Agent";
@@ -24,7 +24,7 @@ namespace Momento.Sdk.Internal.Middleware
         }
     }
 
-    class HeaderMiddleware : IMiddleware
+    internal class HeaderMiddleware : IMiddleware
     {
         public ILoggerFactory? LoggerFactory { get; }
 
@@ -54,7 +54,7 @@ namespace Momento.Sdk.Internal.Middleware
             TRequest request,
             CallOptions callOptions,
             Func<TRequest, CallOptions, Task<MiddlewareResponseState<TResponse>>> continuation
-        )
+        ) where TRequest : class where TResponse : class
         {
             var callOptionsWithHeaders = callOptions;
             if (callOptionsWithHeaders.Headers == null)
