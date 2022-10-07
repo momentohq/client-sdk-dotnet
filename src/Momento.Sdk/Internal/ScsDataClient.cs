@@ -15,17 +15,19 @@ namespace Momento.Sdk.Internal;
 
 public class ScsDataClientBase : IDisposable
 {
-    protected readonly DataGrpcManager grpcManager;
-    protected readonly uint defaultTtlSeconds;
-    protected readonly uint dataClientOperationTimeoutMilliseconds;
-    protected readonly ILogger _logger;
+    internal readonly DataGrpcManager grpcManager;
+    private readonly uint defaultTtlSeconds;
+    private readonly uint dataClientOperationTimeoutMilliseconds;
+    private readonly ILogger _logger;
+    protected readonly CacheExceptionMapper _exceptionMapper;
 
-    public ScsDataClientBase(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds, ILoggerFactory loggerFactory)
+    public ScsDataClientBase(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds)
     {
-        this.grpcManager = new(config, authToken, endpoint, loggerFactory);
+        this.grpcManager = new(config, authToken, endpoint);
         this.defaultTtlSeconds = defaultTtlSeconds;
         this.dataClientOperationTimeoutMilliseconds = config.TransportStrategy.GrpcConfig.DeadlineMilliseconds;
-        this._logger = loggerFactory.CreateLogger<ScsDataClient>();
+        this._logger = config.LoggerFactory.CreateLogger<ScsDataClient>();
+        this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
     }
 
     protected Metadata MetadataWithCache(string cacheName)
@@ -55,8 +57,8 @@ public class ScsDataClientBase : IDisposable
 
 internal sealed class ScsDataClient : ScsDataClientBase
 {
-    public ScsDataClient(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds, ILoggerFactory loggerFactory)
-        : base(config, authToken, endpoint, defaultTtlSeconds, loggerFactory)
+    public ScsDataClient(IConfiguration config, string authToken, string endpoint, uint defaultTtlSeconds)
+        : base(config, authToken, endpoint, defaultTtlSeconds)
     {
 
     }
@@ -105,7 +107,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            var exc = CacheExceptionMapper.Convert(e);
+            var exc = _exceptionMapper.Convert(e);
             if (exc.TransportDetails != null)
             {
                 exc.TransportDetails.Grpc.Metadata = MetadataWithCache(cacheName);
@@ -125,7 +127,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            var exc = CacheExceptionMapper.Convert(e);
+            var exc = _exceptionMapper.Convert(e);
             if (exc.TransportDetails != null)
             {
                 exc.TransportDetails.Grpc.Metadata = MetadataWithCache(cacheName);
@@ -149,7 +151,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            var exc = CacheExceptionMapper.Convert(e);
+            var exc = _exceptionMapper.Convert(e);
             if (exc.TransportDetails != null)
             {
                 exc.TransportDetails.Grpc.Metadata = MetadataWithCache(cacheName);

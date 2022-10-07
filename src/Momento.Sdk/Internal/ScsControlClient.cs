@@ -13,13 +13,16 @@ internal sealed class ScsControlClient : IDisposable
     private readonly ControlGrpcManager grpcManager;
     private readonly string authToken;
     private const uint DEADLINE_SECONDS = 60;
-    private readonly ILogger _logger;
 
-    public ScsControlClient(string authToken, string endpoint, ILoggerFactory loggerFactory)
+    private readonly ILogger _logger;
+    private readonly CacheExceptionMapper _exceptionMapper;
+
+    public ScsControlClient(ILoggerFactory loggerFactory, string authToken, string endpoint)
     {
-        this.grpcManager = new ControlGrpcManager(authToken, endpoint, loggerFactory);
+        this.grpcManager = new ControlGrpcManager(loggerFactory, authToken, endpoint);
         this.authToken = authToken;
         this._logger = loggerFactory.CreateLogger<ScsControlClient>();
+        this._exceptionMapper = new CacheExceptionMapper(loggerFactory);
     }
 
     public async Task<CreateCacheResponse> CreateCacheAsync(string cacheName)
@@ -28,7 +31,7 @@ internal sealed class ScsControlClient : IDisposable
         {
             CheckValidCacheName(cacheName);
             _CreateCacheRequest request = new _CreateCacheRequest() { CacheName = cacheName };
-            await this.grpcManager.Client.CreateCacheAsync(request, deadline: CalculateDeadline());
+            await this.grpcManager.Client.CreateCacheAsync(request, new CallOptions(deadline: CalculateDeadline()));
             return new CreateCacheResponse.Success();
         }
         catch (Exception e)
@@ -36,7 +39,7 @@ internal sealed class ScsControlClient : IDisposable
             if (e is RpcException ex && ex.StatusCode == StatusCode.AlreadyExists) {
                 return new CreateCacheResponse.CacheAlreadyExists();
             }
-            return new CreateCacheResponse.Error(CacheExceptionMapper.Convert(e));
+            return new CreateCacheResponse.Error(_exceptionMapper.Convert(e));
         }
     }
 
@@ -46,12 +49,12 @@ internal sealed class ScsControlClient : IDisposable
         {
             CheckValidCacheName(cacheName);
             _DeleteCacheRequest request = new _DeleteCacheRequest() { CacheName = cacheName };
-            await this.grpcManager.Client.DeleteCacheAsync(request, deadline: CalculateDeadline());
+            await this.grpcManager.Client.DeleteCacheAsync(request, new CallOptions(deadline: CalculateDeadline()));
             return new DeleteCacheResponse.Success();
         }
         catch (Exception e)
         {
-            return new DeleteCacheResponse.Error(CacheExceptionMapper.Convert(e));
+            return new DeleteCacheResponse.Error(_exceptionMapper.Convert(e));
         }
     }
 
@@ -60,12 +63,12 @@ internal sealed class ScsControlClient : IDisposable
         _ListCachesRequest request = new _ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
         try
         {
-            _ListCachesResponse result = await this.grpcManager.Client.ListCachesAsync(request, deadline: CalculateDeadline());
+            _ListCachesResponse result = await this.grpcManager.Client.ListCachesAsync(request, new CallOptions(deadline: CalculateDeadline()));
             return new ListCachesResponse.Success(result);
         }
         catch (Exception e)
         {
-            return new ListCachesResponse.Error(CacheExceptionMapper.Convert(e));
+            return new ListCachesResponse.Error(_exceptionMapper.Convert(e));
         }
     }
 

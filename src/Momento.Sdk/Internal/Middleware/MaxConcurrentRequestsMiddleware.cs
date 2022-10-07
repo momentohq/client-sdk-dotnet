@@ -1,5 +1,7 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Microsoft.Extensions.Logging;
+using Momento.Sdk.Config;
 using Momento.Sdk.Config.Middleware;
 using System;
 using System.Drawing;
@@ -32,16 +34,34 @@ namespace Momento.Sdk.Internal.Middleware
     // cases are unaffected. For the degenerate case (5000+ concurrent requests),
     // this protects the server and actually seems to improve client-side p999
     // latencies by quite a bit.
-    public class MaxConcurrentRequestsMiddleware : IMiddleware
+    internal class MaxConcurrentRequestsMiddleware : IMiddleware
     {
+        public ILoggerFactory LoggerFactory { get; }
+        private readonly int _maxConcurrentRequests;
         private readonly FairAsyncSemaphore _semaphore;
 
-        public MaxConcurrentRequestsMiddleware(int maxConcurrentRequests)
+        public MaxConcurrentRequestsMiddleware(ILoggerFactory loggerFactory, int maxConcurrentRequests)
         {
+            LoggerFactory = loggerFactory;
+            _maxConcurrentRequests = maxConcurrentRequests;
             _semaphore = new FairAsyncSemaphore(maxConcurrentRequests);
         }
 
-        public async Task<MiddlewareResponseState<TResponse>> WrapRequest<TRequest, TResponse>(TRequest request, CallOptions callOptions, Func<TRequest, CallOptions, Task<MiddlewareResponseState<TResponse>>> continuation)
+        public MaxConcurrentRequestsMiddleware WithLoggerFactory(ILoggerFactory loggerFactory)
+        {
+            return new(loggerFactory, _maxConcurrentRequests);
+        }
+
+        IMiddleware IMiddleware.WithLoggerFactory(ILoggerFactory loggerFactory)
+        {
+            return WithLoggerFactory(loggerFactory);
+        }
+
+        public async Task<MiddlewareResponseState<TResponse>> WrapRequest<TRequest, TResponse>(
+            TRequest request,
+            CallOptions callOptions,
+            Func<TRequest, CallOptions, Task<MiddlewareResponseState<TResponse>>> continuation
+        ) where TRequest : class where TResponse : class
         {
             await _semaphore.WaitOne();
             try

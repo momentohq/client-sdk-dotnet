@@ -7,6 +7,7 @@ using Grpc.Core;
 using HdrHistogram;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk;
+using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Responses;
@@ -88,15 +89,11 @@ namespace MomentoLoadGen
 
         public async Task Run()
         {
-            string? authToken = System.Environment.GetEnvironmentVariable("MOMENTO_AUTH_TOKEN");
-            if (authToken == null)
-            {
-                throw new Exception("Missing required environment variable MOMENTO_AUTH_TOKEN");
-            }
+            ICredentialProvider authProvider = new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN");
 
             var momento = new SimpleCacheClient(
                 _momentoClientConfig,
-                authToken,
+                authProvider,
                 CACHE_ITEM_TTL_SECONDS,
                 _loggerFactory
             );
@@ -236,7 +233,7 @@ cumulative get latencies:
                     await Task.Delay((int)(delayMillisBetweenRequests - getDuration));
                 }
 
-                string value = hitResponse.String();
+                string value = hitResponse.ValueString;
                 string valueString = $"{value.Substring(0, 10)}... (len: {value.Length})";
                 
                 var globalRequestCount = context.GlobalRequestCount;

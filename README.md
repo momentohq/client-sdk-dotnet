@@ -1,3 +1,6 @@
+<head>
+  <meta name="Momento .NET Client Library Documentation" content=".NET client software development kit for Momento Serverless Cache">
+</head>
 <img src="https://docs.momentohq.com/img/logo.svg" alt="logo" width="400"/>
 
 [![project status](https://momentohq.github.io/standards-and-practices/badges/project-status-official.svg)](https://github.com/momentohq/standards-and-practices/blob/main/docs/momento-on-github.md)
@@ -76,7 +79,7 @@ using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.La
     CacheGetResponse getResponse = await client.GetAsync(CACHE_NAME, KEY);
     if (getResponse is CacheGetResponse.Hit hitResponse)
     {
-        Console.WriteLine($"Looked up value: {hitResponse.String()}, Stored value: {VALUE}");
+        Console.WriteLine($"Looked up value: {hitResponse.ValueString}, Stored value: {VALUE}");
     } else if (getResponse is CacheGetResponse.Error getError) {
         Console.WriteLine($"Error getting value: {getError.Message}");
     }

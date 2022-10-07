@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Grpc.Core;
+using Microsoft.Extensions.Logging;
 
 namespace Momento.Sdk.Exceptions;
 
@@ -8,13 +10,32 @@ public class CacheExceptionMapper
     private const string INTERNAL_SERVER_ERROR_MESSAGE = "Unexpected exception occurred while trying to fulfill the request.";
     private const string SDK_ERROR_MESSAGE = "SDK Failed to process the request.";
 
-    public static SdkException Convert(Exception e)
+    private readonly ILogger _logger;
+
+    public CacheExceptionMapper(ILoggerFactory loggerFactory)
     {
-        if (e is SdkException exception)
+        _logger = loggerFactory.CreateLogger<CacheExceptionMapper>();
+    }
+
+    public SdkException Convert(Exception e)
+    {
+        _logger.LogDebug("Mapping exception to SdkException: {}", e);
+
+        var unwrappedException = e;
+        // If any Middleware uses a `ContinueWith` to modify the response, then
+        // any Exception that gets thrown will be wrapped in an AggregateException.
+        // Therefore we need to check for that case and unwrap here, otherwise
+        // we will not surface the correct error code.
+        if (e is AggregateException aggregateException)
+        {
+            unwrappedException = aggregateException.InnerException;
+        }
+
+        if (unwrappedException is SdkException exception)
         {
             return exception;
         }
-        if (e is RpcException ex)
+        if (unwrappedException is RpcException ex)
         {
             MomentoErrorTransportDetails transportDetails = new MomentoErrorTransportDetails(
                 new MomentoGrpcErrorDetails(ex.StatusCode, ex.Message, null)
@@ -61,9 +82,9 @@ public class CacheExceptionMapper
 
                 case StatusCode.Aborted:
                 case StatusCode.DataLoss:
-                default: return new InternalServerException(INTERNAL_SERVER_ERROR_MESSAGE, transportDetails, e);
+                default: return new InternalServerException(INTERNAL_SERVER_ERROR_MESSAGE, transportDetails, unwrappedException);
             }
         }
-        return new UnknownException(SDK_ERROR_MESSAGE, null, e);
+        return new UnknownException(SDK_ERROR_MESSAGE, null, unwrappedException);
     }
 }
