@@ -5,6 +5,9 @@ using Momento.Sdk.Config.Transport;
 
 namespace Momento.Sdk.Config;
 
+/// <summary>
+/// Provide pre-build configurations.
+/// </summary>
 public class Configurations
 {
     /// <summary>
