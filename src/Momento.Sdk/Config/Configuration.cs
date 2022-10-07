@@ -11,13 +11,13 @@ namespace Momento.Sdk.Config;
 /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration" />
 public class Configuration : IConfiguration
 {
-    /// <inheritdoc cref="Microsoft.Extensions.Logging.ILoggerFactory" />
+    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration.LoggerFactory" />
     public ILoggerFactory LoggerFactory { get; }
-    /// <inheritdoc cref="Momento.Sdk.Config.Retry.IRetryStrategy" />
+    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration.RetryStrategy" />
     public IRetryStrategy RetryStrategy { get; }
-    /// <inheritdoc cref="Momento.Sdk.Config.Middleware.IMiddleware" />
+    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration.Middlewares" />
     public IList<IMiddleware> Middlewares { get; }
-    /// <inheritdoc cref="Momento.Sdk.Config.Transport.ITransportStrategy" />
+    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration.TransportStrategy" />
     public ITransportStrategy TransportStrategy { get; }
 
     /// <summary>
@@ -52,48 +52,32 @@ public class Configuration : IConfiguration
         this.TransportStrategy = transportStrategy;
     }
 
-    /// <summary>
-    ///  Configures logging
-    /// </summary>
-    /// <param name="loggerFactory">This is responsible for configuraing logging.</param>
-    /// <returns>Configuration object with custom logging provided</returns>
+    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration.WithLoggerFactory(ILoggerFactory)" />
     public IConfiguration WithLoggerFactory(ILoggerFactory loggerFactory)
     {
         return new Configuration(RetryStrategy, Middlewares, TransportStrategy, loggerFactory);
     }
 
-    /// <summary>
-    ///  Configures retry strategy
-    /// </summary>
-    /// <param name="retryStrategy">Defines a contract for how and when to retry a request</param>
-    /// <returns>Configuration object with custom retry strategy provided</returns>
+    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration.WithRetryStrategy(IRetryStrategy)" />
     public IConfiguration WithRetryStrategy(IRetryStrategy retryStrategy)
     {
         return new Configuration(retryStrategy, Middlewares, TransportStrategy, LoggerFactory);
     }
 
-    /// <summary>
-    ///  Configures middlewares
-    /// </summary>
-    /// <param name="middlewares">The Middleware interface allows the Configuration to provide a higher-order function that wraps all requests.</param>
-    /// <returns>Configuration object with custom middlewares provided</returns>
+    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration.WithMiddlewares(IList{IMiddleware})" />
     public IConfiguration WithMiddlewares(IList<IMiddleware> middlewares)
     {
         return new Configuration(RetryStrategy, middlewares, TransportStrategy, LoggerFactory);
     }
 
-    /// <summary>
-    ///  Configures transport trategy
-    /// </summary>
-    /// <param name="transportStrategy">This is responsible for configuring network tunables.</param>
-    /// <returns>Configuration object with custom transport strategy provided</returns>
+    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration.WithTransportStrategy(ITransportStrategy)" />
     public IConfiguration WithTransportStrategy(ITransportStrategy transportStrategy)
     {
         return new Configuration(RetryStrategy, Middlewares, transportStrategy, LoggerFactory);
     }
 
     /// <summary>
-    ///  Configures middlewares
+    /// Add the specified middlewares to an existing instance of Configuration object in addition to already specified middlewares.
     /// </summary>
     /// <param name="additionalMiddlewares">The Middleware interface allows the Configuration to provide a higher-order function that wraps all requests.</param>
     /// <returns>Configuration object with custom middlewares provided</returns>
@@ -108,9 +92,9 @@ public class Configuration : IConfiguration
     }
 
     /// <summary>
-    ///  Configures client timeout for transport strategy
+    /// Add the specified client timeout to an existing instance of Configuration object as an addiion to the existing transport strategy.
     /// </summary>
-    /// <param name="clientTimeoutMillis">Client timeout in milliseconds.</param>
+    /// <param name="clientTimeoutMillis">The amount of time to wait before cancelling the request.</param>
     /// <returns>Configuration object with client timeout provided</returns>
     public Configuration WithClientTimeoutMillis(uint clientTimeoutMillis)
     {
