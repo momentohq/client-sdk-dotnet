@@ -84,6 +84,11 @@ namespace Momento.Sdk.Internal
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="argument"/> is zero or negative.</exception>
         public static void ArgumentStrictlyPositive(TimeSpan? argument, string paramName)
         {
+            if (argument is null)
+            {
+                return;
+            }
+
             if (argument <= TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(paramName, "TimeSpan must be strictly positive.");
