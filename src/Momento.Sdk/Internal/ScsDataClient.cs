@@ -14,7 +14,7 @@ namespace Momento.Sdk.Internal;
 public class ScsDataClientBase : IDisposable
 {
     internal readonly DataGrpcManager grpcManager;
-    protected readonly int defaultTtlMilliseconds;
+    protected readonly TimeSpan defaultTtl;
     protected readonly TimeSpan dataClientOperationTimeout;
     protected readonly ILogger _logger;
     protected readonly CacheExceptionMapper _exceptionMapper;
@@ -22,7 +22,7 @@ public class ScsDataClientBase : IDisposable
     public ScsDataClientBase(IConfiguration config, string authToken, string endpoint, TimeSpan defaultTtl)
     {
         this.grpcManager = new(config, authToken, endpoint);
-        this.defaultTtlMilliseconds = (int)defaultTtl.TotalMilliseconds;
+        this.defaultTtl = defaultTtl;
         this.dataClientOperationTimeout = config.TransportStrategy.GrpcConfig.Deadline;
         this._logger = config.LoggerFactory.CreateLogger<ScsDataClient>();
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
@@ -38,13 +38,13 @@ public class ScsDataClientBase : IDisposable
     }
 
     /// <summary>
-    /// Converts TTL in seconds to milliseconds. Defaults to <see cref="ScsDataClientBase.defaultTtlMilliseconds" />.
+    /// Converts TTL in seconds to milliseconds. Defaults to <see cref="ScsDataClientBase.defaultTtl" />.
     /// </summary>
     /// <param name="ttl">The TTL to convert. Defaults to defaultTtl</param>
     /// <returns></returns>
     protected ulong GivenOrDefaultTtl(TimeSpan? ttl = null)
     {
-        return (ulong)(ttl?.TotalMilliseconds ?? defaultTtlMilliseconds);
+        return (ulong)((ttl ?? defaultTtl).TotalMilliseconds);
     }
 
     public void Dispose()
