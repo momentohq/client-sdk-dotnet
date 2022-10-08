@@ -12,7 +12,7 @@ internal sealed class ScsControlClient : IDisposable
 {
     private readonly ControlGrpcManager grpcManager;
     private readonly string authToken;
-    private const int DEADLINE_SECONDS = 60;
+    private readonly TimeSpan deadline = TimeSpan.FromSeconds(60);
 
     private readonly ILogger _logger;
     private readonly CacheExceptionMapper _exceptionMapper;
@@ -84,7 +84,7 @@ internal sealed class ScsControlClient : IDisposable
 
     private DateTime CalculateDeadline()
     {
-        return DateTime.UtcNow.AddSeconds(DEADLINE_SECONDS);
+        return DateTime.UtcNow.Add(deadline);
     }
 
     public void Dispose()
