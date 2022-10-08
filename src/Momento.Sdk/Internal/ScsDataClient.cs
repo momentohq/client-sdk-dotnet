@@ -15,7 +15,7 @@ public class ScsDataClientBase : IDisposable
 {
     internal readonly DataGrpcManager grpcManager;
     protected readonly int defaultTtlMilliseconds;
-    protected readonly int dataClientOperationTimeoutMilliseconds;
+    protected readonly TimeSpan dataClientOperationTimeout;
     protected readonly ILogger _logger;
     protected readonly CacheExceptionMapper _exceptionMapper;
 
@@ -23,7 +23,7 @@ public class ScsDataClientBase : IDisposable
     {
         this.grpcManager = new(config, authToken, endpoint);
         this.defaultTtlMilliseconds = (int)defaultTtl.TotalMilliseconds;
-        this.dataClientOperationTimeoutMilliseconds = (int)config.TransportStrategy.GrpcConfig.Deadline.TotalMilliseconds;
+        this.dataClientOperationTimeout = config.TransportStrategy.GrpcConfig.Deadline;
         this._logger = config.LoggerFactory.CreateLogger<ScsDataClient>();
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
     }
@@ -34,7 +34,7 @@ public class ScsDataClientBase : IDisposable
     }
     protected DateTime CalculateDeadline()
     {
-        return DateTime.UtcNow.AddMilliseconds(dataClientOperationTimeoutMilliseconds);
+        return DateTime.UtcNow.Add(dataClientOperationTimeout);
     }
 
     /// <summary>
