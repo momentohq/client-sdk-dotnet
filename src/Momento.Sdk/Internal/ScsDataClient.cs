@@ -48,8 +48,8 @@ public class ScsDataClientBase : IDisposable
     /// ticks is <see cref="Int64.MaxValue"/>.
     /// </remark>
     /// <param name="ttl">The TTL to convert. Defaults to defaultTtl</param>
-    /// <returns></returns>
-    protected ulong GivenOrDefaultTtl(TimeSpan? ttl = null)
+    /// <returns>Milliseconds representation of the TTL (if provided, else of <see cref="defaultTtl"/>)</returns>
+    protected ulong TtlToMilliseconds(TimeSpan? ttl = null)
     {
         return (ulong)((ttl ?? defaultTtl).TotalMilliseconds);
     }
@@ -105,7 +105,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     private async Task<CacheSetResponse> SendSetAsync(string cacheName, ByteString key, ByteString value, TimeSpan? ttl = null)
     {
-        _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = GivenOrDefaultTtl(ttl) };
+        _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = TtlToMilliseconds(ttl) };
         try
         {
             await this.grpcManager.Client.SetAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
