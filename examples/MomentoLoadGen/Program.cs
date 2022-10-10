@@ -197,6 +197,7 @@ cumulative get latencies:
 {OutputHistogramSummary(getsAccumulatingHistogram)}
 
 ");
+            _logger.LogInformation($"Load gen data point:\t{_options.numberOfConcurrentRequests}\t{Tps(context, context.GlobalRequestCount)}\t{getsAccumulatingHistogram.GetValueAtPercentile(50)}\t{getsAccumulatingHistogram.GetValueAtPercentile(99.9)}");
         }
 
         private async Task IssueAsyncSetGet(SimpleCacheClient client, CsharpLoadGeneratorContext context, int workerId, int operationId, int delayMillisBetweenRequests, int printStatsEveryNRequests)
@@ -220,7 +221,7 @@ cumulative get latencies:
 
             var getStartTime = System.Diagnostics.Stopwatch.StartNew();
             var getResponse = await ExecuteRequestAndUpdateContextCounts(
-                context,             
+                context,
                 () => IssueGetRequest(client, cacheKey)
                 );
 
@@ -235,7 +236,7 @@ cumulative get latencies:
 
                 string value = hitResponse.ValueString;
                 string valueString = $"{value.Substring(0, 10)}... (len: {value.Length})";
-                
+
                 var globalRequestCount = context.GlobalRequestCount;
                 if (globalRequestCount % printStatsEveryNRequests == 0)
                 {
@@ -253,7 +254,7 @@ cumulative get latencies:
             CsharpLoadGeneratorContext context,
             Func<Task<Tuple<AsyncSetGetResult, TResult>>> block
             )
-        {            
+        {
             var result = await block();
             UpdateContextCountsForRequest(context, result.Item1);
             return result.Item2;
@@ -265,13 +266,16 @@ cumulative get latencies:
             if (getResponse is CacheGetResponse.Hit hit)
             {
                 return Tuple.Create<AsyncSetGetResult, CacheGetResponse?>(AsyncSetGetResult.SUCCESS, hit);
-            } else if (getResponse is CacheGetResponse.Miss miss)
+            }
+            else if (getResponse is CacheGetResponse.Miss miss)
             {
                 return Tuple.Create<AsyncSetGetResult, CacheGetResponse?>(AsyncSetGetResult.SUCCESS, miss);
-            } else if (getResponse is CacheGetResponse.Error error)
+            }
+            else if (getResponse is CacheGetResponse.Error error)
             {
                 return Tuple.Create<AsyncSetGetResult, CacheGetResponse?>(ConvertErrorToAsyncSetGetResult(error.ErrorCode, error.Exception), null);
-            } else
+            }
+            else
             {
                 throw new ApplicationException($"Unsupported get response: {getResponse}");
             }
@@ -300,14 +304,18 @@ cumulative get latencies:
             {
                 _logger.LogError("SERVER UNAVAILABLE: {}", ex);
                 return AsyncSetGetResult.UNAVAILABLE;
-            } else if (errorCode == MomentoErrorCode.INTERNAL_SERVER_ERROR) {
+            }
+            else if (errorCode == MomentoErrorCode.INTERNAL_SERVER_ERROR)
+            {
                 _logger.LogError("INTERNAL SERVER ERROR: {}", ex);
                 return AsyncSetGetResult.UNAVAILABLE;
-            } else if (errorCode == MomentoErrorCode.TIMEOUT_ERROR)
+            }
+            else if (errorCode == MomentoErrorCode.TIMEOUT_ERROR)
             {
                 _logger.LogError("TIMEOUT ERROR: {}", ex);
                 return AsyncSetGetResult.TIMEOUT;
-            } else if (errorCode == MomentoErrorCode.LIMIT_EXCEEDED_ERROR)
+            }
+            else if (errorCode == MomentoErrorCode.LIMIT_EXCEEDED_ERROR)
             {
                 return AsyncSetGetResult.LIMIT_EXCEEDED;
             }
@@ -367,7 +375,8 @@ count: {histogram.TotalCount}
     {
         static ILoggerFactory InitializeLogging()
         {
-            return LoggerFactory.Create(builder => {
+            return LoggerFactory.Create(builder =>
+            {
                 builder.AddSimpleConsole(options =>
                 {
                     options.IncludeScopes = true;
