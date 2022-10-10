@@ -96,6 +96,25 @@ namespace Momento.Sdk.Internal
         }
 
         /// <summary>
+        /// Throw an exception if the value is zero or negative.
+        /// </summary>
+        /// <param name="argument">The value to test.</param>
+        /// <param name="paramName">Name of the value to propagate to the exception.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="argument"/> is zero or negative.</exception>
+        public static void ArgumentStrictlyPositive(int? argument, string paramName)
+        {
+            if (argument is null)
+            {
+                return;
+            }
+
+            if (argument <= 0)
+            {
+                throw new ArgumentOutOfRangeException(paramName, "TimeSpan must be strictly positive.");
+            }
+        }
+
+        /// <summary>
         /// Defines methods to support comparing containers of reference items by their
         /// contents (structure) instead of by reference.
         /// </summary>
