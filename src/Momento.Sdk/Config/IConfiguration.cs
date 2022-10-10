@@ -19,7 +19,6 @@ public interface IConfiguration
     public IList<IMiddleware> Middlewares { get; }
     public ITransportStrategy TransportStrategy { get; }
 
-    public IConfiguration WithLoggerFactory(ILoggerFactory loggerFactory);
     public IConfiguration WithRetryStrategy(IRetryStrategy retryStrategy);
     public IConfiguration WithMiddlewares(IList<IMiddleware> middlewares);
     public IConfiguration WithTransportStrategy(ITransportStrategy transportStrategy);

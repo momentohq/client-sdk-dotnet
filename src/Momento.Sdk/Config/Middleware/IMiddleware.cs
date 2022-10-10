@@ -36,10 +36,6 @@ public record struct MiddlewareResponseState<TResponse>(
 /// </summary>
 public interface IMiddleware
 {
-    public ILoggerFactory? LoggerFactory { get; }
-
-    public IMiddleware WithLoggerFactory(ILoggerFactory loggerFactory);
-
     /// <summary>
     /// Called as a wrapper around each request; can be used to time the request and collect metrics etc.
     /// </summary>

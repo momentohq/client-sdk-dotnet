@@ -8,9 +8,6 @@ namespace Momento.Sdk.Config.Retry;
 /// </summary>
 public interface IRetryStrategy
 {
-    public ILoggerFactory? LoggerFactory { get; }
-    public IRetryStrategy WithLoggerFactory(ILoggerFactory loggerFactory);
-
     /// <summary>
     /// Calculates whether or not to retry a request based on the type of request and number of attempts.
     /// </summary>

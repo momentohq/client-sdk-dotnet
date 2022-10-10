@@ -9,21 +9,11 @@ namespace Momento.Sdk.Config.Middleware;
 
 public class PassThroughMiddleware : IMiddleware
 {
-    public ILoggerFactory LoggerFactory { get; }
+    private readonly ILogger _logger;
 
     public PassThroughMiddleware(ILoggerFactory loggerFactory)
     {
-        LoggerFactory = loggerFactory;
-    }
-
-    public PassThroughMiddleware WithLoggerFactory(ILoggerFactory loggerFactory)
-    {
-        return new(loggerFactory);
-    }
-
-    IMiddleware IMiddleware.WithLoggerFactory(ILoggerFactory loggerFactory)
-    {
-        return WithLoggerFactory(loggerFactory);
+        _logger = loggerFactory.CreateLogger<PassThroughMiddleware>();
     }
 
     public Task<MiddlewareResponseState<TResponse>> WrapRequest<TRequest, TResponse>(
@@ -32,6 +22,7 @@ public class PassThroughMiddleware : IMiddleware
         Func<TRequest, CallOptions, Task<MiddlewareResponseState<TResponse>>> continuation
     ) where TRequest : class where TResponse : class
     {
+        _logger.LogDebug("Hello from PassThroughMiddleware");
         return continuation(request, callOptions);
     }
 

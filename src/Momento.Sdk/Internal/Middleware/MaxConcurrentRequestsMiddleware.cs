@@ -36,25 +36,13 @@ namespace Momento.Sdk.Internal.Middleware
     // latencies by quite a bit.
     internal class MaxConcurrentRequestsMiddleware : IMiddleware
     {
-        public ILoggerFactory LoggerFactory { get; }
         private readonly int _maxConcurrentRequests;
         private readonly FairAsyncSemaphore _semaphore;
 
         public MaxConcurrentRequestsMiddleware(ILoggerFactory loggerFactory, int maxConcurrentRequests)
         {
-            LoggerFactory = loggerFactory;
             _maxConcurrentRequests = maxConcurrentRequests;
             _semaphore = new FairAsyncSemaphore(maxConcurrentRequests);
-        }
-
-        public MaxConcurrentRequestsMiddleware WithLoggerFactory(ILoggerFactory loggerFactory)
-        {
-            return new(loggerFactory, _maxConcurrentRequests);
-        }
-
-        IMiddleware IMiddleware.WithLoggerFactory(ILoggerFactory loggerFactory)
-        {
-            return WithLoggerFactory(loggerFactory);
         }
 
         public async Task<MiddlewareResponseState<TResponse>> WrapRequest<TRequest, TResponse>(

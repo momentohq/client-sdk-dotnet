@@ -1,4 +1,7 @@
-using System;
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
 using Momento.Sdk.Config.Transport;
 
@@ -15,24 +18,21 @@ public class Configurations
     /// </summary>
     public class Laptop : Configuration
     {
-        private Laptop(IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
-            : base(retryStrategy, transportStrategy)
+        private Laptop(ILoggerFactory loggerFactory, IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
+            : base(loggerFactory, retryStrategy, transportStrategy)
         {
 
         }
 
-        public static Laptop Latest
+        public static Laptop Latest(ILoggerFactory? loggerFactory = null)
         {
-            get
-            {
-                /*retryableStatusCodes = DEFAULT_RETRYABLE_STATUS_CODES,*/
-                IRetryStrategy retryStrategy = new FixedCountRetryStrategy(maxAttempts: 3);
-                ITransportStrategy transportStrategy = new StaticTransportStrategy(
-                    maxConcurrentRequests: 200,
-                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromSeconds(5))
-                );
-                return new Laptop(retryStrategy, transportStrategy);
-            }
+            var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
+            IRetryStrategy retryStrategy = new FixedCountRetryStrategy(finalLoggerFactory, maxAttempts: 3);
+            ITransportStrategy transportStrategy = new StaticTransportStrategy(
+                maxConcurrentRequests: 200,
+                grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(5000))
+            );
+            return new Laptop(finalLoggerFactory, retryStrategy, transportStrategy);
         }
     }
 
@@ -47,24 +47,21 @@ public class Configurations
         /// </summary>
         public class Default : Configuration
         {
-            private Default(IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
-                : base(retryStrategy, transportStrategy)
+            private Default(ILoggerFactory loggerFactory, IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
+                : base(loggerFactory, retryStrategy, transportStrategy)
             {
 
             }
 
-            public static Default Latest
+            public static Default Latest(ILoggerFactory? loggerFactory = null)
             {
-                get
-                {
-                    /*retryableStatusCodes = DEFAULT_RETRYABLE_STATUS_CODES,*/
-                    IRetryStrategy retryStrategy = new FixedCountRetryStrategy(maxAttempts: 3);
-                    ITransportStrategy transportStrategy = new StaticTransportStrategy(
-                        maxConcurrentRequests: 200,
-                        // TODO: tune the timeout value
-                        grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromSeconds(1)));
-                    return new Default(retryStrategy, transportStrategy);
-                }
+                var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
+                IRetryStrategy retryStrategy = new FixedCountRetryStrategy(finalLoggerFactory, maxAttempts: 3);
+                ITransportStrategy transportStrategy = new StaticTransportStrategy(
+                    maxConcurrentRequests: 200,
+                    // TODO: tune the timeout value
+                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(1000));
+                return new Default(finalLoggerFactory, retryStrategy, transportStrategy);
             }
         }
 
@@ -75,25 +72,22 @@ public class Configurations
         /// </summary>
         public class LowLatency : Configuration
         {
-            private LowLatency(IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
-                : base(retryStrategy, transportStrategy)
+            private LowLatency(ILoggerFactory loggerFactory, IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
+                : base(loggerFactory, retryStrategy, transportStrategy)
             {
 
             }
 
-            public static LowLatency Latest
+            public static LowLatency Latest(ILoggerFactory? loggerFactory = null)
             {
-                get
-                {
-                    /*retryableStatusCodes = DEFAULT_RETRYABLE_STATUS_CODES,*/
-                    IRetryStrategy retryStrategy = new FixedCountRetryStrategy(maxAttempts: 3);
-                    ITransportStrategy transportStrategy = new StaticTransportStrategy(
-                        maxConcurrentRequests: 20,
-                        // TODO: tune the timeout value
-                        grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromSeconds(1))
-                    );
-                    return new LowLatency(retryStrategy, transportStrategy);
-                }
+                var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
+                IRetryStrategy retryStrategy = new FixedCountRetryStrategy(finalLoggerFactory, maxAttempts: 3);
+                ITransportStrategy transportStrategy = new StaticTransportStrategy(
+                    maxConcurrentRequests: 20,
+                    // TODO: tune the timeout value
+                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(1000))
+                );
+                return new LowLatency(finalLoggerFactory, retryStrategy, transportStrategy);
             }
         }
     }
