@@ -11,9 +11,9 @@ ICredentialProvider authProvider = new EnvMomentoTokenProvider("MOMENTO_AUTH_TOK
 const string CACHE_NAME = "momento-example";
 const string KEY = "MyKey";
 const string VALUE = "MyData";
-const uint DEFAULT_TTL_SECONDS = 60;
+TimeSpan DEFAULT_TTL = TimeSpan.FromSeconds(60);
 
-using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.Latest(), authProvider, DEFAULT_TTL_SECONDS))
+using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.Latest(), authProvider, DEFAULT_TTL))
 {
     Console.WriteLine($"Creating cache {CACHE_NAME}");
     var createCacheResponse = await client.CreateCacheAsync(CACHE_NAME);
@@ -23,7 +23,8 @@ using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.La
         if (createCacheError.ErrorCode == MomentoErrorCode.LIMIT_EXCEEDED_ERROR)
         {
             Console.WriteLine("Error: cache limit exceeded. We need to talk to support@moentohq.com! Exiting.");
-        } else
+        }
+        else
         {
             Console.WriteLine($"Error creating cache: {createCacheError.Message}. Exiting.");
         }
@@ -48,7 +49,8 @@ using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.La
                 Console.WriteLine($"- {cacheInfo.Name}");
             }
             token = listCachesSuccess.NextPageToken;
-        } else if (listCachesResponse is ListCachesResponse.Error listCachesError)
+        }
+        else if (listCachesResponse is ListCachesResponse.Error listCachesError)
         {
             // We do not consider this a fatal error, so we just report it.
             Console.WriteLine($"Error listing caches: {listCachesError.Message}");
@@ -70,18 +72,22 @@ using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.La
     if (getResponse is CacheGetResponse.Hit getHit)
     {
         Console.WriteLine($"Looked up value: {getHit.ValueString}, Stored value: {VALUE}");
-    } else if (getResponse is CacheGetResponse.Miss)
+    }
+    else if (getResponse is CacheGetResponse.Miss)
     {
         // This shouldn't be fatal but should be reported.
         Console.WriteLine($"Error: got a cache miss for {KEY}!");
-    } else if (getResponse is CacheGetResponse.Error getError) {
+    }
+    else if (getResponse is CacheGetResponse.Error getError)
+    {
         // Also not considered fatal.
         Console.WriteLine($"Error getting value: {getError.Message}!");
     }
 
     Console.WriteLine($"\nDeleting key {KEY}");
     var deleteKeyResponse = await client.DeleteAsync(CACHE_NAME, KEY);
-    if (deleteKeyResponse is CacheDeleteResponse.Error deleteKeyError) {
+    if (deleteKeyResponse is CacheDeleteResponse.Error deleteKeyError)
+    {
         // Also not considred fatal.
         Console.WriteLine($"Error deleting key: {deleteKeyError.Message}!");
     }

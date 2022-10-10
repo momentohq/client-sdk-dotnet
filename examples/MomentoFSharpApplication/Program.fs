@@ -5,12 +5,12 @@ open Momento.Sdk.Responses
 open System
 
 let CACHE_NAME = "cache"
-let DEFAULT_TTL_SECONDS = 60u
+let DEFAULT_TTL = TimeSpan.FromSeconds(60)
 let authProvider = new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN")
 
 let exerciseCache() = (
     printfn "Howdy"
-    using(new SimpleCacheClient(Configurations.Laptop.Latest(), authProvider, DEFAULT_TTL_SECONDS)) (fun client ->
+    using(new SimpleCacheClient(Configurations.Laptop.Latest(), authProvider, DEFAULT_TTL)) (fun client ->
         let createCacheResult = client.CreateCacheAsync(CACHE_NAME) |> Async.AwaitTask
         
         printfn("Listing caches:")        
