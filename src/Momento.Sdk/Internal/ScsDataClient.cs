@@ -13,7 +13,7 @@ namespace Momento.Sdk.Internal;
 
 public class ScsDataClientBase : IDisposable
 {
-    internal readonly DataGrpcManager grpcManager;
+    protected readonly DataGrpcManager grpcManager;
     private readonly TimeSpan defaultTtl;
     private readonly TimeSpan dataClientOperationTimeout;
     private readonly ILogger _logger;
