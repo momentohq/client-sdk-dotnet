@@ -12,21 +12,16 @@ namespace Momento.Sdk.Config;
 /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration" />
 public class Configuration : IConfiguration
 {
-    /// <inheritdoc cref="Microsoft.Extensions.Logging.ILoggerFactory" />
+    /// <inheritdoc />
     public ILoggerFactory LoggerFactory { get; }
-    /// <inheritdoc cref="Momento.Sdk.Config.Retry.IRetryStrategy" />
+    /// <inheritdoc />
     public IRetryStrategy RetryStrategy { get; }
-    /// <inheritdoc cref="Momento.Sdk.Config.Middleware.IMiddleware" />
+    /// <inheritdoc />
     public IList<IMiddleware> Middlewares { get; }
-    /// <inheritdoc cref="Momento.Sdk.Config.Transport.ITransportStrategy" />
+    /// <inheritdoc />
     public ITransportStrategy TransportStrategy { get; }
 
-    /// <summary>
     /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration" />
-    /// </summary>
-    /// <param name="retryStrategy">Defines a contract for how and when to retry a request</param>
-    /// <param name="transportStrategy">This is responsible for configuring network tunables.</param>
-    /// <param name="loggerFactory">This is responsible for configuraing logging.</param>
     public Configuration(ILoggerFactory loggerFactory, IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
         : this(loggerFactory, retryStrategy, new List<IMiddleware>(), transportStrategy)
     {
@@ -34,7 +29,7 @@ public class Configuration : IConfiguration
     }
 
     /// <summary>
-    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration" />
+    /// Create a new instance of Configuration obejct with provided arguments: <see cref="Momento.Sdk.Config.IConfiguration.RetryStrategy" />, <see cref="Momento.Sdk.Config.IConfiguration.Middlewares" />, <see cref="Momento.Sdk.Config.IConfiguration.TransportStrategy"/>, and <see cref="Momento.Sdk.Config.IConfiguration.LoggerFactory"/>
     /// </summary>
     /// <param name="retryStrategy">Defines a contract for how and when to retry a request</param>
     /// <param name="middlewares">The Middleware interface allows the Configuration to provide a higher-order function that wraps all requests.</param>
@@ -48,38 +43,32 @@ public class Configuration : IConfiguration
         this.TransportStrategy = transportStrategy;
     }
 
-    /// <summary>
-    ///  Configures retry strategy
-    /// </summary>
-    /// <param name="retryStrategy">Defines a contract for how and when to retry a request</param>
-    /// <returns>Configuration object with custom retry strategy provided</returns>
+    /// <inheritdoc />
+    public IConfiguration WithLoggerFactory(ILoggerFactory loggerFactory)
+    {
+        return new Configuration(loggerFactory, RetryStrategy, Middlewares, TransportStrategy);
+    }
+
+    /// <inheritdoc />
     public IConfiguration WithRetryStrategy(IRetryStrategy retryStrategy)
     {
         return new Configuration(LoggerFactory, retryStrategy, Middlewares, TransportStrategy);
     }
 
-    /// <summary>
-    ///  Configures middlewares
-    /// </summary>
-    /// <param name="middlewares">The Middleware interface allows the Configuration to provide a higher-order function that wraps all requests.</param>
-    /// <returns>Configuration object with custom middlewares provided</returns>
+    /// <inheritdoc />
     public IConfiguration WithMiddlewares(IList<IMiddleware> middlewares)
     {
         return new Configuration(LoggerFactory, RetryStrategy, middlewares, TransportStrategy);
     }
 
-    /// <summary>
-    ///  Configures transport trategy
-    /// </summary>
-    /// <param name="transportStrategy">This is responsible for configuring network tunables.</param>
-    /// <returns>Configuration object with custom transport strategy provided</returns>
+    /// <inheritdoc />
     public IConfiguration WithTransportStrategy(ITransportStrategy transportStrategy)
     {
         return new Configuration(LoggerFactory, RetryStrategy, Middlewares, transportStrategy);
     }
 
     /// <summary>
-    ///  Configures middlewares
+    /// Add the specified middlewares to an existing instance of Configuration object in addition to already specified middlewares.
     /// </summary>
     /// <param name="additionalMiddlewares">The Middleware interface allows the Configuration to provide a higher-order function that wraps all requests.</param>
     /// <returns>Configuration object with custom middlewares provided</returns>
@@ -94,9 +83,9 @@ public class Configuration : IConfiguration
     }
 
     /// <summary>
-    ///  Configures client timeout for transport strategy
+    /// Add the specified client timeout to an existing instance of Configuration object as an addiion to the existing transport strategy.
     /// </summary>
-    /// <param name="clientTimeout">Client timeout.</param>
+    /// <param name="clientTimeout">The amount of time to wait before cancelling the request.</param>
     /// <returns>Configuration object with client timeout provided</returns>
     public Configuration WithClientTimeout(TimeSpan clientTimeout)
     {

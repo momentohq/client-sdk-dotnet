@@ -9,17 +9,11 @@ using Momento.Sdk.Internal;
 /// </summary>
 public class EnvMomentoTokenProvider : ICredentialProvider
 {
-    /// <summary>
-    /// JWT provided by user
-    /// </summary>
+    /// <inheritdoc />
     public string AuthToken { get; private set; }
-    /// <summary>
-    /// Control endpoint extracted from JWT
-    /// </summary>
+    /// <inheritdoc />
     public string ControlEndpoint { get; private set; }
-    /// <summary>
-    /// Cache endpoint extracted from JWT
-    /// </summary>
+    /// <inheritdoc />
     public string CacheEndpoint { get; private set; }
 
     /// <summary>
