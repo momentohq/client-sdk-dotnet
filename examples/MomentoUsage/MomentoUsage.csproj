@@ -11,6 +11,6 @@
     <None Remove="Momento.Sdk" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Momento.Sdk" Version="0.36.0" />
+    <PackageReference Include="Momento.Sdk" Version="0.37.0" />
   </ItemGroup>
 </Project>
