@@ -40,6 +40,13 @@ public class ScsDataClientBase : IDisposable
     /// <summary>
     /// Converts TTL in seconds to milliseconds. Defaults to <see cref="ScsDataClientBase.defaultTtl" />.
     /// </summary>
+    /// <remark>
+    /// Conversion to <see langword="ulong"/> is safe here:
+    /// (1) we already verified <paramref name="ttl"/> strictly positive, and
+    /// (2) we know <paramref name="ttl.TotalMilliseconds"/> is less than <see cref="Int64.MaxValue"/>
+    /// because <see cref="TimeSpan"/> counts number of ticks, 1ms = 10,000 ticks, and max number of
+    /// ticks is <see cref="Int64.MaxValue"/>.
+    /// </remark>
     /// <param name="ttl">The TTL to convert. Defaults to defaultTtl</param>
     /// <returns></returns>
     protected ulong GivenOrDefaultTtl(TimeSpan? ttl = null)
