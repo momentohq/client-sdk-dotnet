@@ -21,8 +21,8 @@ public class Configuration : IConfiguration
     public ITransportStrategy TransportStrategy { get; }
 
     /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration" />
-    public Configuration(IRetryStrategy retryStrategy, ITransportStrategy transportStrategy, ILoggerFactory? loggerFactory = null)
-        : this(retryStrategy, new List<IMiddleware>(), transportStrategy, loggerFactory)
+    public Configuration(ILoggerFactory loggerFactory, IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
+        : this(loggerFactory, retryStrategy, new List<IMiddleware>(), transportStrategy)
     {
 
     }
@@ -34,41 +34,36 @@ public class Configuration : IConfiguration
     /// <param name="middlewares">The Middleware interface allows the Configuration to provide a higher-order function that wraps all requests.</param>
     /// <param name="transportStrategy">This is responsible for configuring network tunables.</param>
     /// <param name="loggerFactory">This is responsible for configuraing logging.</param>
-    public Configuration(IRetryStrategy retryStrategy, IList<IMiddleware> middlewares, ITransportStrategy transportStrategy, ILoggerFactory? loggerFactory = null)
-
+    public Configuration(ILoggerFactory loggerFactory, IRetryStrategy retryStrategy, IList<IMiddleware> middlewares, ITransportStrategy transportStrategy)
     {
-        this.LoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
-
-        var retryStrategyWithLogger = retryStrategy.LoggerFactory != null ? retryStrategy : retryStrategy.WithLoggerFactory(loggerFactory!);
-        var middlewaresWithLogger = middlewares.Select(m => m.LoggerFactory != null ? m : m.WithLoggerFactory(loggerFactory!)).ToList();
-
-        this.RetryStrategy = retryStrategyWithLogger;
-        this.Middlewares = middlewaresWithLogger;
+        this.LoggerFactory = loggerFactory;
+        this.RetryStrategy = retryStrategy;
+        this.Middlewares = middlewares;
         this.TransportStrategy = transportStrategy;
     }
 
     /// <inheritdoc />
     public IConfiguration WithLoggerFactory(ILoggerFactory loggerFactory)
     {
-        return new Configuration(RetryStrategy, Middlewares, TransportStrategy, loggerFactory);
+        return new Configuration(loggerFactory, RetryStrategy, Middlewares, TransportStrategy);
     }
 
     /// <inheritdoc />
     public IConfiguration WithRetryStrategy(IRetryStrategy retryStrategy)
     {
-        return new Configuration(retryStrategy, Middlewares, TransportStrategy, LoggerFactory);
+        return new Configuration(LoggerFactory, retryStrategy, Middlewares, TransportStrategy);
     }
 
     /// <inheritdoc />
     public IConfiguration WithMiddlewares(IList<IMiddleware> middlewares)
     {
-        return new Configuration(RetryStrategy, middlewares, TransportStrategy, LoggerFactory);
+        return new Configuration(LoggerFactory, RetryStrategy, middlewares, TransportStrategy);
     }
 
     /// <inheritdoc />
     public IConfiguration WithTransportStrategy(ITransportStrategy transportStrategy)
     {
-        return new Configuration(RetryStrategy, Middlewares, transportStrategy, LoggerFactory);
+        return new Configuration(LoggerFactory, RetryStrategy, Middlewares, transportStrategy);
     }
 
     /// <summary>

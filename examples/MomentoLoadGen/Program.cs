@@ -75,10 +75,10 @@ namespace MomentoLoadGen
         private readonly CsharpLoadGeneratorOptions _options;
         private readonly string _cacheValue;
 
-        public CsharpLoadGenerator(ILoggerFactory loggerFactory, IConfiguration momentoClientConfig, CsharpLoadGeneratorOptions options)
+        public CsharpLoadGenerator(IConfiguration momentoClientConfig, CsharpLoadGeneratorOptions options)
         {
-            _loggerFactory = loggerFactory;
-            _logger = loggerFactory.CreateLogger<CsharpLoadGenerator>();
+            _loggerFactory = momentoClientConfig.LoggerFactory;
+            _logger = _loggerFactory.CreateLogger<CsharpLoadGenerator>();
             _momentoClientConfig = momentoClientConfig;
 
             _options = options;
@@ -89,53 +89,53 @@ namespace MomentoLoadGen
 
         public async Task Run()
         {
-            ICredentialProvider authProvider = new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN");
+            var authProvider = new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN");
 
-            var momento = new SimpleCacheClient(
+            using (var momento = new SimpleCacheClient(
                 _momentoClientConfig,
                 authProvider,
-                CACHE_ITEM_TTL_SECONDS,
-                _loggerFactory
-            );
-
-            try
+                CACHE_ITEM_TTL_SECONDS
+            ))
             {
-                await momento.CreateCacheAsync(CACHE_NAME);
+                try
+                {
+                    await momento.CreateCacheAsync(CACHE_NAME);
+                }
+                catch (AlreadyExistsException)
+                {
+                    _logger.LogInformation("cache '{0}' already exists", CACHE_NAME);
+                }
+
+
+                var numOperationsPerWorker = _options.totalNumberOfOperationsToExecute / _options.numberOfConcurrentRequests;
+                var workerDelayBetweenRequests = Convert.ToInt32(Math.Floor((1000.0 * _options.numberOfConcurrentRequests) / (_options.maxRequestsPerSecond * 1)));
+                Console.WriteLine($"Targeting a max of {_options.maxRequestsPerSecond} requests per second (delay between requests: {workerDelayBetweenRequests})");
+                var totalNumRequestsExpected = _options.totalNumberOfOperationsToExecute * NUM_REQUESTS_PER_OPERATION;
+
+                var context = new CsharpLoadGeneratorContext();
+
+
+                var asyncResults = Enumerable.Range(0, _options.numberOfConcurrentRequests).Select<int, Task>(workerId =>
+                    LaunchAndRunWorkers(
+                        momento,
+                        context,
+                        workerId + 1,
+                        numOperationsPerWorker,
+                        workerDelayBetweenRequests,
+                        _options.printStatsEveryNRequests
+                        )
+                ).ToList();
+
+                var statsPrinterTask = LaunchStatsPrinterTask(context, _options.printStatsEveryNRequests, totalNumRequestsExpected);
+
+                var firstResult = await Task.WhenAny(asyncResults);
+                // this will ensure that the program exits promptly if one of the async
+                // tasks throws an uncaught exception.
+                await firstResult;
+                await Task.WhenAll(asyncResults);
+
+                await statsPrinterTask;
             }
-            catch (AlreadyExistsException)
-            {
-                _logger.LogInformation("cache '{0}' already exists", CACHE_NAME);
-            }
-
-
-            var numOperationsPerWorker = _options.totalNumberOfOperationsToExecute / _options.numberOfConcurrentRequests;
-            var workerDelayBetweenRequests = Convert.ToInt32(Math.Floor((1000.0 * _options.numberOfConcurrentRequests) / (_options.maxRequestsPerSecond * 1)));
-            Console.WriteLine($"Targeting a max of {_options.maxRequestsPerSecond} requests per second (delay between requests: {workerDelayBetweenRequests})");
-            var totalNumRequestsExpected = _options.totalNumberOfOperationsToExecute * NUM_REQUESTS_PER_OPERATION;
-
-            var context = new CsharpLoadGeneratorContext();
-
-
-            var asyncResults = Enumerable.Range(0, _options.numberOfConcurrentRequests).Select<int, Task>(workerId =>
-                LaunchAndRunWorkers(
-                    momento,
-                    context,
-                    workerId + 1,
-                    numOperationsPerWorker,
-                    workerDelayBetweenRequests,
-                    _options.printStatsEveryNRequests
-                    )
-            ).ToList();
-
-            var statsPrinterTask = LaunchStatsPrinterTask(context, _options.printStatsEveryNRequests, totalNumRequestsExpected);
-
-            var firstResult = await Task.WhenAny(asyncResults);
-            // this will ensure that the program exits promptly if one of the async
-            // tasks throws an uncaught exception.
-            await firstResult;
-            await Task.WhenAll(asyncResults);
-
-            await statsPrinterTask;
             _logger.LogInformation("Done");
         }
 
@@ -298,20 +298,20 @@ cumulative get latencies:
         {
             if (errorCode == MomentoErrorCode.SERVER_UNAVAILABLE)
             {
-                _logger.LogError("SERVER UNAVAILABLE", ex);
+                _logger.LogError("SERVER UNAVAILABLE: {}", ex);
                 return AsyncSetGetResult.UNAVAILABLE;
             } else if (errorCode == MomentoErrorCode.INTERNAL_SERVER_ERROR) {
-                _logger.LogError("INTERNAL SERVER ERROR", ex);
+                _logger.LogError("INTERNAL SERVER ERROR: {}", ex);
                 return AsyncSetGetResult.UNAVAILABLE;
             } else if (errorCode == MomentoErrorCode.TIMEOUT_ERROR)
             {
-                _logger.LogError("TIMEOUT ERROR", ex);
+                _logger.LogError("TIMEOUT ERROR: {}", ex);
                 return AsyncSetGetResult.TIMEOUT;
             } else if (errorCode == MomentoErrorCode.LIMIT_EXCEEDED_ERROR)
             {
                 return AsyncSetGetResult.LIMIT_EXCEEDED;
             }
-            _logger.LogError("UNCAUGHT EXCEPTION", ex);
+            _logger.LogError("UNCAUGHT EXCEPTION: {}", ex);
             throw new ApplicationException($"Unsupported error code: {errorCode}");
 
         }
@@ -374,8 +374,8 @@ count: {histogram.TotalCount}
                     options.SingleLine = true;
                     options.TimestampFormat = "hh:mm:ss ";
                 });
-                builder.AddFilter("Grpc.Net.Client.Internal.GrpcCall", LogLevel.Error);
-                builder.SetMinimumLevel(LogLevel.Information);
+                builder.AddFilter("Grpc.Net.Client", LogLevel.Error);
+                builder.SetMinimumLevel(LogLevel.Debug);
             });
         }
 
@@ -398,65 +398,67 @@ If you have questions or need help experimenting further, please reach out to us
 
         static async Task Main(string[] args)
         {
-            using ILoggerFactory loggerFactory = InitializeLogging();
+            using (ILoggerFactory loggerFactory = InitializeLogging())
+            {
 
-            CsharpLoadGeneratorOptions loadGeneratorOptions = new CsharpLoadGeneratorOptions(
-              ///
-              /// Each time the load generator has executed this many requests, it will
-              /// print out some statistics about throughput and latency.
-              ///
-              printStatsEveryNRequests: 5000,
-              
-              ///
-              /// Controls the size of the payload that will be used for the cache items in
-              /// the load test.  Smaller payloads will generally provide lower latencies than
-              /// larger payloads.
-              ///
-              cacheItemPayloadBytes: 100,
-              ///
-              /// Controls the number of concurrent requests that will be made (via asynchronous
-              /// function calls) by the load test.  Increasing this number may improve throughput,
-              /// but it will also increase CPU consumption.  As CPU usage increases and there
-              /// is more contention between the concurrent function calls, client-side latencies
-              /// may increase.
-              ///
-              numberOfConcurrentRequests: 50,
-              ///
-              /// Sets an upper bound on how many requests per second will be sent to the server.
-              /// Momento caches have a default throttling limit of 100 requests per second,
-              /// so if you raise this, you may observe throttled requests.  Contact
-              /// support@momentohq.com to inquire about raising your limits.
-              ///
-              maxRequestsPerSecond: 100,
-              ///
-              /// Controls how long the load test will run.  We will execute this many operations
-              /// (1 cache 'set' followed immediately by 1 'get') across all of our concurrent
-              /// workers before exiting.  Statistics will be logged every 1000 operations.
-              ///
-              totalNumberOfOperationsToExecute: 500_000
-            );
+                CsharpLoadGeneratorOptions loadGeneratorOptions = new CsharpLoadGeneratorOptions(
+                  ///
+                  /// Each time the load generator has executed this many requests, it will
+                  /// print out some statistics about throughput and latency.
+                  ///
+                  printStatsEveryNRequests: 5000,
 
-            /// 
-            /// This is the configuration that will be used for the Momento client.  Choose from
-            /// our pre-built configurations that are optimized for Laptop vs InRegion environments,
-            /// or build your own.
-            ///
-            IConfiguration config = Configurations.Laptop.Latest.WithClientTimeoutMillis(1000);
-
-            CsharpLoadGenerator loadGenerator = new CsharpLoadGenerator(
-                loggerFactory,
-                config,
-                loadGeneratorOptions
+                  ///
+                  /// Controls the size of the payload that will be used for the cache items in
+                  /// the load test.  Smaller payloads will generally provide lower latencies than
+                  /// larger payloads.
+                  ///
+                  cacheItemPayloadBytes: 100,
+                  ///
+                  /// Controls the number of concurrent requests that will be made (via asynchronous
+                  /// function calls) by the load test.  Increasing this number may improve throughput,
+                  /// but it will also increase CPU consumption.  As CPU usage increases and there
+                  /// is more contention between the concurrent function calls, client-side latencies
+                  /// may increase.
+                  ///
+                  numberOfConcurrentRequests: 50,
+                  ///
+                  /// Sets an upper bound on how many requests per second will be sent to the server.
+                  /// Momento caches have a default throttling limit of 100 requests per second,
+                  /// so if you raise this, you may observe throttled requests.  Contact
+                  /// support@momentohq.com to inquire about raising your limits.
+                  ///
+                  maxRequestsPerSecond: 100,
+                  ///
+                  /// Controls how long the load test will run.  We will execute this many operations
+                  /// (1 cache 'set' followed immediately by 1 'get') across all of our concurrent
+                  /// workers before exiting.  Statistics will be logged every 1000 operations.
+                  ///
+                  totalNumberOfOperationsToExecute: 500_000
                 );
-            try
-            {
-                await loadGenerator.Run();
-                Console.WriteLine("success!");
-                Console.WriteLine(PERFORMANCE_INFORMATION_MESSAGE);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("ERROR!: {0}", e);
+
+                /// 
+                /// This is the configuration that will be used for the Momento client.  Choose from
+                /// our pre-built configurations that are optimized for Laptop vs InRegion environments,
+                /// or build your own.
+                ///
+                IConfiguration config = Configurations.Laptop.Latest
+                    .WithLoggerFactory(loggerFactory);
+
+                CsharpLoadGenerator loadGenerator = new CsharpLoadGenerator(
+                    config,
+                    loadGeneratorOptions
+                    );
+                try
+                {
+                    await loadGenerator.Run();
+                    Console.WriteLine("success!");
+                    Console.WriteLine(PERFORMANCE_INFORMATION_MESSAGE);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("ERROR!: {0}", e);
+                }
             }
         }
     }

@@ -9,7 +9,7 @@ using Momento.Sdk.Config.Middleware;
 
 namespace Momento.Sdk.Internal.Middleware
 {
-    class Header
+    internal class Header
     {
         public const string AuthorizationKey = "Authorization";
         public const string AgentKey = "Agent";
@@ -24,10 +24,8 @@ namespace Momento.Sdk.Internal.Middleware
         }
     }
 
-    class HeaderMiddleware : IMiddleware
+    internal class HeaderMiddleware : IMiddleware
     {
-        public ILoggerFactory? LoggerFactory { get; }
-
         private readonly List<Header> _headers;
         private readonly List<Header> headersToAddEveryTime = new List<Header> { };
         private readonly List<Header> headersToAddOnce = new List<Header> { };
@@ -40,21 +38,11 @@ namespace Momento.Sdk.Internal.Middleware
             this.headersToAddEveryTime = headers.Where(header => !header.onceOnlyHeaders.Contains(header.Name)).ToList();
         }
 
-        public HeaderMiddleware WithLoggerFactory(ILoggerFactory loggerFactory)
-        {
-            return new(loggerFactory, _headers);
-        }
-
-        IMiddleware IMiddleware.WithLoggerFactory(ILoggerFactory loggerFactory)
-        {
-            return WithLoggerFactory(loggerFactory);
-        }
-
         public async Task<MiddlewareResponseState<TResponse>> WrapRequest<TRequest, TResponse>(
             TRequest request,
             CallOptions callOptions,
             Func<TRequest, CallOptions, Task<MiddlewareResponseState<TResponse>>> continuation
-        )
+        ) where TRequest : class where TResponse : class
         {
             var callOptionsWithHeaders = callOptions;
             if (callOptionsWithHeaders.Headers == null)
