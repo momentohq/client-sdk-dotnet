@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
@@ -28,15 +27,16 @@ public class SimpleCacheClient : ISimpleCacheClient
     /// </summary>
     /// <param name="config">Configuration to use for the transport, retries, middlewares. See <see cref="Configurations"/> for out-of-the-box configuration choices, eg <see cref="Configurations.Laptop.Latest"/></param>
     /// <param name="authProvider">Momento auth provider.</param>
-    /// <param name="defaultTtlSeconds">Default time to live for the item in cache.</param>
-    public SimpleCacheClient(IConfiguration config, ICredentialProvider authProvider, uint defaultTtlSeconds)
+    /// <param name="defaultTtl">Default time to live for the item in cache.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="defaultTtl"/> is zero or negative.</exception>
+    public SimpleCacheClient(IConfiguration config, ICredentialProvider authProvider, TimeSpan defaultTtl)
     {
         this.config = config;
         var _loggerFactory = config.LoggerFactory;
         this._logger = _loggerFactory.CreateLogger<SimpleCacheClient>();
-        ValidateRequestTimeout(config.TransportStrategy.GrpcConfig.DeadlineMilliseconds);
+        Utils.ArgumentStrictlyPositive(defaultTtl, "defaultTtl");
         this.controlClient = new(_loggerFactory, authProvider.AuthToken, authProvider.ControlEndpoint);
-        this.dataClient = new(config, authProvider.AuthToken, authProvider.CacheEndpoint, defaultTtlSeconds);
+        this.dataClient = new(config, authProvider.AuthToken, authProvider.CacheEndpoint, defaultTtl);
     }
 
     /// <inheritdoc />
@@ -58,19 +58,24 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <inheritdoc />
-    public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, uint? ttlSeconds = null)
+    public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, TimeSpan? ttl = null)
     {
         try
         {
             Utils.ArgumentNotNull(cacheName, nameof(cacheName));
             Utils.ArgumentNotNull(key, nameof(key));
             Utils.ArgumentNotNull(value, nameof(value));
+            Utils.ArgumentStrictlyPositive(ttl, nameof(ttl));
         }
         catch (ArgumentNullException e)
         {
             return new CacheSetResponse.Error(new InvalidArgumentException(e.Message));
         }
-        return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
+        catch (ArgumentOutOfRangeException e)
+        {
+            return new CacheSetResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        return await this.dataClient.SetAsync(cacheName, key, value, ttl);
     }
 
     /// <inheritdoc />
@@ -106,20 +111,25 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <inheritdoc />
-    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, uint? ttlSeconds = null)
+    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, TimeSpan? ttl = null)
     {
         try
         {
             Utils.ArgumentNotNull(cacheName, nameof(cacheName));
             Utils.ArgumentNotNull(key, nameof(key));
             Utils.ArgumentNotNull(value, nameof(value));
+            Utils.ArgumentStrictlyPositive(ttl, nameof(ttl));
         }
         catch (ArgumentNullException e)
         {
             return new CacheSetResponse.Error(new InvalidArgumentException(e.Message));
         }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return new CacheSetResponse.Error(new InvalidArgumentException(e.Message));
+        }
 
-        return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
+        return await this.dataClient.SetAsync(cacheName, key, value, ttl);
     }
 
     /// <inheritdoc />
@@ -154,20 +164,25 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <inheritdoc />
-    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, uint? ttlSeconds = null)
+    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, TimeSpan? ttl = null)
     {
         try
         {
             Utils.ArgumentNotNull(cacheName, nameof(cacheName));
             Utils.ArgumentNotNull(key, nameof(key));
             Utils.ArgumentNotNull(value, nameof(value));
+            Utils.ArgumentStrictlyPositive(ttl, nameof(ttl));
         }
         catch (ArgumentNullException e)
         {
             return new CacheSetResponse.Error(new InvalidArgumentException(e.Message));
         }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return new CacheSetResponse.Error(new InvalidArgumentException(e.Message));
+        }
 
-        return await this.dataClient.SetAsync(cacheName, key, value, ttlSeconds);
+        return await this.dataClient.SetAsync(cacheName, key, value, ttl);
     }
 
     /// <inheritdoc />
@@ -176,17 +191,5 @@ public class SimpleCacheClient : ISimpleCacheClient
         this.controlClient.Dispose();
         this.dataClient.Dispose();
         GC.SuppressFinalize(this);
-    }
-
-    private void ValidateRequestTimeout(uint? requestTimeoutMilliseconds = null)
-    {
-        if (requestTimeoutMilliseconds == null)
-        {
-            return;
-        }
-        if (requestTimeoutMilliseconds == 0)
-        {
-            throw new InvalidArgumentException("Request timeout must be greater than zero.");
-        }
     }
 }

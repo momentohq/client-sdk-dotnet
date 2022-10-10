@@ -50,7 +50,7 @@ public class MomentoSigner
         return signingRequest.CacheOperation switch
         {
             CacheOperation.GET => $"https://rest.{hostname}/cache/get/{cacheName}/{cacheKey}?token={jwtToken}",
-            CacheOperation.SET => $"https://rest.{hostname}/cache/set/{cacheName}/{cacheKey}?ttl_milliseconds={signingRequest.TtlSeconds * (ulong)1000}&token={jwtToken}",
+            CacheOperation.SET => $"https://rest.{hostname}/cache/set/{cacheName}/{cacheKey}?ttl_milliseconds={(long)signingRequest.TtlSeconds * 1000}&token={jwtToken}",
             _ => throw new NotImplementedException($"Unhandled {signingRequest.CacheOperation}")
         };
     }
@@ -62,7 +62,7 @@ public class MomentoSigner
     /// <returns></returns>
     public string SignAccessToken(SigningRequest signingRequest)
     {
-        var payload = CommonJwtBody(signingRequest.CacheName, signingRequest.CacheKey, signingRequest.ExpiryEpochSeconds);
+        var payload = CommonJwtBody(signingRequest.CacheName, signingRequest.CacheKey, signingRequest.ExpiryEpoch);
         switch (signingRequest.CacheOperation)
         {
             case CacheOperation.GET:
@@ -99,11 +99,11 @@ public class MomentoSigner
     }
 
 
-    private JwtPayload CommonJwtBody(string cacheName, string cacheKey, uint expiryEpochSeconds)
+    private JwtPayload CommonJwtBody(string cacheName, string cacheKey, TimeSpan expiryEpoch)
     {
         return new JwtPayload()
             {
-                { "exp", expiryEpochSeconds },
+                { "exp", Convert.ToInt64(expiryEpoch.TotalSeconds) },
                 { "cache", cacheName },
                 { "key", cacheKey }
             };

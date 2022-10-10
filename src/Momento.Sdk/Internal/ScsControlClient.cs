@@ -12,7 +12,7 @@ internal sealed class ScsControlClient : IDisposable
 {
     private readonly ControlGrpcManager grpcManager;
     private readonly string authToken;
-    private const uint DEADLINE_SECONDS = 60;
+    private readonly TimeSpan deadline = TimeSpan.FromSeconds(60);
 
     private readonly ILogger _logger;
     private readonly CacheExceptionMapper _exceptionMapper;
@@ -36,7 +36,8 @@ internal sealed class ScsControlClient : IDisposable
         }
         catch (Exception e)
         {
-            if (e is RpcException ex && ex.StatusCode == StatusCode.AlreadyExists) {
+            if (e is RpcException ex && ex.StatusCode == StatusCode.AlreadyExists)
+            {
                 return new CreateCacheResponse.CacheAlreadyExists();
             }
             return new CreateCacheResponse.Error(_exceptionMapper.Convert(e));
@@ -83,7 +84,7 @@ internal sealed class ScsControlClient : IDisposable
 
     private DateTime CalculateDeadline()
     {
-        return DateTime.UtcNow.AddSeconds(DEADLINE_SECONDS);
+        return DateTime.UtcNow.Add(deadline);
     }
 
     public void Dispose()
