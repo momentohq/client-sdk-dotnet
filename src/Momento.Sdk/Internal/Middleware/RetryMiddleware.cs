@@ -11,26 +11,13 @@ namespace Momento.Sdk.Config.Retry
 {
     internal class RetryMiddleware : IMiddleware
     {
-        public ILoggerFactory? LoggerFactory { get; }
-
         private readonly ILogger _logger;
         private readonly IRetryStrategy _retryStrategy;
 
         public RetryMiddleware(ILoggerFactory loggerFactory, IRetryStrategy retryStrategy)
         {
-            LoggerFactory = loggerFactory;
             _logger = loggerFactory.CreateLogger<RetryMiddleware>();
             _retryStrategy = retryStrategy;
-        }
-
-        public RetryMiddleware WithLoggerFactory(ILoggerFactory loggerFactory)
-        {
-            return new(loggerFactory, _retryStrategy);
-        }
-
-        IMiddleware IMiddleware.WithLoggerFactory(ILoggerFactory loggerFactory)
-        {
-            return WithLoggerFactory(loggerFactory);
         }
 
         public async Task<MiddlewareResponseState<TResponse>> WrapRequest<TRequest, TResponse>(
