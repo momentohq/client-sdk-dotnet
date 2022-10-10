@@ -48,7 +48,7 @@ public interface IDataClient
 // middleware layer of our own that uses asynchronous signatures throughout.  This has
 // the nice side effect of making the user-facing API for writing Middlewares a bit less
 // of a learning curve for anyone not super deep on gRPC internals.
-internal class DataClientWithMiddleware : IDataClient
+public class DataClientWithMiddleware : IDataClient
 {
     private readonly IList<IMiddleware> _middlewares;
     private readonly Scs.ScsClient _generatedClient;
@@ -168,7 +168,7 @@ internal class DataClientWithMiddleware : IDataClient
     }
 }
 
-internal class DataGrpcManager : IDisposable
+public class DataGrpcManager : IDisposable
 {
     private readonly GrpcChannel channel;
 
@@ -194,7 +194,7 @@ internal class DataGrpcManager : IDisposable
         List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version), new Header(name: Header.RuntimeVersionKey, value: runtimeVersion) };
 
         this._logger = config.LoggerFactory.CreateLogger<DataGrpcManager>();
-        
+
         CallInvoker invoker = this.channel.CreateCallInvoker();
 
         var middlewares = config.Middlewares.Concat(

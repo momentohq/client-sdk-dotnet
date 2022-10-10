@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config.Middleware;
@@ -54,5 +55,5 @@ public interface IConfiguration
     /// </summary>
     /// <param name="clientTimeoutMillis">The amount of time to wait before cancelling the request.</param>
     /// <returns>Configuration object with custom client timeout provided</returns>
-    public IConfiguration WithClientTimeoutMillis(uint clientTimeoutMillis);
+    public IConfiguration WithClientTimeout(TimeSpan clientTimeout);
 }
