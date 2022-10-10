@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -60,7 +61,7 @@ public class Configurations
                 ITransportStrategy transportStrategy = new StaticTransportStrategy(
                     maxConcurrentRequests: 200,
                     // TODO: tune the timeout value
-                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(1000));
+                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(1000)));
                 return new Default(finalLoggerFactory, retryStrategy, transportStrategy);
             }
         }
