@@ -26,8 +26,6 @@ namespace Momento.Sdk.Internal.Middleware
 
     internal class HeaderMiddleware : IMiddleware
     {
-        public ILoggerFactory? LoggerFactory { get; }
-
         private readonly List<Header> _headers;
         private readonly List<Header> headersToAddEveryTime = new List<Header> { };
         private readonly List<Header> headersToAddOnce = new List<Header> { };
@@ -38,16 +36,6 @@ namespace Momento.Sdk.Internal.Middleware
             _headers = headers;
             this.headersToAddOnce = headers.Where(header => header.onceOnlyHeaders.Contains(header.Name)).ToList();
             this.headersToAddEveryTime = headers.Where(header => !header.onceOnlyHeaders.Contains(header.Name)).ToList();
-        }
-
-        public HeaderMiddleware WithLoggerFactory(ILoggerFactory loggerFactory)
-        {
-            return new(loggerFactory, _headers);
-        }
-
-        IMiddleware IMiddleware.WithLoggerFactory(ILoggerFactory loggerFactory)
-        {
-            return WithLoggerFactory(loggerFactory);
         }
 
         public async Task<MiddlewareResponseState<TResponse>> WrapRequest<TRequest, TResponse>(
