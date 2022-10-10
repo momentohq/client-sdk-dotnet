@@ -2,12 +2,11 @@ namespace Momento.Sdk.Auth;
 
 using System;
 using Momento.Sdk.Exceptions;
-using Momento.Sdk.Internal;
 
 /// <summary>
-/// Reads and parses a JWT token stored as an environment variable.
+/// Reads and parses a JWT token stored as a string.
 /// </summary>
-public class EnvMomentoTokenProvider : ICredentialProvider
+public class StringMomentoTokenProvider : ICredentialProvider
 {
     /// <inheritdoc />
     public string AuthToken { get; private set; }
@@ -17,15 +16,15 @@ public class EnvMomentoTokenProvider : ICredentialProvider
     public string CacheEndpoint { get; private set; }
 
     /// <summary>
-    /// Reads and parses a JWT token stored as an environment variable.
+    /// Reads and parses a JWT token from a string.
     /// </summary>
-    /// <param name="name">Name of the environment variable that contains the JWT token.</param>
-    public EnvMomentoTokenProvider(string name)
+    /// <param name="token">The JWT token.</param>
+    public StringMomentoTokenProvider(string token)
     {
-        AuthToken = Environment.GetEnvironmentVariable(name);
+        AuthToken = token;
         if (String.IsNullOrEmpty(AuthToken))
         {
-            throw new InvalidArgumentException($"Environment variable '{name}' is empty or null.");
+            throw new InvalidArgumentException($"String '{token}' is empty or null.");
         }
 
         var claims = AuthUtils.TryDecodeAuthToken(AuthToken);
