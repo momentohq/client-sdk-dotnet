@@ -94,7 +94,7 @@ namespace MomentoLoadGen
             using (var momento = new SimpleCacheClient(
                 _momentoClientConfig,
                 authProvider,
-                CACHE_ITEM_TTL_SECONDS
+                TimeSpan.FromSeconds(CACHE_ITEM_TTL_SECONDS)
             ))
             {
                 try
