@@ -120,11 +120,13 @@ namespace Momento.Sdk.Internal
         /// </summary>
         public class StructuralEqualityComparer<T> : IEqualityComparer<T>
         {
+            /// <inheritdoc />
             public bool Equals(T x, T y)
             {
                 return StructuralComparisons.StructuralEqualityComparer.Equals(x, y);
             }
 
+            /// <inheritdoc />
             public int GetHashCode(T obj)
             {
                 return StructuralComparisons.StructuralEqualityComparer.GetHashCode(obj);
@@ -140,6 +142,10 @@ namespace Momento.Sdk.Internal
 
     namespace ExtensionMethods
     {
+        /// <summary>
+        /// Defines extension methods to support the conversion of data to
+        /// various forms of ByteString.
+        /// </summary>
         public static class ToByteStringExtensions
         {
             /// <summary>
@@ -199,11 +205,15 @@ namespace Momento.Sdk.Internal
             }
         }
 
+        /// <summary>
+        /// Defines extension methods to operate on dictionaries with
+        /// byte array keys and values.
+        /// </summary>
         public static class ByteArrayDictionaryExtensions
         {
             /// <summary>
             /// DWIM equality implementation for dictionaries, cf <see href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1.setequals?view=net-6.0">SetEquals</see>.
-            /// 
+            ///
             ///
             /// Tests whether the dictionaries contain the same content as opposed to the same
             /// references.
@@ -231,11 +241,15 @@ namespace Momento.Sdk.Internal
             }
         }
 
+        /// <summary>
+        /// Defines extension methods to operate on lists containing
+        /// byte arrays.
+        /// </summary>
         public static class ByteArrayListExtensions
         {
             /// <summary>
             /// DWIM equality implementation for lists, cf <see href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1.setequals?view=net-6.0">SetEquals</see>.
-            /// 
+            ///
             ///
             /// Tests whether the lists contain the same content as opposed to the same
             /// references.
@@ -261,7 +275,12 @@ namespace Momento.Sdk.Internal
                 return Enumerable.Range(0, list.Count).All(index => list[index].SequenceEqual(other[index]));
             }
         }
-        public static class StringStringDictionaryExtensions
+
+        /// <summary>
+        /// Defines extension methods to operate on dictionaries with
+        /// string keys and values.
+        /// </summary>
+       public static class StringStringDictionaryExtensions
         {
             /// <summary>
             /// Make a shallow copy of a dictionary.

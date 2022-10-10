@@ -28,6 +28,8 @@ public abstract class CacheDeleteResponse
     public class Error : CacheDeleteResponse
     {
         private readonly SdkException _error;
+
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
         {
             _error = error;
@@ -51,6 +53,7 @@ public abstract class CacheDeleteResponse
             get => $"{_error.MessageWrapper}: {_error.Message}";
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"{base.ToString()}: {this.Message}";

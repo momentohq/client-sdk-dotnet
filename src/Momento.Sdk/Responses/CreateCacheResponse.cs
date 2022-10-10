@@ -22,14 +22,21 @@ using Momento.Sdk.Exceptions;
 public abstract class CreateCacheResponse
 {
 
+    /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
     public class Success : CreateCacheResponse { }
 
+    /// <summary>
+    /// Class <c>CacheAlreadyExists</c> indicates that a cache with the requested name
+    /// has already been created in the requesting account.
+    /// </summary>
     public class CacheAlreadyExists : CreateCacheResponse { }
 
     /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : CreateCacheResponse
     {
         private readonly SdkException _error;
+
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
         {
             _error = error;
@@ -53,6 +60,7 @@ public abstract class CreateCacheResponse
             get => $"{_error.MessageWrapper}: {_error.Message}";
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"{base.ToString()}: {this.Message}";
