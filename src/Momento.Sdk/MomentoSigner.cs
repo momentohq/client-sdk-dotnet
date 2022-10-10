@@ -103,7 +103,7 @@ public class MomentoSigner
     {
         return new JwtPayload()
             {
-                { "exp", (long)expiryEpoch.TotalSeconds },
+                { "exp", Convert.ToInt64(expiryEpoch.TotalSeconds) },
                 { "cache", cacheName },
                 { "key", cacheKey }
             };

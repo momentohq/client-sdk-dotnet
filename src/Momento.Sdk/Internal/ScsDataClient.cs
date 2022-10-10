@@ -51,7 +51,7 @@ public class ScsDataClientBase : IDisposable
     /// <returns>Milliseconds representation of the TTL (if provided, else of <see cref="defaultTtl"/>)</returns>
     protected ulong TtlToMilliseconds(TimeSpan? ttl = null)
     {
-        return (ulong)((ttl ?? defaultTtl).TotalMilliseconds);
+        return Convert.ToUInt64((ttl ?? defaultTtl).TotalMilliseconds);
     }
 
     public void Dispose()
