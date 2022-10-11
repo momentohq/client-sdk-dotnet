@@ -7,6 +7,7 @@ using System;
 /// </summary>
 public class ServerUnavailableException : SdkException
 {
+    /// <include file="../docs.xml" path='docs/class[@name="SdkException"]/constructor/*' />
     public ServerUnavailableException(string message, MomentoErrorTransportDetails transportDetails, Exception? e = null) : base(MomentoErrorCode.SERVER_UNAVAILABLE, message, transportDetails, e)
     {
         this.MessageWrapper = "The server was unable to handle the request; consider retrying.  If the error persists, please contact us at support@momentohq.com";

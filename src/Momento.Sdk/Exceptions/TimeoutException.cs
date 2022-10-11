@@ -7,6 +7,7 @@ using System;
 /// </summary>
 public class TimeoutException : SdkException
 {
+    /// <include file="../docs.xml" path='docs/class[@name="SdkException"]/constructor/*' />
     public TimeoutException(string message, MomentoErrorTransportDetails transportDetails, Exception? e = null) : base(MomentoErrorCode.TIMEOUT_ERROR, message, transportDetails, e)
     {
         this.MessageWrapper = "The client's configured timeout was exceeded; you may need to use a Configuration with more lenient timeouts";
