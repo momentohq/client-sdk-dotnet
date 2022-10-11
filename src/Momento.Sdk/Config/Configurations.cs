@@ -30,8 +30,8 @@ public class Configurations
             var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
             IRetryStrategy retryStrategy = new FixedCountRetryStrategy(finalLoggerFactory, maxAttempts: 3);
             ITransportStrategy transportStrategy = new StaticTransportStrategy(
-                maxConcurrentRequests: 200,
-                grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(5000))
+                maxConcurrentRequests: 100,
+                grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(15000))
             );
             return new Laptop(finalLoggerFactory, retryStrategy, transportStrategy);
         }
@@ -60,8 +60,7 @@ public class Configurations
                 IRetryStrategy retryStrategy = new FixedCountRetryStrategy(finalLoggerFactory, maxAttempts: 3);
                 ITransportStrategy transportStrategy = new StaticTransportStrategy(
                     maxConcurrentRequests: 200,
-                    // TODO: tune the timeout value
-                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(1000)));
+                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(1100)));
                 return new Default(finalLoggerFactory, retryStrategy, transportStrategy);
             }
         }
@@ -85,8 +84,7 @@ public class Configurations
                 IRetryStrategy retryStrategy = new FixedCountRetryStrategy(finalLoggerFactory, maxAttempts: 3);
                 ITransportStrategy transportStrategy = new StaticTransportStrategy(
                     maxConcurrentRequests: 20,
-                    // TODO: tune the timeout value
-                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(1000))
+                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(500))
                 );
                 return new LowLatency(finalLoggerFactory, retryStrategy, transportStrategy);
             }
