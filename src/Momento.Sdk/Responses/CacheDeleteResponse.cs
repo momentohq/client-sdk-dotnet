@@ -35,8 +35,8 @@ public abstract class CacheDeleteResponse
             _error = error;
         }
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="Exception"]/*' />
-        public SdkException Exception
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="InnerException"]/*' />
+        public SdkException InnerException
         {
             get => _error;
         }
