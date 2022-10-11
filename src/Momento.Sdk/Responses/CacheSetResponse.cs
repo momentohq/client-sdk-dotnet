@@ -29,13 +29,15 @@ public abstract class CacheSetResponse
     public class Error : CacheSetResponse
     {
         private readonly SdkException _error;
+
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
         {
             _error = error;
         }
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="Exception"]/*' />
-        public SdkException Exception
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="InnerException"]/*' />
+        public SdkException InnerException
         {
             get => _error;
         }
@@ -52,6 +54,7 @@ public abstract class CacheSetResponse
             get => $"{_error.MessageWrapper}: {_error.Message}";
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"{base.ToString()}: {this.Message}";

@@ -27,9 +27,20 @@ public abstract class ListCachesResponse
     /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
     public class Success : ListCachesResponse
     {
+        /// <summary>
+        /// The list of caches available to the user represented as
+        /// <see cref="Momento.Sdk.Responses.CacheInfo" /> objects.
+        /// </summary>
         public List<CacheInfo> Caches { get; }
+
+        /// <summary>
+        /// A token to specify where to start paging. This is the NextToken from
+        /// a previous response.
+        /// </summary>
         public string? NextPageToken { get; }
 
+        /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
+        /// <param name="result">gRPC list caches request result</param>
         public Success(_ListCachesResponse result)
         {
             NextPageToken = result.NextToken == "" ? null : result.NextToken;
@@ -40,6 +51,7 @@ public abstract class ListCachesResponse
             }
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             List<string> cacheNames = new List<string>();
@@ -56,13 +68,15 @@ public abstract class ListCachesResponse
     public class Error : ListCachesResponse
     {
         private readonly SdkException _error;
+
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
         {
             _error = error;
         }
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="Exception"]/*' />
-        public SdkException Exception
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="InnerException"]/*' />
+        public SdkException InnerException
         {
             get => _error;
         }
@@ -79,6 +93,7 @@ public abstract class ListCachesResponse
             get => $"{_error.MessageWrapper}: {_error.Message}";
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"{base.ToString()}: {this.Message}";

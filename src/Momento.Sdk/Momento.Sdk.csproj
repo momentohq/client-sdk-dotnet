@@ -6,7 +6,7 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<!-- Include documentation in build -->
-		<NoWarn>1591</NoWarn>
+		<!-- <NoWarn>1591</NoWarn> -->
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<!-- Include source and debug symbols-->
 		<IncludeSource>true</IncludeSource>

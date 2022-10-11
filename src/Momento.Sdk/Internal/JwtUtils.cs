@@ -6,6 +6,9 @@ using Newtonsoft.Json;
 
 namespace Momento.Sdk.Internal;
 
+/// <summary>
+/// Provides methods for dealing with JWT tokens.
+/// </summary>
 public class JwtUtils
 {
     /// <summary>
@@ -32,13 +35,31 @@ public class JwtUtils
     }
 }
 
+/// <summary>
+/// Encapsulates claims embedded in a JWT token that specify host endpoints
+/// for the control plane and the data plane.
+/// </summary>
 public class Claims
 {
+
+    /// <summary>
+    /// Endpoint for issuing control plane requests.
+    /// </summary>
     [JsonProperty(PropertyName = "cp", Required = Required.Always)]
     public string ControlEndpoint { get; private set; }
+
+    /// <summary>
+    /// Endpoint for issuing data plane requests.
+    /// </summary>
     [JsonProperty(PropertyName = "c", Required = Required.Always)]
     public string CacheEndpoint { get; private set; }
 
+    /// <summary>
+    /// Encapsulates claims embedded in a JWT token that specify host endpoints
+    /// for the control plane and the data plane.
+    /// </summary>
+    /// <param name="cacheEndpoint">Data plane endpoint</param>
+    /// <param name="controlEndpoint">Control plane endpoint</param>
     public Claims(string cacheEndpoint, string controlEndpoint)
     {
         this.CacheEndpoint = cacheEndpoint;

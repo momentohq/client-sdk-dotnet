@@ -18,7 +18,9 @@ public class SimpleCacheClient : ISimpleCacheClient
 {
     private readonly ScsControlClient controlClient;
     private readonly ScsDataClient dataClient;
+    /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration" />
     protected readonly IConfiguration config;
+    /// <inheritdoc cref="Microsoft.Extensions.Logging.ILogger" />
     protected readonly ILogger _logger;
 
 

@@ -31,8 +31,18 @@ public abstract class CacheGetResponse
     ///</summary>
     public class Hit : CacheGetResponse
     {
+        /// <summary>
+        /// The value returned from the cache for the specified key. Use the
+        /// <c>ValueString</c> and <c>ValueByteArray</c> properites to access
+        /// this value as a string or byte array respectively.
+        /// </summary>
         protected readonly ByteString value;
 
+
+        /// <summary>
+        /// Class <c>Hit</c> contains the results of a cache hit.
+        ///</summary>
+        /// <param name="response">gRPC get request result</param>
         public Hit(_GetResponse response)
         {
             this.value = response.CacheBody;
@@ -54,6 +64,7 @@ public abstract class CacheGetResponse
             get => value.ToStringUtf8();
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"{base.ToString()}: {this.ValueString}";
@@ -65,6 +76,9 @@ public abstract class CacheGetResponse
     ///</summary>
     public class Miss : CacheGetResponse
     {
+        /// <summary>
+        /// Class <c>Miss</c> contains the results of a cache miss.
+        ///</summary>
         public Miss() { }
     }
 
@@ -72,13 +86,15 @@ public abstract class CacheGetResponse
     public class Error : CacheGetResponse
     {
         private readonly SdkException _error;
+
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
         {
             _error = error;
         }
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="Exception"]/*' />
-        public SdkException Exception
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="InnerException"]/*' />
+        public SdkException InnerException
         {
             get => _error;
         }
@@ -95,6 +111,7 @@ public abstract class CacheGetResponse
             get => $"{_error.MessageWrapper}: {_error.Message}";
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"{base.ToString()}: {this.Message}";
