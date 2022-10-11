@@ -1,4 +1,5 @@
-﻿using System;
+﻿#pragma warning disable 1591
+using System;
 using Grpc.Core;
 using Momento.Sdk.Config.Middleware;
 using System.Collections.Generic;

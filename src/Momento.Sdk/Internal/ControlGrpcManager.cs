@@ -1,15 +1,12 @@
-﻿using System;
+﻿#pragma warning disable 1591
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
-using Grpc.Core.Interceptors;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
-using Momento.Protos.CacheClient;
 using Momento.Protos.ControlClient;
 using Momento.Sdk.Config.Middleware;
-using Momento.Sdk.Internal;
 using Momento.Sdk.Internal.Middleware;
 using static System.Reflection.Assembly;
 

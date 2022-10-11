@@ -1,4 +1,5 @@
-﻿using System;
+﻿#pragma warning disable 1591
+using System;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Grpc.Core;
@@ -17,6 +18,7 @@ public class ScsDataClientBase : IDisposable
     private readonly TimeSpan defaultTtl;
     private readonly TimeSpan dataClientOperationTimeout;
     private readonly ILogger _logger;
+
     protected readonly CacheExceptionMapper _exceptionMapper;
 
     public ScsDataClientBase(IConfiguration config, string authToken, string endpoint, TimeSpan defaultTtl)
