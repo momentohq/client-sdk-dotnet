@@ -33,7 +33,7 @@
         </code>
       </summary>
     </prop>
-    <prop name="Exception">
+    <prop name="InnerException">
       <summary>
         The <c>SdkException</c> object used to construct the response.
       </summary>
