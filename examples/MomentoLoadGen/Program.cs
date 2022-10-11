@@ -273,7 +273,7 @@ cumulative get latencies:
             }
             else if (getResponse is CacheGetResponse.Error error)
             {
-                return Tuple.Create<AsyncSetGetResult, CacheGetResponse?>(ConvertErrorToAsyncSetGetResult(error.ErrorCode, error.Exception), null);
+                return Tuple.Create<AsyncSetGetResult, CacheGetResponse?>(ConvertErrorToAsyncSetGetResult(error.ErrorCode, error.InnerException), null);
             }
             else
             {
@@ -290,7 +290,7 @@ cumulative get latencies:
             }
             else if (setResponse is CacheSetResponse.Error error)
             {
-                return Tuple.Create<AsyncSetGetResult, CacheSetResponse?>(ConvertErrorToAsyncSetGetResult(error.ErrorCode, error.Exception), null);
+                return Tuple.Create<AsyncSetGetResult, CacheSetResponse?>(ConvertErrorToAsyncSetGetResult(error.ErrorCode, error.InnerException), null);
             }
             else
             {
