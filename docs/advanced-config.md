@@ -12,7 +12,9 @@ the `WithClientTimeout` method:
 
 ```csharp
 new SimpleCacheClient(
-    Configurations.InRegion.Default.Latest().WithClientTimeout(TimeSpan.FromSeconds(2))
+    Configurations.InRegion.Default.Latest().WithClientTimeout(TimeSpan.FromSeconds(2)),
+    authProvider,
+    defaultTtl
 )
 ```
 
