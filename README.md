@@ -27,6 +27,33 @@ You will need the [`dotnet` runtime and command line tools](https://dotnet.micro
 
 **IDE Notes**: You will most likely want an IDE that supports .NET development, such as [Microsoft Visual Studio](https://visualstudio.microsoft.com/vs), [JetBrains Rider](https://www.jetbrains.com/rider/), or [Microsoft Visual Studio Code](https://code.visualstudio.com/).
 
+### Examples
+
+Ready to dive right in?  Just check out the [examples](./examples/README.md) directory for complete, working examples of
+how to use the SDK.
+
+### Momento Response Types
+
+The return values of the methods on the Momento `SimpleCacheClient` class are designed to allow you to use your
+IDE to help you easily discover all the possible responses, including errors.  We use [pattern matching](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/pattern-matching) to distinguish between different types of responses,
+which means that you can get compile-time safety when interacting with the API, rather than having bugs sneak in at runtime.
+
+Here's an example:
+
+```csharp
+CacheGetResponse getResponse = await client.GetAsync(CACHE_NAME, KEY);
+if (getResponse is CacheGetResponse.Hit hitResponse)
+{
+  Console.WriteLine($"Looked up value: {hitResponse.ValueString}, Stored value: {VALUE}");
+}
+else if (getResponse is CacheGetResponse.Error getError)
+{
+  Console.WriteLine($"Error getting value: {getError.Message}");
+}
+```
+
+See the [Error Handling](#error-handling) section below for more details.
+
 ### Installation
 
 To create a new .NET project and add the Momento client library as a dependency:
@@ -39,8 +66,6 @@ dotnet add package Momento.Sdk
 ```
 
 ### Usage
-
-Checkout our [examples](./examples/README.md) directory for complete examples of how to use the SDK.
 
 Here is a quickstart you can use in your own project:
 
@@ -91,26 +116,6 @@ using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.La
 Note that the above code requires an environment variable named MOMENTO_AUTH_TOKEN which must
 be set to a valid [Momento authentication token](https://docs.momentohq.com/docs/getting-started#obtain-an-auth-token).
 
-**Momento Response Types**: The Momento `SimpleCacheClient` uses response types in a way you may not be familiar with and deserves
-a word of explanation upfront. Each response object's actual type will be a subtype (e.g., `CacheGetResponse.Hit`) of the requested response type (e.g., `CacheGetResponse`) and must be resolved to the correct subtype before accessing its properties. We recommend using [pattern matching](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/pattern-matching) to resolve the response's subtype and allow us to access the appropriate properties for that type:
-
-```csharp
-CreateCacheResponse createResponse = client.CreateCacheAsync("example-cache");
-if (createResponse is CreateCacheResponse.CacheAlreadyExists)
-{
-      // this may or may not be expected; handle as appropriate.
-}
-else if (createResponse is CreateCacheResponse.Error createError)
-{
-      if (createError.ErrorCode == MomentoErrorCode.LIMIT_EXCEEDED_ERROR)
-      {
-            // we've used our quota of caches; we should contact support@momentohq.com!
-      }
-}
-```
-
-See the "Error Handling" section below for more details.
-
 ### Error Handling
 
 Error that occur in calls to SimpleCacheClient methods are surfaced to developers as part of the return values of
@@ -150,8 +155,8 @@ if (getResponse is CacheGetResponse.Error errorResponse)
 }
 ```
 
-Note that, outside of SimpleCacheClient responses, exceptions can occur and should be handled as usual. For example, trying to instantiate a SimpleCacheClient with an invalid authentication token will result in an
-IllegalArgumentException being thrown.
+Note that, outside of SimpleCacheClient responses, exceptions can occur and should be handled as usual. For example, trying
+to instantiate a SimpleCacheClient with an invalid authentication token will result in an IllegalArgumentException being thrown.
 
 ### Tuning
 
@@ -169,6 +174,13 @@ you might be interested in:
 - `Configurations.InRegion.LowLatency` - This config prioritizes keeping p99.9 latencies as low as possible, potentially sacrificing
       some throughput to achieve this.  Use this configuration if the most important factor is to ensure that cache
       unavailability doesn't force unacceptably high latencies for your own application.
+
+We hope that these configurations will meet the needs of most users, but if you find them lacking in any way, please
+open a github issue, or contact us at `support@momentohq.com`.  We would love to hear about your use case so that we
+can fix or extend the pre-built configs to support it.
+
+If you do need to customize your configuration beyond what our pre-builts provide, see the
+[Advanced Configuration Guide](./docs/advanced-config.md).
 
 ----------------------------------------------------------------------------------------
 For more info, visit our website at [https://gomomento.com](https://gomomento.com)!
