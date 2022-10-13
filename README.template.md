@@ -35,7 +35,6 @@ else if (getResponse is CacheGetResponse.Error getError)
 
 See the [Error Handling](#error-handling) section below for more details.
 
-
 ### Installation
 
 To create a new .NET project and add the Momento client library as a dependency:
