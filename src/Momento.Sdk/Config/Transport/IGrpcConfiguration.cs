@@ -20,6 +20,17 @@ public interface IGrpcConfiguration
     /// </summary>
     public GrpcChannelOptions GrpcChannelOptions { get; }
 
+    /// <summary>
+    /// Copy constructor to override the Deadline
+    /// </summary>
+    /// <param name="deadline"></param>
+    /// <returns>A new IGrpcConfiguration with the specified Deadline</returns>
     public IGrpcConfiguration WithDeadline(TimeSpan deadline);
+
+    /// <summary>
+    /// Copy constructor to override the channel options
+    /// </summary>
+    /// <param name="grpcChannelOptions"></param>
+    /// <returns>A new IGrpcConfiguration with the specified channel options</returns>
     public IGrpcConfiguration WithGrpcChannelOptions(GrpcChannelOptions grpcChannelOptions);
 }

@@ -14,11 +14,16 @@ namespace Momento.Sdk.Config.Middleware
     {
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="loggerFactory"></param>
         public LoggingMiddleware(ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<LoggingMiddleware>();
         }
 
+        /// <inheritdoc/>
         public async Task<MiddlewareResponseState<TResponse>> WrapRequest<TRequest, TResponse>(
             TRequest request,
             CallOptions callOptions,

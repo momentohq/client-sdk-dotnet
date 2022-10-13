@@ -2,6 +2,9 @@
 
 using System;
 
+/// <summary>
+/// Operation was cancelled.
+/// </summary>
 public class CancelledException : SdkException
 {
     /// <summary>

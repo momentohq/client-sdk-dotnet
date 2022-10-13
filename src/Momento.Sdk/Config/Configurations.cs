@@ -14,8 +14,8 @@ namespace Momento.Sdk.Config;
 public class Configurations
 {
     /// <summary>
-    /// Laptop config provides defaults suitable for a medium-to-high-latency dev environment.  Permissive timeouts, retries, potentially
-    /// a higher number of connections, etc.
+    /// Laptop config provides defaults suitable for a medium-to-high-latency dev environment.  Permissive timeouts, retries, and
+    /// relaxed latency and throughput targets.
     /// </summary>
     public class Laptop : Configuration
     {
@@ -25,11 +25,17 @@ public class Configurations
 
         }
 
+        /// <summary>
+        /// Provides the latest recommended configuration for a Laptop environment.
+        /// </summary>
+        /// <param name="loggerFactory"></param>
+        /// <returns></returns>
         public static Laptop Latest(ILoggerFactory? loggerFactory = null)
         {
             var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
             IRetryStrategy retryStrategy = new FixedCountRetryStrategy(finalLoggerFactory, maxAttempts: 3);
             ITransportStrategy transportStrategy = new StaticTransportStrategy(
+                loggerFactory: finalLoggerFactory,
                 maxConcurrentRequests: 100,
                 grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(15000))
             );
@@ -54,11 +60,17 @@ public class Configurations
 
             }
 
+            /// <summary>
+            /// Provides the latest recommended configuration for an InRegion environment.
+            /// </summary>
+            /// <param name="loggerFactory"></param>
+            /// <returns></returns>
             public static Default Latest(ILoggerFactory? loggerFactory = null)
             {
                 var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
                 IRetryStrategy retryStrategy = new FixedCountRetryStrategy(finalLoggerFactory, maxAttempts: 3);
                 ITransportStrategy transportStrategy = new StaticTransportStrategy(
+                    loggerFactory: finalLoggerFactory,
                     maxConcurrentRequests: 200,
                     grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(1100)));
                 return new Default(finalLoggerFactory, retryStrategy, transportStrategy);
@@ -78,11 +90,18 @@ public class Configurations
 
             }
 
+            /// <summary>
+            /// Provides the latest recommended configuration for a low-latency in-region
+            /// environment.
+            /// </summary>
+            /// <param name="loggerFactory"></param>
+            /// <returns></returns>
             public static LowLatency Latest(ILoggerFactory? loggerFactory = null)
             {
                 var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
                 IRetryStrategy retryStrategy = new FixedCountRetryStrategy(finalLoggerFactory, maxAttempts: 3);
                 ITransportStrategy transportStrategy = new StaticTransportStrategy(
+                    loggerFactory: finalLoggerFactory,
                     maxConcurrentRequests: 20,
                     grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(500))
                 );

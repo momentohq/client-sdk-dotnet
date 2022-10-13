@@ -9,6 +9,11 @@ using Momento.Sdk.Config.Retry;
 
 namespace Momento.Sdk.Internal.Retry
 {
+    /// <summary>
+    /// A retry eligibility strategy that returns true for status codes that
+    /// are commonly understood to be retry-able (Unavailable, Internal), and
+    /// for idempotent request types.
+    /// </summary>
     public class DefaultRetryEligibilityStrategy : IRetryEligibilityStrategy
     {
         private readonly HashSet<StatusCode> _retryableStatusCodes = new HashSet<StatusCode>
@@ -38,25 +43,18 @@ namespace Momento.Sdk.Internal.Retry
             typeof(_GetRequest)
         };
 
-        public ILoggerFactory? LoggerFactory { get; }
-
         private readonly ILogger _logger;
 
-        public DefaultRetryEligibilityStrategy(ILoggerFactory? loggerFactory)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="loggerFactory"></param>
+        public DefaultRetryEligibilityStrategy(ILoggerFactory loggerFactory)
         {
-            _logger = (loggerFactory ?? NullLoggerFactory.Instance).CreateLogger<DefaultRetryEligibilityStrategy>();
+            _logger = loggerFactory.CreateLogger<DefaultRetryEligibilityStrategy>();
         }
 
-        public DefaultRetryEligibilityStrategy WithLoggerFactory(ILoggerFactory loggerFactory)
-        {
-            return new(loggerFactory);
-        }
-
-        IRetryEligibilityStrategy IRetryEligibilityStrategy.WithLoggerFactory(ILoggerFactory loggerFactory)
-        {
-            return WithLoggerFactory(loggerFactory);
-        }
-
+        /// <inheritdoc/>
         public bool IsEligibleForRetry<TRequest>(Status status, TRequest request)
             where TRequest : class
         {
