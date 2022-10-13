@@ -123,5 +123,4 @@ can fix or extend the pre-built configs to support it.
 If you do need to customize your configuration beyond what our pre-builts provide, see the
 [Advanced Configuration Guide](./docs/advanced-config.md).
 
-
 {{ ossFooter }}
