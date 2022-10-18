@@ -7,7 +7,9 @@ using System;
 /// </summary>
 public class PermissionDeniedException : SdkException
 {
+    /// <include file="../docs.xml" path='docs/class[@name="SdkException"]/constructor/*' />
     public PermissionDeniedException(string message, MomentoErrorTransportDetails transportDetails, Exception? e = null) : base(MomentoErrorCode.PERMISSION_ERROR, message, transportDetails, e)
     {
+        this.MessageWrapper = "Insufficient permissions to perform an operation on a cache";
     }
 }

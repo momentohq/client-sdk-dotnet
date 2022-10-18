@@ -45,6 +45,29 @@
       </summary>
     </prop>
   </class>
+  <class name="SdkException">
+      <description>
+      <summary>
+        Base class for capturing information about errors that occur during Momento
+        API calls.
+        <list type="bullet">
+          <item>
+            <term>message: </term>
+            <description>
+              <c>string</c> describing the error.
+            </description>
+          </item>
+          <item>
+            <term>transportDetails: </term>
+            <description>
+              Low-level information about the error, potentially including wire-level
+              status information.
+            </description>
+          </item>
+        </list>
+      </summary>
+    </description>
+  </class>
   <class name="Success">
     <description>
       <summary>

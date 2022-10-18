@@ -7,6 +7,7 @@ using System;
 /// </summary>
 public class AlreadyExistsException : SdkException
 {
+    /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
     public AlreadyExistsException(string message, MomentoErrorTransportDetails transportDetails, Exception? e = null) : base(MomentoErrorCode.ALREADY_EXISTS_ERROR, message, transportDetails, e)
     {
         this.MessageWrapper = "A cache with the specified name already exists.  To resolve this error, either delete the existing cache and make a new one, or use a different name";
