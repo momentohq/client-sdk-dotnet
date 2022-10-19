@@ -24,7 +24,7 @@ public class SimpleCacheDataTest
     [InlineData(null, new byte[] { 0x00 }, new byte[] { 0x00 })]
     [InlineData("cache", null, new byte[] { 0x00 })]
     [InlineData("cache", new byte[] { 0x00 }, null)]
-    public async Task SetAsync_NullChecksByteArrayByteArray_ThrowsException(string cacheName, byte[] key, byte[] value)
+    public async Task SetAsync_NullChecksByteArrayByteArray_IsError(string cacheName, byte[] key, byte[] value)
     {
         CacheSetResponse response = await client.SetAsync(cacheName, key, value);
         Assert.True(response is CacheSetResponse.Error);
@@ -40,7 +40,7 @@ public class SimpleCacheDataTest
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
-    public async Task SetAsync_InvalidTTLByteArrayByteArray_ThrowsException(int ttlSeconds)
+    public async Task SetAsync_InvalidTTLByteArrayByteArray_IsError(int ttlSeconds)
     {
         CacheSetResponse response = await client.SetAsync(cacheName, new byte[] { 0x00 }, new byte[] { 0x00 }, TimeSpan.FromSeconds(ttlSeconds));
         Assert.True(response is CacheSetResponse.Error);
@@ -74,7 +74,7 @@ public class SimpleCacheDataTest
     [Theory]
     [InlineData(null, new byte[] { 0x00 })]
     [InlineData("cache", null)]
-    public async Task GetAsync_NullChecksByteArray_ThrowsException(string cacheName, byte[] key)
+    public async Task GetAsync_NullChecksByteArray_IsError(string cacheName, byte[] key)
     {
         CacheGetResponse response = await client.GetAsync(cacheName, key);
         Assert.True(response is CacheGetResponse.Error);
@@ -85,7 +85,7 @@ public class SimpleCacheDataTest
     [InlineData(null, "key", "value")]
     [InlineData("cache", null, "value")]
     [InlineData("cache", "key", null)]
-    public async Task SetAsync_NullChecksStringString_ThrowsException(string cacheName, string key, string value)
+    public async Task SetAsync_NullChecksStringString_IsError(string cacheName, string key, string value)
     {
         CacheSetResponse response = await client.SetAsync(cacheName, key, value);
         Assert.True(response is CacheSetResponse.Error);
@@ -99,7 +99,7 @@ public class SimpleCacheDataTest
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
-    public async Task SetAsync_InvalidTTLStringString_ThrowsException(int ttlSeconds)
+    public async Task SetAsync_InvalidTTLStringString_IsError(int ttlSeconds)
     {
         CacheSetResponse response = await client.SetAsync(cacheName, "hello", "world", TimeSpan.FromSeconds(ttlSeconds));
         Assert.True(response is CacheSetResponse.Error);
@@ -139,7 +139,7 @@ public class SimpleCacheDataTest
     [Theory]
     [InlineData(null, "key")]
     [InlineData("cache", null)]
-    public async Task GetAsync_NullChecksString_ThrowsException(string cacheName, string key)
+    public async Task GetAsync_NullChecksString_IsError(string cacheName, string key)
     {
         CacheGetResponse response = await client.GetAsync(cacheName, key);
         Assert.True(response is CacheGetResponse.Error);
@@ -150,7 +150,7 @@ public class SimpleCacheDataTest
     [InlineData(null, "key", new byte[] { 0x00 })]
     [InlineData("cache", null, new byte[] { 0x00 })]
     [InlineData("cache", "key", null)]
-    public async Task SetAsync_NullChecksStringByteArray_ThrowsException(string cacheName, string key, byte[] value)
+    public async Task SetAsync_NullChecksStringByteArray_IsError(string cacheName, string key, byte[] value)
     {
         CacheSetResponse response = await client.SetAsync(cacheName, key, value);
         Assert.True(response is CacheSetResponse.Error);
@@ -164,7 +164,7 @@ public class SimpleCacheDataTest
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
-    public async Task SetAsync_InvalidTTLStringByteArray_ThrowsException(int ttlSeconds)
+    public async Task SetAsync_InvalidTTLStringByteArray_IsError(int ttlSeconds)
     {
         CacheSetResponse response = await client.SetAsync(cacheName, "hello", new byte[] { 0x00 }, TimeSpan.FromSeconds(ttlSeconds));
         Assert.True(response is CacheSetResponse.Error);
@@ -214,7 +214,7 @@ public class SimpleCacheDataTest
     [Theory]
     [InlineData(null, new byte[] { 0x00 })]
     [InlineData("cache", null)]
-    public async Task DeleteAsync_NullChecksByte_ThrowsException(string cacheName, byte[] key)
+    public async Task DeleteAsync_NullChecksByte_IsError(string cacheName, byte[] key)
     {
         CacheDeleteResponse result = await client.DeleteAsync(cacheName, key);
         Assert.True(result is CacheDeleteResponse.Error);
@@ -244,7 +244,7 @@ public class SimpleCacheDataTest
     [Theory]
     [InlineData(null, "key")]
     [InlineData("cache", null)]
-    public async Task DeleteAsync_NullChecksString_ThrowsException(string cacheName, string key)
+    public async Task DeleteAsync_NullChecksString_IsError(string cacheName, string key)
     {
         CacheDeleteResponse response = await client.DeleteAsync(cacheName, key);
         Assert.True(response is CacheDeleteResponse.Error);
