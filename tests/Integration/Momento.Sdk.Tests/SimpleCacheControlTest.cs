@@ -41,7 +41,7 @@ public class SimpleCacheControlTest
     public async Task DeleteCacheAsync_NullCache_InvalidArgumentError()
     {
         DeleteCacheResponse deleteResponse = await client.DeleteCacheAsync(null!);
-        Assert.True(deleteResponse is DeleteCacheResponse.Error);
+        Assert.True(deleteResponse is DeleteCacheResponse.Error, $"Unexpected response: {deleteResponse}");
         DeleteCacheResponse.Error errorResponse = (DeleteCacheResponse.Error)deleteResponse;
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errorResponse.InnerException.ErrorCode);
     }
@@ -50,7 +50,7 @@ public class SimpleCacheControlTest
     public async Task DeleteCacheAsync_CacheDoesntExist_NotFoundException()
     {
         DeleteCacheResponse response = await client.DeleteCacheAsync("non-existent cache");
-        Assert.True(response is DeleteCacheResponse.Error);
+        Assert.True(response is DeleteCacheResponse.Error, $"Unexpected response: {response}");
         var errorResponse = (DeleteCacheResponse.Error)response;
         Assert.Equal(MomentoErrorCode.NOT_FOUND_ERROR, errorResponse.InnerException.ErrorCode);
     }
@@ -59,7 +59,7 @@ public class SimpleCacheControlTest
     public async Task CreateCacheAsync_NullCache_InvalidArgumentError()
     {
         CreateCacheResponse response = await client.CreateCacheAsync(null!);
-        Assert.True(response is CreateCacheResponse.Error);
+        Assert.True(response is CreateCacheResponse.Error, $"Unexpected response: {response}");
         CreateCacheResponse.Error errorResponse = (CreateCacheResponse.Error)response;
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errorResponse.InnerException.ErrorCode);
     }
@@ -74,7 +74,7 @@ public class SimpleCacheControlTest
 
         // Test cache exists
         ListCachesResponse result = await client.ListCachesAsync();
-        Assert.True(result is ListCachesResponse.Success);
+        Assert.True(result is ListCachesResponse.Success, $"Unexpected response: {result}");
         var successResult = (ListCachesResponse.Success)result;
         List<CacheInfo> caches = successResult.Caches;
         Assert.Contains(new CacheInfo(cacheName), caches);
@@ -82,7 +82,7 @@ public class SimpleCacheControlTest
         // Test deleting cache
         await client.DeleteCacheAsync(cacheName);
         result = await client.ListCachesAsync();
-        Assert.True(result is ListCachesResponse.Success);
+        Assert.True(result is ListCachesResponse.Success, $"Unexpected response: {result}");
         var successResult2 = (ListCachesResponse.Success)result;
         var caches2 = successResult2.Caches;
         Assert.DoesNotContain(new CacheInfo(cacheName), caches2);
@@ -107,7 +107,7 @@ public class SimpleCacheControlTest
         ListCachesResponse result = await client.ListCachesAsync();
         while (true)
         {
-            Assert.True(result is ListCachesResponse.Success);
+            Assert.True(result is ListCachesResponse.Success, $"Unexpected response: {result}");
             var successResult = (ListCachesResponse.Success)result;
             foreach (CacheInfo cache in successResult.Caches)
             {
