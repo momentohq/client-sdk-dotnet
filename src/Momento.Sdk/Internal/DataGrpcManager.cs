@@ -36,6 +36,8 @@ public interface IDataClient
     public Task<_ListRemoveResponse> ListRemoveAsync(_ListRemoveRequest request, CallOptions callOptions);
     public Task<_ListLengthResponse> ListLengthAsync(_ListLengthRequest request, CallOptions callOptions);
     public Task<_ListEraseResponse> ListEraseAsync(_ListEraseRequest request, CallOptions callOptions);
+    public Task<_ListConcatenateFrontResponse> ListConcatenateFrontAsync(_ListConcatenateFrontRequest request, CallOptions callOptions);
+    public Task<_ListConcatenateBackResponse> ListConcatenateBackAsync(_ListConcatenateBackRequest request, CallOptions callOptions);
 }
 
 
@@ -169,6 +171,18 @@ public class DataClientWithMiddleware : IDataClient
     public async Task<_ListEraseResponse> ListEraseAsync(_ListEraseRequest request, CallOptions callOptions)
     {
         var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.ListEraseAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_ListConcatenateFrontResponse> ListConcatenateFrontAsync(_ListConcatenateFrontRequest request, CallOptions callOptions)
+    {
+        var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.ListConcatenateFrontAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_ListConcatenateBackResponse> ListConcatenateBackAsync(_ListConcatenateBackRequest request, CallOptions callOptions)
+    {
+        var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.ListConcatenateBackAsync(r, o));
         return await wrapped.ResponseAsync;
     }
 }
