@@ -24,13 +24,7 @@ public class SimpleCacheClientFixture : IDisposable
             throw new NullReferenceException("TEST_CACHE_NAME environment variable must be set.");
         Client = new(Configurations.Laptop.Latest(), AuthProvider, defaultTtl: DefaultTtl);
 
-        try
-        {
-            var result = Client.CreateCacheAsync(CacheName).Result;
-        }
-        catch (AlreadyExistsException)
-        {
-        }
+        var result = Client.CreateCacheAsync(CacheName).Result;    
     }
 
     public void Dispose()
