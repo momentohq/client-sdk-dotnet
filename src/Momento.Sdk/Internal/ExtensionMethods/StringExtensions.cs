@@ -29,9 +29,12 @@ public static class StringExtensions
         }
 
         var firstHalf = totalLength / 2 - fillValue.Length / 2;
-        if (totalLength % 2 == 0)
+
+        // Even length and odd sized fillvalue means the output will have the same number of characters
+        // on either side of the fillValue. 
+        if (totalLength % 2 == 0 && fillValue.Length % 2 == 1)
         {
-            firstHalf -= (fillValue.Length % 2);
+            firstHalf--;
         }
 
         var sb = new StringBuilder();

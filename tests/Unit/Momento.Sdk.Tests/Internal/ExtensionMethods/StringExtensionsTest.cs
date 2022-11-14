@@ -14,6 +14,8 @@ public class StringExtensionsTest
     [InlineData("hello", 20, "...", "hello")]
     [InlineData("hello", 4, "...", "...o")]
     [InlineData("hellos", 5, "...", "h...s")]
+    [InlineData("hellos", 4, "..", "h..s")]
+    [InlineData("hellos", 5, "..", "h..os")]
     [InlineData("hello world", 10, "...", "hel...orld")]
     public void Truncate_StringSmall_ReturnsIdentical(string input, int totalLength, string fillValue, string expected)
     {
