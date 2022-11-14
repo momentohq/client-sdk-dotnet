@@ -1,6 +1,8 @@
 ﻿using Google.Protobuf;
 using Momento.Protos.CacheClient;
 using Momento.Sdk.Exceptions;
+using Momento.Sdk.Internal.ExtensionMethods;
+
 namespace Momento.Sdk.Responses;
 
 /// <summary>
@@ -67,7 +69,7 @@ public abstract class CacheGetResponse
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{base.ToString()}: {this.ValueString}";
+            return $"{base.ToString()}: ValueString: \"{this.ValueString.Truncate()}\" ValueByteArray: \"{ValueByteArray.ToPrettyHexString().Truncate()}\"";
         }
     }
 
@@ -99,13 +101,13 @@ public abstract class CacheGetResponse
             get => _error;
         }
 
-         /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="ErrorCode"]/*' />
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="ErrorCode"]/*' />
         public MomentoErrorCode ErrorCode
         {
             get => _error.ErrorCode;
         }
 
-         /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="Message"]/*' />
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="Message"]/*' />
         public string Message
         {
             get => $"{_error.MessageWrapper}: {_error.Message}";
