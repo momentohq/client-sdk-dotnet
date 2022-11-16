@@ -8,10 +8,6 @@
 
 # Momento .NET Client Library
 
-:warning: Beta SDK :warning:
-
-こちらの SDK は Momento の公式 SDK ですが、API は Beta ステージです。詳細は上記の Beta ボタンをクリックしてください。
-
 Momento Serverless Cache の .NET クライアント SDK：従来のキャッシュが必要とするオペレーションオーバーヘッドが全く無く、速くて、シンプルで、従量課金のキャッシュです！
 
 ## さあ、使用開始 :running:
