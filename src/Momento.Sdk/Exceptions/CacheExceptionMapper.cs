@@ -5,13 +5,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Momento.Sdk.Exceptions;
 
-    /// <summary>
-    /// This class maps low-level exceptions that occur during
-    /// <see cref="Momento.Sdk.SimpleCacheClient" /> requests to
-    /// Momento <see cref="Momento.Sdk.Exceptions.SdkException" />
-    /// exceptions. The <c>SdkException</c> is returned to the caller
-    /// as part of an <c>Error</c> response object.
-    /// </summary>
+/// <summary>
+/// This class maps low-level exceptions that occur during
+/// <see cref="Momento.Sdk.SimpleCacheClient" /> requests to
+/// Momento <see cref="Momento.Sdk.Exceptions.SdkException" />
+/// exceptions. The <c>SdkException</c> is returned to the caller
+/// as part of an <c>Error</c> response object.
+/// </summary>
 public class CacheExceptionMapper
 {
     private const string INTERNAL_SERVER_ERROR_MESSAGE = "Unexpected exception occurred while trying to fulfill the request.";
@@ -36,7 +36,7 @@ public class CacheExceptionMapper
     /// Convert a low-level exception to a Momento
     /// <see cref="Momento.Sdk.Exceptions.SdkException" />.
     /// </summary>
-    public SdkException Convert(Exception e)
+    public SdkException Convert(Exception e, Metadata? transportMetadata = null)
     {
         _logger.LogDebug("Mapping exception to SdkException: {}", e);
 
@@ -57,7 +57,7 @@ public class CacheExceptionMapper
         if (unwrappedException is RpcException ex)
         {
             MomentoErrorTransportDetails transportDetails = new MomentoErrorTransportDetails(
-                new MomentoGrpcErrorDetails(ex.StatusCode, ex.Message, null)
+                new MomentoGrpcErrorDetails(ex.StatusCode, ex.Message, transportMetadata)
             );
 
             switch (ex.StatusCode)
