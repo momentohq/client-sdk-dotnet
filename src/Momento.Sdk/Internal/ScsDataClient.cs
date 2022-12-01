@@ -108,18 +108,14 @@ internal sealed class ScsDataClient : ScsDataClientBase
     private async Task<CacheSetResponse> SendSetAsync(string cacheName, ByteString key, ByteString value, TimeSpan? ttl = null)
     {
         _SetRequest request = new _SetRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = TtlToMilliseconds(ttl) };
+        var metadata = MetadataWithCache(cacheName);
         try
         {
-            await this.grpcManager.Client.SetAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            await this.grpcManager.Client.SetAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
         }
         catch (Exception e)
         {
-            var exc = _exceptionMapper.Convert(e);
-            if (exc.TransportDetails != null)
-            {
-                exc.TransportDetails.Grpc.Metadata = MetadataWithCache(cacheName);
-            }
-            return new CacheSetResponse.Error(exc);
+            return new CacheSetResponse.Error(_exceptionMapper.Convert(e, metadata));
         }
         return new CacheSetResponse.Success();
     }
@@ -128,18 +124,14 @@ internal sealed class ScsDataClient : ScsDataClientBase
     {
         _GetRequest request = new _GetRequest() { CacheKey = key };
         _GetResponse response;
+        var metadata = MetadataWithCache(cacheName);
         try
         {
-            response = await this.grpcManager.Client.GetAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.GetAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
         }
         catch (Exception e)
         {
-            var exc = _exceptionMapper.Convert(e);
-            if (exc.TransportDetails != null)
-            {
-                exc.TransportDetails.Grpc.Metadata = MetadataWithCache(cacheName);
-            }
-            return new CacheGetResponse.Error(exc);
+            return new CacheGetResponse.Error(_exceptionMapper.Convert(e, metadata));
         }
 
         if (response.Result == ECacheResult.Miss)
@@ -152,18 +144,14 @@ internal sealed class ScsDataClient : ScsDataClientBase
     private async Task<CacheDeleteResponse> SendDeleteAsync(string cacheName, ByteString key)
     {
         _DeleteRequest request = new _DeleteRequest() { CacheKey = key };
+        var metadata = MetadataWithCache(cacheName);
         try
         {
-            await this.grpcManager.Client.DeleteAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            await this.grpcManager.Client.DeleteAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
         }
         catch (Exception e)
         {
-            var exc = _exceptionMapper.Convert(e);
-            if (exc.TransportDetails != null)
-            {
-                exc.TransportDetails.Grpc.Metadata = MetadataWithCache(cacheName);
-            }
-            return new CacheDeleteResponse.Error(exc);
+            return new CacheDeleteResponse.Error(_exceptionMapper.Convert(e, metadata));
         }
         return new CacheDeleteResponse.Success();
     }
