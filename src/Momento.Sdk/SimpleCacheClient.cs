@@ -14,7 +14,7 @@ namespace Momento.Sdk;
 /// 
 /// See <see href="https://github.com/momentohq/client-sdk-examples/tree/main/dotnet/MomentoExamples">the examples repo</see> for complete workflows.
 /// </summary>
-public class SimpleCacheClient : ISimpleCacheClient
+public class SimpleCacheClient : ISimpleCacheClient, IDisposable
 {
     private readonly ScsControlClient controlClient;
     private readonly ScsDataClient dataClient;

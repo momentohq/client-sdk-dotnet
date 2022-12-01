@@ -9,7 +9,7 @@ namespace Momento.Sdk;
 ///
 /// Includes control operations and data operations.
 /// </summary>
-public interface ISimpleCacheClient : IDisposable
+public interface ISimpleCacheClient
 {
     /// <summary>
     /// Creates a cache if it doesn't exist.
