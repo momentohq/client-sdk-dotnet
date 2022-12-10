@@ -55,6 +55,12 @@ namespace Momento.Sdk.Internal.Retry
             // not idempotent: typeof(_ListPopFrontRequest),
             // not idempotent: typeof(_ListPopBackRequest),
             typeof(_ListFetchRequest),
+            /*
+             *  Warning: in the future, this may not be idempotent
+             *  Currently it supports removing all occurrences of a value.
+             *  In the future, we may also add "the first/last N occurrences of a value".
+             *  In the latter case it is not idempotent.
+             */
             typeof(_ListRemoveRequest),
             typeof(_ListLengthRequest),
             // not idempotent: typeof(_ListConcatenateFrontRequest),
