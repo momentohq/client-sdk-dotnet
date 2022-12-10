@@ -40,7 +40,25 @@ namespace Momento.Sdk.Internal.Retry
         private readonly HashSet<Type> _retryableRequestTypes = new HashSet<Type>
         {
             typeof(_SetRequest),
-            typeof(_GetRequest)
+            typeof(_GetRequest),
+            typeof(_DeleteRequest),
+            typeof(_DictionarySetRequest),
+            // not idempotent: typeof(_DictionaryIncrementRequest),
+            typeof(_DictionaryGetRequest),
+            typeof(_DictionaryFetchRequest),
+            typeof(_DictionaryDeleteRequest),
+            typeof(_SetUnionRequest),
+            typeof(_SetDifferenceRequest),
+            typeof(_SetFetchRequest),
+            // not idempotent: typeof(_ListPushFrontRequest),
+            // not idempotent: typeof(_ListPushBackRequest),
+            // not idempotent: typeof(_ListPopFrontRequest),
+            // not idempotent: typeof(_ListPopBackRequest),
+            typeof(_ListFetchRequest),
+            typeof(_ListRemoveRequest),
+            typeof(_ListLengthRequest),
+            // not idempotent: typeof(_ListConcatenateFrontRequest),
+            // not idempotent: typeof(_ListConcatenateBackRequest)
         };
 
         private readonly ILogger _logger;
