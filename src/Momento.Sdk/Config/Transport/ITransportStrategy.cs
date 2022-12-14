@@ -13,6 +13,13 @@ public interface ITransportStrategy
     /// allow onto the wire at a given time.
     /// </summary>
     public int MaxConcurrentRequests { get; }
+    
+    /// <summary>
+    /// If false, the client will only attempt to connect to the server lazily when the first request is executed.
+    /// If true, the client will attempt to connect to the server immediately upon construction.
+    /// </summary>
+    public Boolean EagerConnection { get;  }
+    
     /// <summary>
     /// Configures the low-level gRPC settings for the Momento client's communication
     /// with the Momento server.
@@ -39,4 +46,10 @@ public interface ITransportStrategy
     /// <param name="clientTimeout"></param>
     /// <returns>A new ITransportStrategy with the specified client timeout</returns>
     public ITransportStrategy WithClientTimeout(TimeSpan clientTimeout);
+
+    /// <summary>
+    /// Copy constructor to enable eager connection to the server
+    /// </summary>
+    /// <returns>A new ITransportStrategy configured to eagerly connect to the server upon construction</returns>
+    public ITransportStrategy WithEagerConnection();
 }

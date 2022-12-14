@@ -9,6 +9,8 @@ using Momento.Sdk.Internal;
 /// </summary>
 public class EnvMomentoTokenProvider : ICredentialProvider
 {
+    private readonly string envVarName;
+    
     /// <inheritdoc />
     public string AuthToken { get; private set; }
     /// <inheritdoc />
@@ -22,6 +24,8 @@ public class EnvMomentoTokenProvider : ICredentialProvider
     /// <param name="name">Name of the environment variable that contains the JWT token.</param>
     public EnvMomentoTokenProvider(string name)
     {
+        this.envVarName = name;
+        
         AuthToken = Environment.GetEnvironmentVariable(name);
         if (String.IsNullOrEmpty(AuthToken))
         {
@@ -31,5 +35,12 @@ public class EnvMomentoTokenProvider : ICredentialProvider
         var claims = AuthUtils.TryDecodeAuthToken(AuthToken);
         ControlEndpoint = claims.ControlEndpoint;
         CacheEndpoint = claims.CacheEndpoint;
+    }
+
+    public ICredentialProvider WithCacheEndpoint(string cacheEndpoint)
+    {
+        var updated = new EnvMomentoTokenProvider(this.envVarName);
+        updated.CacheEndpoint = cacheEndpoint;
+        return updated;
     }
 }

@@ -7,6 +7,7 @@ using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient;
+using Momento.Protos.CachePing;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
@@ -217,7 +218,23 @@ public class DataGrpcManager : IDisposable
             }
         ).ToList();
 
-        Client = new DataClientWithMiddleware(new Scs.ScsClient(invoker), middlewares);
+        var client = new Scs.ScsClient(invoker);
+
+        if (config.TransportStrategy.EagerConnection)
+        {
+            _logger.LogDebug("TransportStrategy EagerConnection is enabled; attempting to connect to server");
+            var pingClient = new Ping.PingClient(this.channel);
+            try
+            {
+                pingClient.Ping(new _PingRequest());
+            }
+            catch (RpcException ex)
+            {
+                _logger.LogWarning("Failed to eagerly connect to the server; continuing with execution in case failure is recoverable later.");
+            }
+        }
+        
+        Client = new DataClientWithMiddleware(client, middlewares);
     }
 
     public void Dispose()

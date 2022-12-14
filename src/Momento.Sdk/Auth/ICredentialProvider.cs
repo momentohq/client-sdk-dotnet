@@ -1,7 +1,5 @@
 namespace Momento.Sdk.Auth;
 
-using System.Collections.Generic;
-
 /// <summary>
 /// Specifies the fields that are required for a Momento client to connect to and authenticate with the Momento service.
 /// </summary>
@@ -19,4 +17,11 @@ public interface ICredentialProvider
     /// The host which the Momento client will connect to the Momento data plane
     /// </summary>
     string CacheEndpoint { get; }
+
+    /// <summary>
+    /// Copy constructor to override the CacheEndpoint
+    /// </summary>
+    /// <param name="cacheEndpoint"></param>
+    /// <returns>A new ICredentialProvider with the specified cache endpoint.</returns>
+    ICredentialProvider WithCacheEndpoint(string cacheEndpoint);
 }
