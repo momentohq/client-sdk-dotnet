@@ -66,7 +66,7 @@ public class StaticTransportStrategy : ITransportStrategy
     public int MaxConcurrentRequests { get; }
 
     /// <inheritdoc />
-    public bool EagerConnection { get; }
+    public TimeSpan? EagerConnectionTimeout { get; }
 
     /// <inheritdoc />
     public IGrpcConfiguration GrpcConfig { get; }
@@ -77,12 +77,15 @@ public class StaticTransportStrategy : ITransportStrategy
     /// <param name="loggerFactory"></param>
     /// <param name="maxConcurrentRequests">The maximum number of concurrent requests that the Momento client will allow on the wire at one time.</param>
     /// <param name="grpcConfig">Configures how Momento client interacts with the Momento service via gRPC</param>
-    /// <param name="eagerConnection">If true, client will eagerly attempt to connect to the server on construction.  If false, will connect to the server lazily on the first request.  Defaults to false.</param>
-    public StaticTransportStrategy(ILoggerFactory loggerFactory, int maxConcurrentRequests, IGrpcConfiguration grpcConfig, Boolean eagerConnection = false)
+    /// <param name="eagerConnectionTimeout">If null, the client will only attempt to connect to the server lazily when the first request is executed.
+    /// If provided, the client will attempt to connect to the server immediately upon construction; if the connection
+    /// cannot be established within the specified TimeSpan, it will abort the connection attempt, log a warning,
+    /// and proceed with execution so that the application doesn't hang.</param>
+    public StaticTransportStrategy(ILoggerFactory loggerFactory, int maxConcurrentRequests, IGrpcConfiguration grpcConfig, TimeSpan? eagerConnectionTimeout = null)
     {
         _loggerFactory = loggerFactory;
         MaxConcurrentRequests = maxConcurrentRequests;
-        EagerConnection = eagerConnection;
+        EagerConnectionTimeout = eagerConnectionTimeout;
         GrpcConfig = grpcConfig;
     }
 
@@ -105,8 +108,8 @@ public class StaticTransportStrategy : ITransportStrategy
     }
 
     /// <inheritdoc/>
-    public ITransportStrategy WithEagerConnection()
+    public ITransportStrategy WithEagerConnectionTimeout(TimeSpan connectionTimeout)
     {
-        return new StaticTransportStrategy(_loggerFactory, MaxConcurrentRequests, GrpcConfig, true);
+        return new StaticTransportStrategy(_loggerFactory, MaxConcurrentRequests, GrpcConfig, connectionTimeout);
     }
 }

@@ -220,13 +220,15 @@ public class DataGrpcManager : IDisposable
 
         var client = new Scs.ScsClient(invoker);
 
-        if (config.TransportStrategy.EagerConnection)
+        if (config.TransportStrategy.EagerConnectionTimeout != null)
         {
+            TimeSpan eagerConnectionTimeout = config.TransportStrategy.EagerConnectionTimeout.Value;
             _logger.LogDebug("TransportStrategy EagerConnection is enabled; attempting to connect to server");
             var pingClient = new Ping.PingClient(this.channel);
             try
             {
-                pingClient.Ping(new _PingRequest());
+                pingClient.Ping(new _PingRequest(),
+                    new CallOptions(deadline: DateTime.UtcNow.Add(eagerConnectionTimeout)));
             }
             catch (RpcException ex)
             {
