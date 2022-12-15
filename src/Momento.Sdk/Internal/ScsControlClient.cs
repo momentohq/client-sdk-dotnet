@@ -59,6 +59,21 @@ internal sealed class ScsControlClient : IDisposable
         }
     }
 
+    public async Task<FlushCacheResponse> FlushCacheAsync(string cacheName)
+    {
+        try
+        {
+            CheckValidCacheName(cacheName);
+            _FlushCacheRequest request = new() { CacheName = cacheName };
+            await this.grpcManager.Client.FlushCacheAsync(request, new CallOptions(deadline: CalculateDeadline()));
+            return new FlushCacheResponse.Success();
+        }
+        catch (Exception e)
+        {
+            return new FlushCacheResponse.Error(_exceptionMapper.Convert(e));
+        }
+    }
+
     public async Task<ListCachesResponse> ListCachesAsync(string? nextPageToken = null)
     {
         _ListCachesRequest request = new _ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
