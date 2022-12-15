@@ -58,9 +58,9 @@ public interface ISimpleCacheClient : IDisposable
     public Task<DeleteCacheResponse> DeleteCacheAsync(string cacheName);
 
     /// <summary>
-    /// Deletes all the items within a cache
+    /// Flushes all the items within a cache.
     /// </summary>
-    /// <param name="cacheName">Name of the cache to be flushed.</param>
+    /// <param name="cacheName">Name of the cache from which all items will be flushed.</param>
     /// <returns>
     /// Task representing the result of the flush cache operation. The
     /// response object is resolved to a type-safe object of one of

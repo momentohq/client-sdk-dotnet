@@ -101,7 +101,6 @@ public class SimpleCacheControlTest
         Assert.Equal(MomentoErrorCode.NOT_FOUND_ERROR, errorResponse.InnerException.ErrorCode);
     }
 
-
     // Tests: creating a cache, listing a cache, and deleting a cache.
     [Fact]
     public async Task ListCachesAsync_OneCache_HappyPath()
