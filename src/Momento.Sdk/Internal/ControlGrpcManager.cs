@@ -17,6 +17,7 @@ public interface IControlClient
 {
     public Task<_CreateCacheResponse> CreateCacheAsync(_CreateCacheRequest request, CallOptions callOptions);
     public Task<_DeleteCacheResponse> DeleteCacheAsync(_DeleteCacheRequest request, CallOptions callOptions);
+    public Task<_FlushCacheResponse> FlushCacheAsync(_FlushCacheRequest request, CallOptions callOptions);
     public Task<_ListCachesResponse> ListCachesAsync(_ListCachesRequest request, CallOptions callOptions);
 }
 
@@ -49,6 +50,12 @@ internal class ControlClientWithMiddleware : IControlClient
     public async Task<_DeleteCacheResponse> DeleteCacheAsync(_DeleteCacheRequest request, CallOptions callOptions)
     {
         var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.DeleteCacheAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_FlushCacheResponse> FlushCacheAsync(_FlushCacheRequest request, CallOptions callOptions)
+    {
+        var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.FlushCacheAsync(r, o));
         return await wrapped.ResponseAsync;
     }
 

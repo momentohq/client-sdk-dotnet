@@ -54,6 +54,12 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <inheritdoc />
+    public async Task<FlushCacheResponse> FlushCacheAsync(string cacheName)
+    {
+        return await this.controlClient.FlushCacheAsync(cacheName);
+    }
+
+    /// <inheritdoc />
     public async Task<ListCachesResponse> ListCachesAsync(string? nextPageToken = null)
     {
         return await this.controlClient.ListCachesAsync(nextPageToken);

@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Momento.Sdk.Auth;
-using Momento.Sdk.Config;
 
 namespace Momento.Sdk.Tests;
 
@@ -61,6 +60,55 @@ public class SimpleCacheControlTest
         CreateCacheResponse response = await client.CreateCacheAsync(null!);
         Assert.True(response is CreateCacheResponse.Error, $"Unexpected response: {response}");
         CreateCacheResponse.Error errorResponse = (CreateCacheResponse.Error)response;
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errorResponse.InnerException.ErrorCode);
+    }
+
+    [Fact]
+    public async Task FlushCacheAsync_HappyPath()
+    {
+        string cacheName = Utils.NewGuidString();
+        await client.CreateCacheAsync(cacheName);
+
+        try
+        {
+            string key = Utils.NewGuidString();
+            string value = Utils.NewGuidString();
+            // Set with a long TTL
+            await client.SetAsync(cacheName, key, value, TimeSpan.FromHours(1));
+            CacheGetResponse response = await client.GetAsync(cacheName, key);
+            Assert.True(response is CacheGetResponse.Hit, $"Unexpected response: {response}");
+
+            // Flush
+            FlushCacheResponse flushCacheResponse = await client.FlushCacheAsync(cacheName);
+
+            // Verify
+            Assert.True(flushCacheResponse is FlushCacheResponse.Success, $"Unexpected response: {flushCacheResponse}");
+            response = await client.GetAsync(cacheName, key);
+            Assert.True(response is CacheGetResponse.Miss, $"Unexpected response: {response}");
+        }
+        finally
+        {
+            DeleteCacheResponse deleteResp = await client.DeleteCacheAsync(cacheName);
+            Assert.True(deleteResp is DeleteCacheResponse.Success, $"Unexpected response: {deleteResp} while deleting cache: {cacheName}.");
+        }
+
+    }
+
+    [Fact]
+    public async Task FlushCacheAsync_CacheNotFound()
+    {
+        FlushCacheResponse response = await client.FlushCacheAsync("non-existent cache");
+        Assert.True(response is FlushCacheResponse.Error, $"Unexpected response: {response}");
+        var errorResponse = (FlushCacheResponse.Error)response;
+        Assert.Equal(MomentoErrorCode.NOT_FOUND_ERROR, errorResponse.InnerException.ErrorCode);
+    }
+
+    [Fact]
+    public async Task FlushCacheAsync_NullCache_IllegalArgumentError()
+    {
+        FlushCacheResponse response = await client.FlushCacheAsync(null!);
+        Assert.True(response is FlushCacheResponse.Error, $"Unexpected response: {response}");
+        var errorResponse = (FlushCacheResponse.Error)response;
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errorResponse.InnerException.ErrorCode);
     }
 

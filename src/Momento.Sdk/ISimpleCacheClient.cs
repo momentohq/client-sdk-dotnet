@@ -58,6 +58,29 @@ public interface ISimpleCacheClient : IDisposable
     public Task<DeleteCacheResponse> DeleteCacheAsync(string cacheName);
 
     /// <summary>
+    /// Flushes all the items within a cache.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache from which all items will be flushed.</param>
+    /// <returns>
+    /// Task representing the result of the flush cache operation. The
+    /// response object is resolved to a type-safe object of one of
+    /// the following subtypes:
+    /// <list type="bullet">
+    /// <item><description>FlushCacheResponse.Success</description></item>
+    /// <item><description>FlushCacheResponse.Error</description></item>
+    /// </list>
+    /// Pattern matching can be used to operate on the appropriate subtype.
+    /// For example:
+    /// <code>
+    /// if (response is FlushCacheResponse.Error errorResponse)
+    /// {
+    ///     // handle error as appropriate
+    /// }
+    /// </code>
+    ///</returns>
+    public Task<FlushCacheResponse> FlushCacheAsync(string cacheName);
+
+    /// <summary>
     /// List all caches.
     /// </summary>
     /// <param name="nextPageToken">A token to specify where to start paginating. This is the NextToken from a previous response.</param>
