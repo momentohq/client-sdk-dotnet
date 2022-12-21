@@ -24,7 +24,8 @@ public class SimpleCacheClientFixture : IDisposable
         CacheName = Environment.GetEnvironmentVariable("TEST_CACHE_NAME") ??
             throw new NullReferenceException("TEST_CACHE_NAME environment variable must be set.");
         Client = new(Configurations.Laptop.Latest().WithLoggerFactory(
-                LoggerFactory.Create(builder => {
+                LoggerFactory.Create(builder =>
+                {
                     builder.AddSimpleConsole(options =>
                     {
                         options.IncludeScopes = true;
@@ -32,11 +33,11 @@ public class SimpleCacheClientFixture : IDisposable
                         options.TimestampFormat = "hh:mm:ss ";
                     });
                     builder.AddFilter("Grpc.Net.Client", LogLevel.Error);
-                    builder.SetMinimumLevel(LogLevel.Trace);
+                    builder.SetMinimumLevel(LogLevel.Information);
                 })),
                 AuthProvider, defaultTtl: DefaultTtl);
 
-        var result = Client.CreateCacheAsync(CacheName).Result;    
+        var result = Client.CreateCacheAsync(CacheName).Result;
     }
 
     public void Dispose()
