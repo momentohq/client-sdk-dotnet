@@ -399,7 +399,7 @@ If you have questions or need help experimenting further, please reach out to us
               ///
               logLevel: LogLevel.Debug,
               ///
-              /// Each time this amount of time has past, statistics about throughput and latency
+              /// Each time this amount of time has passed, statistics about throughput and latency
               /// will be printed.
               /// 
               ///
