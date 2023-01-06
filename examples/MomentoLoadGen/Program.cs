@@ -110,6 +110,7 @@ namespace MomentoLoadGen
 
                 var workerDelayBetweenRequests = Convert.ToInt32(Math.Floor((1000.0 * _options.numberOfConcurrentRequests) / (_options.maxRequestsPerSecond * 1)));
                 Console.WriteLine($"Targeting a max of {_options.maxRequestsPerSecond} requests per second (delay between requests: {workerDelayBetweenRequests})");
+                Console.WriteLine($"Running {_options.numberOfConcurrentRequests} concurrent requests for {_options.howLongToRun}");
 
                 var context = new CsharpLoadGeneratorContext();
 
