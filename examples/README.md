@@ -4,7 +4,7 @@
 
 ## Prerequisites
 
-* [`dotnet`](https://dotnet.microsoft.com/en-us/download) 6.0 or higher is required
+* [`dotnet`](https://dotnet.microsoft.com/en-us/download) SDK version 6 is required.
 * A Momento auth token is required.  You can generate one using the [Momento CLI](https://github.com/momentohq/momento-cli).
 
 ## Running the advanced example
