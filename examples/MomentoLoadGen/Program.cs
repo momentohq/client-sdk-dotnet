@@ -16,6 +16,7 @@ namespace MomentoLoadGen
 {
     public record CsharpLoadGeneratorOptions
     (
+        LogLevel logLevel,
         int printStatsEveryNRequests,
         int cacheItemPayloadBytes,
         int numberOfConcurrentRequests,
@@ -373,7 +374,7 @@ count: {histogram.TotalCount}
 
     internal class Program
     {
-        static ILoggerFactory InitializeLogging()
+        static ILoggerFactory InitializeLogging(LogLevel minLogLevel)
         {
             return LoggerFactory.Create(builder =>
             {
@@ -384,7 +385,7 @@ count: {histogram.TotalCount}
                     options.TimestampFormat = "hh:mm:ss ";
                 });
                 builder.AddFilter("Grpc.Net.Client", LogLevel.Error);
-                builder.SetMinimumLevel(LogLevel.Debug);
+                builder.SetMinimumLevel(minLogLevel);
             });
         }
 
@@ -407,45 +408,48 @@ If you have questions or need help experimenting further, please reach out to us
 
         static async Task Main(string[] args)
         {
-            using (ILoggerFactory loggerFactory = InitializeLogging())
+            CsharpLoadGeneratorOptions loadGeneratorOptions = new CsharpLoadGeneratorOptions(
+              ///
+              /// Controls the verbosity of the output during the run.
+              ///
+              logLevel: LogLevel.Debug,
+              ///
+              /// Each time the load generator has executed this many requests, it will
+              /// print out some statistics about throughput and latency.
+              ///
+              printStatsEveryNRequests: 5000,
+
+              ///
+              /// Controls the size of the payload that will be used for the cache items in
+              /// the load test.  Smaller payloads will generally provide lower latencies than
+              /// larger payloads.
+              ///
+              cacheItemPayloadBytes: 100,
+              ///
+              /// Controls the number of concurrent requests that will be made (via asynchronous
+              /// function calls) by the load test.  Increasing this number may improve throughput,
+              /// but it will also increase CPU consumption.  As CPU usage increases and there
+              /// is more contention between the concurrent function calls, client-side latencies
+              /// may increase.
+              ///
+              numberOfConcurrentRequests: 50,
+              ///
+              /// Sets an upper bound on how many requests per second will be sent to the server.
+              /// Momento caches have a default throttling limit of 100 requests per second,
+              /// so if you raise this, you may observe throttled requests.  Contact
+              /// support@momentohq.com to inquire about raising your limits.
+              ///
+              maxRequestsPerSecond: 100,
+              ///
+              /// Controls how long the load test will run.  We will execute this many operations
+              /// (1 cache 'set' followed immediately by 1 'get') across all of our concurrent
+              /// workers before exiting.  Statistics will be logged every 1000 operations.
+              ///
+              totalNumberOfOperationsToExecute: 500_000
+            );
+            
+            using (ILoggerFactory loggerFactory = InitializeLogging(loadGeneratorOptions.logLevel))
             {
-
-                CsharpLoadGeneratorOptions loadGeneratorOptions = new CsharpLoadGeneratorOptions(
-                  ///
-                  /// Each time the load generator has executed this many requests, it will
-                  /// print out some statistics about throughput and latency.
-                  ///
-                  printStatsEveryNRequests: 5000,
-
-                  ///
-                  /// Controls the size of the payload that will be used for the cache items in
-                  /// the load test.  Smaller payloads will generally provide lower latencies than
-                  /// larger payloads.
-                  ///
-                  cacheItemPayloadBytes: 100,
-                  ///
-                  /// Controls the number of concurrent requests that will be made (via asynchronous
-                  /// function calls) by the load test.  Increasing this number may improve throughput,
-                  /// but it will also increase CPU consumption.  As CPU usage increases and there
-                  /// is more contention between the concurrent function calls, client-side latencies
-                  /// may increase.
-                  ///
-                  numberOfConcurrentRequests: 50,
-                  ///
-                  /// Sets an upper bound on how many requests per second will be sent to the server.
-                  /// Momento caches have a default throttling limit of 100 requests per second,
-                  /// so if you raise this, you may observe throttled requests.  Contact
-                  /// support@momentohq.com to inquire about raising your limits.
-                  ///
-                  maxRequestsPerSecond: 100,
-                  ///
-                  /// Controls how long the load test will run.  We will execute this many operations
-                  /// (1 cache 'set' followed immediately by 1 'get') across all of our concurrent
-                  /// workers before exiting.  Statistics will be logged every 1000 operations.
-                  ///
-                  totalNumberOfOperationsToExecute: 500_000
-                );
-
                 /// 
                 /// This is the configuration that will be used for the Momento client.  Choose from
                 /// our pre-built configurations that are optimized for Laptop vs InRegion environments,
