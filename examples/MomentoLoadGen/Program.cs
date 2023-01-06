@@ -21,7 +21,7 @@ namespace MomentoLoadGen
         int cacheItemPayloadBytes,
         int numberOfConcurrentRequests,
         int maxRequestsPerSecond,
-        int totalNumberOfOperationsToExecute
+        TimeSpan howLongToRun
     );
 
     enum AsyncSetGetResult
@@ -108,30 +108,36 @@ namespace MomentoLoadGen
                 }
 
 
-                var numOperationsPerWorker = _options.totalNumberOfOperationsToExecute / _options.numberOfConcurrentRequests;
                 var workerDelayBetweenRequests = Convert.ToInt32(Math.Floor((1000.0 * _options.numberOfConcurrentRequests) / (_options.maxRequestsPerSecond * 1)));
                 Console.WriteLine($"Targeting a max of {_options.maxRequestsPerSecond} requests per second (delay between requests: {workerDelayBetweenRequests})");
-                var totalNumRequestsExpected = _options.totalNumberOfOperationsToExecute * NUM_REQUESTS_PER_OPERATION;
 
                 var context = new CsharpLoadGeneratorContext();
 
+                CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
                 var asyncTasks = Enumerable.Range(0, _options.numberOfConcurrentRequests).Select<int, Task>(workerId =>
                     LaunchAndRunWorkers(
                         momento,
                         context,
                         workerId + 1,
-                        numOperationsPerWorker,
-                        workerDelayBetweenRequests
-                        )
+                        workerDelayBetweenRequests,
+                        cancellationTokenSource.Token
+                    )
                 );
-                var statsPrinterTask = LaunchStatsPrinterTask(context, _options.showStatsInterval, totalNumRequestsExpected);
+                var statsPrinterTask = LaunchStatsPrinterTask(
+                    context, 
+                    _options.showStatsInterval, 
+                    cancellationTokenSource.Token
+                );
                 asyncTasks.Append(statsPrinterTask);
 
-                var firstResult = await Task.WhenAny(asyncTasks);
+                cancellationTokenSource.CancelAfter(_options.howLongToRun);
+
                 // this will ensure that the program exits promptly if one of the async
                 // tasks throws an uncaught exception.
+                var firstResult = await Task.WhenAny(asyncTasks);
                 await firstResult;
+                
                 await Task.WhenAll(asyncTasks);
             }
             _logger.LogInformation("Done");
@@ -142,27 +148,30 @@ namespace MomentoLoadGen
             SimpleCacheClient client,
             CsharpLoadGeneratorContext context,
             int workerId,
-            int numOperations,
-            int delayMillisBetweenRequests
+            int delayMillisBetweenRequests,
+            CancellationToken token
         )
         {
-            for (var i = 1; i <= numOperations; i++)
+            for (var i = 1; !token.IsCancellationRequested; i++)
             {
                 await IssueAsyncSetGet(client, context, workerId, i, delayMillisBetweenRequests);
             }
         }
 
-        private async Task LaunchStatsPrinterTask(CsharpLoadGeneratorContext context, TimeSpan showStatsInterval, int totalNumRequests)
+        private async Task LaunchStatsPrinterTask(CsharpLoadGeneratorContext context, TimeSpan showStatsInterval, CancellationToken token)
         {
             var setsAccumulatingHistogram = new LongHistogram(TimeStamp.Minutes(1), 1);
             var getsAccumulatingHistogram = new LongHistogram(TimeStamp.Minutes(1), 1);
 
-            while (context.GlobalRequestCount < totalNumRequests)
+            while (!token.IsCancellationRequested)
             {
-                await Task.Delay(showStatsInterval);
-                PrintStats(setsAccumulatingHistogram, getsAccumulatingHistogram, context);
+                try {
+                    await Task.Delay(showStatsInterval, token);
+                }
+                finally {
+                    PrintStats(setsAccumulatingHistogram, getsAccumulatingHistogram, context);
+                }
             }
-            PrintStats(setsAccumulatingHistogram, getsAccumulatingHistogram, context);
         }
 
         private void PrintStats(LongHistogram setsAccumulatingHistogram, LongHistogram getsAccumulatingHistogram, CsharpLoadGeneratorContext context)
@@ -415,11 +424,9 @@ If you have questions or need help experimenting further, please reach out to us
               ///
               maxRequestsPerSecond: 100,
               ///
-              /// Controls how long the load test will run.  We will execute this many operations
-              /// (1 cache 'set' followed immediately by 1 'get') across all of our concurrent
-              /// workers before exiting.  Statistics will be logged every 1000 operations.
+              /// Controls how long the load test will run.
               ///
-              totalNumberOfOperationsToExecute: 500_000
+              howLongToRun: new TimeSpan(0, 1, 0)
             );
             
             using (ILoggerFactory loggerFactory = InitializeLogging(loadGeneratorOptions.logLevel))
