@@ -399,8 +399,9 @@ If you have questions or need help experimenting further, please reach out to us
               ///
               logLevel: LogLevel.Debug,
               ///
-              /// Each time the load generator has executed this many requests, it will
-              /// print out some statistics about throughput and latency.
+              /// Each time this amount of time has past, statistics about throughput and latency
+              /// will be printed.
+              /// 
               ///
               showStatsInterval: TimeSpan.FromSeconds(5),
               ///
