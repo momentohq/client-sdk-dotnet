@@ -17,7 +17,7 @@ namespace MomentoLoadGen
     public record CsharpLoadGeneratorOptions
     (
         LogLevel logLevel,
-        int printStatsEveryNRequests,
+        TimeSpan showStatsInterval,
         int cacheItemPayloadBytes,
         int numberOfConcurrentRequests,
         int maxRequestsPerSecond,
@@ -116,26 +116,23 @@ namespace MomentoLoadGen
                 var context = new CsharpLoadGeneratorContext();
 
 
-                var asyncResults = Enumerable.Range(0, _options.numberOfConcurrentRequests).Select<int, Task>(workerId =>
+                var asyncTasks = Enumerable.Range(0, _options.numberOfConcurrentRequests).Select<int, Task>(workerId =>
                     LaunchAndRunWorkers(
                         momento,
                         context,
                         workerId + 1,
                         numOperationsPerWorker,
-                        workerDelayBetweenRequests,
-                        _options.printStatsEveryNRequests
+                        workerDelayBetweenRequests
                         )
-                ).ToList();
+                );
+                var statsPrinterTask = LaunchStatsPrinterTask(context, _options.showStatsInterval, totalNumRequestsExpected);
+                asyncTasks.Append(statsPrinterTask);
 
-                var statsPrinterTask = LaunchStatsPrinterTask(context, _options.printStatsEveryNRequests, totalNumRequestsExpected);
-
-                var firstResult = await Task.WhenAny(asyncResults);
+                var firstResult = await Task.WhenAny(asyncTasks);
                 // this will ensure that the program exits promptly if one of the async
                 // tasks throws an uncaught exception.
                 await firstResult;
-                await Task.WhenAll(asyncResults);
-
-                await statsPrinterTask;
+                await Task.WhenAll(asyncTasks);
             }
             _logger.LogInformation("Done");
         }
@@ -146,31 +143,24 @@ namespace MomentoLoadGen
             CsharpLoadGeneratorContext context,
             int workerId,
             int numOperations,
-            int delayMillisBetweenRequests,
-            int printStatsEveryNRequests
+            int delayMillisBetweenRequests
         )
         {
             for (var i = 1; i <= numOperations; i++)
             {
-                await IssueAsyncSetGet(client, context, workerId, i, delayMillisBetweenRequests, printStatsEveryNRequests);
+                await IssueAsyncSetGet(client, context, workerId, i, delayMillisBetweenRequests);
             }
         }
 
-        private async Task LaunchStatsPrinterTask(CsharpLoadGeneratorContext context, int printStatsEveryNRequests, int totalNumRequests)
+        private async Task LaunchStatsPrinterTask(CsharpLoadGeneratorContext context, TimeSpan showStatsInterval, int totalNumRequests)
         {
             var setsAccumulatingHistogram = new LongHistogram(TimeStamp.Minutes(1), 1);
             var getsAccumulatingHistogram = new LongHistogram(TimeStamp.Minutes(1), 1);
 
-            var nextStatsUpdateRequestCount = printStatsEveryNRequests;
             while (context.GlobalRequestCount < totalNumRequests)
             {
-                if (context.GlobalRequestCount >= nextStatsUpdateRequestCount)
-                {
-                    nextStatsUpdateRequestCount += printStatsEveryNRequests;
-                    PrintStats(setsAccumulatingHistogram, getsAccumulatingHistogram, context);
-                }
-
-                await Task.Delay(500);
+                await Task.Delay(showStatsInterval);
+                PrintStats(setsAccumulatingHistogram, getsAccumulatingHistogram, context);
             }
             PrintStats(setsAccumulatingHistogram, getsAccumulatingHistogram, context);
         }
@@ -201,7 +191,7 @@ cumulative get latencies:
             _logger.LogInformation($"Load gen data point:\t{_options.numberOfConcurrentRequests}\t{Tps(context, context.GlobalRequestCount)}\t{getsAccumulatingHistogram.GetValueAtPercentile(50)}\t{getsAccumulatingHistogram.GetValueAtPercentile(99.9)}");
         }
 
-        private async Task IssueAsyncSetGet(SimpleCacheClient client, CsharpLoadGeneratorContext context, int workerId, int operationId, int delayMillisBetweenRequests, int printStatsEveryNRequests)
+        private async Task IssueAsyncSetGet(SimpleCacheClient client, CsharpLoadGeneratorContext context, int workerId, int operationId, int delayMillisBetweenRequests)
         {
             var cacheKey = $"worker{workerId}operation{operationId}";
 
@@ -233,20 +223,6 @@ cumulative get latencies:
                 if (getDuration < delayMillisBetweenRequests)
                 {
                     await Task.Delay((int)(delayMillisBetweenRequests - getDuration));
-                }
-
-                string value = hitResponse.ValueString;
-                string valueString = $"{value.Substring(0, 10)}... (len: {value.Length})";
-
-                var globalRequestCount = context.GlobalRequestCount;
-                if (globalRequestCount % printStatsEveryNRequests == 0)
-                {
-                    var lastPrintCount = Interlocked.Exchange(ref context.LastWorkerStatsPrintRequestCount, globalRequestCount);
-                    if (lastPrintCount != globalRequestCount)
-                    {
-                        Console.WriteLine($"worker: {workerId} last print count: {lastPrintCount} global request count: {globalRequestCount}");
-                        _logger.LogInformation($"worker: {workerId}, worker request: {operationId}, global request: {context.GlobalRequestCount}, status: {getResponse.GetType()}, val: {valueString}");
-                    }
                 }
             }
         }
@@ -417,8 +393,7 @@ If you have questions or need help experimenting further, please reach out to us
               /// Each time the load generator has executed this many requests, it will
               /// print out some statistics about throughput and latency.
               ///
-              printStatsEveryNRequests: 5000,
-
+              showStatsInterval: new TimeSpan(0, 0, 5),
               ///
               /// Controls the size of the payload that will be used for the cache items in
               /// the load test.  Smaller payloads will generally provide lower latencies than
