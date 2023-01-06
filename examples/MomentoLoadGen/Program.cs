@@ -402,7 +402,7 @@ If you have questions or need help experimenting further, please reach out to us
               /// Each time the load generator has executed this many requests, it will
               /// print out some statistics about throughput and latency.
               ///
-              showStatsInterval: new TimeSpan(0, 0, 5),
+              showStatsInterval: TimeSpan.FromSeconds(5),
               ///
               /// Controls the size of the payload that will be used for the cache items in
               /// the load test.  Smaller payloads will generally provide lower latencies than
@@ -427,7 +427,7 @@ If you have questions or need help experimenting further, please reach out to us
               ///
               /// Controls how long the load test will run.
               ///
-              howLongToRun: new TimeSpan(0, 1, 0)
+              howLongToRun: TimeSpan.FromMinutes(1)
             );
             
             using (ILoggerFactory loggerFactory = InitializeLogging(loadGeneratorOptions.logLevel))
