@@ -335,7 +335,6 @@ cumulative get latencies:
 
         private static string OutputHistogramSummary(HistogramBase histogram)
         {
-            Console.WriteLine($"Histogram totalcount: {histogram.TotalCount}");
             return $@"
 count: {histogram.TotalCount}
         p50: {histogram.GetValueAtPercentile(50)}
