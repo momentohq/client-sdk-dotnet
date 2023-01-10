@@ -6,15 +6,15 @@ using Momento.Sdk.Auth;
 namespace Momento.Sdk.Tests;
 
 [Collection("SimpleCacheClient")]
-public class SimpleCacheControlTest
+public class SimpleCacheControlTest : TestBase
 {
-    private SimpleCacheClient client;
-    private ICredentialProvider authProvider;
+    //private SimpleCacheClient client;
+    //private ICredentialProvider authProvider;
 
-    public SimpleCacheControlTest(SimpleCacheClientFixture fixture)
+    public SimpleCacheControlTest(SimpleCacheClientFixture fixture) : base(fixture)
     {
-        client = fixture.Client;
-        authProvider = fixture.AuthProvider;
+        //client = fixture.Client;
+        //authProvider = fixture.AuthProvider;
     }
 
     [Fact]
