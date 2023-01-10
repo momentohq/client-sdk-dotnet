@@ -6,7 +6,8 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<!-- Include documentation in build -->
-		<!-- <NoWarn>1591</NoWarn> -->
+		<!-- TODO: Address public-facing documentation -->
+		<NoWarn>1591</NoWarn>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<!-- Include source and debug symbols-->
 		<IncludeSource>true</IncludeSource>
@@ -14,7 +15,6 @@
 		<IncludeSymbols>true</IncludeSymbols>
 		<!-- Publish the repository URL in the built .nupkg -->
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-
 		<!-- Package metadata -->
 		<PackageId>Momento.Sdk</PackageId>
 		<Authors>Momento</Authors>
@@ -32,40 +32,40 @@
 		<RepositoryUrl>https://github.com/momentohq/client-sdk-dotnet</RepositoryUrl>
 	</PropertyGroup>
 	<ItemGroup>
-	  <None Remove="System.Threading.Channels" />
-	  <None Remove="Internal\Middleware\" />
-	  <None Remove="Grpc.Net.Client" />
-	  <None Remove="Momento.Protos" />
-	  <None Remove="JWT" />
-	  <None Remove="System.IdentityModel.Tokens.Jwt" />
-	  <None Remove="Microsoft.Extensions.Logging" />
-	  <None Remove="Microsoft.SourceLink.GitHub" />
-	  <None Remove="Internal\Retry\" />
+		<None Remove="System.Threading.Channels" />
+		<None Remove="Internal\Middleware\" />
+		<None Remove="Grpc.Net.Client" />
+		<None Remove="Momento.Protos" />
+		<None Remove="JWT" />
+		<None Remove="System.IdentityModel.Tokens.Jwt" />
+		<None Remove="Microsoft.Extensions.Logging" />
+		<None Remove="Microsoft.SourceLink.GitHub" />
+		<None Remove="Internal\Retry\" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Internal\Middleware\" />
-	  <Folder Include="Internal\Retry\" />
+		<Folder Include="Internal\Middleware\" />
+		<Folder Include="Internal\Retry\" />
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="Grpc.Net.Client" Version="2.49.0" />
-	  <PackageReference Include="Momento.Protos" Version="0.38.0" />
-	  <PackageReference Include="JWT" Version="9.0.3" />
-	  <PackageReference Include="System.Threading.Channels" Version="6.0.0" />
-	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />
-	  <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-	  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
-	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	    <PrivateAssets>all</PrivateAssets>
-	  </PackageReference>
+		<PackageReference Include="Grpc.Net.Client" Version="2.49.0" />
+		<PackageReference Include="Momento.Protos" Version="0.38.0" />
+		<PackageReference Include="JWT" Version="9.0.3" />
+		<PackageReference Include="System.Threading.Channels" Version="6.0.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
 	</ItemGroup>
 	<ProjectExtensions>
-	  <MonoDevelop>
-	    <Properties>
-	      <Policies>
-	        <TextStylePolicy TabWidth="4" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="80" TabsToSpaces="True" scope="application/xml" />
-	        <XmlFormattingPolicy scope="application/xml" />
-	      </Policies>
-	    </Properties>
-	  </MonoDevelop>
+		<MonoDevelop>
+			<Properties>
+				<Policies>
+					<TextStylePolicy TabWidth="4" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="80" TabsToSpaces="True" scope="application/xml" />
+					<XmlFormattingPolicy scope="application/xml" />
+				</Policies>
+			</Properties>
+		</MonoDevelop>
 	</ProjectExtensions>
 </Project>
