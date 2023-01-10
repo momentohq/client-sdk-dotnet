@@ -15,10 +15,10 @@ public abstract class CacheDictionaryGetFieldResponse
         protected readonly ByteString value;
         protected readonly ByteString field;
 
-        public Hit(IEnumerable<ByteString> fields, _DictionaryGetResponse response)
+        public Hit(ByteString field, _DictionaryGetResponse response)
         {
             this.value = response.Found.Items[0].CacheBody;
-            this.field = fields.ToList()[0];
+            this.field = field;
         }
 
         public Hit(ByteString field, ByteString cacheBody)
