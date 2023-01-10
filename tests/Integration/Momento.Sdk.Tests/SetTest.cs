@@ -579,7 +579,7 @@ public class SetTest : TestBase
 
         Assert.True(fetchResponse is CacheSetFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheSetFetchResponse.Hit)fetchResponse;
-        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheSetFetchResponse+Hit: ValueSetString: {\"a\"} ValueSetByteArray: {\"61\"}", hitResponse.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheSetFetchResponse+Hit: ValueSetString: {\"a\"} ValueSetByteArray: {\"61\"}", hitResponse.ToString());
     }
 
     [Fact]

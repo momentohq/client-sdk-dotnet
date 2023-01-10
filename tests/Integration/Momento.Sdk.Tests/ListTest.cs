@@ -36,7 +36,7 @@ public class ListTest : TestBase
         Assert.True(concatenateResponse is CacheListConcatenateFrontResponse.Success, $"Unexpected response: {concatenateResponse}");
         var success = (CacheListConcatenateFrontResponse.Success)concatenateResponse;
         Assert.Equal(2, success.ListLength);
-        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheListConcatenateFrontResponse+Success: ListLength: 2", success.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheListConcatenateFrontResponse+Success: ListLength: 2", success.ToString());
 
         CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName);
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
@@ -120,7 +120,7 @@ public class ListTest : TestBase
         Assert.True(concatenateResponse is CacheListConcatenateFrontResponse.Success, $"Unexpected response: {concatenateResponse}");
         var success = (CacheListConcatenateFrontResponse.Success)concatenateResponse;
         Assert.Equal(2, success.ListLength);
-        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheListConcatenateFrontResponse+Success: ListLength: 2", success.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheListConcatenateFrontResponse+Success: ListLength: 2", success.ToString());
 
         CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName);
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
@@ -211,7 +211,7 @@ public class ListTest : TestBase
         Assert.True(concatenateResponse is CacheListConcatenateBackResponse.Success, $"Unexpected response: {concatenateResponse}");
         var success = (CacheListConcatenateBackResponse.Success)concatenateResponse;
         Assert.Equal(2, success.ListLength);
-        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheListConcatenateBackResponse+Success: ListLength: 2", success.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheListConcatenateBackResponse+Success: ListLength: 2", success.ToString());
 
         CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName);
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
@@ -295,7 +295,7 @@ public class ListTest : TestBase
         Assert.True(concatenateResponse is CacheListConcatenateBackResponse.Success, $"Unexpected response: {concatenateResponse}");
         var success = (CacheListConcatenateBackResponse.Success)concatenateResponse;
         Assert.Equal(2, success.ListLength);
-        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheListConcatenateBackResponse+Success: ListLength: 2", success.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheListConcatenateBackResponse+Success: ListLength: 2", success.ToString());
 
         CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName);
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
@@ -388,7 +388,7 @@ public class ListTest : TestBase
         Assert.True(pushResponse is CacheListPushFrontResponse.Success, $"Unexpected response: {pushResponse}");
         var successResponse = (CacheListPushFrontResponse.Success)pushResponse;
         Assert.Equal(1, successResponse.ListLength);
-        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheListPushFrontResponse+Success: ListLength: 1", successResponse.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheListPushFrontResponse+Success: ListLength: 1", successResponse.ToString());
 
         CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName);
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
@@ -474,7 +474,7 @@ public class ListTest : TestBase
         Assert.True(pushResponse is CacheListPushFrontResponse.Success, $"Unexpected response: {pushResponse}");
         var successResponse = (CacheListPushFrontResponse.Success)pushResponse;
         Assert.Equal(1, successResponse.ListLength);
-        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheListPushFrontResponse+Success: ListLength: 1", successResponse.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheListPushFrontResponse+Success: ListLength: 1", successResponse.ToString());
         successResponse = (CacheListPushFrontResponse.Success)pushResponse;
 
         CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName);
@@ -561,7 +561,7 @@ public class ListTest : TestBase
         Assert.True(pushResponse is CacheListPushBackResponse.Success, $"Unexpected response: {pushResponse}");
         var successResponse = (CacheListPushBackResponse.Success)pushResponse;
         Assert.Equal(1, successResponse.ListLength);
-        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheListPushBackResponse+Success: ListLength: 1", successResponse.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheListPushBackResponse+Success: ListLength: 1", successResponse.ToString());
 
         CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName);
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
@@ -719,7 +719,7 @@ public class ListTest : TestBase
         Assert.True(pushResponse is CacheListPushBackResponse.Success, $"Unexpected response: {pushResponse}");
         var successResponse = (CacheListPushBackResponse.Success)pushResponse;
         Assert.Equal(1, successResponse.ListLength);
-        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheListPushBackResponse+Success: ListLength: 1", successResponse.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheListPushBackResponse+Success: ListLength: 1", successResponse.ToString());
 
         CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName);
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
@@ -844,7 +844,7 @@ public class ListTest : TestBase
         CacheListPopFrontResponse response = await client.ListPopFrontAsync(cacheName, listName);
         Assert.True(response is CacheListPopFrontResponse.Hit, $"Unexpected response: {response}");
         var hitResponse = (CacheListPopFrontResponse.Hit)response;
-        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheListPopFrontResponse+Hit: ValueString: \"a\" ValueByteArray: \"61\"", hitResponse.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheListPopFrontResponse+Hit: ValueString: \"a\" ValueByteArray: \"61\"", hitResponse.ToString());
     }
 
     [Theory]
@@ -907,7 +907,7 @@ public class ListTest : TestBase
         CacheListPopBackResponse response = await client.ListPopBackAsync(cacheName, listName);
         Assert.True(response is CacheListPopBackResponse.Hit, $"Unexpected response: {response}");
         var hitResponse = (CacheListPopBackResponse.Hit)response;
-        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheListPopBackResponse+Hit: ValueString: \"a\" ValueByteArray: \"61\"", hitResponse.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheListPopBackResponse+Hit: ValueString: \"a\" ValueByteArray: \"61\"", hitResponse.ToString());
     }
 
     [Theory]
@@ -976,7 +976,7 @@ public class ListTest : TestBase
 
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
-        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheListFetchResponse+Hit: ValueListString: [\"a\", \"b\"] ValueListByteArray: [\"61\", \"62\"]", hitResponse.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheListFetchResponse+Hit: ValueListString: [\"a\", \"b\"] ValueListByteArray: [\"61\", \"62\"]", hitResponse.ToString());
     }
 
     [Theory]
@@ -1141,7 +1141,7 @@ public class ListTest : TestBase
         Assert.True(lengthResponse is CacheListLengthResponse.Success, $"Unexpected response: {lengthResponse}");
         var successResponse = (CacheListLengthResponse.Success)lengthResponse;
         Assert.Equal(10, successResponse.Length);
-        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheListLengthResponse+Success: Length: 10", successResponse.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheListLengthResponse+Success: Length: 10", successResponse.ToString());
     }
 
     [Fact]
