@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Requests;
 using Momento.Sdk.Responses;
-using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Tests;
 
-namespace Momento.Sdk.Tests;
+namespace Momento.Sdk.Incubating.Tests;
 
 [Collection("SimpleCacheClient")]
 public class DictionaryTest : TestBase
@@ -37,17 +37,6 @@ public class DictionaryTest : TestBase
         CacheDictionarySetFieldResponse response = await client.DictionarySetFieldAsync(cacheName, dictionaryName, field, value);
         Assert.True(response is CacheDictionarySetFieldResponse.Error, $"Unexpected response: {response}");
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheDictionarySetFieldResponse.Error)response).ErrorCode);
-    }
-
-    [Fact]
-    public async Task DictionaryGetFieldAsync_NullChecksFieldIsByteArray_IsError_Returns_ByteArrayKey()
-    {
-        var field = Utils.NewGuidByteArray();
-        CacheDictionaryGetFieldResponse response = await client.DictionaryGetFieldAsync("cache", null, field);
-        Assert.True(response is CacheDictionaryGetFieldResponse.Error, $"Unexpected response: {response}");
-        var errResponse = (CacheDictionaryGetFieldResponse.Error)response;
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheDictionaryGetFieldResponse.Error)response).ErrorCode);
-        Assert.Equal(field, errResponse.FieldByteArray);
     }
 
     [Fact]
@@ -140,17 +129,6 @@ public class DictionaryTest : TestBase
     }
 
     [Fact]
-    public async Task DictionaryGetFieldAsync_NullChecksFieldIsString_IsError_Returns_ByteArrayKey()
-    {
-        var field = Utils.NewGuidString();
-        CacheDictionaryGetFieldResponse response = await client.DictionaryGetFieldAsync("cache", null, field);
-        Assert.True(response is CacheDictionaryGetFieldResponse.Error, $"Unexpected response: {response}");
-        var errResponse = (CacheDictionaryGetFieldResponse.Error)response;
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheDictionaryGetFieldResponse.Error)response).ErrorCode);
-        Assert.Equal(field, errResponse.FieldString);
-    }
-
-    [Fact]
     public async Task DictionaryIncrementAsync_IncrementFromZero_HappyPath()
     {
         var dictionaryName = Utils.NewGuidString();
@@ -165,7 +143,7 @@ public class DictionaryTest : TestBase
         Assert.True(incrementResponse is CacheDictionaryIncrementResponse.Success, $"Unexpected response: {incrementResponse}");
         successResponse = (CacheDictionaryIncrementResponse.Success)incrementResponse;
         Assert.Equal(42, successResponse.Value);
-        Assert.Equal("Momento.Sdk.Responses.CacheDictionaryIncrementResponse+Success: Value: 42", successResponse.ToString());
+        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheDictionaryIncrementResponse+Success: Value: 42", successResponse.ToString());
 
         incrementResponse = await client.DictionaryIncrementAsync(cacheName, dictionaryName, fieldName, -1042);
         Assert.True(incrementResponse is CacheDictionaryIncrementResponse.Success, $"Unexpected response: {incrementResponse}");
@@ -261,7 +239,9 @@ public class DictionaryTest : TestBase
     {
         CacheDictionaryGetFieldResponse response = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field);
         Assert.True(response is CacheDictionaryGetFieldResponse.Error, $"Unexpected response: {response}");
+        var errResponse = (CacheDictionaryGetFieldResponse.Error)response;
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheDictionaryGetFieldResponse.Error)response).ErrorCode);
+        Assert.Equal(field, ((CacheDictionaryGetFieldResponse.Error)response).FieldString);
     }
 
     [Theory]
@@ -313,7 +293,7 @@ public class DictionaryTest : TestBase
 
         CacheDictionaryGetFieldResponse getResponse = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, "a");
         Assert.True(getResponse is CacheDictionaryGetFieldResponse.Hit, $"Unexpected response: {getResponse}");
-        Assert.Equal("Momento.Sdk.Responses.CacheDictionaryGetFieldResponse+Hit: ValueString: \"b\" ValueByteArray: \"62\"", getResponse.ToString());
+        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheDictionaryGetFieldResponse+Hit: ValueString: \"b\" ValueByteArray: \"62\"", getResponse.ToString());
     }
 
     [Fact]
@@ -828,7 +808,7 @@ public class DictionaryTest : TestBase
 
         Assert.True(getResponse is CacheDictionaryGetFieldsResponse.Hit, $"Unexpected response: {getResponse}");
         var hitResponse = (CacheDictionaryGetFieldsResponse.Hit)getResponse;
-        Assert.Equal("Momento.Sdk.Responses.CacheDictionaryGetFieldsResponse+Hit: ValueDictionaryStringString: {\"a\": \"b\", \"c\": \"d\"} ValueDictionaryByteArrayByteArray: {\"61\": \"6...63\": \"64\"}", hitResponse.ToString());
+        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheDictionaryGetFieldsResponse+Hit: ValueDictionaryStringString: {\"a\": \"b\", \"c\": \"d\"} ValueDictionaryByteArrayByteArray: {\"61\": \"6...63\": \"64\"}", hitResponse.ToString());
     }
 
     [Theory]
@@ -885,7 +865,7 @@ public class DictionaryTest : TestBase
 
         Assert.True(fetchResponse is CacheDictionaryFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheDictionaryFetchResponse.Hit)fetchResponse;
-        Assert.Equal("Momento.Sdk.Responses.CacheDictionaryFetchResponse+Hit: ValueDictionaryStringString: {\"a\": \"b\"} ValueDictionaryByteArrayByteArray: {\"61\": \"62\"}", hitResponse.ToString());
+        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheDictionaryFetchResponse+Hit: ValueDictionaryStringString: {\"a\": \"b\"} ValueDictionaryByteArrayByteArray: {\"61\": \"62\"}", hitResponse.ToString());
     }
 
     [Fact]
