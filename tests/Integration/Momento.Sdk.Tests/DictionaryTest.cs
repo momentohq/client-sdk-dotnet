@@ -143,7 +143,7 @@ public class DictionaryTest : TestBase
         Assert.True(incrementResponse is CacheDictionaryIncrementResponse.Success, $"Unexpected response: {incrementResponse}");
         successResponse = (CacheDictionaryIncrementResponse.Success)incrementResponse;
         Assert.Equal(42, successResponse.Value);
-        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheDictionaryIncrementResponse+Success: Value: 42", successResponse.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheDictionaryIncrementResponse+Success: Value: 42", successResponse.ToString());
 
         incrementResponse = await client.DictionaryIncrementAsync(cacheName, dictionaryName, fieldName, -1042);
         Assert.True(incrementResponse is CacheDictionaryIncrementResponse.Success, $"Unexpected response: {incrementResponse}");
@@ -293,7 +293,7 @@ public class DictionaryTest : TestBase
 
         CacheDictionaryGetFieldResponse getResponse = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, "a");
         Assert.True(getResponse is CacheDictionaryGetFieldResponse.Hit, $"Unexpected response: {getResponse}");
-        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheDictionaryGetFieldResponse+Hit: ValueString: \"b\" ValueByteArray: \"62\"", getResponse.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheDictionaryGetFieldResponse+Hit: ValueString: \"b\" ValueByteArray: \"62\"", getResponse.ToString());
     }
 
     [Fact]
@@ -808,7 +808,7 @@ public class DictionaryTest : TestBase
 
         Assert.True(getResponse is CacheDictionaryGetFieldsResponse.Hit, $"Unexpected response: {getResponse}");
         var hitResponse = (CacheDictionaryGetFieldsResponse.Hit)getResponse;
-        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheDictionaryGetFieldsResponse+Hit: ValueDictionaryStringString: {\"a\": \"b\", \"c\": \"d\"} ValueDictionaryByteArrayByteArray: {\"61\": \"6...63\": \"64\"}", hitResponse.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheDictionaryGetFieldsResponse+Hit: ValueDictionaryStringString: {\"a\": \"b\", \"c\": \"d\"} ValueDictionaryByteArrayByteArray: {\"61\": \"6...63\": \"64\"}", hitResponse.ToString());
     }
 
     [Theory]
@@ -865,7 +865,7 @@ public class DictionaryTest : TestBase
 
         Assert.True(fetchResponse is CacheDictionaryFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheDictionaryFetchResponse.Hit)fetchResponse;
-        Assert.Equal("Momento.Sdk.Incubating.Responses.CacheDictionaryFetchResponse+Hit: ValueDictionaryStringString: {\"a\": \"b\"} ValueDictionaryByteArrayByteArray: {\"61\": \"62\"}", hitResponse.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheDictionaryFetchResponse+Hit: ValueDictionaryStringString: {\"a\": \"b\"} ValueDictionaryByteArrayByteArray: {\"61\": \"62\"}", hitResponse.ToString());
     }
 
     [Fact]
