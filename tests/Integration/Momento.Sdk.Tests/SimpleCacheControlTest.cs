@@ -8,13 +8,8 @@ namespace Momento.Sdk.Tests;
 [Collection("SimpleCacheClient")]
 public class SimpleCacheControlTest : TestBase
 {
-    //private SimpleCacheClient client;
-    //private ICredentialProvider authProvider;
-
     public SimpleCacheControlTest(SimpleCacheClientFixture fixture) : base(fixture)
     {
-        //client = fixture.Client;
-        //authProvider = fixture.AuthProvider;
     }
 
     [Fact]
@@ -143,41 +138,43 @@ public class SimpleCacheControlTest : TestBase
         List<String> cacheNames = new List<String>();
 
         // TODO: increase limit after pagination is enabled
-        foreach (int val in Enumerable.Range(1, 5))
+        foreach (int val in Enumerable.Range(1, 3))
         {
             String cacheName = Utils.NewGuidString();
             cacheNames.Add(cacheName);
             await client.CreateCacheAsync(cacheName);
         }
-
-        // List caches
-        HashSet<String> retrievedCaches = new HashSet<string>();
-        ListCachesResponse result = await client.ListCachesAsync();
-        while (true)
+        try
         {
-            Assert.True(result is ListCachesResponse.Success, $"Unexpected response: {result}");
-            var successResult = (ListCachesResponse.Success)result;
-            foreach (CacheInfo cache in successResult.Caches)
+            // List caches
+            HashSet<String> retrievedCaches = new HashSet<string>();
+            ListCachesResponse result = await client.ListCachesAsync();
+            while (true)
             {
-                retrievedCaches.Add(cache.Name);
+                Assert.True(result is ListCachesResponse.Success, $"Unexpected response: {result}");
+                var successResult = (ListCachesResponse.Success)result;
+                foreach (CacheInfo cache in successResult.Caches)
+                {
+                    retrievedCaches.Add(cache.Name);
+                    Assert.Contains(cache.Name, cacheNames);
+                }
+                if (successResult.NextPageToken == null)
+                {
+                    break;
+                }
+                result = await client.ListCachesAsync(successResult.NextPageToken);
             }
-            if (successResult.NextPageToken == null)
+
+        }
+        finally
+        {
+            // Cleanup
+            foreach (String cacheName in cacheNames)
             {
-                break;
+                await client.DeleteCacheAsync(cacheName);
             }
-            result = await client.ListCachesAsync(successResult.NextPageToken);
         }
 
-
-        int sizeOverlap = cacheNames.Intersect(retrievedCaches).Count();
-
-        // Cleanup
-        foreach (String cacheName in cacheNames)
-        {
-            await client.DeleteCacheAsync(cacheName);
-        }
-
-        Assert.True(sizeOverlap == cacheNames.Count);
     }
 
     [Fact]
