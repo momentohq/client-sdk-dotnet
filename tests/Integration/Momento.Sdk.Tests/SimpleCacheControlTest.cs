@@ -156,13 +156,16 @@ public class SimpleCacheControlTest : TestBase
                 foreach (CacheInfo cache in successResult.Caches)
                 {
                     retrievedCaches.Add(cache.Name);
-                    Assert.Contains(cache.Name, cacheNames);
                 }
                 if (successResult.NextPageToken == null)
                 {
                     break;
                 }
                 result = await client.ListCachesAsync(successResult.NextPageToken);
+            }
+            foreach (String cache in cacheNames)
+            {
+                Assert.Contains(cache, retrievedCaches);
             }
 
         }
