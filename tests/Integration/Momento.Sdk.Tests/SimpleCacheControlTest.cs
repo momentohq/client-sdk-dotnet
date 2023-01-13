@@ -160,7 +160,6 @@ public class SimpleCacheControlTest : TestBase
             foreach (CacheInfo cache in successResult.Caches)
             {
                 retrievedCaches.Add(cache.Name);
-                Assert.Contains(cache.Name, cacheNames);
             }
             if (successResult.NextPageToken == null)
             {
@@ -169,6 +168,7 @@ public class SimpleCacheControlTest : TestBase
             result = await client.ListCachesAsync(successResult.NextPageToken);
         }
 
+
         int sizeOverlap = cacheNames.Intersect(retrievedCaches).Count();
 
         // Cleanup
@@ -176,6 +176,8 @@ public class SimpleCacheControlTest : TestBase
         {
             await client.DeleteCacheAsync(cacheName);
         }
+
+        Assert.True(sizeOverlap == cacheNames.Count);
     }
 
     [Fact]
