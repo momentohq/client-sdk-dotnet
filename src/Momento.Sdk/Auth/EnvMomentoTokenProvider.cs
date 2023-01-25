@@ -37,6 +37,7 @@ public class EnvMomentoTokenProvider : ICredentialProvider
         CacheEndpoint = claims.CacheEndpoint;
     }
 
+    /// <inheritdoc />
     public ICredentialProvider WithCacheEndpoint(string cacheEndpoint)
     {
         var updated = new EnvMomentoTokenProvider(this.envVarName);
