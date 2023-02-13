@@ -17,7 +17,7 @@ using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.La
     await AdvancedExamples.ListCachesExample(client);
     await AdvancedExamples.SetGetDeleteExample(client);
     await AdvancedExamples.DeleteCacheExample(client);
-    await AdvancedExamples.EagerConnectionExample();
+    AdvancedExamples.EagerConnectionExample();
 
 
     Console.WriteLine("\nProgram has completed successfully.");
@@ -132,7 +132,7 @@ public class AdvancedExamples {
     /// when it is instantiated, and to specify a distinct timeout for the
     /// connection to be established.
     /// </summary>
-    public static async Task EagerConnectionExample()
+    public static void EagerConnectionExample()
     {
         ICredentialProvider authProvider = new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN");
         TimeSpan defaultTtl = TimeSpan.FromSeconds(60);
