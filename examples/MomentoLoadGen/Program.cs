@@ -16,11 +16,12 @@ namespace MomentoLoadGen
 {
     public record CsharpLoadGeneratorOptions
     (
-        int printStatsEveryNRequests,
+        LogLevel logLevel,
+        TimeSpan showStatsInterval,
         int cacheItemPayloadBytes,
         int numberOfConcurrentRequests,
         int maxRequestsPerSecond,
-        int totalNumberOfOperationsToExecute
+        TimeSpan howLongToRun
     );
 
     enum AsyncSetGetResult
@@ -107,34 +108,38 @@ namespace MomentoLoadGen
                 }
 
 
-                var numOperationsPerWorker = _options.totalNumberOfOperationsToExecute / _options.numberOfConcurrentRequests;
                 var workerDelayBetweenRequests = Convert.ToInt32(Math.Floor((1000.0 * _options.numberOfConcurrentRequests) / (_options.maxRequestsPerSecond * 1)));
                 Console.WriteLine($"Targeting a max of {_options.maxRequestsPerSecond} requests per second (delay between requests: {workerDelayBetweenRequests})");
-                var totalNumRequestsExpected = _options.totalNumberOfOperationsToExecute * NUM_REQUESTS_PER_OPERATION;
+                Console.WriteLine($"Running {_options.numberOfConcurrentRequests} concurrent requests for {_options.howLongToRun}");
 
                 var context = new CsharpLoadGeneratorContext();
 
+                CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-                var asyncResults = Enumerable.Range(0, _options.numberOfConcurrentRequests).Select<int, Task>(workerId =>
+                var asyncTasks = Enumerable.Range(0, _options.numberOfConcurrentRequests).Select<int, Task>(workerId =>
                     LaunchAndRunWorkers(
                         momento,
                         context,
                         workerId + 1,
-                        numOperationsPerWorker,
                         workerDelayBetweenRequests,
-                        _options.printStatsEveryNRequests
-                        )
-                ).ToList();
+                        cancellationTokenSource.Token
+                    )
+                );
+                var statsPrinterTask = LaunchStatsPrinterTask(
+                    context, 
+                    _options.showStatsInterval, 
+                    cancellationTokenSource.Token
+                );
+                asyncTasks.Append(statsPrinterTask);
 
-                var statsPrinterTask = LaunchStatsPrinterTask(context, _options.printStatsEveryNRequests, totalNumRequestsExpected);
+                cancellationTokenSource.CancelAfter(_options.howLongToRun);
 
-                var firstResult = await Task.WhenAny(asyncResults);
                 // this will ensure that the program exits promptly if one of the async
                 // tasks throws an uncaught exception.
+                var firstResult = await Task.WhenAny(asyncTasks);
                 await firstResult;
-                await Task.WhenAll(asyncResults);
-
-                await statsPrinterTask;
+                
+                await Task.WhenAll(asyncTasks);
             }
             _logger.LogInformation("Done");
         }
@@ -144,34 +149,30 @@ namespace MomentoLoadGen
             SimpleCacheClient client,
             CsharpLoadGeneratorContext context,
             int workerId,
-            int numOperations,
             int delayMillisBetweenRequests,
-            int printStatsEveryNRequests
+            CancellationToken token
         )
         {
-            for (var i = 1; i <= numOperations; i++)
+            for (var i = 1; !token.IsCancellationRequested; i++)
             {
-                await IssueAsyncSetGet(client, context, workerId, i, delayMillisBetweenRequests, printStatsEveryNRequests);
+                await IssueAsyncSetGet(client, context, workerId, i, delayMillisBetweenRequests);
             }
         }
 
-        private async Task LaunchStatsPrinterTask(CsharpLoadGeneratorContext context, int printStatsEveryNRequests, int totalNumRequests)
+        private async Task LaunchStatsPrinterTask(CsharpLoadGeneratorContext context, TimeSpan showStatsInterval, CancellationToken token)
         {
             var setsAccumulatingHistogram = new LongHistogram(TimeStamp.Minutes(1), 1);
             var getsAccumulatingHistogram = new LongHistogram(TimeStamp.Minutes(1), 1);
 
-            var nextStatsUpdateRequestCount = printStatsEveryNRequests;
-            while (context.GlobalRequestCount < totalNumRequests)
+            while (!token.IsCancellationRequested)
             {
-                if (context.GlobalRequestCount >= nextStatsUpdateRequestCount)
-                {
-                    nextStatsUpdateRequestCount += printStatsEveryNRequests;
+                try {
+                    await Task.Delay(showStatsInterval, token);
+                }
+                finally {
                     PrintStats(setsAccumulatingHistogram, getsAccumulatingHistogram, context);
                 }
-
-                await Task.Delay(500);
             }
-            PrintStats(setsAccumulatingHistogram, getsAccumulatingHistogram, context);
         }
 
         private void PrintStats(LongHistogram setsAccumulatingHistogram, LongHistogram getsAccumulatingHistogram, CsharpLoadGeneratorContext context)
@@ -200,7 +201,7 @@ cumulative get latencies:
             _logger.LogInformation($"Load gen data point:\t{_options.numberOfConcurrentRequests}\t{Tps(context, context.GlobalRequestCount)}\t{getsAccumulatingHistogram.GetValueAtPercentile(50)}\t{getsAccumulatingHistogram.GetValueAtPercentile(99.9)}");
         }
 
-        private async Task IssueAsyncSetGet(SimpleCacheClient client, CsharpLoadGeneratorContext context, int workerId, int operationId, int delayMillisBetweenRequests, int printStatsEveryNRequests)
+        private async Task IssueAsyncSetGet(SimpleCacheClient client, CsharpLoadGeneratorContext context, int workerId, int operationId, int delayMillisBetweenRequests)
         {
             var cacheKey = $"worker{workerId}operation{operationId}";
 
@@ -232,20 +233,6 @@ cumulative get latencies:
                 if (getDuration < delayMillisBetweenRequests)
                 {
                     await Task.Delay((int)(delayMillisBetweenRequests - getDuration));
-                }
-
-                string value = hitResponse.ValueString;
-                string valueString = $"{value.Substring(0, 10)}... (len: {value.Length})";
-
-                var globalRequestCount = context.GlobalRequestCount;
-                if (globalRequestCount % printStatsEveryNRequests == 0)
-                {
-                    var lastPrintCount = Interlocked.Exchange(ref context.LastWorkerStatsPrintRequestCount, globalRequestCount);
-                    if (lastPrintCount != globalRequestCount)
-                    {
-                        Console.WriteLine($"worker: {workerId} last print count: {lastPrintCount} global request count: {globalRequestCount}");
-                        _logger.LogInformation($"worker: {workerId}, worker request: {operationId}, global request: {context.GlobalRequestCount}, status: {getResponse.GetType()}, val: {valueString}");
-                    }
                 }
             }
         }
@@ -358,7 +345,6 @@ cumulative get latencies:
 
         private static string OutputHistogramSummary(HistogramBase histogram)
         {
-            Console.WriteLine($"Histogram totalcount: {histogram.TotalCount}");
             return $@"
 count: {histogram.TotalCount}
         p50: {histogram.GetValueAtPercentile(50)}
@@ -373,7 +359,7 @@ count: {histogram.TotalCount}
 
     internal class Program
     {
-        static ILoggerFactory InitializeLogging()
+        static ILoggerFactory InitializeLogging(LogLevel minLogLevel)
         {
             return LoggerFactory.Create(builder =>
             {
@@ -384,7 +370,7 @@ count: {histogram.TotalCount}
                     options.TimestampFormat = "hh:mm:ss ";
                 });
                 builder.AddFilter("Grpc.Net.Client", LogLevel.Error);
-                builder.SetMinimumLevel(LogLevel.Debug);
+                builder.SetMinimumLevel(minLogLevel);
             });
         }
 
@@ -407,45 +393,46 @@ If you have questions or need help experimenting further, please reach out to us
 
         static async Task Main(string[] args)
         {
-            using (ILoggerFactory loggerFactory = InitializeLogging())
+            CsharpLoadGeneratorOptions loadGeneratorOptions = new CsharpLoadGeneratorOptions(
+              ///
+              /// Controls the verbosity of the output during the run.
+              ///
+              logLevel: LogLevel.Debug,
+              ///
+              /// Each time this amount of time has passed, statistics about throughput and latency
+              /// will be printed.
+              /// 
+              ///
+              showStatsInterval: TimeSpan.FromSeconds(5),
+              ///
+              /// Controls the size of the payload that will be used for the cache items in
+              /// the load test.  Smaller payloads will generally provide lower latencies than
+              /// larger payloads.
+              ///
+              cacheItemPayloadBytes: 100,
+              ///
+              /// Controls the number of concurrent requests that will be made (via asynchronous
+              /// function calls) by the load test.  Increasing this number may improve throughput,
+              /// but it will also increase CPU consumption.  As CPU usage increases and there
+              /// is more contention between the concurrent function calls, client-side latencies
+              /// may increase.
+              ///
+              numberOfConcurrentRequests: 50,
+              ///
+              /// Sets an upper bound on how many requests per second will be sent to the server.
+              /// Momento caches have a default throttling limit of 100 requests per second,
+              /// so if you raise this, you may observe throttled requests.  Contact
+              /// support@momentohq.com to inquire about raising your limits.
+              ///
+              maxRequestsPerSecond: 100,
+              ///
+              /// Controls how long the load test will run.
+              ///
+              howLongToRun: TimeSpan.FromMinutes(1)
+            );
+            
+            using (ILoggerFactory loggerFactory = InitializeLogging(loadGeneratorOptions.logLevel))
             {
-
-                CsharpLoadGeneratorOptions loadGeneratorOptions = new CsharpLoadGeneratorOptions(
-                  ///
-                  /// Each time the load generator has executed this many requests, it will
-                  /// print out some statistics about throughput and latency.
-                  ///
-                  printStatsEveryNRequests: 5000,
-
-                  ///
-                  /// Controls the size of the payload that will be used for the cache items in
-                  /// the load test.  Smaller payloads will generally provide lower latencies than
-                  /// larger payloads.
-                  ///
-                  cacheItemPayloadBytes: 100,
-                  ///
-                  /// Controls the number of concurrent requests that will be made (via asynchronous
-                  /// function calls) by the load test.  Increasing this number may improve throughput,
-                  /// but it will also increase CPU consumption.  As CPU usage increases and there
-                  /// is more contention between the concurrent function calls, client-side latencies
-                  /// may increase.
-                  ///
-                  numberOfConcurrentRequests: 50,
-                  ///
-                  /// Sets an upper bound on how many requests per second will be sent to the server.
-                  /// Momento caches have a default throttling limit of 100 requests per second,
-                  /// so if you raise this, you may observe throttled requests.  Contact
-                  /// support@momentohq.com to inquire about raising your limits.
-                  ///
-                  maxRequestsPerSecond: 100,
-                  ///
-                  /// Controls how long the load test will run.  We will execute this many operations
-                  /// (1 cache 'set' followed immediately by 1 'get') across all of our concurrent
-                  /// workers before exiting.  Statistics will be logged every 1000 operations.
-                  ///
-                  totalNumberOfOperationsToExecute: 500_000
-                );
-
                 /// 
                 /// This is the configuration that will be used for the Momento client.  Choose from
                 /// our pre-built configurations that are optimized for Laptop vs InRegion environments,

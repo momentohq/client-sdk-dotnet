@@ -48,7 +48,7 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <PackageReference Include="Grpc.Net.Client" Version="2.49.0" />
-	  <PackageReference Include="Momento.Protos" Version="0.37.0" />
+	  <PackageReference Include="Momento.Protos" Version="0.38.0" />
 	  <PackageReference Include="JWT" Version="9.0.3" />
 	  <PackageReference Include="System.Threading.Channels" Version="6.0.0" />
 	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />

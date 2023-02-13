@@ -7,6 +7,7 @@ using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient;
+using Momento.Protos.CachePing;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
@@ -35,7 +36,6 @@ public interface IDataClient
     public Task<_ListFetchResponse> ListFetchAsync(_ListFetchRequest request, CallOptions callOptions);
     public Task<_ListRemoveResponse> ListRemoveAsync(_ListRemoveRequest request, CallOptions callOptions);
     public Task<_ListLengthResponse> ListLengthAsync(_ListLengthRequest request, CallOptions callOptions);
-    public Task<_ListEraseResponse> ListEraseAsync(_ListEraseRequest request, CallOptions callOptions);
     public Task<_ListConcatenateFrontResponse> ListConcatenateFrontAsync(_ListConcatenateFrontRequest request, CallOptions callOptions);
     public Task<_ListConcatenateBackResponse> ListConcatenateBackAsync(_ListConcatenateBackRequest request, CallOptions callOptions);
 }
@@ -168,12 +168,6 @@ public class DataClientWithMiddleware : IDataClient
         return await wrapped.ResponseAsync;
     }
 
-    public async Task<_ListEraseResponse> ListEraseAsync(_ListEraseRequest request, CallOptions callOptions)
-    {
-        var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.ListEraseAsync(r, o));
-        return await wrapped.ResponseAsync;
-    }
-
     public async Task<_ListConcatenateFrontResponse> ListConcatenateFrontAsync(_ListConcatenateFrontRequest request, CallOptions callOptions)
     {
         var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.ListConcatenateFrontAsync(r, o));
@@ -224,7 +218,25 @@ public class DataGrpcManager : IDisposable
             }
         ).ToList();
 
-        Client = new DataClientWithMiddleware(new Scs.ScsClient(invoker), middlewares);
+        var client = new Scs.ScsClient(invoker);
+
+        if (config.TransportStrategy.EagerConnectionTimeout != null)
+        {
+            TimeSpan eagerConnectionTimeout = config.TransportStrategy.EagerConnectionTimeout.Value;
+            _logger.LogDebug("TransportStrategy EagerConnection is enabled; attempting to connect to server");
+            var pingClient = new Ping.PingClient(this.channel);
+            try
+            {
+                pingClient.Ping(new _PingRequest(),
+                    new CallOptions(deadline: DateTime.UtcNow.Add(eagerConnectionTimeout)));
+            }
+            catch (RpcException ex)
+            {
+                _logger.LogWarning("Failed to eagerly connect to the server; continuing with execution in case failure is recoverable later.");
+            }
+        }
+        
+        Client = new DataClientWithMiddleware(client, middlewares);
     }
 
     public void Dispose()
