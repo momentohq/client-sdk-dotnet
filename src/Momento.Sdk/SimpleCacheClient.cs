@@ -22,6 +22,12 @@ public class SimpleCacheClient : ISimpleCacheClient
 {
     private readonly ScsControlClient controlClient;
     private readonly List<ScsDataClient> dataClients;
+
+    private ScsDataClient DataClient
+    {
+        get => NextDataClient();
+    }
+
     private int nextDataClientIndex = 0;
 
     /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration" />
@@ -93,7 +99,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         {
             return new CacheSetResponse.Error(new InvalidArgumentException(e.Message));
         }
-        return await this.NextDataClient().SetAsync(cacheName, key, value, ttl);
+        return await this.DataClient.SetAsync(cacheName, key, value, ttl);
     }
 
     /// <inheritdoc />
@@ -109,7 +115,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheGetResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.NextDataClient().GetAsync(cacheName, key);
+        return await this.DataClient.GetAsync(cacheName, key);
     }
 
     /// <inheritdoc />
@@ -125,7 +131,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheDeleteResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.NextDataClient().DeleteAsync(cacheName, key);
+        return await this.DataClient.DeleteAsync(cacheName, key);
     }
 
     /// <inheritdoc />
@@ -147,7 +153,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheSetResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.NextDataClient().SetAsync(cacheName, key, value, ttl);
+        return await this.DataClient.SetAsync(cacheName, key, value, ttl);
     }
 
     /// <inheritdoc />
@@ -162,7 +168,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         {
             return new CacheGetResponse.Error(new InvalidArgumentException(e.Message));
         }
-        return await this.NextDataClient().GetAsync(cacheName, key);
+        return await this.DataClient.GetAsync(cacheName, key);
     }
 
     /// <inheritdoc />
@@ -178,7 +184,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheDeleteResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.NextDataClient().DeleteAsync(cacheName, key);
+        return await this.DataClient.DeleteAsync(cacheName, key);
     }
 
     /// <inheritdoc />
@@ -200,7 +206,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheSetResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.NextDataClient().SetAsync(cacheName, key, value, ttl);
+        return await this.DataClient.SetAsync(cacheName, key, value, ttl);
     }
 
     /// <inheritdoc />
@@ -218,7 +224,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheDictionarySetFieldResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.DictionarySetFieldAsync(cacheName, dictionaryName, field, value, ttl);
+        return await this.DataClient.DictionarySetFieldAsync(cacheName, dictionaryName, field, value, ttl);
     }
 
     /// <inheritdoc />
@@ -236,7 +242,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheDictionarySetFieldResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.DictionarySetFieldAsync(cacheName, dictionaryName, field, value, ttl);
+        return await this.DataClient.DictionarySetFieldAsync(cacheName, dictionaryName, field, value, ttl);
     }
 
     /// <inheritdoc />
@@ -254,7 +260,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheDictionarySetFieldResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.DictionarySetFieldAsync(cacheName, dictionaryName, field, value, ttl);
+        return await this.DataClient.DictionarySetFieldAsync(cacheName, dictionaryName, field, value, ttl);
     }
 
     /// <inheritdoc />
@@ -271,7 +277,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheDictionaryGetFieldResponse.Error(field?.ToByteString(), new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.DictionaryGetFieldAsync(cacheName, dictionaryName, field);
+        return await this.DataClient.DictionaryGetFieldAsync(cacheName, dictionaryName, field);
     }
 
     /// <inheritdoc />
@@ -288,7 +294,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheDictionaryGetFieldResponse.Error(field?.ToByteString(), new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.DictionaryGetFieldAsync(cacheName, dictionaryName, field);
+        return await this.DataClient.DictionaryGetFieldAsync(cacheName, dictionaryName, field);
     }
 
     /// <inheritdoc />
@@ -306,7 +312,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheDictionarySetFieldsResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.DictionarySetFieldsAsync(cacheName, dictionaryName, items, ttl);
+        return await this.DataClient.DictionarySetFieldsAsync(cacheName, dictionaryName, items, ttl);
     }
 
     /// <inheritdoc />
@@ -324,7 +330,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheDictionarySetFieldsResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.DictionarySetFieldsAsync(cacheName, dictionaryName, items, ttl);
+        return await this.DataClient.DictionarySetFieldsAsync(cacheName, dictionaryName, items, ttl);
     }
 
     /// <inheritdoc />
@@ -342,7 +348,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheDictionarySetFieldsResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.DictionarySetFieldsAsync(cacheName, dictionaryName, items, ttl);
+        return await this.DataClient.DictionarySetFieldsAsync(cacheName, dictionaryName, items, ttl);
     }
 
     /// <inheritdoc />
@@ -359,7 +365,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheDictionaryIncrementResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.DictionaryIncrementAsync(cacheName, dictionaryName, field, amount, ttl);
+        return await this.DataClient.DictionaryIncrementAsync(cacheName, dictionaryName, field, amount, ttl);
     }
 
     /// <inheritdoc />
@@ -376,7 +382,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         {
             return new CacheDictionaryGetFieldsResponse.Error(new InvalidArgumentException(e.Message));
         }
-        return await this.dataClient.DictionaryGetFieldsAsync(cacheName, dictionaryName, fields);
+        return await this.DataClient.DictionaryGetFieldsAsync(cacheName, dictionaryName, fields);
     }
 
     /// <inheritdoc />
@@ -394,7 +400,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheDictionaryGetFieldsResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.DictionaryGetFieldsAsync(cacheName, dictionaryName, fields);
+        return await this.DataClient.DictionaryGetFieldsAsync(cacheName, dictionaryName, fields);
     }
 
     /// <inheritdoc />
@@ -411,7 +417,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         }
 
 
-        return await this.dataClient.DictionaryFetchAsync(cacheName, dictionaryName);
+        return await this.DataClient.DictionaryFetchAsync(cacheName, dictionaryName);
     }
 
     /// <inheritdoc />
@@ -428,7 +434,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         {
             return new CacheDictionaryRemoveFieldResponse.Error(new InvalidArgumentException(e.Message));
         }
-        return await this.dataClient.DictionaryRemoveFieldAsync(cacheName, dictionaryName, field);
+        return await this.DataClient.DictionaryRemoveFieldAsync(cacheName, dictionaryName, field);
     }
 
     /// <inheritdoc />
@@ -446,7 +452,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheDictionaryRemoveFieldResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.DictionaryRemoveFieldAsync(cacheName, dictionaryName, field);
+        return await this.DataClient.DictionaryRemoveFieldAsync(cacheName, dictionaryName, field);
     }
 
     /// <inheritdoc />
@@ -464,7 +470,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         {
             return new CacheDictionaryRemoveFieldsResponse.Error(new InvalidArgumentException(e.Message));
         }
-        return await this.dataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
+        return await this.DataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
     }
 
     /// <inheritdoc />
@@ -483,7 +489,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheDictionaryRemoveFieldsResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
+        return await this.DataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
     }
 
     /// <inheritdoc />
@@ -500,7 +506,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         {
             return new CacheSetAddElementResponse.Error(new InvalidArgumentException(e.Message));
         }
-        return await this.dataClient.SetAddElementAsync(cacheName, setName, element, ttl);
+        return await this.DataClient.SetAddElementAsync(cacheName, setName, element, ttl);
     }
 
     /// <inheritdoc />
@@ -517,7 +523,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheSetAddElementResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.SetAddElementAsync(cacheName, setName, element, ttl);
+        return await this.DataClient.SetAddElementAsync(cacheName, setName, element, ttl);
     }
 
     /// <inheritdoc />
@@ -535,7 +541,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         {
             return new CacheSetAddElementsResponse.Error(new InvalidArgumentException(e.Message));
         }
-        return await this.dataClient.SetAddElementsAsync(cacheName, setName, elements, ttl);
+        return await this.DataClient.SetAddElementsAsync(cacheName, setName, elements, ttl);
     }
 
     /// <inheritdoc />
@@ -554,7 +560,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheSetAddElementsResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.SetAddElementsAsync(cacheName, setName, elements, ttl);
+        return await this.DataClient.SetAddElementsAsync(cacheName, setName, elements, ttl);
     }
 
     /// <inheritdoc />
@@ -571,7 +577,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         {
             return new CacheSetRemoveElementResponse.Error(new InvalidArgumentException(e.Message));
         }
-        return await this.dataClient.SetRemoveElementAsync(cacheName, setName, element);
+        return await this.DataClient.SetRemoveElementAsync(cacheName, setName, element);
     }
 
     /// <inheritdoc />
@@ -589,7 +595,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheSetRemoveElementResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.SetRemoveElementAsync(cacheName, setName, element);
+        return await this.DataClient.SetRemoveElementAsync(cacheName, setName, element);
     }
 
     /// <inheritdoc />
@@ -607,7 +613,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheSetRemoveElementsResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.SetRemoveElementsAsync(cacheName, setName, elements);
+        return await this.DataClient.SetRemoveElementsAsync(cacheName, setName, elements);
     }
 
     /// <inheritdoc />
@@ -625,7 +631,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheSetRemoveElementsResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.SetRemoveElementsAsync(cacheName, setName, elements);
+        return await this.DataClient.SetRemoveElementsAsync(cacheName, setName, elements);
     }
 
     /// <inheritdoc />
@@ -641,7 +647,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheSetFetchResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.SetFetchAsync(cacheName, setName);
+        return await this.DataClient.SetFetchAsync(cacheName, setName);
     }
 
     /// <inheritdoc />
@@ -664,7 +670,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheListConcatenateFrontResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.ListConcatenateFrontAsync(cacheName, listName, values, truncateBackToSize, ttl);
+        return await this.DataClient.ListConcatenateFrontAsync(cacheName, listName, values, truncateBackToSize, ttl);
     }
 
 
@@ -688,7 +694,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheListConcatenateFrontResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.ListConcatenateFrontAsync(cacheName, listName, values, truncateBackToSize, ttl);
+        return await this.DataClient.ListConcatenateFrontAsync(cacheName, listName, values, truncateBackToSize, ttl);
     }
 
     /// <inheritdoc />
@@ -711,7 +717,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheListConcatenateBackResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.ListConcatenateBackAsync(cacheName, listName, values, truncateFrontToSize, ttl);
+        return await this.DataClient.ListConcatenateBackAsync(cacheName, listName, values, truncateFrontToSize, ttl);
     }
 
     /// <inheritdoc />
@@ -734,7 +740,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheListConcatenateBackResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.ListConcatenateBackAsync(cacheName, listName, values, truncateFrontToSize, ttl);
+        return await this.DataClient.ListConcatenateBackAsync(cacheName, listName, values, truncateFrontToSize, ttl);
     }
 
     /// <inheritdoc />
@@ -756,7 +762,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheListPushFrontResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.ListPushFrontAsync(cacheName, listName, value, truncateBackToSize, ttl);
+        return await this.DataClient.ListPushFrontAsync(cacheName, listName, value, truncateBackToSize, ttl);
     }
 
     /// <inheritdoc />
@@ -778,7 +784,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheListPushFrontResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.ListPushFrontAsync(cacheName, listName, value, truncateBackToSize, ttl);
+        return await this.DataClient.ListPushFrontAsync(cacheName, listName, value, truncateBackToSize, ttl);
     }
 
     /// <inheritdoc />
@@ -800,7 +806,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheListPushBackResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.ListPushBackAsync(cacheName, listName, value, truncateFrontToSize, ttl);
+        return await this.DataClient.ListPushBackAsync(cacheName, listName, value, truncateFrontToSize, ttl);
     }
 
     /// <inheritdoc />
@@ -822,7 +828,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheListPushBackResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.ListPushBackAsync(cacheName, listName, value, truncateFrontToSize, ttl);
+        return await this.DataClient.ListPushBackAsync(cacheName, listName, value, truncateFrontToSize, ttl);
     }
 
     /// <inheritdoc />
@@ -838,7 +844,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheListPopFrontResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.ListPopFrontAsync(cacheName, listName);
+        return await this.DataClient.ListPopFrontAsync(cacheName, listName);
     }
 
     /// <inheritdoc />
@@ -854,7 +860,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheListPopBackResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.ListPopBackAsync(cacheName, listName);
+        return await this.DataClient.ListPopBackAsync(cacheName, listName);
     }
 
     /// <inheritdoc />
@@ -870,7 +876,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheListFetchResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.ListFetchAsync(cacheName, listName);
+        return await this.DataClient.ListFetchAsync(cacheName, listName);
     }
 
     /// <inheritdoc />
@@ -888,7 +894,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         }
 
 
-        return await this.dataClient.ListRemoveValueAsync(cacheName, listName, value);
+        return await this.DataClient.ListRemoveValueAsync(cacheName, listName, value);
     }
 
     /// <inheritdoc />
@@ -906,7 +912,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         }
 
 
-        return await this.dataClient.ListRemoveValueAsync(cacheName, listName, value);
+        return await this.DataClient.ListRemoveValueAsync(cacheName, listName, value);
     }
 
     /// <inheritdoc />
@@ -922,7 +928,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         {
             return new CacheListLengthResponse.Error(new InvalidArgumentException(e.Message));
         }
-        return await this.dataClient.ListLengthAsync(cacheName, listName);
+        return await this.DataClient.ListLengthAsync(cacheName, listName);
     }
 
     /// <inheritdoc />
