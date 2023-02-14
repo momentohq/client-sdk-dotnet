@@ -11,13 +11,11 @@ namespace Momento.Sdk.Config.Transport;
 /// </summary>
 public class StaticGrpcConfiguration : IGrpcConfiguration
 {
-    /// <summary>
-    /// Maximum amount of time before a request will timeout
-    /// </summary>
+    /// <inheritdoc/>
     public TimeSpan Deadline { get; }
-    /// <summary>
-    /// Customizations to low-level gRPC channel configuration
-    /// </summary>
+    /// <inheritdoc/>
+    public int MinNumGrpcChannels { get; }
+    /// <inheritdoc/>
     public GrpcChannelOptions GrpcChannelOptions { get; }
 
     /// <summary>
@@ -25,31 +23,31 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
     /// </summary>
     /// <param name="deadline">Maximum amount of time before a request will timeout</param>
     /// <param name="grpcChannelOptions">Customizations to low-level gRPC channel configuration</param>
-    public StaticGrpcConfiguration(TimeSpan deadline, GrpcChannelOptions? grpcChannelOptions = null)
+    /// <param name="minNumGrpcChannels">minimum number of gRPC channels to open</param>
+    public StaticGrpcConfiguration(TimeSpan deadline, GrpcChannelOptions? grpcChannelOptions = null, int minNumGrpcChannels = 1)
     {
         Utils.ArgumentStrictlyPositive(deadline, nameof(deadline));
         this.Deadline = deadline;
+        this.MinNumGrpcChannels = minNumGrpcChannels;
         this.GrpcChannelOptions = grpcChannelOptions ?? new GrpcChannelOptions();
     }
 
-    /// <summary>
-    /// Copy constructor for overriding the deadline
-    /// </summary>
-    /// <param name="deadline"></param>
-    /// <returns>A new GrpcConfiguration with the updated deadline</returns>
+    /// <inheritdoc/>
     public IGrpcConfiguration WithDeadline(TimeSpan deadline)
     {
-        return new StaticGrpcConfiguration(deadline, this.GrpcChannelOptions);
+        return new StaticGrpcConfiguration(deadline, this.GrpcChannelOptions, this.MinNumGrpcChannels);
     }
 
-    /// <summary>
-    /// Copy constructor for overriding the gRPC channel options
-    /// </summary>
-    /// <param name="grpcChannelOptions"></param>
-    /// <returns>A new GrpcConfiguration with the specified channel options</returns>
+    /// <inheritdoc/>
+    public IGrpcConfiguration WithMinNumGrpcChannels(int minNumGrpcChannels)
+    {
+        return new StaticGrpcConfiguration(this.Deadline, this.GrpcChannelOptions, minNumGrpcChannels);
+    }
+
+    /// <inheritdoc/>
     public IGrpcConfiguration WithGrpcChannelOptions(GrpcChannelOptions grpcChannelOptions)
     {
-        return new StaticGrpcConfiguration(this.Deadline, grpcChannelOptions);
+        return new StaticGrpcConfiguration(this.Deadline, grpcChannelOptions, this.MinNumGrpcChannels);
     }
 }
 

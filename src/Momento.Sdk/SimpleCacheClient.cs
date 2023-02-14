@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Auth;
@@ -17,7 +19,9 @@ namespace Momento.Sdk;
 public class SimpleCacheClient : ISimpleCacheClient
 {
     private readonly ScsControlClient controlClient;
-    private readonly ScsDataClient dataClient;
+    private readonly List<ScsDataClient> dataClients;
+    private int nextDataClientIndex = 0;
+
     /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration" />
     protected readonly IConfiguration config;
     /// <inheritdoc cref="Microsoft.Extensions.Logging.ILogger" />
@@ -38,7 +42,11 @@ public class SimpleCacheClient : ISimpleCacheClient
         this._logger = _loggerFactory.CreateLogger<SimpleCacheClient>();
         Utils.ArgumentStrictlyPositive(defaultTtl, "defaultTtl");
         this.controlClient = new(_loggerFactory, authProvider.AuthToken, authProvider.ControlEndpoint);
-        this.dataClient = new(config, authProvider.AuthToken, authProvider.CacheEndpoint, defaultTtl);
+        this.dataClients = new List<ScsDataClient>();
+        for (var i = 1; i <= config.TransportStrategy.GrpcConfig.MinNumGrpcChannels; i++)
+        {
+            this.dataClients.Add(new(config, authProvider.AuthToken, authProvider.CacheEndpoint, defaultTtl));
+        }
     }
 
     /// <inheritdoc />
@@ -83,7 +91,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         {
             return new CacheSetResponse.Error(new InvalidArgumentException(e.Message));
         }
-        return await this.dataClient.SetAsync(cacheName, key, value, ttl);
+        return await this.NextDataClient().SetAsync(cacheName, key, value, ttl);
     }
 
     /// <inheritdoc />
@@ -99,7 +107,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheGetResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.GetAsync(cacheName, key);
+        return await this.NextDataClient().GetAsync(cacheName, key);
     }
 
     /// <inheritdoc />
@@ -115,7 +123,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheDeleteResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.DeleteAsync(cacheName, key);
+        return await this.NextDataClient().DeleteAsync(cacheName, key);
     }
 
     /// <inheritdoc />
@@ -137,7 +145,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheSetResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.SetAsync(cacheName, key, value, ttl);
+        return await this.NextDataClient().SetAsync(cacheName, key, value, ttl);
     }
 
     /// <inheritdoc />
@@ -152,7 +160,7 @@ public class SimpleCacheClient : ISimpleCacheClient
         {
             return new CacheGetResponse.Error(new InvalidArgumentException(e.Message));
         }
-        return await this.dataClient.GetAsync(cacheName, key);
+        return await this.NextDataClient().GetAsync(cacheName, key);
     }
 
     /// <inheritdoc />
@@ -168,7 +176,7 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheDeleteResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.DeleteAsync(cacheName, key);
+        return await this.NextDataClient().DeleteAsync(cacheName, key);
     }
 
     /// <inheritdoc />
@@ -190,14 +198,23 @@ public class SimpleCacheClient : ISimpleCacheClient
             return new CacheSetResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.dataClient.SetAsync(cacheName, key, value, ttl);
+        return await this.NextDataClient().SetAsync(cacheName, key, value, ttl);
     }
 
     /// <inheritdoc />
     public void Dispose()
     {
         this.controlClient.Dispose();
-        this.dataClient.Dispose();
+        foreach (var dataClient in this.dataClients)
+        {
+            dataClient.Dispose();
+        }
         GC.SuppressFinalize(this);
+    }
+
+
+    private ScsDataClient NextDataClient()
+    {
+        return this.dataClients[Interlocked.Increment(ref this.nextDataClientIndex) % this.dataClients.Count];
     }
 }
