@@ -11,13 +11,11 @@ namespace Momento.Sdk.Config.Transport;
 /// </summary>
 public class StaticGrpcConfiguration : IGrpcConfiguration
 {
-    /// <summary>
-    /// Maximum amount of time before a request will timeout
-    /// </summary>
+    /// <inheritdoc/>
     public TimeSpan Deadline { get; }
-    /// <summary>
-    /// Customizations to low-level gRPC channel configuration
-    /// </summary>
+    /// <inheritdoc/>
+    public int MinNumGrpcChannels { get; }
+    /// <inheritdoc/>
     public GrpcChannelOptions GrpcChannelOptions { get; }
 
     /// <summary>
@@ -25,31 +23,31 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
     /// </summary>
     /// <param name="deadline">Maximum amount of time before a request will timeout</param>
     /// <param name="grpcChannelOptions">Customizations to low-level gRPC channel configuration</param>
-    public StaticGrpcConfiguration(TimeSpan deadline, GrpcChannelOptions? grpcChannelOptions = null)
+    /// <param name="minNumGrpcChannels">minimum number of gRPC channels to open</param>
+    public StaticGrpcConfiguration(TimeSpan deadline, GrpcChannelOptions? grpcChannelOptions = null, int minNumGrpcChannels = 1)
     {
         Utils.ArgumentStrictlyPositive(deadline, nameof(deadline));
         this.Deadline = deadline;
+        this.MinNumGrpcChannels = minNumGrpcChannels;
         this.GrpcChannelOptions = grpcChannelOptions ?? new GrpcChannelOptions();
     }
 
-    /// <summary>
-    /// Copy constructor for overriding the deadline
-    /// </summary>
-    /// <param name="deadline"></param>
-    /// <returns>A new GrpcConfiguration with the updated deadline</returns>
+    /// <inheritdoc/>
     public IGrpcConfiguration WithDeadline(TimeSpan deadline)
     {
-        return new StaticGrpcConfiguration(deadline, this.GrpcChannelOptions);
+        return new StaticGrpcConfiguration(deadline, this.GrpcChannelOptions, this.MinNumGrpcChannels);
     }
 
-    /// <summary>
-    /// Copy constructor for overriding the gRPC channel options
-    /// </summary>
-    /// <param name="grpcChannelOptions"></param>
-    /// <returns>A new GrpcConfiguration with the specified channel options</returns>
+    /// <inheritdoc/>
+    public IGrpcConfiguration WithMinNumGrpcChannels(int minNumGrpcChannels)
+    {
+        return new StaticGrpcConfiguration(this.Deadline, this.GrpcChannelOptions, minNumGrpcChannels);
+    }
+
+    /// <inheritdoc/>
     public IGrpcConfiguration WithGrpcChannelOptions(GrpcChannelOptions grpcChannelOptions)
     {
-        return new StaticGrpcConfiguration(this.Deadline, grpcChannelOptions);
+        return new StaticGrpcConfiguration(this.Deadline, grpcChannelOptions, this.MinNumGrpcChannels);
     }
 }
 
@@ -62,14 +60,13 @@ public class StaticTransportStrategy : ITransportStrategy
 {
     private readonly ILoggerFactory _loggerFactory;
 
-    /// <summary>
-    /// The maximum number of concurrent requests that the Momento client will
-    /// allow on the wire at one time.
-    /// </summary>
+    /// <inheritdoc />
     public int MaxConcurrentRequests { get; }
-    /// <summary>
-    /// Configures how Momento client interacts with the Momento service via gRPC
-    /// </summary>
+
+    /// <inheritdoc />
+    public TimeSpan? EagerConnectionTimeout { get; }
+
+    /// <inheritdoc />
     public IGrpcConfiguration GrpcConfig { get; }
 
     /// <summary>
@@ -78,10 +75,15 @@ public class StaticTransportStrategy : ITransportStrategy
     /// <param name="loggerFactory"></param>
     /// <param name="maxConcurrentRequests">The maximum number of concurrent requests that the Momento client will allow on the wire at one time.</param>
     /// <param name="grpcConfig">Configures how Momento client interacts with the Momento service via gRPC</param>
-    public StaticTransportStrategy(ILoggerFactory loggerFactory, int maxConcurrentRequests, IGrpcConfiguration grpcConfig)
+    /// <param name="eagerConnectionTimeout">If null, the client will only attempt to connect to the server lazily when the first request is executed.
+    /// If provided, the client will attempt to connect to the server immediately upon construction; if the connection
+    /// cannot be established within the specified TimeSpan, it will abort the connection attempt, log a warning,
+    /// and proceed with execution so that the application doesn't hang.</param>
+    public StaticTransportStrategy(ILoggerFactory loggerFactory, int maxConcurrentRequests, IGrpcConfiguration grpcConfig, TimeSpan? eagerConnectionTimeout = null)
     {
         _loggerFactory = loggerFactory;
         MaxConcurrentRequests = maxConcurrentRequests;
+        EagerConnectionTimeout = eagerConnectionTimeout;
         GrpcConfig = grpcConfig;
     }
 
@@ -101,5 +103,11 @@ public class StaticTransportStrategy : ITransportStrategy
     public ITransportStrategy WithClientTimeout(TimeSpan clientTimeout)
     {
         return new StaticTransportStrategy(_loggerFactory, MaxConcurrentRequests, GrpcConfig.WithDeadline(clientTimeout));
+    }
+
+    /// <inheritdoc/>
+    public ITransportStrategy WithEagerConnectionTimeout(TimeSpan connectionTimeout)
+    {
+        return new StaticTransportStrategy(_loggerFactory, MaxConcurrentRequests, GrpcConfig, connectionTimeout);
     }
 }

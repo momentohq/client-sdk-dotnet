@@ -32,31 +32,33 @@
 		<RepositoryUrl>https://github.com/momentohq/client-sdk-dotnet</RepositoryUrl>
 	</PropertyGroup>
 	<ItemGroup>
-		<None Remove="System.Threading.Channels" />
-		<None Remove="Internal\Middleware\" />
-		<None Remove="Grpc.Net.Client" />
-		<None Remove="Momento.Protos" />
-		<None Remove="JWT" />
-		<None Remove="System.IdentityModel.Tokens.Jwt" />
-		<None Remove="Microsoft.Extensions.Logging" />
-		<None Remove="Microsoft.SourceLink.GitHub" />
-		<None Remove="Internal\Retry\" />
+	  <None Remove="System.Threading.Channels" />
+	  <None Remove="Internal\Middleware\" />
+	  <None Remove="Grpc.Net.Client" />
+	  <None Remove="Momento.Protos" />
+	  <None Remove="JWT" />
+	  <None Remove="System.IdentityModel.Tokens.Jwt" />
+	  <None Remove="Microsoft.Extensions.Logging" />
+	  <None Remove="Microsoft.SourceLink.GitHub" />
+	  <None Remove="Internal\Retry\" />
+	  <None Remove="System.Threading" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Internal\Middleware\" />
 		<Folder Include="Internal\Retry\" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Grpc.Net.Client" Version="2.49.0" />
-		<PackageReference Include="Momento.Protos" Version="0.38.0" />
-		<PackageReference Include="JWT" Version="9.0.3" />
-		<PackageReference Include="System.Threading.Channels" Version="6.0.0" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-			<PrivateAssets>all</PrivateAssets>
-		</PackageReference>
+	  <PackageReference Include="Grpc.Net.Client" Version="2.49.0" />
+	  <PackageReference Include="Momento.Protos" Version="0.38.0" />
+	  <PackageReference Include="JWT" Version="9.0.3" />
+	  <PackageReference Include="System.Threading.Channels" Version="6.0.0" />
+	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />
+	  <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+	  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	    <PrivateAssets>all</PrivateAssets>
+	  </PackageReference>
+	  <PackageReference Include="System.Threading" Version="4.3.0" />
 	</ItemGroup>
 	<ProjectExtensions>
 		<MonoDevelop>

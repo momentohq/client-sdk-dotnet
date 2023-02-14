@@ -30,7 +30,7 @@ public class Configurations
         /// </summary>
         /// <param name="loggerFactory"></param>
         /// <returns></returns>
-        public static Laptop Latest(ILoggerFactory? loggerFactory = null)
+        public static IConfiguration Latest(ILoggerFactory? loggerFactory = null)
         {
             var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
             IRetryStrategy retryStrategy = new FixedCountRetryStrategy(finalLoggerFactory, maxAttempts: 3);
@@ -65,7 +65,7 @@ public class Configurations
             /// </summary>
             /// <param name="loggerFactory"></param>
             /// <returns></returns>
-            public static Default Latest(ILoggerFactory? loggerFactory = null)
+            public static IConfiguration Latest(ILoggerFactory? loggerFactory = null)
             {
                 var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
                 IRetryStrategy retryStrategy = new FixedCountRetryStrategy(finalLoggerFactory, maxAttempts: 3);
@@ -96,7 +96,7 @@ public class Configurations
             /// </summary>
             /// <param name="loggerFactory"></param>
             /// <returns></returns>
-            public static LowLatency Latest(ILoggerFactory? loggerFactory = null)
+            public static IConfiguration Latest(ILoggerFactory? loggerFactory = null)
             {
                 var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
                 IRetryStrategy retryStrategy = new FixedCountRetryStrategy(finalLoggerFactory, maxAttempts: 3);
