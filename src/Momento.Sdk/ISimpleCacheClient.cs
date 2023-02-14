@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Momento.Sdk.Exceptions;
 using Momento.Sdk.Requests;
 using Momento.Sdk.Responses;
 
