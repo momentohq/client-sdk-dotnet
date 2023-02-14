@@ -234,16 +234,16 @@ public interface ISimpleCacheClient : IDisposable
     /// <inheritdoc cref="DictionarySetFieldAsync(string, string, byte[], byte[], CollectionTtl)" path="remark"/>
     /// <param name="cacheName">Name of the cache to store the dictionary in.</param>
     /// <param name="dictionaryName">The dictionary to set.</param>
-    /// <param name="items">The field-value pairs in the dictionary to set.</param>
+    /// <param name="elements">The field-value pairs in the dictionary to set.</param>
     /// <param name="ttl">TTL for the dictionary in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
     /// <returns>Task representing the result of the cache operation.</returns>
-    public Task<CacheDictionarySetFieldsResponse> DictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, CollectionTtl ttl = default(CollectionTtl));
+    public Task<CacheDictionarySetFieldsResponse> DictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> elements, CollectionTtl ttl = default(CollectionTtl));
 
     /// <inheritdoc cref="DictionarySetFieldsAsync(string, string, IEnumerable{KeyValuePair{byte[], byte[]}}, CollectionTtl)"/>
-    public Task<CacheDictionarySetFieldsResponse> DictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, CollectionTtl ttl = default(CollectionTtl));
+    public Task<CacheDictionarySetFieldsResponse> DictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> elements, CollectionTtl ttl = default(CollectionTtl));
 
     /// <inheritdoc cref="DictionarySetFieldsAsync(string, string, IEnumerable{KeyValuePair{byte[], byte[]}}, CollectionTtl)"/>
-    public Task<CacheDictionarySetFieldsResponse> DictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, byte[]>> items, CollectionTtl ttl = default(CollectionTtl));
+    public Task<CacheDictionarySetFieldsResponse> DictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, byte[]>> elements, CollectionTtl ttl = default(CollectionTtl));
 
     /// <summary>
     /// <para>Add an integer quantity to a dictionary value.</para>

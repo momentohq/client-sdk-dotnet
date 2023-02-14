@@ -298,57 +298,57 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <inheritdoc />
-    public async Task<CacheDictionarySetFieldsResponse> DictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, CollectionTtl ttl = default(CollectionTtl))
+    public async Task<CacheDictionarySetFieldsResponse> DictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> elements, CollectionTtl ttl = default(CollectionTtl))
     {
         try
         {
             Utils.ArgumentNotNull(cacheName, nameof(cacheName));
             Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
-            Utils.ArgumentNotNull(items, nameof(items));
-            Utils.KeysAndValuesNotNull(items, nameof(items));
+            Utils.ArgumentNotNull(elements, nameof(elements));
+            Utils.KeysAndValuesNotNull(elements, nameof(elements));
         }
         catch (ArgumentNullException e)
         {
             return new CacheDictionarySetFieldsResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.DataClient.DictionarySetFieldsAsync(cacheName, dictionaryName, items, ttl);
+        return await this.DataClient.DictionarySetFieldsAsync(cacheName, dictionaryName, elements, ttl);
     }
 
     /// <inheritdoc />
-    public async Task<CacheDictionarySetFieldsResponse> DictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, CollectionTtl ttl = default(CollectionTtl))
+    public async Task<CacheDictionarySetFieldsResponse> DictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> elements, CollectionTtl ttl = default(CollectionTtl))
     {
         try
         {
             Utils.ArgumentNotNull(cacheName, nameof(cacheName));
             Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
-            Utils.ArgumentNotNull(items, nameof(items));
-            Utils.KeysAndValuesNotNull(items, nameof(items));
+            Utils.ArgumentNotNull(elements, nameof(elements));
+            Utils.KeysAndValuesNotNull(elements, nameof(elements));
         }
         catch (ArgumentNullException e)
         {
             return new CacheDictionarySetFieldsResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.DataClient.DictionarySetFieldsAsync(cacheName, dictionaryName, items, ttl);
+        return await this.DataClient.DictionarySetFieldsAsync(cacheName, dictionaryName, elements, ttl);
     }
 
     /// <inheritdoc />
-    public async Task<CacheDictionarySetFieldsResponse> DictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, byte[]>> items, CollectionTtl ttl = default(CollectionTtl))
+    public async Task<CacheDictionarySetFieldsResponse> DictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, byte[]>> elements, CollectionTtl ttl = default(CollectionTtl))
     {
         try
         {
             Utils.ArgumentNotNull(cacheName, nameof(cacheName));
             Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
-            Utils.ArgumentNotNull(items, nameof(items));
-            Utils.KeysAndValuesNotNull(items, nameof(items));
+            Utils.ArgumentNotNull(elements, nameof(elements));
+            Utils.KeysAndValuesNotNull(elements, nameof(elements));
         }
         catch (ArgumentNullException e)
         {
             return new CacheDictionarySetFieldsResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.DataClient.DictionarySetFieldsAsync(cacheName, dictionaryName, items, ttl);
+        return await this.DataClient.DictionarySetFieldsAsync(cacheName, dictionaryName, elements, ttl);
     }
 
     /// <inheritdoc />
