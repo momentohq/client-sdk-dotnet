@@ -6,7 +6,8 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<!-- Include documentation in build -->
-		<!-- <NoWarn>1591</NoWarn> -->
+		<!-- TODO: Address public-facing documentation -->
+		<NoWarn>1591</NoWarn>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<!-- Include source and debug symbols-->
 		<IncludeSource>true</IncludeSource>
@@ -14,7 +15,6 @@
 		<IncludeSymbols>true</IncludeSymbols>
 		<!-- Publish the repository URL in the built .nupkg -->
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-
 		<!-- Package metadata -->
 		<PackageId>Momento.Sdk</PackageId>
 		<Authors>Momento</Authors>
@@ -44,8 +44,8 @@
 	  <None Remove="System.Threading" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Internal\Middleware\" />
-	  <Folder Include="Internal\Retry\" />
+		<Folder Include="Internal\Middleware\" />
+		<Folder Include="Internal\Retry\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <PackageReference Include="Grpc.Net.Client" Version="2.49.0" />
@@ -61,13 +61,13 @@
 	  <PackageReference Include="System.Threading" Version="4.3.0" />
 	</ItemGroup>
 	<ProjectExtensions>
-	  <MonoDevelop>
-	    <Properties>
-	      <Policies>
-	        <TextStylePolicy TabWidth="4" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="80" TabsToSpaces="True" scope="application/xml" />
-	        <XmlFormattingPolicy scope="application/xml" />
-	      </Policies>
-	    </Properties>
-	  </MonoDevelop>
+		<MonoDevelop>
+			<Properties>
+				<Policies>
+					<TextStylePolicy TabWidth="4" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="80" TabsToSpaces="True" scope="application/xml" />
+					<XmlFormattingPolicy scope="application/xml" />
+				</Policies>
+			</Properties>
+		</MonoDevelop>
 	</ProjectExtensions>
 </Project>
