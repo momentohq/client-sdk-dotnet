@@ -33,17 +33,10 @@ public abstract class ListCachesResponse
         /// </summary>
         public List<CacheInfo> Caches { get; }
 
-        /// <summary>
-        /// A token to specify where to start paging. This is the NextToken from
-        /// a previous response.
-        /// </summary>
-        public string? NextPageToken { get; }
-
         /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
         /// <param name="result">gRPC list caches request result</param>
         public Success(_ListCachesResponse result)
         {
-            NextPageToken = result.NextToken == "" ? null : result.NextToken;
             Caches = new List<CacheInfo>();
             foreach (_Cache c in result.Cache)
             {
