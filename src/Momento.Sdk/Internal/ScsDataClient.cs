@@ -155,21 +155,21 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return await SendDictionarySetFieldAsync(cacheName, dictionaryName, ToSingletonFieldValuePair(field, value), ttl);
     }
 
-    public async Task<CacheDictionarySetFieldsResponse> DictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> items, CollectionTtl ttl = default(CollectionTtl))
+    public async Task<CacheDictionarySetFieldsResponse> DictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<byte[], byte[]>> elements, CollectionTtl ttl = default(CollectionTtl))
     {
-        var protoItems = items.Select(kv => new _DictionaryFieldValuePair() { Field = kv.Key.ToByteString(), Value = kv.Value.ToByteString() });
+        var protoItems = elements.Select(kv => new _DictionaryFieldValuePair() { Field = kv.Key.ToByteString(), Value = kv.Value.ToByteString() });
         return await SendDictionarySetFieldsAsync(cacheName, dictionaryName, protoItems, ttl);
     }
 
-    public async Task<CacheDictionarySetFieldsResponse> DictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> items, CollectionTtl ttl = default(CollectionTtl))
+    public async Task<CacheDictionarySetFieldsResponse> DictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, string>> elements, CollectionTtl ttl = default(CollectionTtl))
     {
-        var protoItems = items.Select(kv => new _DictionaryFieldValuePair() { Field = kv.Key.ToByteString(), Value = kv.Value.ToByteString() });
+        var protoItems = elements.Select(kv => new _DictionaryFieldValuePair() { Field = kv.Key.ToByteString(), Value = kv.Value.ToByteString() });
         return await SendDictionarySetFieldsAsync(cacheName, dictionaryName, protoItems, ttl);
     }
 
-    public async Task<CacheDictionarySetFieldsResponse> DictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, byte[]>> items, CollectionTtl ttl = default(CollectionTtl))
+    public async Task<CacheDictionarySetFieldsResponse> DictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<KeyValuePair<string, byte[]>> elements, CollectionTtl ttl = default(CollectionTtl))
     {
-        var protoItems = items.Select(kv => new _DictionaryFieldValuePair() { Field = kv.Key.ToByteString(), Value = kv.Value.ToByteString() });
+        var protoItems = elements.Select(kv => new _DictionaryFieldValuePair() { Field = kv.Key.ToByteString(), Value = kv.Value.ToByteString() });
         return await SendDictionarySetFieldsAsync(cacheName, dictionaryName, protoItems, ttl);
     }
 
@@ -468,7 +468,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
     }
 
     const string REQUEST_TYPE_DICTIONARY_SET_FIELD = "DICTIONARY_SET_FIELD";
-    private async Task<CacheDictionarySetFieldResponse> SendDictionarySetFieldAsync(string cacheName, string dictionaryName, IEnumerable<_DictionaryFieldValuePair> items, CollectionTtl ttl)
+    private async Task<CacheDictionarySetFieldResponse> SendDictionarySetFieldAsync(string cacheName, string dictionaryName, IEnumerable<_DictionaryFieldValuePair> elements, CollectionTtl ttl)
     {
         _DictionarySetRequest request = new()
         {
@@ -476,24 +476,24 @@ internal sealed class ScsDataClient : ScsDataClientBase
             RefreshTtl = ttl.RefreshTtl,
             TtlMilliseconds = TtlToMilliseconds(ttl.Ttl)
         };
-        request.Items.Add(items);
+        request.Items.Add(elements);
         var metadata = MetadataWithCache(cacheName);
 
         try
         {
-            this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_DICTIONARY_SET_FIELD, cacheName, dictionaryName, items, ttl);
+            this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_DICTIONARY_SET_FIELD, cacheName, dictionaryName, elements, ttl);
             await this.grpcManager.Client.DictionarySetAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
         }
         catch (Exception e)
         {
-            return this._logger.LogTraceCollectionRequestError(REQUEST_TYPE_DICTIONARY_SET_FIELD, cacheName, dictionaryName, items, ttl, new CacheDictionarySetFieldResponse.Error(_exceptionMapper.Convert(e, metadata)));
+            return this._logger.LogTraceCollectionRequestError(REQUEST_TYPE_DICTIONARY_SET_FIELD, cacheName, dictionaryName, elements, ttl, new CacheDictionarySetFieldResponse.Error(_exceptionMapper.Convert(e, metadata)));
         }
 
-        return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_DICTIONARY_SET_FIELD, cacheName, dictionaryName, items, ttl, new CacheDictionarySetFieldResponse.Success());
+        return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_DICTIONARY_SET_FIELD, cacheName, dictionaryName, elements, ttl, new CacheDictionarySetFieldResponse.Success());
     }
 
     const string REQUEST_TYPE_DICTIONARY_SET_FIELDS = "DICTIONARY_SET_FIELDS";
-    private async Task<CacheDictionarySetFieldsResponse> SendDictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<_DictionaryFieldValuePair> items, CollectionTtl ttl)
+    private async Task<CacheDictionarySetFieldsResponse> SendDictionarySetFieldsAsync(string cacheName, string dictionaryName, IEnumerable<_DictionaryFieldValuePair> elements, CollectionTtl ttl)
     {
         _DictionarySetRequest request = new()
         {
@@ -501,20 +501,20 @@ internal sealed class ScsDataClient : ScsDataClientBase
             RefreshTtl = ttl.RefreshTtl,
             TtlMilliseconds = TtlToMilliseconds(ttl.Ttl)
         };
-        request.Items.Add(items);
+        request.Items.Add(elements);
         var metadata = MetadataWithCache(cacheName);
 
         try
         {
-            this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_DICTIONARY_SET_FIELDS, cacheName, dictionaryName, items, ttl);
+            this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_DICTIONARY_SET_FIELDS, cacheName, dictionaryName, elements, ttl);
             await this.grpcManager.Client.DictionarySetAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
         }
         catch (Exception e)
         {
-            return this._logger.LogTraceCollectionRequestError(REQUEST_TYPE_DICTIONARY_SET_FIELDS, cacheName, dictionaryName, items, ttl, new CacheDictionarySetFieldsResponse.Error(_exceptionMapper.Convert(e, metadata)));
+            return this._logger.LogTraceCollectionRequestError(REQUEST_TYPE_DICTIONARY_SET_FIELDS, cacheName, dictionaryName, elements, ttl, new CacheDictionarySetFieldsResponse.Error(_exceptionMapper.Convert(e, metadata)));
         }
 
-        return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_DICTIONARY_SET_FIELDS, cacheName, dictionaryName, items, ttl, new CacheDictionarySetFieldsResponse.Success());
+        return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_DICTIONARY_SET_FIELDS, cacheName, dictionaryName, elements, ttl, new CacheDictionarySetFieldsResponse.Success());
     }
 
 
