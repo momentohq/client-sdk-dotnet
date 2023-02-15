@@ -44,12 +44,6 @@ public class Configuration : IConfiguration
     }
 
     /// <inheritdoc />
-    public IConfiguration WithLoggerFactory(ILoggerFactory loggerFactory)
-    {
-        return new Configuration(loggerFactory, RetryStrategy, Middlewares, TransportStrategy);
-    }
-
-    /// <inheritdoc />
     public IConfiguration WithRetryStrategy(IRetryStrategy retryStrategy)
     {
         return new Configuration(LoggerFactory, retryStrategy, Middlewares, TransportStrategy);
