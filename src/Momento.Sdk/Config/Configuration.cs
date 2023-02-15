@@ -101,4 +101,18 @@ public class Configuration : IConfiguration
     {
         return WithClientTimeout(clientTimeout);
     }
+
+    public override bool Equals(object obj)
+    {
+        if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+        {
+            return false;
+        }
+
+        var other = (Configuration)obj;
+        return RetryStrategy.Equals(other.RetryStrategy) &&
+            Middlewares.SequenceEqual(other.Middlewares) &&
+            TransportStrategy.Equals(other.TransportStrategy) &&
+            LoggerFactory.Equals(other.LoggerFactory);
+    }
 }

@@ -49,6 +49,21 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
     {
         return new StaticGrpcConfiguration(this.Deadline, grpcChannelOptions, this.MinNumGrpcChannels);
     }
+
+    public override bool Equals(object obj)
+    {
+        if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+        {
+            return false;
+        }
+
+        var other = (StaticGrpcConfiguration)obj;
+
+        return Deadline.Equals(other.Deadline) &&
+                MinNumGrpcChannels == other.MinNumGrpcChannels;
+        // TODO: gRPC doesn't implement a to equals for this
+        //GrpcChannelOptions.Equals(other.GrpcChannelOptions);
+    }
 }
 
 /// <summary>
@@ -109,5 +124,19 @@ public class StaticTransportStrategy : ITransportStrategy
     public ITransportStrategy WithEagerConnectionTimeout(TimeSpan connectionTimeout)
     {
         return new StaticTransportStrategy(_loggerFactory, MaxConcurrentRequests, GrpcConfig, connectionTimeout);
+    }
+
+    public override bool Equals(object obj)
+    {
+        if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+        {
+            return false;
+        }
+
+        var other = (StaticTransportStrategy)obj;
+        return MaxConcurrentRequests == other.MaxConcurrentRequests &&
+            ((EagerConnectionTimeout == null && other.EagerConnectionTimeout == null) ||
+                EagerConnectionTimeout.Equals(other.EagerConnectionTimeout)) &&
+            GrpcConfig.Equals(other.GrpcConfig);
     }
 }

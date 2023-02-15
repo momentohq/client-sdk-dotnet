@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-using Momento.Sdk.Config.Middleware;
-using System.Linq;
 using Momento.Protos.CacheClient;
-using System.Collections.Generic;
+using Momento.Sdk.Config.Middleware;
 
 namespace Momento.Sdk.Config.Retry
 {
@@ -47,7 +47,7 @@ namespace Momento.Sdk.Config.Retry
                 try
                 {
                     await nextState.ResponseAsync;
-                    
+
                     if (attemptNumber > 1)
                     {
                         _logger.LogDebug($"Retry succeeded (attempt {attemptNumber})");
@@ -70,6 +70,17 @@ namespace Momento.Sdk.Config.Retry
                 GetStatus: nextState.GetStatus,
                 GetTrailers: nextState.GetTrailers
             );
+        }
+
+        public override bool Equals(object obj)
+        {
+            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            }
+
+            var other = (RetryMiddleware)obj;
+            return _logger.Equals(other._logger) && _retryStrategy.Equals(other._retryStrategy);
         }
     }
 }

@@ -28,9 +28,27 @@ public class Configurations
         /// <summary>
         /// Provides the latest recommended configuration for a Laptop environment.
         /// </summary>
+        /// <remark>
+        /// This configuration may change in future releases to take advantage of
+        /// improvements we identify for default configurations.
+        /// </remark>
         /// <param name="loggerFactory"></param>
         /// <returns></returns>
         public static IConfiguration Latest(ILoggerFactory? loggerFactory = null)
+        {
+            return V1(loggerFactory);
+        }
+
+        /// <summary>
+        /// Provides version 1 configuration for a Laptop environment.
+        /// </summary>
+        /// <remark>
+        /// This configuration is guaranteed not to change in future
+        /// releases of the Momento .NET SDK.
+        /// </remark>
+        /// <param name="loggerFactory"></param>
+        /// <returns></returns>
+        public static IConfiguration V1(ILoggerFactory? loggerFactory = null)
         {
             var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
             IRetryStrategy retryStrategy = new FixedCountRetryStrategy(finalLoggerFactory, maxAttempts: 3);
@@ -63,9 +81,27 @@ public class Configurations
             /// <summary>
             /// Provides the latest recommended configuration for an InRegion environment.
             /// </summary>
+            /// <remark>
+            /// This configuration may change in future releases to take advantage of
+            /// improvements we identify for default configurations.
+            /// </remark>
             /// <param name="loggerFactory"></param>
             /// <returns></returns>
             public static IConfiguration Latest(ILoggerFactory? loggerFactory = null)
+            {
+                return V1(loggerFactory);
+            }
+
+            /// <summary>
+            /// Provides the version 1 configuration for an InRegion environment.
+            /// </summary>
+            /// <remark>
+            /// This configuration is guaranteed not to change in future
+            /// releases of the Momento .NET SDK.
+            /// </remark>
+            /// <param name="loggerFactory"></param>
+            /// <returns></returns>
+            public static IConfiguration V1(ILoggerFactory? loggerFactory = null)
             {
                 var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
                 IRetryStrategy retryStrategy = new FixedCountRetryStrategy(finalLoggerFactory, maxAttempts: 3);
@@ -94,9 +130,28 @@ public class Configurations
             /// Provides the latest recommended configuration for a low-latency in-region
             /// environment.
             /// </summary>
+            /// <remark>
+            /// This configuration may change in future releases to take advantage of
+            /// improvements we identify for default configurations.
+            /// </remark>
             /// <param name="loggerFactory"></param>
             /// <returns></returns>
             public static IConfiguration Latest(ILoggerFactory? loggerFactory = null)
+            {
+                return V1(loggerFactory);
+            }
+
+            /// <summary>
+            /// Provides the latest recommended configuration for a low-latency in-region
+            /// environment.
+            /// </summary>
+            /// <remark>
+            /// This configuration is guaranteed not to change in future
+            /// releases of the Momento .NET SDK.
+            /// </remark>
+            /// <param name="loggerFactory"></param>
+            /// <returns></returns>
+            public static IConfiguration V1(ILoggerFactory? loggerFactory = null)
             {
                 var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
                 IRetryStrategy retryStrategy = new FixedCountRetryStrategy(finalLoggerFactory, maxAttempts: 3);

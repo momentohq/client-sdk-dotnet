@@ -96,6 +96,18 @@ namespace Momento.Sdk.Internal.Retry
 
             return true;
         }
+
+        public override bool Equals(object obj)
+        {
+            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            }
+
+            var other = (DefaultRetryEligibilityStrategy)obj;
+            return _retryableRequestTypes.SetEquals(other._retryableRequestTypes) &&
+                _retryableStatusCodes.SetEquals(other._retryableStatusCodes);
+        }
     }
 }
 
