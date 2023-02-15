@@ -19,7 +19,7 @@ public static class ByteArrayDictionaryExtensions
     /// <param name="dictionary">LHS to compare</param>
     /// <param name="other">RHS to compare</param>
     /// <returns><see langword="true"/> if the dictionaries contain the same content.</returns>
-    public static bool DictionaryEquals(this Dictionary<byte[], byte[]> dictionary, Dictionary<byte[], byte[]> other)
+    public static bool DictionaryEquals(this IDictionary<byte[], byte[]> dictionary, IDictionary<byte[], byte[]> other)
     {
         if (dictionary == null && other == null)
         {

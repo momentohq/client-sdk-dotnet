@@ -16,9 +16,9 @@ public abstract class CacheDictionaryGetFieldsResponse
     public class Hit : CacheDictionaryGetFieldsResponse
     {
         public List<CacheDictionaryGetFieldResponse> Responses { get; private set; }
-        protected readonly Lazy<Dictionary<byte[], byte[]>> _dictionaryByteArrayByteArray;
-        protected readonly Lazy<Dictionary<string, string>> _dictionaryStringString;
-        protected readonly Lazy<Dictionary<string, byte[]>> _dictionaryStringByteArray;
+        protected readonly Lazy<IDictionary<byte[], byte[]>> _dictionaryByteArrayByteArray;
+        protected readonly Lazy<IDictionary<string, string>> _dictionaryStringString;
+        protected readonly Lazy<IDictionary<string, byte[]>> _dictionaryStringByteArray;
 
         public Hit(IEnumerable<ByteString> fields, _DictionaryGetResponse responses)
         {
@@ -68,11 +68,11 @@ public abstract class CacheDictionaryGetFieldsResponse
             });
         }
 
-        public Dictionary<byte[], byte[]> ValueDictionaryByteArrayByteArray { get => _dictionaryByteArrayByteArray.Value; }
+        public IDictionary<byte[], byte[]> ValueDictionaryByteArrayByteArray { get => _dictionaryByteArrayByteArray.Value; }
 
-        public Dictionary<string, string> ValueDictionaryStringString { get => _dictionaryStringString.Value; }
+        public IDictionary<string, string> ValueDictionaryStringString { get => _dictionaryStringString.Value; }
 
-        public Dictionary<string, byte[]> ValueDictionaryStringByteArray { get => _dictionaryStringByteArray.Value; }
+        public IDictionary<string, byte[]> ValueDictionaryStringByteArray { get => _dictionaryStringByteArray.Value; }
 
         /// <inheritdoc />
         public override string ToString()

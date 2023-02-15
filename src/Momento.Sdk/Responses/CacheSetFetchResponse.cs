@@ -15,8 +15,8 @@ public abstract class CacheSetFetchResponse
     public class Hit : CacheSetFetchResponse
     {
         protected readonly RepeatedField<ByteString> elements;
-        protected readonly Lazy<HashSet<byte[]>> _byteArraySet;
-        protected readonly Lazy<HashSet<string>> _stringSet;
+        protected readonly Lazy<ISet<byte[]>> _byteArraySet;
+        protected readonly Lazy<ISet<string>> _stringSet;
 
         public Hit(_SetFetchResponse response)
         {
@@ -36,9 +36,9 @@ public abstract class CacheSetFetchResponse
             });
         }
 
-        public HashSet<byte[]> ValueSetByteArray { get => _byteArraySet.Value; }
+        public ISet<byte[]> ValueSetByteArray { get => _byteArraySet.Value; }
 
-        public HashSet<string> ValueSetString { get => _stringSet.Value; }
+        public ISet<string> ValueSetString { get => _stringSet.Value; }
 
         /// <inheritdoc />
         public override string ToString()

@@ -14,9 +14,9 @@ public abstract class CacheDictionaryFetchResponse
     public class Hit : CacheDictionaryFetchResponse
     {
         protected readonly RepeatedField<_DictionaryFieldValuePair>? items;
-        protected readonly Lazy<Dictionary<byte[], byte[]>> _dictionaryByteArrayByteArray;
-        protected readonly Lazy<Dictionary<string, string>> _dictionaryStringString;
-        protected readonly Lazy<Dictionary<string, byte[]>> _dictionaryStringByteArray;
+        protected readonly Lazy<IDictionary<byte[], byte[]>> _dictionaryByteArrayByteArray;
+        protected readonly Lazy<IDictionary<string, string>> _dictionaryStringString;
+        protected readonly Lazy<IDictionary<string, byte[]>> _dictionaryStringByteArray;
 
         public Hit(_DictionaryFetchResponse response)
         {
@@ -40,11 +40,11 @@ public abstract class CacheDictionaryFetchResponse
             });
         }
 
-        public Dictionary<byte[], byte[]> ValueDictionaryByteArrayByteArray { get => _dictionaryByteArrayByteArray.Value; }
+        public IDictionary<byte[], byte[]> ValueDictionaryByteArrayByteArray { get => _dictionaryByteArrayByteArray.Value; }
 
-        public Dictionary<string, string> ValueDictionaryStringString { get => _dictionaryStringString.Value; }
+        public IDictionary<string, string> ValueDictionaryStringString { get => _dictionaryStringString.Value; }
 
-        public Dictionary<string, byte[]> ValueDictionaryStringByteArray { get => _dictionaryStringByteArray.Value; }
+        public IDictionary<string, byte[]> ValueDictionaryStringByteArray { get => _dictionaryStringByteArray.Value; }
 
         /// <inheritdoc />
         public override string ToString()
