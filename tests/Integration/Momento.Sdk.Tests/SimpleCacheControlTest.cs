@@ -149,27 +149,18 @@ public class SimpleCacheControlTest : TestBase
             // List caches
             HashSet<String> retrievedCaches = new HashSet<string>();
             ListCachesResponse result = await client.ListCachesAsync();
-            while (true)
+
+            Assert.True(result is ListCachesResponse.Success, $"Unexpected response: {result}");
+            var successResult = (ListCachesResponse.Success)result;
+            foreach (CacheInfo cache in successResult.Caches)
             {
-                Assert.True(result is ListCachesResponse.Success, $"Unexpected response: {result}");
-                var successResult = (ListCachesResponse.Success)result;
-                foreach (CacheInfo cache in successResult.Caches)
-                {
-                    retrievedCaches.Add(cache.Name);
-                }
-                if (successResult.NextPageToken == null)
-                {
-                    break;
-                }
-                break;
-                // TODO: enable pending server side support
-                //result = await client.ListCachesAsync(successResult.NextPageToken);
+                retrievedCaches.Add(cache.Name);
             }
+
             foreach (String cache in cacheNames)
             {
                 Assert.Contains(cache, retrievedCaches);
             }
-
         }
         finally
         {
@@ -179,14 +170,5 @@ public class SimpleCacheControlTest : TestBase
                 await client.DeleteCacheAsync(cacheName);
             }
         }
-
     }
-    /* TODO: enable pending server side support
-        [Fact]
-        public async Task ListCachesAsync_BadNextToken_NoException()
-        {
-            // A bad next token does not throw an exception
-            await client.ListCachesAsync(nextPageToken: "hello world");
-        }
-    */
 }
