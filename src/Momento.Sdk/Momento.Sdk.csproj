@@ -6,8 +6,6 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<!-- Include documentation in build -->
-		<!-- TODO: Address public-facing documentation -->
-		<NoWarn>1591</NoWarn>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<!-- Include source and debug symbols-->
 		<IncludeSource>true</IncludeSource>
