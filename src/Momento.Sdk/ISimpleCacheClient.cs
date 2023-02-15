@@ -427,7 +427,7 @@ public interface ISimpleCacheClient : IDisposable
     public Task<CacheListConcatenateFrontResponse> ListConcatenateFrontAsync(string cacheName, string listName, IEnumerable<byte[]> values, int? truncateBackToSize = null, CollectionTtl ttl = default(CollectionTtl));
 
     /// <inheritdoc cref="ListConcatenateFrontAsync(string, string, IEnumerable{byte[]}, int?, CollectionTtl)"/>
-    public Task<CacheListConcatenateFrontResponse> ListConcatenateFrontAsync(string cacheName, string listName, IEnumerable<string> value, int? truncateBackToSize = null, CollectionTtl ttl = default(CollectionTtl));
+    public Task<CacheListConcatenateFrontResponse> ListConcatenateFrontAsync(string cacheName, string listName, IEnumerable<string> values, int? truncateBackToSize = null, CollectionTtl ttl = default(CollectionTtl));
 
     /// <summary>
     /// Push multiple values to the back of a list.
@@ -441,7 +441,7 @@ public interface ISimpleCacheClient : IDisposable
     public Task<CacheListConcatenateBackResponse> ListConcatenateBackAsync(string cacheName, string listName, IEnumerable<byte[]> values, int? truncateFrontToSize = null, CollectionTtl ttl = default(CollectionTtl));
 
     /// <inheritdoc cref="ListConcatenateBackAsync(string, string, IEnumerable{byte[]}, int?, CollectionTtl)"/>
-    public Task<CacheListConcatenateBackResponse> ListConcatenateBackAsync(string cacheName, string listName, IEnumerable<string> value, int? truncateFrontToSize = null, CollectionTtl ttl = default(CollectionTtl));
+    public Task<CacheListConcatenateBackResponse> ListConcatenateBackAsync(string cacheName, string listName, IEnumerable<string> values, int? truncateFrontToSize = null, CollectionTtl ttl = default(CollectionTtl));
 
     /// <summary>
     /// Push a value to the beginning of a list.
