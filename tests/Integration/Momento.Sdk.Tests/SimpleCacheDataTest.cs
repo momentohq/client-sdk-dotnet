@@ -4,20 +4,11 @@ using Momento.Sdk.Auth;
 namespace Momento.Sdk.Tests;
 
 [Collection("SimpleCacheClient")]
-public class SimpleCacheDataTest
+public class SimpleCacheDataTest : TestBase
 {
-    private readonly ICredentialProvider authProvider;
-    private readonly string cacheName;
-    private TimeSpan defaultTtl;
-    private SimpleCacheClient client;
-
     // Test initialization
-    public SimpleCacheDataTest(SimpleCacheClientFixture fixture)
+    public SimpleCacheDataTest(SimpleCacheClientFixture fixture) : base(fixture)
     {
-        client = fixture.Client;
-        authProvider = fixture.AuthProvider;
-        cacheName = fixture.CacheName;
-        defaultTtl = fixture.DefaultTtl;
     }
 
     [Theory]

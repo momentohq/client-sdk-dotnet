@@ -22,6 +22,22 @@ namespace Momento.Sdk.Internal.Middleware
             this.Name = name;
             this.Value = value;
         }
+
+        public override bool Equals(object obj)
+        {
+            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            }
+
+            var otherHeader = (Header)obj;
+            return Name.Equals(otherHeader.Name) && Value.Equals(otherHeader.Value);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 
     internal class HeaderMiddleware : IMiddleware
@@ -73,6 +89,25 @@ namespace Momento.Sdk.Internal.Middleware
                 GetStatus: nextState.GetStatus,
                 GetTrailers: nextState.GetTrailers
             );
+        }
+
+        public override bool Equals(object obj)
+        {
+            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            }
+
+            var other = (HeaderMiddleware)obj;
+            return _headers.SequenceEqual(other._headers) &&
+                headersToAddEveryTime.SequenceEqual(other.headersToAddEveryTime) &&
+                headersToAddOnce.SequenceEqual(other.headersToAddOnce) &&
+                areOnlyOnceHeadersSent == other.areOnlyOnceHeadersSent;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }

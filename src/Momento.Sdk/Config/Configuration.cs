@@ -44,12 +44,6 @@ public class Configuration : IConfiguration
     }
 
     /// <inheritdoc />
-    public IConfiguration WithLoggerFactory(ILoggerFactory loggerFactory)
-    {
-        return new Configuration(loggerFactory, RetryStrategy, Middlewares, TransportStrategy);
-    }
-
-    /// <inheritdoc />
     public IConfiguration WithRetryStrategy(IRetryStrategy retryStrategy)
     {
         return new Configuration(LoggerFactory, retryStrategy, Middlewares, TransportStrategy);
@@ -100,5 +94,24 @@ public class Configuration : IConfiguration
     IConfiguration IConfiguration.WithClientTimeout(TimeSpan clientTimeout)
     {
         return WithClientTimeout(clientTimeout);
+    }
+
+    public override bool Equals(object obj)
+    {
+        if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+        {
+            return false;
+        }
+
+        var other = (Configuration)obj;
+        return RetryStrategy.Equals(other.RetryStrategy) &&
+            Middlewares.SequenceEqual(other.Middlewares) &&
+            TransportStrategy.Equals(other.TransportStrategy) &&
+            LoggerFactory.Equals(other.LoggerFactory);
+    }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
     }
 }

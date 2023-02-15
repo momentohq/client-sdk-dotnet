@@ -48,7 +48,7 @@ public class FixedCountRetryStrategy : IRetryStrategy
     public int? DetermineWhenToRetryRequest<TRequest>(Status grpcStatus, TRequest grpcRequest, int attemptNumber) where TRequest : class
     {
         _logger.LogDebug($"Determining whether request is eligible for retry; status code: {grpcStatus.StatusCode}, request type: {grpcRequest.GetType()}, attemptNumber: {attemptNumber}, maxAttempts: {MaxAttempts}");
-        if (! _eligibilityStrategy.IsEligibleForRetry(grpcStatus, grpcRequest))
+        if (!_eligibilityStrategy.IsEligibleForRetry(grpcStatus, grpcRequest))
         {
             return null;
         }
@@ -61,4 +61,21 @@ public class FixedCountRetryStrategy : IRetryStrategy
         return 0;
     }
 
+    public override bool Equals(object obj)
+    {
+        if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+        {
+            return false;
+        }
+
+        var other = (FixedCountRetryStrategy)obj;
+        return MaxAttempts.Equals(other.MaxAttempts) &&
+            _loggerFactory.Equals(other._loggerFactory) &&
+            _eligibilityStrategy.Equals(other._eligibilityStrategy);
+    }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
 }
