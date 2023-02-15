@@ -86,7 +86,6 @@ public interface ISimpleCacheClient : IDisposable
     /// <summary>
     /// List all caches.
     /// </summary>
-    /// <param name="nextPageToken">A token to specify where to start paginating. This is the NextToken from a previous response.</param>
     /// <returns>
     /// Task representing the result of the list cache operation. The
     /// response object is resolved to a type-safe object of one of
@@ -104,7 +103,7 @@ public interface ISimpleCacheClient : IDisposable
     /// }
     /// </code>
     /// </returns>
-    public Task<ListCachesResponse> ListCachesAsync(string? nextPageToken = null);
+    public Task<ListCachesResponse> ListCachesAsync();
 
     /// <summary>
     /// Set the value in cache with a given time to live (TTL) seconds.

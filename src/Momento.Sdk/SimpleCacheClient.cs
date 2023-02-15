@@ -76,9 +76,9 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <inheritdoc />
-    public async Task<ListCachesResponse> ListCachesAsync(string? nextPageToken = null)
+    public async Task<ListCachesResponse> ListCachesAsync()
     {
-        return await this.controlClient.ListCachesAsync(nextPageToken);
+        return await this.controlClient.ListCachesAsync();
     }
 
     /// <inheritdoc />
