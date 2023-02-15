@@ -19,7 +19,7 @@ public static class ByteArrayListExtensions
     /// <param name="list">LHS to compare</param>
     /// <param name="other">RHS to compare</param>
     /// <returns><see langword="true"/> if the lists contain the same content.</returns>
-    public static bool ListEquals(this List<byte[]> list, List<byte[]> other)
+    public static bool ListEquals(this IList<byte[]> list, IList<byte[]> other)
     {
         if (list == null && other == null)
         {

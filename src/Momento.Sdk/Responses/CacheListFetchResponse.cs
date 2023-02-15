@@ -14,8 +14,8 @@ public abstract class CacheListFetchResponse
     public class Hit : CacheListFetchResponse
     {
         protected readonly RepeatedField<ByteString> values;
-        protected readonly Lazy<List<byte[]>> _byteArrayList;
-        protected readonly Lazy<List<string>> _stringList;
+        protected readonly Lazy<IList<byte[]>> _byteArrayList;
+        protected readonly Lazy<IList<string>> _stringList;
 
         public Hit(_ListFetchResponse response)
         {
@@ -31,9 +31,9 @@ public abstract class CacheListFetchResponse
             });
         }
 
-        public List<byte[]> ValueListByteArray { get => _byteArrayList.Value; }
+        public IList<byte[]> ValueListByteArray { get => _byteArrayList.Value; }
 
-        public List<string> ValueListString { get => _stringList.Value; }
+        public IList<string> ValueListString { get => _stringList.Value; }
 
         /// <inheritdoc />
         public override string ToString()
