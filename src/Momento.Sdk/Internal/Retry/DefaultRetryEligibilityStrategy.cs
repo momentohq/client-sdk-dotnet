@@ -108,6 +108,11 @@ namespace Momento.Sdk.Internal.Retry
             return _retryableRequestTypes.SetEquals(other._retryableRequestTypes) &&
                 _retryableStatusCodes.SetEquals(other._retryableStatusCodes);
         }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }
 

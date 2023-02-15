@@ -33,6 +33,11 @@ namespace Momento.Sdk.Internal.Middleware
             var otherHeader = (Header)obj;
             return Name.Equals(otherHeader.Name) && Value.Equals(otherHeader.Value);
         }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 
     internal class HeaderMiddleware : IMiddleware
@@ -98,6 +103,11 @@ namespace Momento.Sdk.Internal.Middleware
                 headersToAddEveryTime.SequenceEqual(other.headersToAddEveryTime) &&
                 headersToAddOnce.SequenceEqual(other.headersToAddOnce) &&
                 areOnlyOnceHeadersSent == other.areOnlyOnceHeadersSent;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }

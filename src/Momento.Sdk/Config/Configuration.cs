@@ -115,4 +115,9 @@ public class Configuration : IConfiguration
             TransportStrategy.Equals(other.TransportStrategy) &&
             LoggerFactory.Equals(other.LoggerFactory);
     }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
 }

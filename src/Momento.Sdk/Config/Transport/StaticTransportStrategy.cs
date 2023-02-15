@@ -64,6 +64,11 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
         // TODO: gRPC doesn't implement a to equals for this
         //GrpcChannelOptions.Equals(other.GrpcChannelOptions);
     }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
 }
 
 /// <summary>
@@ -138,5 +143,10 @@ public class StaticTransportStrategy : ITransportStrategy
             ((EagerConnectionTimeout == null && other.EagerConnectionTimeout == null) ||
                 EagerConnectionTimeout.Equals(other.EagerConnectionTimeout)) &&
             GrpcConfig.Equals(other.GrpcConfig);
+    }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
     }
 }

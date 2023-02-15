@@ -82,6 +82,11 @@ namespace Momento.Sdk.Config.Retry
             var other = (RetryMiddleware)obj;
             return _logger.Equals(other._logger) && _retryStrategy.Equals(other._retryStrategy);
         }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }
 

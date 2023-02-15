@@ -73,4 +73,9 @@ public class FixedCountRetryStrategy : IRetryStrategy
             _loggerFactory.Equals(other._loggerFactory) &&
             _eligibilityStrategy.Equals(other._eligibilityStrategy);
     }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
 }

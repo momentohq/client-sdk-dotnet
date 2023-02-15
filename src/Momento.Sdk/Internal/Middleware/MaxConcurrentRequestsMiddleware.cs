@@ -75,6 +75,11 @@ namespace Momento.Sdk.Internal.Middleware
             var other = (MaxConcurrentRequestsMiddleware)obj;
             return _maxConcurrentRequests == other._maxConcurrentRequests;
         }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }
 
