@@ -5,7 +5,7 @@ using Momento.Sdk.Requests;
 using Momento.Sdk.Responses;
 using Momento.Sdk.Tests;
 
-namespace Momento.Sdk.Incubating.Tests;
+namespace Momento.Sdk.Tests;
 
 [Collection("SimpleCacheClient")]
 public class DictionaryTest : TestBase
@@ -24,7 +24,7 @@ public class DictionaryTest : TestBase
         Assert.True(response is CacheDictionaryGetFieldResponse.Error, $"Unexpected response: {response}");
         var errResponse = (CacheDictionaryGetFieldResponse.Error)response;
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheDictionaryGetFieldResponse.Error)response).ErrorCode);
-        Assert.Equal(field, ((CacheDictionaryGetFieldResponse.Error)response).FieldByteArray);
+        Assert.Equal(field ?? new byte[] {}, ((CacheDictionaryGetFieldResponse.Error)response).FieldByteArray);
     }
 
     [Theory]
@@ -241,7 +241,7 @@ public class DictionaryTest : TestBase
         Assert.True(response is CacheDictionaryGetFieldResponse.Error, $"Unexpected response: {response}");
         var errResponse = (CacheDictionaryGetFieldResponse.Error)response;
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheDictionaryGetFieldResponse.Error)response).ErrorCode);
-        Assert.Equal(field, ((CacheDictionaryGetFieldResponse.Error)response).FieldString);
+        Assert.Equal(field ?? "", ((CacheDictionaryGetFieldResponse.Error)response).FieldString);
     }
 
     [Theory]

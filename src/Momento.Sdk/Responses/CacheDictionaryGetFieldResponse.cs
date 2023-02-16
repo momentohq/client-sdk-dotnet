@@ -36,23 +36,44 @@ namespace Momento.Sdk.Responses;
 /// </summary>
 public abstract class CacheDictionaryGetFieldResponse
 {
+#pragma warning disable 1591
+    protected readonly ByteString field;
+#pragma warning restore 1591
+
+    /// <summary>
+    /// The field queried as a <see cref="byte" /> array.
+    /// </summary>
+    public byte[] FieldByteArray
+    {
+        get => field.ToByteArray();
+    }
+
+    /// <summary>
+    /// The field queried as a <see cref="string" />.
+    /// </summary>
+    public string FieldString { get => field.ToStringUtf8(); }
+
+#pragma warning disable 1591
+    protected CacheDictionaryGetFieldResponse(ByteString field)
+    {
+        this.field = field;
+    }
+#pragma warning restore 1591
+
     /// <include file="../docs.xml" path='docs/class[@name="Hit"]/description/*' />
     public class Hit : CacheDictionaryGetFieldResponse
     {
 #pragma warning disable 1591
         protected readonly ByteString value;
-        protected readonly ByteString field;
 #pragma warning restore 1591
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="field">The field queried.</param>
         /// <param name="response">The cache response.</param>
-        public Hit(ByteString field, _DictionaryGetResponse response)
+        public Hit(ByteString field, _DictionaryGetResponse response) : base(field)
         {
             this.value = response.Found.Items[0].CacheBody;
-            this.field = field;
         }
 
         /// <summary>
@@ -60,10 +81,9 @@ public abstract class CacheDictionaryGetFieldResponse
         /// </summary>
         /// <param name="field">The field queried.</param>
         /// <param name="cacheBody">The cache response.</param>
-        public Hit(ByteString field, ByteString cacheBody)
+        public Hit(ByteString field, ByteString cacheBody) : base(field)
         {
             this.value = cacheBody;
-            this.field = field;
         }
 
         /// <summary>
@@ -75,22 +95,9 @@ public abstract class CacheDictionaryGetFieldResponse
         }
 
         /// <summary>
-        /// The field queried in the cache operation as a <see cref="byte" /> array.
-        /// </summary>
-        public byte[] FieldByteArray
-        {
-            get => field.ToByteArray();
-        }
-
-        /// <summary>
         /// The cached value as a <see cref="string" />.
         /// </summary>
         public string ValueString { get => value.ToStringUtf8(); }
-
-        /// <summary>
-        /// The field queried in the cache operation as a <see cref="string" />.
-        /// </summary>
-        public string FieldString { get => field.ToStringUtf8(); }
 
         /// <inheritdoc />
         public override string ToString()
@@ -103,61 +110,28 @@ public abstract class CacheDictionaryGetFieldResponse
     public class Miss : CacheDictionaryGetFieldResponse
     {
         /// <summary>
-        /// The field queried.
-        /// </summary>
-        protected readonly ByteString field;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="fields">The fields queried.</param>
-        public Miss(IEnumerable<ByteString> fields)
-        {
-            this.field = fields.ToList()[0];
-        }
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="field">The field queried.</param>
-        public Miss(ByteString field)
+        public Miss(ByteString field) : base(field)
         {
-            this.field = field;
         }
-
-        /// <summary>
-        /// The field queried as a <see cref="byte" /> array.
-        /// </summary>
-        public byte[] FieldByteArray
-        {
-            get => field.ToByteArray();
-        }
-
-        /// <summary>
-        /// The field queried as a <see langword="string" />
-        /// </summary>
-        public string FieldString { get => field.ToStringUtf8(); }
     }
 
     /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : CacheDictionaryGetFieldResponse
     {
         private readonly SdkException _error;
-        /// <summary>
-        /// The field queried in the cache operation.
-        /// </summary>
-        protected readonly ByteString? field;
 
         /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
-        public Error(SdkException error)
+        public Error(SdkException error) : base(ByteString.Empty)
         {
             _error = error;
         }
 
         /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
-        public Error(ByteString? field, SdkException error)
+        public Error(ByteString field, SdkException error) : base(field)
         {
-            this.field = field;
             _error = error;
         }
 
@@ -172,19 +146,6 @@ public abstract class CacheDictionaryGetFieldResponse
         {
             get => _error.ErrorCode;
         }
-
-        /// <summary>
-        /// The field queried in the cache operation.
-        /// </summary>
-        public byte[]? FieldByteArray
-        {
-            get => field?.ToByteArray();
-        }
-
-        /// <summary>
-        /// The field queried in the cache operation.
-        /// </summary>
-        public string? FieldString { get => field?.ToStringUtf8(); }
 
         /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="Message"]/*' />
         public string Message
