@@ -57,25 +57,19 @@ public class AdvancedExamples {
 
     public static async Task ListCachesExample(ISimpleCacheClient client) {
         Console.WriteLine("\nListing caches:");
-        string? token = null;
-        do
+        ListCachesResponse listCachesResponse = await client.ListCachesAsync();
+        if (listCachesResponse is ListCachesResponse.Success listCachesSuccess)
         {
-            ListCachesResponse listCachesResponse = await client.ListCachesAsync(token);
-            if (listCachesResponse is ListCachesResponse.Success listCachesSuccess)
+            foreach (CacheInfo cacheInfo in listCachesSuccess.Caches)
             {
-                foreach (CacheInfo cacheInfo in listCachesSuccess.Caches)
-                {
-                    Console.WriteLine($"- {cacheInfo.Name}");
-                }
-                token = listCachesSuccess.NextPageToken;
+                Console.WriteLine($"- {cacheInfo.Name}");
             }
-            else if (listCachesResponse is ListCachesResponse.Error listCachesError)
-            {
-                // We do not consider this a fatal error, so we just report it.
-                Console.WriteLine($"Error listing caches: {listCachesError.Message}");
-                break;
-            }
-        } while (!String.IsNullOrEmpty(token));
+        }
+        else if (listCachesResponse is ListCachesResponse.Error listCachesError)
+        {
+            // We do not consider this a fatal error, so we just report it.
+            Console.WriteLine($"Error listing caches: {listCachesError.Message}");
+        }
     }
 
     public static async Task SetGetDeleteExample(ISimpleCacheClient client) {
@@ -142,5 +136,12 @@ public class AdvancedExamples {
         using (SimpleCacheClient client = new SimpleCacheClient(eagerConnectionConfig, authProvider, defaultTtl)) {
             Console.WriteLine("Successfully created a momento client with eager connection");
         }
+
+        var grpcConfig = config.TransportStrategy.GrpcConfig.WithMinNumGrpcChannels(4);
+        var transportStrategy = config.TransportStrategy
+            .WithEagerConnectionTimeout(TimeSpan.FromSeconds(20))
+            .WithGrpcConfig(grpcConfig);
+        config = config.WithTransportStrategy(transportStrategy);
+        
     }
 }
