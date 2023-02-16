@@ -13,7 +13,15 @@ using Momento.Sdk.Exceptions;
 /// Pattern matching can be used to operate on the appropriate subtype.
 /// For example:
 /// <code>
-/// if (response is CreateCacheResponse.Error errorResponse)
+/// if (response is CreateCacheResponse.Success successResponse)
+/// {
+///     // handle success if needed
+/// }
+/// else if (response is CreateCacheResponse.CacheAlreadyExists alreadyExistsResponse)
+/// {
+///     // handle already exists as appropriate
+/// }
+/// else if (response is CreateCacheResponse.Error errorResponse)
 /// {
 ///     // handle error as appropriate
 /// }
