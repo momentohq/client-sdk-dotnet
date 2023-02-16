@@ -20,17 +20,20 @@ namespace Momento.Sdk.Responses;
 /// if (response is CacheGetResponse.Hit hitResponse)
 /// {
 ///     return hitResponse.ValueString;
-/// } else if (response is CacheGetResponse.Error errorResponse)
+/// }
+/// else if (response is CacheGetResponse.Error errorResponse)
 /// {
 ///     // handle error as appropriate
+/// }
+/// else
+/// {
+///     // handle unexpected response
 /// }
 /// </code>
 /// </summary>
 public abstract class CacheGetResponse
 {
-    /// <summary>
-    /// Class <c>Hit</c> contains the results of a cache hit.
-    ///</summary>
+    /// <include file="../docs.xml" path='docs/class[@name="Hit"]/description/*' />
     public class Hit : CacheGetResponse
     {
         /// <summary>
@@ -40,11 +43,10 @@ public abstract class CacheGetResponse
         /// </summary>
         protected readonly ByteString value;
 
-
         /// <summary>
-        /// Class <c>Hit</c> contains the results of a cache hit.
-        ///</summary>
-        /// <param name="response">gRPC get request result</param>
+        /// 
+        /// </summary>
+        /// <param name="response"></param>
         public Hit(_GetResponse response)
         {
             this.value = response.CacheBody;
@@ -73,15 +75,9 @@ public abstract class CacheGetResponse
         }
     }
 
-    /// <summary>
-    /// Class <c>Miss</c> contains the results of a cache miss.
-    ///</summary>
+    /// <include file="../docs.xml" path='docs/class[@name="Miss"]/description/*' />
     public class Miss : CacheGetResponse
     {
-        /// <summary>
-        /// Class <c>Miss</c> contains the results of a cache miss.
-        ///</summary>
-        public Miss() { }
     }
 
     /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />

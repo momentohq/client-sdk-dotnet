@@ -13,9 +13,17 @@ using Momento.Sdk.Exceptions;
 /// Pattern matching can be used to operate on the appropriate subtype.
 /// For example:
 /// <code>
-/// if (response is CacheSetResponse.Error errorResponse)
+/// if (response is CacheSetResponse.Success successResponse)
+/// {
+///     // handle success as appropriate
+/// }
+/// else if (response is CacheSetResponse.Error errorResponse)
 /// {
 ///     // handle error as appropriate
+/// }
+/// else
+/// {
+///     // handle unexpected response
 /// }
 /// </code>
 /// </summary>
@@ -59,6 +67,5 @@ public abstract class CacheSetResponse
         {
             return $"{base.ToString()}: {this.Message}";
         }
-
     }
 }

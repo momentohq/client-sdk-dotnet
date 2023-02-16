@@ -2,29 +2,62 @@
 
 namespace Momento.Sdk.Responses;
 
+/// <summary>
+/// Parent response type for a cache dictionary remove field request. The
+/// response object is resolved to a type-safe object of one of
+/// the following subtypes:
+/// <list type="bullet">
+/// <item><description>CacheDictionaryRemoveFieldResponse.Success</description></item>
+/// <item><description>CacheDictionaryRemoveFieldResponse.Error</description></item>
+/// </list>
+/// Pattern matching can be used to operate on the appropriate subtype.
+/// For example:
+/// <code>
+/// if (response is CacheDictionaryRemoveFieldResponse.Success successResponse)
+/// {
+///     // handle success as appropriate
+/// }
+/// else if (response is CacheDictionaryRemoveFieldResponse.Error errorResponse)
+/// {
+///     // handle error as appropriate
+/// }
+/// else
+/// {
+///     // handle unexpected response
+/// }
+/// </code>
+/// </summary>
 public abstract class CacheDictionaryRemoveFieldResponse
 {
+    /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
     public class Success : CacheDictionaryRemoveFieldResponse
     {
     }
+
+    /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : CacheDictionaryRemoveFieldResponse
     {
         private readonly SdkException _error;
+
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
         {
             _error = error;
         }
 
-        public SdkException Exception
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="InnerException"]/*' />
+        public SdkException InnerException
         {
             get => _error;
         }
 
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="ErrorCode"]/*' />
         public MomentoErrorCode ErrorCode
         {
             get => _error.ErrorCode;
         }
 
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="Message"]/*' />
         public string Message
         {
             get => $"{_error.MessageWrapper}: {_error.Message}";
@@ -33,7 +66,7 @@ public abstract class CacheDictionaryRemoveFieldResponse
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{base.ToString()}: {Message}";
+            return $"{base.ToString()}: {this.Message}";
         }
     }
 }
