@@ -4,15 +4,45 @@ using Momento.Sdk.Exceptions;
 namespace Momento.Sdk.Responses;
 
 /// <summary>
-/// The result of a <c>ListConcatenateFront</c> command
+/// Parent response type for a cache list concatenate front request. The
+/// response object is resolved to a type-safe object of one of
+/// the following subtypes:
+/// <list type="bullet">
+/// <item><description>CacheListConcatenateFrontResponse.Success</description></item>
+/// <item><description>CacheListConcatenateFrontResponse.Error</description></item>
+/// </list>
+/// Pattern matching can be used to operate on the appropriate subtype.
+/// For example:
+/// <code>
+/// if (response is CacheListConcatenateFrontResponse.Success successResponse)
+/// {
+///     return successResponse.ListLength;
+/// }
+/// else if (response is CacheListConcatenateFrontResponse.Error errorResponse)
+/// {
+///     // handle error as appropriate
+/// }
+/// else
+/// {
+///     // handle unexpected response
+/// }
+/// </code>
 /// </summary>
-///
 public abstract class CacheListConcatenateFrontResponse
 {
+    /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
     public class Success : CacheListConcatenateFrontResponse
     {
+        /// <summary>
+        /// The length of the list post-concatenate (and post-truncate, if that applies).
+        /// </summary>
         public int ListLength { get; private set; }
-        public Success(_ListConcatenateFrontResponse response)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="response">The cache response</param>
+	public Success(_ListConcatenateFrontResponse response)
         {
             ListLength = checked((int)response.ListLength);
         }
@@ -23,24 +53,31 @@ public abstract class CacheListConcatenateFrontResponse
             return $"{base.ToString()}: ListLength: {ListLength}";
         }
     }
+
+    /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : CacheListConcatenateFrontResponse
     {
         private readonly SdkException _error;
+
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
         {
             _error = error;
         }
 
-        public SdkException Exception
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="InnerException"]/*' />
+        public SdkException InnerException
         {
             get => _error;
         }
 
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="ErrorCode"]/*' />
         public MomentoErrorCode ErrorCode
         {
             get => _error.ErrorCode;
         }
 
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="Message"]/*' />
         public string Message
         {
             get => $"{_error.MessageWrapper}: {_error.Message}";
@@ -49,8 +86,7 @@ public abstract class CacheListConcatenateFrontResponse
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{base.ToString()}: {Message}";
+            return $"{base.ToString()}: {this.Message}";
         }
     }
-
 }

@@ -3,11 +3,45 @@ using Momento.Sdk.Exceptions;
 
 namespace Momento.Sdk.Responses;
 
+/// <summary>
+/// Parent response type for a cache list length request. The
+/// response object is resolved to a type-safe object of one of
+/// the following subtypes:
+/// <list type="bullet">
+/// <item><description>CacheListLengthResponse.Success</description></item>
+/// <item><description>CacheListLengthResponse.Error</description></item>
+/// </list>
+/// Pattern matching can be used to operate on the appropriate subtype.
+/// For example:
+/// <code>
+/// if (response is CacheListLengthResponse.Success successResponse)
+/// {
+///     return successResponse.Length;
+/// }
+/// else if (response is CacheListLengthResponse.Error errorResponse)
+/// {
+///     // handle error as appropriate
+/// }
+/// else
+/// {
+///     // handle unexpected response
+/// }
+/// </code>
+/// </summary>
 public abstract class CacheListLengthResponse
 {
+    /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
     public class Success : CacheListLengthResponse
     {
+        /// <summary>
+        /// The length of the list. If the list is missing or empty, the result is zero.
+        /// </summary>
         public int Length { get; private set; } = 0;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="response">The cache response.</param>
         public Success(_ListLengthResponse response)
         {
             if (response.ListCase == _ListLengthResponse.ListOneofCase.Found)
@@ -22,24 +56,31 @@ public abstract class CacheListLengthResponse
             return $"{base.ToString()}: Length: {Length}";
         }
     }
+
+    /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : CacheListLengthResponse
     {
         private readonly SdkException _error;
+
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
         {
             _error = error;
         }
 
-        public SdkException Exception
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="InnerException"]/*' />
+        public SdkException InnerException
         {
             get => _error;
         }
 
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="ErrorCode"]/*' />
         public MomentoErrorCode ErrorCode
         {
             get => _error.ErrorCode;
         }
 
+        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="Message"]/*' />
         public string Message
         {
             get => $"{_error.MessageWrapper}: {_error.Message}";
@@ -48,8 +89,7 @@ public abstract class CacheListLengthResponse
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{base.ToString()}: {Message}";
+            return $"{base.ToString()}: {this.Message}";
         }
     }
-
 }
