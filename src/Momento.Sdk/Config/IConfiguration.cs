@@ -23,13 +23,6 @@ public interface IConfiguration
     public ITransportStrategy TransportStrategy { get; }
 
     /// <summary>
-    /// Creates a new instance of the Configuration object, updated to use the specified logger factory.
-    /// </summary>
-    /// <param name="loggerFactory">This is responsible for configuraing logging.</param>
-    /// <returns>Configuration object with custom logging provided</returns>
-    public IConfiguration WithLoggerFactory(ILoggerFactory loggerFactory);
-
-    /// <summary>
     /// Creates a new instance of the Configuration object, updated to use the specified retry strategy.
     /// </summary>
     /// <param name="retryStrategy">Defines a contract for how and when to retry a request</param>

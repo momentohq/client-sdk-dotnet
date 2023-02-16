@@ -1,12 +1,12 @@
-﻿using Google.Protobuf.WellKnownTypes;
+﻿using System;
+using System.Drawing;
+using System.IO;
+using System.Threading.Tasks;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Middleware;
-using System;
-using System.Drawing;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace Momento.Sdk.Internal.Middleware
 {
@@ -63,6 +63,22 @@ namespace Momento.Sdk.Internal.Middleware
             {
                 _semaphore.Release();
             }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            }
+
+            var other = (MaxConcurrentRequestsMiddleware)obj;
+            return _maxConcurrentRequests == other._maxConcurrentRequests;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }
