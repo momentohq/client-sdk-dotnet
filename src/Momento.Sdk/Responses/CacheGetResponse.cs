@@ -114,6 +114,5 @@ public abstract class CacheGetResponse
         {
             return $"{base.ToString()}: {this.Message}";
         }
-
     }
 }
