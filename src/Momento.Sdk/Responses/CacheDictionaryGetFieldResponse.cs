@@ -10,21 +10,32 @@ namespace Momento.Sdk.Responses;
 
 public abstract class CacheDictionaryGetFieldResponse
 {
+    protected readonly ByteString field;
+
+    public byte[] FieldByteArray
+    {
+        get => field.ToByteArray();
+    }
+
+    public string FieldString { get => field.ToStringUtf8(); }
+
+    protected CacheDictionaryGetFieldResponse(ByteString field)
+    {
+        this.field = field;
+    }
+
     public class Hit : CacheDictionaryGetFieldResponse
     {
         protected readonly ByteString value;
-        protected readonly ByteString field;
 
-        public Hit(ByteString field, _DictionaryGetResponse response)
+        public Hit(ByteString field, _DictionaryGetResponse response) : base(field)
         {
             this.value = response.Found.Items[0].CacheBody;
-            this.field = field;
         }
 
-        public Hit(ByteString field, ByteString cacheBody)
+        public Hit(ByteString field, ByteString cacheBody) : base(field)
         {
             this.value = cacheBody;
-            this.field = field;
         }
 
         public byte[] ValueByteArray
@@ -32,14 +43,7 @@ public abstract class CacheDictionaryGetFieldResponse
             get => value.ToByteArray();
         }
 
-        public byte[] FieldByteArray
-        {
-            get => field.ToByteArray();
-        }
-
         public string ValueString { get => value.ToStringUtf8(); }
-
-        public string FieldString { get => field.ToStringUtf8(); }
 
         /// <inheritdoc />
         public override string ToString()
@@ -50,39 +54,22 @@ public abstract class CacheDictionaryGetFieldResponse
 
     public class Miss : CacheDictionaryGetFieldResponse
     {
-        protected readonly ByteString field;
-
-        public Miss(IEnumerable<ByteString> fields)
+        public Miss(ByteString field) : base(field)
         {
-            this.field = fields.ToList()[0];
         }
-
-        public Miss(ByteString field)
-        {
-            this.field = field;
-        }
-
-        public byte[] FieldByteArray
-        {
-            get => field.ToByteArray();
-        }
-
-        public string FieldString { get => field.ToStringUtf8(); }
     }
 
     public class Error : CacheDictionaryGetFieldResponse
     {
         private readonly SdkException _error;
-        protected readonly ByteString? field;
-
-        public Error(SdkException error)
+        
+        public Error(SdkException error): base(ByteString.Empty)
         {
             _error = error;
         }
 
-        public Error(ByteString? field, SdkException error)
+        public Error(ByteString field, SdkException error) : base(field)
         {
-            this.field = field;
             _error = error;
         }
 
@@ -100,13 +87,6 @@ public abstract class CacheDictionaryGetFieldResponse
         {
             get => $"{_error.MessageWrapper}: {_error.Message}";
         }
-
-        public byte[]? FieldByteArray
-        {
-            get => field?.ToByteArray();
-        }
-
-        public string? FieldString { get => field?.ToStringUtf8(); }
 
         /// <inheritdoc />
         public override string ToString()
