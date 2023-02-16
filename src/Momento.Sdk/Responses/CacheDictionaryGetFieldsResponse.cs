@@ -27,6 +27,10 @@ namespace Momento.Sdk.Responses;
 /// {
 ///     return hitResponse.ValueDictionaryStringString;
 /// }
+/// else if (response is CacheDictionaryGetFieldsResponse.Miss missResponse)
+/// {
+///     // handle miss as appropriate
+/// }
 /// else if (response is CacheDictionaryGetFieldsResponse.Error errorResponse)
 /// {
 ///     // handle error as appropriate

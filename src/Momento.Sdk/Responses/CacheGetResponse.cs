@@ -21,6 +21,10 @@ namespace Momento.Sdk.Responses;
 /// {
 ///     return hitResponse.ValueString;
 /// }
+/// else if (response is CacheGetResponse.Miss missResponse)
+/// {
+///     // handle miss as appropriate
+/// }
 /// else if (response is CacheGetResponse.Error errorResponse)
 /// {
 ///     // handle error as appropriate

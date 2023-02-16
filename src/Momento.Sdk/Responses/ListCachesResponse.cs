@@ -16,9 +16,17 @@ namespace Momento.Sdk.Responses;
 /// Pattern matching can be used to operate on the appropriate subtype.
 /// For example:
 /// <code>
-/// if (response is ListCachesResponse.Error errorResponse)
+/// if (response is ListCachesResponse.Success successResponse)
+/// {
+///     return successResponse.Caches;
+/// }
+/// else if (response is ListCachesResponse.Error errorResponse)
 /// {
 ///     // handle error as appropriate
+/// }
+/// else
+/// {
+///     // handle unexpected response
 /// }
 /// </code>
 /// </summary>

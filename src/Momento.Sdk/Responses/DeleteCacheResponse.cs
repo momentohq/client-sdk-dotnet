@@ -13,9 +13,17 @@ using Momento.Sdk.Exceptions;
 /// Pattern matching can be used to operate on the appropriate subtype.
 /// For example:
 /// <code>
-/// if (response is DeleteCacheResponse.Error errorResponse)
+/// if (response is DeleteCacheResponse.Success successResponse)
+/// {
+///     // handle success if needed
+/// }
+/// else if (response is DeleteCacheResponse.Error errorResponse)
 /// {
 ///     // handle error as appropriate
+/// }
+/// else
+/// {
+///     // handle unexpected response
 /// }
 /// </code>
 /// </summary>

@@ -21,6 +21,10 @@ namespace Momento.Sdk.Responses;
 /// {
 ///     return hitResponse.ValueString;
 /// }
+/// else if (response is CacheListPopFrontResponse.Miss missResponse)
+/// {
+///     // handle miss as appropriate
+/// }
 /// else if (response is CacheListPopFrontResponse.Error errorResponse)
 /// {
 ///     // handle error as appropriate
