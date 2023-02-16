@@ -96,6 +96,7 @@ public class Configuration : IConfiguration
         return WithClientTimeout(clientTimeout);
     }
 
+    /// <inheritdoc />
     public override bool Equals(object obj)
     {
         if ((obj == null) || !this.GetType().Equals(obj.GetType()))
@@ -110,6 +111,7 @@ public class Configuration : IConfiguration
             LoggerFactory.Equals(other.LoggerFactory);
     }
 
+    /// <inheritdoc />
     public override int GetHashCode()
     {
         return base.GetHashCode();

@@ -7,6 +7,12 @@
         returned from the request:
         <list type="bullet">
           <item>
+            <term>InnerException: </term>
+            <description>
+              <c>Momento.Sdk.Exceptions.SdkException</c> specific exception object.
+            </description>
+          </item>
+          <item>
             <term>ErrorCode: </term>
             <description>
               <c>Momento.Sdk.Exceptions.MomentoErrorCode</c> value for the error.
@@ -73,6 +79,20 @@
       <summary>
         Class <c>Success</c> indicates that the request that generated
         it was successful.
+      </summary>
+    </description>
+  </class>
+  <class name="Hit">
+    <description>
+      <summary>
+	Class <c>Hit</c> contains the results of a cache hit.
+      </summary>
+    </description>
+  </class>
+  <class name="Miss">
+    <description>
+      <summary>
+        Class <c>Miss</c> contains the results of a cache miss.
       </summary>
     </description>
   </class>

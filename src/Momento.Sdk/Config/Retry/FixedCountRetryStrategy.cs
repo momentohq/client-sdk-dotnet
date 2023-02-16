@@ -61,6 +61,11 @@ public class FixedCountRetryStrategy : IRetryStrategy
         return 0;
     }
 
+    /// <summary>
+    /// Test equality by value.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
     public override bool Equals(object obj)
     {
         if ((obj == null) || !this.GetType().Equals(obj.GetType()))
@@ -74,6 +79,10 @@ public class FixedCountRetryStrategy : IRetryStrategy
             _eligibilityStrategy.Equals(other._eligibilityStrategy);
     }
 
+    /// <summary>
+    /// Trivial hash code implementation.
+    /// </summary>
+    /// <returns></returns>
     public override int GetHashCode()
     {
         return base.GetHashCode();
