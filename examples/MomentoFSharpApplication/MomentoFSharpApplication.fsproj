@@ -13,8 +13,5 @@
     <PackageReference Include="Momento.Sdk" Version="1.6.0">
       <GeneratePathProperty></GeneratePathProperty>
     </PackageReference>
-    <PackageReference Include="FSharp.Core" Version="7.0.200">
-      <GeneratePathProperty></GeneratePathProperty>
-    </PackageReference>
   </ItemGroup>
 </Project>

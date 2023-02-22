@@ -11,7 +11,7 @@ ICredentialProvider authProvider = new EnvMomentoTokenProvider("MOMENTO_AUTH_TOK
 
 TimeSpan DEFAULT_TTL = TimeSpan.FromSeconds(60);
 
-using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.Latest(), authProvider, DEFAULT_TTL))
+using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.V1(), authProvider, DEFAULT_TTL))
 {
     await AdvancedExamples.CreateCacheExample(client);
     await AdvancedExamples.ListCachesExample(client);
@@ -130,7 +130,7 @@ public class AdvancedExamples {
     {
         ICredentialProvider authProvider = new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN");
         TimeSpan defaultTtl = TimeSpan.FromSeconds(60);
-        var config = Configurations.Laptop.Latest();
+        var config = Configurations.Laptop.V1();
         var eagerConnectionConfig = config.WithTransportStrategy(config.TransportStrategy.WithEagerConnectionTimeout(TimeSpan.FromSeconds(10)));
         Console.WriteLine("Creating a momento client with eager connection");
         using (SimpleCacheClient client = new SimpleCacheClient(eagerConnectionConfig, authProvider, defaultTtl)) {
