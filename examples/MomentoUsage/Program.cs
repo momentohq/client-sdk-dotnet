@@ -10,7 +10,7 @@ const string KEY = "MyKey";
 const string VALUE = "MyData";
 TimeSpan DEFAULT_TTL = TimeSpan.FromSeconds(60);
 
-using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.Latest(), authProvider, DEFAULT_TTL))
+using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.V1(), authProvider, DEFAULT_TTL))
 {
     var createCacheResponse = await client.CreateCacheAsync(CACHE_NAME);
     if (createCacheResponse is CreateCacheResponse.Error createError)

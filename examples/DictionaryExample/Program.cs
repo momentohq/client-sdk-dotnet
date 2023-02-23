@@ -25,7 +25,7 @@ public class Driver
         var cacheName = ReadCacheName();
 
         // Set up the client
-        using var client = new SimpleCacheClient(Configurations.Laptop.Latest(), authToken, TimeSpan.FromSeconds(60));
+        using var client = new SimpleCacheClient(Configurations.Laptop.V1(), authToken, TimeSpan.FromSeconds(60));
         await EnsureCacheExistsAsync(client, cacheName);
 
         // Set a value
