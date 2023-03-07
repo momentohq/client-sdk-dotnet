@@ -203,10 +203,20 @@ public interface ISimpleCacheClient : IDisposable
     /// </summary>
     /// <param name="cacheName">Name of the cache to store the key and field in.</param>
     /// <param name="key">The key to set.</param>
-    /// <param name="field">The value to be stored.</param>
+    /// <param name="value">The value to be stored.</param>
     /// <param name="ttl">TTL for the field in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
     /// <returns>Task representing the result of the cache operation.</returns>
-    public Task<CacheSetIfNotExistsResponse> SetIfNotExistsAsync(string cacheName, string key, string field, TimeSpan? ttl = null);
+    public Task<CacheSetIfNotExistsResponse> SetIfNotExistsAsync(string cacheName, string key, string value, TimeSpan? ttl = null);
+
+    /// <inheritdoc cref="SetIfNotExistsAsync(string, string, string, TimeSpan?)"/>
+    public Task<CacheSetIfNotExistsResponse> SetIfNotExistsAsync(string cacheName, byte[] key, string value, TimeSpan? ttl = null);
+
+    /// <inheritdoc cref="SetIfNotExistsAsync(string, string, string, TimeSpan?)"/>
+    public Task<CacheSetIfNotExistsResponse> SetIfNotExistsAsync(string cacheName, string key, byte[] value, TimeSpan? ttl = null);
+
+    /// <inheritdoc cref="SetIfNotExistsAsync(string, string, string, TimeSpan?)"/>
+    public Task<CacheSetIfNotExistsResponse> SetIfNotExistsAsync(string cacheName, byte[] key, byte[] value, TimeSpan? ttl = null);
+
 
     /// <summary>
     /// <para>Add an integer quantity to a value.</para>
