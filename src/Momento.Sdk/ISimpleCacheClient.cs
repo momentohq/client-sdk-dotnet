@@ -196,6 +196,37 @@ public interface ISimpleCacheClient : IDisposable
     public Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, TimeSpan? ttl = null);
 
     /// <summary>
+    /// <para>Sets the value of of the given key and field if the key does not exists in cache</para>
+    ///
+    /// <para>Associates the given key with the given value. If a value for the key is
+    /// already present it is not replaced with the new value.</para>
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to store the key and field in.</param>
+    /// <param name="key">The key to set.</param>
+    /// <param name="field">The value to be stored.</param>
+    /// <param name="ttl">TTL for the field in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
+    /// <returns>Task representing the result of the cache operation.</returns>
+    public Task<CacheSetIfNotExistsResponse> SetIfNotExistsAsync(string cacheName, string key, string field, TimeSpan? ttl = null);
+
+    /// <summary>
+    /// <para>Add an integer quantity to a value.</para>
+    ///
+    /// <para>Incrementing the value of a missing field sets the value to <paramref name="amount"/>.</para>
+    /// <para>Incrementing a value that was not set using this method or not the string representation of an integer
+    /// results in an error with <see cref="FailedPreconditionException"/>.</para>
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to store the field in.</param>
+    /// <param name="field"></param>
+    /// <param name="amount">The quantity to add to the value. May be positive, negative, or zero. Defaults to 1.</param>
+    /// <param name="ttl">TTL for the field in cache. This TTL takes precedence over the TTL used when initializing a cache client. Defaults to client TTL.</param>
+    /// <returns>Task representing the result of the cache operation.</returns>
+    public Task<CacheIncrementResponse> IncrementAsync(string cacheName, string field, long amount = 1, TimeSpan? ttl = null);
+
+    /// <inheritdoc cref="IncrementAsync(string, string, long, TimeSpan?)"/>
+    public Task<CacheIncrementResponse> IncrementAsync(string cacheName, byte[] field, long amount = 1, TimeSpan? ttl = null);
+
+
+    /// <summary>
     /// Set the dictionary field to a value with a given time to live (TTL) seconds.
     /// </summary>
     /// <remark>

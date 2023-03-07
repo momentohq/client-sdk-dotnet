@@ -21,6 +21,8 @@ public interface IDataClient
     public Task<_GetResponse> GetAsync(_GetRequest request, CallOptions callOptions);
     public Task<_SetResponse> SetAsync(_SetRequest request, CallOptions callOptions);
     public Task<_DeleteResponse> DeleteAsync(_DeleteRequest request, CallOptions callOptions);
+    public Task<_SetIfNotExistsResponse> SetIfNotExistsAsync(_SetIfNotExistsRequest request, CallOptions callOptions);
+    public Task<_IncrementResponse> IncrementAsync(_IncrementRequest request, CallOptions callOptions);
     public Task<_DictionarySetResponse> DictionarySetAsync(_DictionarySetRequest request, CallOptions callOptions);
     public Task<_DictionaryIncrementResponse> DictionaryIncrementAsync(_DictionaryIncrementRequest request, CallOptions callOptions);
     public Task<_DictionaryGetResponse> DictionaryGetAsync(_DictionaryGetRequest request, CallOptions callOptions);
@@ -75,6 +77,18 @@ public class DataClientWithMiddleware : IDataClient
     public async Task<_SetResponse> SetAsync(_SetRequest request, CallOptions callOptions)
     {
         var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.SetAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_SetIfNotExistsResponse> SetIfNotExistsAsync(_SetIfNotExistsRequest request, CallOptions callOptions)
+    {
+        var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.SetIfNotExistsAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_IncrementResponse> IncrementAsync(_IncrementRequest request, CallOptions callOptions)
+    {
+        var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.IncrementAsync(r, o));
         return await wrapped.ResponseAsync;
     }
 
