@@ -210,6 +210,136 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <inheritdoc />
+    public async Task<CacheSetIfNotExistsResponse> SetIfNotExistsAsync(string cacheName, string key, byte[] value, TimeSpan? ttl = null)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(key, nameof(key));
+            Utils.ArgumentNotNull(value, nameof(value));
+            Utils.ArgumentStrictlyPositive(ttl, nameof(ttl));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheSetIfNotExistsResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return new CacheSetIfNotExistsResponse.Error(new InvalidArgumentException(e.Message));
+        }
+
+        return await this.DataClient.SetIfNotExistsAsync(cacheName, key, value, ttl);
+    }
+
+    /// <inheritdoc />
+    public async Task<CacheSetIfNotExistsResponse> SetIfNotExistsAsync(string cacheName, byte[] key, string value, TimeSpan? ttl = null)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(key, nameof(key));
+            Utils.ArgumentNotNull(value, nameof(value));
+            Utils.ArgumentStrictlyPositive(ttl, nameof(ttl));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheSetIfNotExistsResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return new CacheSetIfNotExistsResponse.Error(new InvalidArgumentException(e.Message));
+        }
+
+        return await this.DataClient.SetIfNotExistsAsync(cacheName, key, value, ttl);
+    }
+
+    /// <inheritdoc />
+    public async Task<CacheSetIfNotExistsResponse> SetIfNotExistsAsync(string cacheName, string key, string value, TimeSpan? ttl = null)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(key, nameof(key));
+            Utils.ArgumentNotNull(value, nameof(value));
+            Utils.ArgumentStrictlyPositive(ttl, nameof(ttl));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheSetIfNotExistsResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return new CacheSetIfNotExistsResponse.Error(new InvalidArgumentException(e.Message));
+        }
+
+        return await this.DataClient.SetIfNotExistsAsync(cacheName, key, value, ttl);
+    }
+
+    /// <inheritdoc />
+    public async Task<CacheSetIfNotExistsResponse> SetIfNotExistsAsync(string cacheName, byte[] key, byte[] value, TimeSpan? ttl = null)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(key, nameof(key));
+            Utils.ArgumentNotNull(value, nameof(value));
+            Utils.ArgumentStrictlyPositive(ttl, nameof(ttl));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheSetIfNotExistsResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return new CacheSetIfNotExistsResponse.Error(new InvalidArgumentException(e.Message));
+        }
+
+        return await this.DataClient.SetIfNotExistsAsync(cacheName, key, value, ttl);
+    }
+
+    /// <inheritdoc />
+    public async Task<CacheIncrementResponse> IncrementAsync(string cacheName, string field, long amount = 1, TimeSpan? ttl = null)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(field, nameof(field));
+            Utils.ArgumentStrictlyPositive(ttl, nameof(ttl));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheIncrementResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return new CacheIncrementResponse.Error(new InvalidArgumentException(e.Message));
+        }
+
+        return await this.DataClient.IncrementAsync(cacheName, field, amount, ttl);
+    }
+
+    /// <inheritdoc />
+    public async Task<CacheIncrementResponse> IncrementAsync(string cacheName, byte[] field, long amount = 1, TimeSpan? ttl = null)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(field, nameof(field));
+            Utils.ArgumentStrictlyPositive(ttl, nameof(ttl));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheIncrementResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return new CacheIncrementResponse.Error(new InvalidArgumentException(e.Message));
+        }
+
+        return await this.DataClient.IncrementAsync(cacheName, field, amount, ttl);
+    }
+
+    /// <inheritdoc />
     public async Task<CacheDictionarySetFieldResponse> DictionarySetFieldAsync(string cacheName, string dictionaryName, byte[] field, byte[] value, CollectionTtl ttl = default(CollectionTtl))
     {
         try
