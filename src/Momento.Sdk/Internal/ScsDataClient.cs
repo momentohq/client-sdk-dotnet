@@ -78,7 +78,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, TimeSpan? ttl = null)
     {
-        return await this.SendSetAsync(cacheName, value: value.ToByteString(), key: key.ToByteString(), ttl: ttl);
+        return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(),  ttl: ttl);
     }
 
     public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
@@ -108,7 +108,12 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, TimeSpan? ttl = null)
     {
-        return await this.SendSetAsync(cacheName, value: value.ToByteString(), key: key.ToByteString(), ttl: ttl);
+        return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(),  ttl: ttl);
+    }
+
+    public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, string value, TimeSpan? ttl = null)
+    {
+        return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(),  ttl: ttl);
     }
 
     public async Task<CacheIncrementResponse> IncrementAsync(string cacheName, string field, long amount = 1, TimeSpan? ttl = null)

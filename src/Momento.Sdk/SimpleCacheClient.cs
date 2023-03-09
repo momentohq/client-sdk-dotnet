@@ -210,6 +210,28 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <inheritdoc />
+    public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, string value, TimeSpan? ttl = null)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(key, nameof(key));
+            Utils.ArgumentNotNull(value, nameof(value));
+            Utils.ArgumentStrictlyPositive(ttl, nameof(ttl));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheSetResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return new CacheSetResponse.Error(new InvalidArgumentException(e.Message));
+        }
+
+        return await this.DataClient.SetAsync(cacheName, key, value, ttl);
+    }
+
+    /// <inheritdoc />
     public async Task<CacheSetIfNotExistsResponse> SetIfNotExistsAsync(string cacheName, string key, byte[] value, TimeSpan? ttl = null)
     {
         try

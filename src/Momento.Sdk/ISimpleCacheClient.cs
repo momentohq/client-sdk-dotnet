@@ -195,6 +195,9 @@ public interface ISimpleCacheClient : IDisposable
     /// <inheritdoc cref="SetAsync(string, byte[], byte[], TimeSpan?)"/>
     public Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, TimeSpan? ttl = null);
 
+    /// <inheritdoc cref="SetAsync(string, byte[], byte[], TimeSpan?)"/>
+    public Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, string value, TimeSpan? ttl = null);
+
     /// <summary>
     /// <para>Sets the value of of the given key and field if the key does not exists in cache</para>
     ///
