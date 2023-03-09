@@ -134,9 +134,6 @@ public interface ISimpleCacheClient : IDisposable
     /// <inheritdoc cref="SetAsync(string, byte[], byte[], TimeSpan?)"/>
     public Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, TimeSpan? ttl = null);
 
-    /// <inheritdoc cref="SetAsync(string, byte[], byte[], TimeSpan?)"/>
-    public Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, string value, TimeSpan? ttl = null);
-
      /// <inheritdoc cref="SetAsync(string, byte[], byte[], TimeSpan?)"/>
     public Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, TimeSpan? ttl = null);
 

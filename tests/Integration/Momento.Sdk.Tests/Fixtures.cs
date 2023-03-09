@@ -12,7 +12,7 @@ namespace Momento.Sdk.Tests;
 /// </summary>
 public class SimpleCacheClientFixture : IDisposable
 {
-    public SimpleCacheClient Client { get; private set; }
+    public ISimpleCacheClient Client { get; private set; }
     public ICredentialProvider AuthProvider { get; private set; }
     public string CacheName { get; private set; }
 
@@ -23,7 +23,7 @@ public class SimpleCacheClientFixture : IDisposable
         AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
         CacheName = Environment.GetEnvironmentVariable("TEST_CACHE_NAME") ??
             throw new NullReferenceException("TEST_CACHE_NAME environment variable must be set.");
-        Client = new(Configurations.Laptop.Latest(LoggerFactory.Create(builder =>
+        Client = new SimpleCacheClient(Configurations.Laptop.Latest(LoggerFactory.Create(builder =>
                 {
                     builder.AddSimpleConsole(options =>
                     {

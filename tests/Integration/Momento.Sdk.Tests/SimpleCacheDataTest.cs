@@ -261,57 +261,6 @@ public class SimpleCacheDataTest : TestBase
         Assert.True(getResponse is CacheGetResponse.Miss, $"Unexpected response: {getResponse}");
     }
 
-    [Theory]
-    [InlineData(null, new byte[] { 0x00 }, "value")]
-    [InlineData("cache", null,  "value")]
-    [InlineData("cache", new byte[] { 0x00 }, null)]
-    public async Task SetAsync_NullChecksByteArrayString_IsError(string cacheName, byte[] key, string value)
-    {
-        CacheSetResponse response = await client.SetAsync(cacheName, key, value);
-        Assert.True(response is CacheSetResponse.Error, $"Unexpected response: {response}");
-        var errorResponse = (CacheSetResponse.Error)response;
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errorResponse.ErrorCode);
-
-        response = await client.SetAsync(cacheName, key, value, defaultTtl);
-        Assert.True(response is CacheSetResponse.Error, $"Unexpected response: {response}");
-        errorResponse = (CacheSetResponse.Error)response;
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errorResponse.ErrorCode);
-    }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(-1)]
-    public async Task SetAsync_InvalidTTLByteArrayString_IsError(int ttlSeconds)
-    {
-        CacheSetResponse response = await client.SetAsync(cacheName, new byte[] { 0x00 }, "value", TimeSpan.FromSeconds(ttlSeconds));
-        Assert.True(response is CacheSetResponse.Error, $"Unexpected response: {response}");
-        var errorResponse = (CacheSetResponse.Error)response;
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errorResponse.ErrorCode);
-    }
-
-    // Tests SetAsyc(cacheName, byte[], byte[]) as well as GetAsync(cacheName, byte[])
-    [Fact]
-    public async Task SetAsync_KeyIsByteArrayValueIsString_HappyPath()
-    {
-        byte[] key = Utils.NewGuidByteArray();
-        string value = Utils.NewGuidString();
-        await client.SetAsync(cacheName, key, value);
-        CacheGetResponse response = await client.GetAsync(cacheName, key);
-        Assert.True(response is CacheGetResponse.Hit, $"Unexpected response: {response}");
-        var goodResponse = (CacheGetResponse.Hit)response;
-        string setValue = goodResponse.ValueString;
-        Assert.Equal(value, setValue);
-
-        key = Utils.NewGuidByteArray();
-        value = Utils.NewGuidString();
-        await client.SetAsync(cacheName, key, value, ttl: TimeSpan.FromSeconds(15));
-        response = await client.GetAsync(cacheName, key);
-        Assert.True(response is CacheGetResponse.Hit, $"Unexpected response: {response}");
-        goodResponse = (CacheGetResponse.Hit)response;
-        setValue = goodResponse.ValueString;
-        Assert.Equal(value, setValue);
-    }
-
     // Also tests GetAsync(cacheName, string)
     [Fact]
     public async Task SetIfNotExistsAsync_KeyIsStringValueIsString_HappyPath()

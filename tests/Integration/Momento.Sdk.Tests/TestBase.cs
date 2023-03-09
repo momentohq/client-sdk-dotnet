@@ -8,7 +8,7 @@ public class TestBase
     protected readonly ICredentialProvider authProvider;
     protected readonly string cacheName;
     protected TimeSpan defaultTtl;
-    protected SimpleCacheClient client;
+    protected ISimpleCacheClient client;
 
     public TestBase(SimpleCacheClientFixture fixture)
     {
