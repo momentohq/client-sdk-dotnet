@@ -11,7 +11,7 @@ namespace Momento.Sdk
     /// See <see href="https://github.com/momentohq/client-sdk-dotnet/tree/main/examples">the examples directory</see> for complete workflows.
     /// </summary>
     [Obsolete("This class has been renamed to CacheClient, and is now deprecated")]
-    public class SimpleCacheClient : CacheClient
+    public class SimpleCacheClient : CacheClient, ISimpleCacheClient
 	{
         /// <summary>
         /// Client to perform operations against the Momento Serverless Cache Service
