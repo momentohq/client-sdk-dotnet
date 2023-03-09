@@ -402,7 +402,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            return this._logger.LogTraceRequestSuccess(REQUEST_TYPE_GET, cacheName, key, null, null, new CacheDeleteResponse.Error(_exceptionMapper.Convert(e, metadata)));
+            return this._logger.LogTraceRequestError(REQUEST_TYPE_DELETE, cacheName, key, null, null, new CacheDeleteResponse.Error(_exceptionMapper.Convert(e, metadata)));
         }
         return this._logger.LogTraceRequestSuccess(REQUEST_TYPE_DELETE, cacheName, key, null, null, new CacheDeleteResponse.Success());
 
