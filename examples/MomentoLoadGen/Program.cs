@@ -92,7 +92,7 @@ namespace MomentoLoadGen
         {
             var authProvider = new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN");
 
-            using (var momento = new SimpleCacheClient(
+            using (ICacheClient momento = new CacheClient(
                 _momentoClientConfig,
                 authProvider,
                 TimeSpan.FromSeconds(CACHE_ITEM_TTL_SECONDS)
@@ -146,7 +146,7 @@ namespace MomentoLoadGen
 
 
         private async Task LaunchAndRunWorkers(
-            SimpleCacheClient client,
+            ICacheClient client,
             CsharpLoadGeneratorContext context,
             int workerId,
             int delayMillisBetweenRequests,
@@ -201,7 +201,7 @@ cumulative get latencies:
             _logger.LogInformation($"Load gen data point:\t{_options.numberOfConcurrentRequests}\t{Tps(context, context.GlobalRequestCount)}\t{getsAccumulatingHistogram.GetValueAtPercentile(50)}\t{getsAccumulatingHistogram.GetValueAtPercentile(99.9)}");
         }
 
-        private async Task IssueAsyncSetGet(SimpleCacheClient client, CsharpLoadGeneratorContext context, int workerId, int operationId, int delayMillisBetweenRequests)
+        private async Task IssueAsyncSetGet(ICacheClient client, CsharpLoadGeneratorContext context, int workerId, int operationId, int delayMillisBetweenRequests)
         {
             var cacheKey = $"worker{workerId}operation{operationId}";
 
@@ -247,7 +247,7 @@ cumulative get latencies:
             return result.Item2;
         }
 
-        private async Task<Tuple<AsyncSetGetResult, CacheGetResponse?>> IssueGetRequest(SimpleCacheClient client, String cacheKey)
+        private async Task<Tuple<AsyncSetGetResult, CacheGetResponse?>> IssueGetRequest(ICacheClient client, String cacheKey)
         {
             var getResponse = await client.GetAsync(CACHE_NAME, cacheKey);
             if (getResponse is CacheGetResponse.Hit hit)
@@ -268,7 +268,7 @@ cumulative get latencies:
             }
         }
 
-        private async Task<Tuple<AsyncSetGetResult, CacheSetResponse?>> IssueSetRequest(SimpleCacheClient client, String cacheKey, String cacheValue)
+        private async Task<Tuple<AsyncSetGetResult, CacheSetResponse?>> IssueSetRequest(ICacheClient client, String cacheKey, String cacheValue)
         {
             var setResponse = await client.SetAsync(CACHE_NAME, cacheKey, cacheValue);
             if (setResponse is CacheSetResponse.Success success)
