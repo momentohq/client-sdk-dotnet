@@ -57,13 +57,13 @@
 	  <PackageReference Include="System.Threading" Version="4.3.0" />
 	</ItemGroup>
 	<ProjectExtensions>
-		<MonoDevelop>
-			<Properties>
-				<Policies>
-					<TextStylePolicy TabWidth="4" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="80" TabsToSpaces="True" scope="application/xml" />
-					<XmlFormattingPolicy scope="application/xml" />
-				</Policies>
-			</Properties>
-		</MonoDevelop>
+	  <MonoDevelop>
+	    <Properties>
+	      <Policies>
+	        <TextStylePolicy TabWidth="4" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="80" TabsToSpaces="True" scope="application/xml" />
+	        <XmlFormattingPolicy scope="application/xml" />
+	      </Policies>
+	    </Properties>
+	  </MonoDevelop>
 	</ProjectExtensions>
 </Project>

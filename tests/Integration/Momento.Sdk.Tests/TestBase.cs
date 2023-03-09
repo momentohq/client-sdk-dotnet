@@ -8,9 +8,9 @@ public class TestBase
     protected readonly ICredentialProvider authProvider;
     protected readonly string cacheName;
     protected TimeSpan defaultTtl;
-    protected SimpleCacheClient client;
+    protected CacheClient client;
 
-    public TestBase(SimpleCacheClientFixture fixture)
+    public TestBase(CacheClientFixture fixture)
     {
         this.client = fixture.Client;
         this.cacheName = fixture.CacheName;

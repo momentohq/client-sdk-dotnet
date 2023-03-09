@@ -10,15 +10,15 @@ namespace Momento.Sdk.Tests;
 /// Use this when not testing client-building edge cases:
 /// re-using the client drops overall integration test time down ~5X.
 /// </summary>
-public class SimpleCacheClientFixture : IDisposable
+public class CacheClientFixture : IDisposable
 {
-    public SimpleCacheClient Client { get; private set; }
+    public CacheClient Client { get; private set; }
     public ICredentialProvider AuthProvider { get; private set; }
     public string CacheName { get; private set; }
 
     public TimeSpan DefaultTtl { get; private set; } = TimeSpan.FromSeconds(10);
 
-    public SimpleCacheClientFixture()
+    public CacheClientFixture()
     {
         AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
         CacheName = Environment.GetEnvironmentVariable("TEST_CACHE_NAME") ??
@@ -49,8 +49,8 @@ public class SimpleCacheClientFixture : IDisposable
 /// <summary>
 /// Register the fixture in xUnit.
 /// </summary>
-[CollectionDefinition("SimpleCacheClient")]
-public class SimpleCacheClientCollection : ICollectionFixture<SimpleCacheClientFixture>
+[CollectionDefinition("CacheClient")]
+public class CacheClientCollection : ICollectionFixture<CacheClientFixture>
 {
 
 }

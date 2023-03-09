@@ -3,11 +3,11 @@ using Momento.Sdk.Auth;
 
 namespace Momento.Sdk.Tests;
 
-[Collection("SimpleCacheClient")]
-public class SimpleCacheDataTest : TestBase
+[Collection("CacheClient")]
+public class CacheDataTest : TestBase
 {
     // Test initialization
-    public SimpleCacheDataTest(SimpleCacheClientFixture fixture) : base(fixture)
+    public CacheDataTest(CacheClientFixture fixture) : base(fixture)
     {
     }
 

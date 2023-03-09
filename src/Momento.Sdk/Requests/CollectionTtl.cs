@@ -19,7 +19,7 @@ namespace Momento.Sdk.Requests
     /// 
     /// <param name="Ttl">The <see cref="TimeSpan"/> after which the cached collection
     /// should be expired from the cache.  If <code>null</code>, we use the default
-    /// TTL <see cref="TimeSpan"/> that was passed to the <see cref="SimpleCacheClient"/>constructor</param>.
+    /// TTL <see cref="TimeSpan"/> that was passed to the <see cref="CacheClient"/>constructor</param>.
     /// <param name="RefreshTtl">If <see langword="true"/>, the collection's TTL will be refreshed (to
     /// prolong the life of the collection) on every update.  If <see langword="false"/>, the collection's
     /// TTL will only be set when the collection is initially created.</param>
@@ -27,7 +27,7 @@ namespace Momento.Sdk.Requests
     {
         /// <summary>
         /// The default way to handle TTLs for collections.  The default TTL
-        /// <see cref="TimeSpan"/> that was specified when constructing the <see cref="SimpleCacheClient"/>
+        /// <see cref="TimeSpan"/> that was specified when constructing the <see cref="CacheClient"/>
         /// will be used, and the TTL for the collection will be refreshed any
         /// time the collection is modified.
         /// </summary>

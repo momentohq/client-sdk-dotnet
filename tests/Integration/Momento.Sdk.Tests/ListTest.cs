@@ -8,10 +8,10 @@ using Momento.Sdk.Tests;
 
 namespace Momento.Sdk.Tests;
 
-[Collection("SimpleCacheClient")]
+[Collection("CacheClient")]
 public class ListTest : TestBase
 {
-    public ListTest(SimpleCacheClientFixture fixture) : base(fixture)
+    public ListTest(CacheClientFixture fixture) : base(fixture)
     {
     }
 

@@ -36,6 +36,11 @@ restore:
 test:
 	@dotnet test
 
+.PHONY: unit-tests
+## Run unit tests
+unit-tests:
+	@dotnet test tests/Unit/Momento.Sdk.Tests
+
 
 # See <https://gist.github.com/klmr/575726c7e05d8780505a> for explanation.
 .PHONY: help
