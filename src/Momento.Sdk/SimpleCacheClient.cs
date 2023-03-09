@@ -103,39 +103,7 @@ public class SimpleCacheClient : ISimpleCacheClient
     }
 
     /// <inheritdoc />
-    public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
-    {
-        try
-        {
-            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
-            Utils.ArgumentNotNull(key, nameof(key));
-        }
-        catch (ArgumentNullException e)
-        {
-            return new CacheGetResponse.Error(new InvalidArgumentException(e.Message));
-        }
-
-        return await this.DataClient.GetAsync(cacheName, key);
-    }
-
-    /// <inheritdoc />
-    public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, byte[] key)
-    {
-        try
-        {
-            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
-            Utils.ArgumentNotNull(key, nameof(key));
-        }
-        catch (ArgumentNullException e)
-        {
-            return new CacheDeleteResponse.Error(new InvalidArgumentException(e.Message));
-        }
-
-        return await this.DataClient.DeleteAsync(cacheName, key);
-    }
-
-    /// <inheritdoc />
-    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, TimeSpan? ttl = null)
+    public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, string value, TimeSpan? ttl = null)
     {
         try
         {
@@ -156,35 +124,26 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.DataClient.SetAsync(cacheName, key, value, ttl);
     }
 
-    /// <inheritdoc />
-    public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
+     /// <inheritdoc />
+    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, TimeSpan? ttl = null)
     {
         try
         {
             Utils.ArgumentNotNull(cacheName, nameof(cacheName));
             Utils.ArgumentNotNull(key, nameof(key));
+            Utils.ArgumentNotNull(value, nameof(value));
+            Utils.ArgumentStrictlyPositive(ttl, nameof(ttl));
         }
         catch (ArgumentNullException e)
         {
-            return new CacheGetResponse.Error(new InvalidArgumentException(e.Message));
+            return new CacheSetResponse.Error(new InvalidArgumentException(e.Message));
         }
-        return await this.DataClient.GetAsync(cacheName, key);
-    }
-
-    /// <inheritdoc />
-    public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key)
-    {
-        try
+        catch (ArgumentOutOfRangeException e)
         {
-            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
-            Utils.ArgumentNotNull(key, nameof(key));
-        }
-        catch (ArgumentNullException e)
-        {
-            return new CacheDeleteResponse.Error(new InvalidArgumentException(e.Message));
+            return new CacheSetResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.DataClient.DeleteAsync(cacheName, key);
+        return await this.DataClient.SetAsync(cacheName, key, value, ttl);
     }
 
     /// <inheritdoc />
@@ -209,26 +168,68 @@ public class SimpleCacheClient : ISimpleCacheClient
         return await this.DataClient.SetAsync(cacheName, key, value, ttl);
     }
 
+   
     /// <inheritdoc />
-    public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, string value, TimeSpan? ttl = null)
+    public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
     {
         try
         {
             Utils.ArgumentNotNull(cacheName, nameof(cacheName));
             Utils.ArgumentNotNull(key, nameof(key));
-            Utils.ArgumentNotNull(value, nameof(value));
-            Utils.ArgumentStrictlyPositive(ttl, nameof(ttl));
         }
         catch (ArgumentNullException e)
         {
-            return new CacheSetResponse.Error(new InvalidArgumentException(e.Message));
-        }
-        catch (ArgumentOutOfRangeException e)
-        {
-            return new CacheSetResponse.Error(new InvalidArgumentException(e.Message));
+            return new CacheGetResponse.Error(new InvalidArgumentException(e.Message));
         }
 
-        return await this.DataClient.SetAsync(cacheName, key, value, ttl);
+        return await this.DataClient.GetAsync(cacheName, key);
+    }
+
+    /// <inheritdoc />
+    public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(key, nameof(key));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheGetResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        return await this.DataClient.GetAsync(cacheName, key);
+    }
+
+    /// <inheritdoc />
+    public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, byte[] key)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(key, nameof(key));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheDeleteResponse.Error(new InvalidArgumentException(e.Message));
+        }
+
+        return await this.DataClient.DeleteAsync(cacheName, key);
+    }
+
+    /// <inheritdoc />
+    public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(key, nameof(key));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheDeleteResponse.Error(new InvalidArgumentException(e.Message));
+        }
+
+        return await this.DataClient.DeleteAsync(cacheName, key);
     }
 
     /// <inheritdoc />

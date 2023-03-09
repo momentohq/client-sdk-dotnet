@@ -81,7 +81,27 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(),  ttl: ttl);
     }
 
+    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, TimeSpan? ttl = null)
+    {
+        return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(),  ttl: ttl);
+    }
+
+    public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, string value, TimeSpan? ttl = null)
+    {
+        return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(),  ttl: ttl);
+    }
+
+    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, TimeSpan? ttl = null)
+    {
+        return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttl: ttl);
+    }
+
     public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
+    {
+        return await this.SendGetAsync(cacheName, key.ToByteString());
+    }
+
+    public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
     {
         return await this.SendGetAsync(cacheName, key.ToByteString());
     }
@@ -91,29 +111,9 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return await this.SendDeleteAsync(cacheName, key.ToByteString());
     }
 
-    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, TimeSpan? ttl = null)
-    {
-        return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttl: ttl);
-    }
-
-    public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
-    {
-        return await this.SendGetAsync(cacheName, key.ToByteString());
-    }
-
     public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key)
     {
         return await this.SendDeleteAsync(cacheName, key.ToByteString());
-    }
-
-    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, TimeSpan? ttl = null)
-    {
-        return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(),  ttl: ttl);
-    }
-
-    public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, string value, TimeSpan? ttl = null)
-    {
-        return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(),  ttl: ttl);
     }
 
     public async Task<CacheIncrementResponse> IncrementAsync(string cacheName, string field, long amount = 1, TimeSpan? ttl = null)

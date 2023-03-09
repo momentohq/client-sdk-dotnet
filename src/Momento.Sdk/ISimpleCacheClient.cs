@@ -131,6 +131,15 @@ public interface ISimpleCacheClient : IDisposable
     /// </returns>
     public Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, TimeSpan? ttl = null);
 
+    /// <inheritdoc cref="SetAsync(string, byte[], byte[], TimeSpan?)"/>
+    public Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, TimeSpan? ttl = null);
+
+    /// <inheritdoc cref="SetAsync(string, byte[], byte[], TimeSpan?)"/>
+    public Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, string value, TimeSpan? ttl = null);
+
+     /// <inheritdoc cref="SetAsync(string, byte[], byte[], TimeSpan?)"/>
+    public Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, TimeSpan? ttl = null);
+
     /// <summary>
     /// Get the cache value stored for the given key.
     /// </summary>
@@ -159,6 +168,9 @@ public interface ISimpleCacheClient : IDisposable
     /// </returns>
     public Task<CacheGetResponse> GetAsync(string cacheName, byte[] key);
 
+    /// <inheritdoc cref="GetAsync(string, byte[])"/>
+    public Task<CacheGetResponse> GetAsync(string cacheName, string key);
+
     /// <summary>
     /// Remove the key from the cache.
     /// </summary>
@@ -183,20 +195,8 @@ public interface ISimpleCacheClient : IDisposable
     /// </returns>
     public Task<CacheDeleteResponse> DeleteAsync(string cacheName, byte[] key);
 
-    /// <inheritdoc cref="SetAsync(string, byte[], byte[], TimeSpan?)"/>
-    public Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, TimeSpan? ttl = null);
-
-    /// <inheritdoc cref="GetAsync(string, byte[])"/>
-    public Task<CacheGetResponse> GetAsync(string cacheName, string key);
-
     /// <inheritdoc cref="DeleteAsync(string, byte[])"/>
     public Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key);
-
-    /// <inheritdoc cref="SetAsync(string, byte[], byte[], TimeSpan?)"/>
-    public Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, TimeSpan? ttl = null);
-
-    /// <inheritdoc cref="SetAsync(string, byte[], byte[], TimeSpan?)"/>
-    public Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, string value, TimeSpan? ttl = null);
 
     /// <summary>
     /// <para>Sets the value of of the given key and field if the key does not exists in cache</para>
