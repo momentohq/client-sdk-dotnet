@@ -3,11 +3,11 @@ using Momento.Sdk.Auth;
 
 namespace Momento.Sdk.Tests;
 
-[Collection("SimpleCacheClient")]
-public class SimpleCacheDataTest : TestBase
+[Collection("CacheClient")]
+public class CacheDataTest : TestBase
 {
     // Test initialization
-    public SimpleCacheDataTest(SimpleCacheClientFixture fixture) : base(fixture)
+    public CacheDataTest(CacheClientFixture fixture) : base(fixture)
     {
     }
 
@@ -267,15 +267,15 @@ public class SimpleCacheDataTest : TestBase
     {
         // Set without TTL
         string key = Utils.NewGuidString();
-        string orininalValue = Utils.NewGuidString();
-        var setIfNotExistsResponse = await client.SetIfNotExistsAsync(cacheName, key, orininalValue);
+        string originalValue = Utils.NewGuidString();
+        var setIfNotExistsResponse = await client.SetIfNotExistsAsync(cacheName, key, originalValue);
         Assert.True(setIfNotExistsResponse is CacheSetIfNotExistsResponse.Stored, $"Unexpected response: {setIfNotExistsResponse}");
 
         CacheGetResponse response = await client.GetAsync(cacheName, key);
         Assert.True(response is CacheGetResponse.Hit, $"Unexpected response: {response}");
         var goodResponse = (CacheGetResponse.Hit)response;
         string setValue = goodResponse.ValueString;
-        Assert.Equal(orininalValue, setValue);
+        Assert.Equal(originalValue, setValue);
 
         // Set an existing value without TTL
         string newValue = Utils.NewGuidString();
@@ -286,7 +286,7 @@ public class SimpleCacheDataTest : TestBase
         Assert.True(response is CacheGetResponse.Hit, $"Unexpected response: {response}");
         goodResponse = (CacheGetResponse.Hit)response;
         setValue = goodResponse.ValueString;
-        Assert.Equal(orininalValue, setValue);
+        Assert.Equal(originalValue, setValue);
         
         await client.DeleteAsync(cacheName, key);
 
@@ -338,16 +338,16 @@ public class SimpleCacheDataTest : TestBase
     public async Task SetIfNotExistsAsync_KeyIsByteArrayValueIsString_HappyPath()
     {
         // Set without TTL
-        byte[] key = new byte[] { 0x00 };
-        string orininalValue = Utils.NewGuidString();
-        var setIfNotExistsResponse = await client.SetIfNotExistsAsync(cacheName, key, orininalValue);
+        byte[] key = Utils.NewGuidByteArray();
+        string originalValue = Utils.NewGuidString();
+        var setIfNotExistsResponse = await client.SetIfNotExistsAsync(cacheName, key, originalValue);
         Assert.True(setIfNotExistsResponse is CacheSetIfNotExistsResponse.Stored, $"Unexpected response: {setIfNotExistsResponse}");
 
         CacheGetResponse response = await client.GetAsync(cacheName, key);
         Assert.True(response is CacheGetResponse.Hit, $"Unexpected response: {response}");
         var goodResponse = (CacheGetResponse.Hit)response;
         string setValue = goodResponse.ValueString;
-        Assert.Equal(orininalValue, setValue);
+        Assert.Equal(originalValue, setValue);
 
         // Set an existing value without TTL
         string newValue = Utils.NewGuidString();
@@ -358,12 +358,12 @@ public class SimpleCacheDataTest : TestBase
         Assert.True(response is CacheGetResponse.Hit, $"Unexpected response: {response}");
         goodResponse = (CacheGetResponse.Hit)response;
         setValue = goodResponse.ValueString;
-        Assert.Equal(orininalValue, setValue);
+        Assert.Equal(originalValue, setValue);
 
         await client.DeleteAsync(cacheName, key);
 
         // Set with TTL
-        key = new byte[] { 0x01 };
+        key = Utils.NewGuidByteArray();
         var value = Utils.NewGuidString();
         setIfNotExistsResponse = await client.SetIfNotExistsAsync(cacheName, key, value, ttl: TimeSpan.FromSeconds(15));
         Assert.True(setIfNotExistsResponse is CacheSetIfNotExistsResponse.Stored, $"Unexpected response: {setIfNotExistsResponse}");
@@ -411,15 +411,15 @@ public class SimpleCacheDataTest : TestBase
     {
         // Set without TTL
         string key =  Utils.NewGuidString();
-        byte[] orininalValue = new byte[] { 0x00 };
-        var setIfNotExistsResponse = await client.SetIfNotExistsAsync(cacheName, key, orininalValue);
+        byte[] originalValue = new byte[] { 0x00 };
+        var setIfNotExistsResponse = await client.SetIfNotExistsAsync(cacheName, key, originalValue);
         Assert.True(setIfNotExistsResponse is CacheSetIfNotExistsResponse.Stored, $"Unexpected response: {setIfNotExistsResponse}");
 
         CacheGetResponse response = await client.GetAsync(cacheName, key);
         Assert.True(response is CacheGetResponse.Hit, $"Unexpected response: {response}");
         var goodResponse = (CacheGetResponse.Hit)response;
         byte[] setValue = goodResponse.ValueByteArray;
-        Assert.Equal(orininalValue, setValue);
+        Assert.Equal(originalValue, setValue);
 
         // Set an existing value without TTL
         byte[] newValue = new byte[] { 0x01 };
@@ -430,7 +430,7 @@ public class SimpleCacheDataTest : TestBase
         Assert.True(response is CacheGetResponse.Hit, $"Unexpected response: {response}");
         goodResponse = (CacheGetResponse.Hit)response;
         setValue = goodResponse.ValueByteArray;
-        Assert.Equal(orininalValue, setValue);
+        Assert.Equal(originalValue, setValue);
 
         await client.DeleteAsync(cacheName, key);
 
@@ -483,15 +483,15 @@ public class SimpleCacheDataTest : TestBase
     {
         // Set without TTL
         byte[] key = new byte[] { 0x00 };
-        byte[] orininalValue = new byte[] { 0x00 };
-        var setIfNotExistsResponse = await client.SetIfNotExistsAsync(cacheName, key, orininalValue);
+        byte[] originalValue = new byte[] { 0x00 };
+        var setIfNotExistsResponse = await client.SetIfNotExistsAsync(cacheName, key, originalValue);
         Assert.True(setIfNotExistsResponse is CacheSetIfNotExistsResponse.Stored, $"Unexpected response: {setIfNotExistsResponse}");
 
         CacheGetResponse response = await client.GetAsync(cacheName, key);
         Assert.True(response is CacheGetResponse.Hit, $"Unexpected response: {response}");
         var goodResponse = (CacheGetResponse.Hit)response;
         byte[] setValue = goodResponse.ValueByteArray;
-        Assert.Equal(orininalValue, setValue);
+        Assert.Equal(originalValue, setValue);
 
         // Set an existing value without TTL
         byte[] newValue = new byte[] { 0x01 };
@@ -502,7 +502,7 @@ public class SimpleCacheDataTest : TestBase
         Assert.True(response is CacheGetResponse.Hit, $"Unexpected response: {response}");
         goodResponse = (CacheGetResponse.Hit)response;
         setValue = goodResponse.ValueByteArray;
-        Assert.Equal(orininalValue, setValue);
+        Assert.Equal(originalValue, setValue);
 
         // Set with TTL
         key = new byte[] { 0x01 };

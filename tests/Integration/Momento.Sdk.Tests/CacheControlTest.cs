@@ -5,15 +5,15 @@ using Momento.Sdk.Auth;
 
 namespace Momento.Sdk.Tests;
 
-[Collection("SimpleCacheClient")]
-public class SimpleCacheControlTest : TestBase
+[Collection("CacheClient")]
+public class CacheControlTest : TestBase
 {
-    public SimpleCacheControlTest(SimpleCacheClientFixture fixture) : base(fixture)
+    public CacheControlTest(CacheClientFixture fixture) : base(fixture)
     {
     }
 
     [Fact]
-    public void SimpleCacheClientConstructor_BadJWT_InvalidJwtException()
+    public void CacheClientConstructor_BadJWT_InvalidJwtException()
     {
         Environment.SetEnvironmentVariable("BAD_MOMENTO_AUTH_TOKEN", "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs");
         Assert.Throws<InvalidArgumentException>(
@@ -23,7 +23,7 @@ public class SimpleCacheControlTest : TestBase
     }
 
     [Fact]
-    public void SimpleCacheClientConstructor_NullJWT_InvalidJwtException()
+    public void CacheClientConstructor_NullJWT_InvalidJwtException()
     {
         Environment.SetEnvironmentVariable("BAD_MOMENTO_AUTH_TOKEN", null);
         Assert.Throws<InvalidArgumentException>(
