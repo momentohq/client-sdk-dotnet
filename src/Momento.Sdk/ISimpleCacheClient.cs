@@ -6,7 +6,7 @@ namespace Momento.Sdk
     ///
     /// Includes control operations and data operations.
     /// </summary>
-    [Obsolete("This interface has been renamed to ICacheClient, and is now deprecated")]
+    [Obsolete("This interface has been renamed to ICacheClient and is now deprecated")]
     public interface ISimpleCacheClient : ICacheClient
     {
     }
