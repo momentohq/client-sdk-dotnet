@@ -7,10 +7,10 @@ using Momento.Sdk.Tests;
 
 namespace Momento.Sdk.Tests;
 
-[Collection("SimpleCacheClient")]
+[Collection("CacheClient")]
 public class DictionaryTest : TestBase
 {
-    public DictionaryTest(SimpleCacheClientFixture fixture) : base(fixture)
+    public DictionaryTest(CacheClientFixture fixture) : base(fixture)
     {
     }
 

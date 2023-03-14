@@ -14,11 +14,11 @@ using Momento.Sdk.Responses;
 namespace Momento.Sdk;
 
 /// <summary>
-/// Client to perform control and data operations against the Simple Cache Service.
+/// Client to perform operations against Momento Serverless Cache.
 /// 
-/// See <see href="https://github.com/momentohq/client-sdk-examples/tree/main/dotnet/MomentoExamples">the examples repo</see> for complete workflows.
+/// See <see href="https://github.com/momentohq/client-sdk-dotnet/tree/main/examples">the examples dir</see> for complete workflows.
 /// </summary>
-public class SimpleCacheClient : ISimpleCacheClient
+public class CacheClient : ICacheClient
 {
     private readonly ScsControlClient controlClient;
     private readonly List<ScsDataClient> dataClients;
@@ -37,17 +37,17 @@ public class SimpleCacheClient : ISimpleCacheClient
 
 
     /// <summary>
-    /// Client to perform operations against the Simple Cache Service.
+    /// Client to perform operations against Momento Serverless Cache.
     /// </summary>
     /// <param name="config">Configuration to use for the transport, retries, middlewares. See <see cref="Configurations"/> for out-of-the-box configuration choices, eg <see cref="Configurations.Laptop.Latest"/></param>
     /// <param name="authProvider">Momento auth provider.</param>
     /// <param name="defaultTtl">Default time to live for the item in cache.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="defaultTtl"/> is zero or negative.</exception>
-    public SimpleCacheClient(IConfiguration config, ICredentialProvider authProvider, TimeSpan defaultTtl)
+    public CacheClient(IConfiguration config, ICredentialProvider authProvider, TimeSpan defaultTtl)
     {
         this.config = config;
         var _loggerFactory = config.LoggerFactory;
-        this._logger = _loggerFactory.CreateLogger<SimpleCacheClient>();
+        this._logger = _loggerFactory.CreateLogger<CacheClient>();
         Utils.ArgumentStrictlyPositive(defaultTtl, "defaultTtl");
         this.controlClient = new(_loggerFactory, authProvider.AuthToken, authProvider.ControlEndpoint);
         this.dataClients = new List<ScsDataClient>();
