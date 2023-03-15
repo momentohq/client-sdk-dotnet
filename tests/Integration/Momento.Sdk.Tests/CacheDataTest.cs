@@ -1,5 +1,8 @@
-﻿using System.Threading.Tasks;
-using Momento.Sdk.Auth;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Momento.Sdk.Internal.ExtensionMethods;
 
 namespace Momento.Sdk.Tests;
 
@@ -10,6 +13,160 @@ public class CacheDataTest : TestBase
     public CacheDataTest(CacheClientFixture fixture) : base(fixture)
     {
     }
+
+
+    [Theory]
+    [InlineData(null, new byte[] { 0x00 })]
+    [InlineData("cache", null)]
+    public async Task KeyExistsAsync_NullChecksByteArray_IsError(string cacheName, byte[] key)
+    {
+        CacheKeyExistsResponse response = await client.KeyExistsAsync(cacheName, key);
+        Assert.True(response is CacheKeyExistsResponse.Error, $"Unexpected response: {response}");
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheKeyExistsResponse.Error)response).ErrorCode);
+    }
+
+
+    [Theory]
+    [InlineData(null, "foo")]
+    [InlineData("cache", null)]
+    public async Task KeyExistsAsync_NullChecksString_IsError(string cacheName, string key)
+    {
+        CacheKeyExistsResponse response = await client.KeyExistsAsync(cacheName, key);
+        Assert.True(response is CacheKeyExistsResponse.Error, $"Unexpected response: {response}");
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheKeyExistsResponse.Error)response).ErrorCode);
+    }
+
+    [Fact]
+    public async Task KeyExistsAsync_ByteArray()
+    {
+        byte[] key = Utils.NewGuidByteArray();
+        byte[] value = Utils.NewGuidByteArray();
+        await client.SetAsync(cacheName, key, value);
+        CacheKeyExistsResponse response = await client.KeyExistsAsync(cacheName, key);
+        Assert.True(response is CacheKeyExistsResponse.Success, $"Unexpected response: {response}");
+        var goodResponse = (CacheKeyExistsResponse.Success)response;
+        bool exists = goodResponse.Exists;
+        Assert.True(exists);
+
+        key = Utils.NewGuidByteArray();
+        response = await client.KeyExistsAsync(cacheName, key);
+        Assert.True(response is CacheKeyExistsResponse.Success, $"Unexpected response: {response}");
+        goodResponse = (CacheKeyExistsResponse.Success)response;
+        exists = goodResponse.Exists;
+        Assert.False(exists);
+    }
+
+    [Fact]
+    public async Task KeyExistsAsync_String()
+    {
+        string key = Utils.NewGuidString();
+        string value = Utils.NewGuidString();
+        await client.SetAsync(cacheName, key, value);
+        CacheKeyExistsResponse response = await client.KeyExistsAsync(cacheName, key);
+        Assert.True(response is CacheKeyExistsResponse.Success, $"Unexpected response: {response}");
+        var goodResponse = (CacheKeyExistsResponse.Success)response;
+        bool exists = goodResponse.Exists;
+        Assert.True(exists);
+
+        key = Utils.NewGuidString();
+        response = await client.KeyExistsAsync(cacheName, key);
+        Assert.True(response is CacheKeyExistsResponse.Success, $"Unexpected response: {response}");
+        goodResponse = (CacheKeyExistsResponse.Success)response;
+        exists = goodResponse.Exists;
+        Assert.False(exists);
+    }
+
+    [Fact]
+    public async Task KeysExistAsync_NullChecksByteArray_IsError()
+    {
+        var validKeys = new List<byte[]> { new byte[] { 0x00 } };
+        List<byte[]> nullKeys = null!;
+        var oneNullKey = new List<byte[]> { null! };
+
+        CacheKeysExistResponse response = await client.KeysExistAsync(null!, validKeys);
+        Assert.True(response is CacheKeysExistResponse.Error, $"Unexpected response: {response}");
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheKeysExistResponse.Error)response).ErrorCode);
+        response = await client.KeysExistAsync(cacheName, nullKeys);
+        Assert.True(response is CacheKeysExistResponse.Error, $"Unexpected response: {response}");
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheKeysExistResponse.Error)response).ErrorCode);
+        response = await client.KeysExistAsync(cacheName, oneNullKey);
+        Assert.True(response is CacheKeysExistResponse.Error, $"Unexpected response: {response}");
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheKeysExistResponse.Error)response).ErrorCode);
+    }
+
+    [Fact]
+    public async Task KeysExistAsync_NullChecksString_IsError()
+    {
+        var validKeys = new List<string> { "foo" };
+        List<byte[]> nullKeys = null!;
+        var oneNullKey = new List<string> { null! };
+
+        CacheKeysExistResponse response = await client.KeysExistAsync(null!, validKeys);
+        Assert.True(response is CacheKeysExistResponse.Error, $"Unexpected response: {response}");
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheKeysExistResponse.Error)response).ErrorCode);
+        response = await client.KeysExistAsync(cacheName, nullKeys);
+        Assert.True(response is CacheKeysExistResponse.Error, $"Unexpected response: {response}");
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheKeysExistResponse.Error)response).ErrorCode);
+        response = await client.KeysExistAsync(cacheName, oneNullKey);
+        Assert.True(response is CacheKeysExistResponse.Error, $"Unexpected response: {response}");
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheKeysExistResponse.Error)response).ErrorCode);
+    }
+
+    [Fact]
+    public async Task KeysExistAsync_ByteArray()
+    {
+        byte[] key1 = Encoding.UTF8.GetBytes("foo");
+        byte[] key2 = Encoding.UTF8.GetBytes("bar");
+        byte[] key3 = Encoding.UTF8.GetBytes("baz");
+
+        await client.SetAsync(cacheName, key1, key1);
+        await client.SetAsync(cacheName, key3, key3);
+
+        var keys = new byte[][] { key1, key2, key3 };
+        CacheKeysExistResponse response = await client.KeysExistAsync(cacheName, keys);
+        Assert.True(response is CacheKeysExistResponse.Success, $"Unexpected response: {response}");
+        var goodResponse = (CacheKeysExistResponse.Success)response;
+        Assert.Equal(new List<bool> { true, false, true }, goodResponse.ExistsEnumerable.ToList());
+
+        var keysInADifferentOrder = new byte[][] { key2, key3, key1 };
+        response = await client.KeysExistAsync(cacheName, keysInADifferentOrder);
+        Assert.True(response is CacheKeysExistResponse.Success, $"Unexpected response: {response}");
+        goodResponse = (CacheKeysExistResponse.Success)response;
+        Assert.Equal(new List<bool> { false, true, true }, goodResponse.ExistsEnumerable.ToList());
+    }
+
+    [Fact]
+    public async Task KeysExistAsync_String()
+    {
+        var key1 = "foo";
+        var key2 = "bar";
+        var key3 = "baz";
+
+        await client.SetAsync(cacheName, key1, key1);
+        await client.SetAsync(cacheName, key3, key3);
+
+        var keys = new string[] { key1, key2, key3 };
+        CacheKeysExistResponse response = await client.KeysExistAsync(cacheName, keys);
+        Assert.True(response is CacheKeysExistResponse.Success, $"Unexpected response: {response}");
+        var goodResponse = (CacheKeysExistResponse.Success)response;
+        Assert.Equal(new List<bool> { true, false, true }, goodResponse.ExistsEnumerable.ToList());
+
+        var expectedDict = new Dictionary<string, bool>
+        {
+            [key1] = true,
+            [key2] = false,
+            [key3] = true
+        };
+        Assert.Equal(expectedDict, goodResponse.ExistsDictionary);
+
+        var keysInADifferentOrder = new string[] { key2, key3, key1 };
+        response = await client.KeysExistAsync(cacheName, keysInADifferentOrder);
+        Assert.True(response is CacheKeysExistResponse.Success, $"Unexpected response: {response}");
+        goodResponse = (CacheKeysExistResponse.Success)response;
+        Assert.Equal(new List<bool> { false, true, true }, goodResponse.ExistsEnumerable.ToList());
+        Assert.Equal(expectedDict, goodResponse.ExistsDictionary);
+    }
+
 
     [Theory]
     [InlineData(null, new byte[] { 0x00 }, new byte[] { 0x00 })]
@@ -39,7 +196,7 @@ public class CacheDataTest : TestBase
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, errorResponse.ErrorCode);
     }
 
-    // Tests SetAsyc(cacheName, byte[], byte[]) as well as GetAsync(cacheName, byte[])
+    // Tests SetAsync(cacheName, byte[], byte[]) as well as GetAsync(cacheName, byte[])
     [Fact]
     public async Task SetAsync_KeyIsByteArrayValueIsByteArray_HappyPath()
     {

@@ -105,6 +105,62 @@ public interface ICacheClient : IDisposable
     /// </returns>
     public Task<ListCachesResponse> ListCachesAsync();
 
+
+    /// <summary>
+    /// Check to see if a key exists in the cache
+    /// </summary>
+    /// <param name="cacheName"></param>
+    /// <param name="key"></param>
+    /// <returns>
+    /// Task representing the result of the key exists operation.  The response
+    /// object is resolved to a type-safe object of one of the following subtypes:
+    /// the following subtypes:
+    /// <list type="bullet">
+    /// <item><description>CacheKeyExistsResponse.Success</description></item>
+    /// <item><description>CacheKeyExistsResponse.Error</description></item>
+    /// </list>
+    /// Pattern matching can be used to operate on the appropriate subtype.
+    /// For example:
+    /// <code>
+    /// if (response is CacheKeyExistsResponse.Error errorResponse)
+    /// {
+    ///     // handle error as appropriate
+    /// }
+    /// </code>
+    /// </returns>
+    public Task<CacheKeyExistsResponse> KeyExistsAsync(string cacheName, byte[] key);
+
+    /// <inheritdoc cref="KeyExistsAsync(string, byte[])"/>
+    public Task<CacheKeyExistsResponse> KeyExistsAsync(string cacheName, string key);
+
+    /// <summary>
+    /// Check to see if multiple keys exist in the cache
+    /// </summary>
+    /// <param name="cacheName"></param>
+    /// <param name="keys"></param>
+    /// <returns>
+    /// Task representing the result of the keys exist operation.  The response
+    /// object is resolved to a type-safe object of one of the following subtypes:
+    /// the following subtypes:
+    /// <list type="bullet">
+    /// <item><description>CacheKeysExistResponse.Success</description></item>
+    /// <item><description>CacheKeysExistResponse.Error</description></item>
+    /// </list>
+    /// Pattern matching can be used to operate on the appropriate subtype.
+    /// For example:
+    /// <code>
+    /// if (response is CacheKeysExistResponse.Error errorResponse)
+    /// {
+    ///     // handle error as appropriate
+    /// }
+    /// </code>
+    /// </returns>
+    public Task<CacheKeysExistResponse> KeysExistAsync(string cacheName, IEnumerable<byte[]> keys);
+
+    /// <inheritdoc cref="KeysExistAsync(string, IEnumerable{byte[]})"/>
+    public Task<CacheKeysExistResponse> KeysExistAsync(string cacheName, IEnumerable<string> keys);
+
+
     /// <summary>
     /// Set the value in cache with a given time to live (TTL) seconds.
     /// </summary>

@@ -11,3 +11,9 @@ To run integration tests:
 ```
 dotnet test tests/Integration/Momento.Sdk.Tests
 ```
+
+To run specific tests:
+
+```
+dotnet test --filter "FullyQualifiedName~CacheDataTest"
+```

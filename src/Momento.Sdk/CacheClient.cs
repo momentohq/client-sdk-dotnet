@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
@@ -80,6 +82,69 @@ public class CacheClient : ICacheClient
     {
         return await this.controlClient.ListCachesAsync();
     }
+
+    /// <inheritdoc />
+    async Task<CacheKeyExistsResponse> ICacheClient.KeyExistsAsync(string cacheName, byte[] key)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(key, nameof(key));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheKeyExistsResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        return await this.DataClient.KeyExistsAsync(cacheName, key);
+    }
+
+    /// <inheritdoc />
+    async Task<CacheKeyExistsResponse> ICacheClient.KeyExistsAsync(string cacheName, string key)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(key, nameof(key));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheKeyExistsResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        return await this.DataClient.KeyExistsAsync(cacheName, key);
+    }
+
+    /// <inheritdoc />
+    async Task<CacheKeysExistResponse> ICacheClient.KeysExistAsync(string cacheName, IEnumerable<byte[]> keys)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(keys, nameof(keys));
+            Utils.ElementsNotNull(keys, nameof(keys));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheKeysExistResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        return await this.DataClient.KeysExistAsync(cacheName, keys);
+    }
+
+    /// <inheritdoc />
+    async Task<CacheKeysExistResponse> ICacheClient.KeysExistAsync(string cacheName, IEnumerable<string> keys)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(keys, nameof(keys));
+            Utils.ElementsNotNull(keys, nameof(keys));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheKeysExistResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        return await this.DataClient.KeysExistAsync(cacheName, keys);
+    }
+
 
     /// <inheritdoc />
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, TimeSpan? ttl = null)
