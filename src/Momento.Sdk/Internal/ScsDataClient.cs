@@ -76,6 +76,26 @@ internal sealed class ScsDataClient : ScsDataClientBase
         this._logger = config.LoggerFactory.CreateLogger<ScsDataClient>();
     }
 
+    public async Task<CacheKeyExistsResponse> KeyExistsAsync(string cacheName, byte[] key)
+    {
+        return await this.SendKeyExistsAsync(cacheName, key: key.ToByteString());
+    }
+
+    public async Task<CacheKeyExistsResponse> KeyExistsAsync(string cacheName, string key)
+    {
+        return await this.SendKeyExistsAsync(cacheName, key: key.ToByteString());
+    }
+
+    public async Task<CacheKeysExistResponse> KeysExistAsync(string cacheName, IEnumerable<byte[]> keys)
+    {
+        return await this.SendKeysExistAsync(cacheName, keys: keys.ToEnumerableByteString());
+    }
+
+    public async Task<CacheKeysExistResponse> KeysExistAsync(string cacheName, IEnumerable<string> keys)
+    {
+        return await this.SendKeysExistAsync(cacheName, keys: keys.ToEnumerableByteString());
+    }
+
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, TimeSpan? ttl = null)
     {
         return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(),  ttl: ttl);
@@ -346,6 +366,45 @@ internal sealed class ScsDataClient : ScsDataClientBase
     /**
      * "Send" methods
      */
+    const string REQUEST_TYPE_KEY_EXISTS = "KEY_EXISTS";
+    private async Task<CacheKeyExistsResponse> SendKeyExistsAsync(string cacheName, ByteString key)
+    {
+        _KeysExistRequest request = new _KeysExistRequest();
+        request.CacheKeys.Add(key);
+        var metadata = MetadataWithCache(cacheName);
+        _KeysExistResponse response;
+        try
+        {
+            this._logger.LogTraceExecutingRequest(REQUEST_TYPE_KEY_EXISTS, cacheName, key, null, null);
+            response = await this.grpcManager.Client.KeysExistAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+        }
+        catch (Exception e)
+        {
+            return this._logger.LogTraceRequestError(REQUEST_TYPE_KEY_EXISTS, cacheName, key, null, null, new CacheKeyExistsResponse.Error(_exceptionMapper.Convert(e, metadata)));
+        }
+
+        return this._logger.LogTraceRequestSuccess(REQUEST_TYPE_KEY_EXISTS, cacheName, key, null, null, new CacheKeyExistsResponse.Success(response.Exists[0]));
+    }
+
+    const string REQUEST_TYPE_KEYS_EXIST = "KEYS_EXIST";
+    private async Task<CacheKeysExistResponse> SendKeysExistAsync(string cacheName, IEnumerable<ByteString> keys)
+    {
+        _KeysExistRequest request = new _KeysExistRequest();
+        request.CacheKeys.Add(keys);
+        var metadata = MetadataWithCache(cacheName);
+        _KeysExistResponse response;
+        try
+        {
+            this._logger.LogTraceExecutingRequest(REQUEST_TYPE_KEYS_EXIST, cacheName, keys.ToString().ToByteString(), null, null);
+            response = await this.grpcManager.Client.KeysExistAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+        }
+        catch (Exception e)
+        {
+            return this._logger.LogTraceRequestError(REQUEST_TYPE_KEYS_EXIST, cacheName, keys.ToString().ToByteString(), null, null, new CacheKeysExistResponse.Error(_exceptionMapper.Convert(e, metadata)));
+        }
+
+        return this._logger.LogTraceRequestSuccess(REQUEST_TYPE_KEYS_EXIST, cacheName, keys.ToString().ToByteString(), null, null, new CacheKeysExistResponse.Success(keys, response));
+    }
 
     const string REQUEST_TYPE_SET = "SET";
     private async Task<CacheSetResponse> SendSetAsync(string cacheName, ByteString key, ByteString value, TimeSpan? ttl = null)
@@ -369,7 +428,6 @@ internal sealed class ScsDataClient : ScsDataClientBase
     const string REQUEST_TYPE_GET = "GET";
     private async Task<CacheGetResponse> SendGetAsync(string cacheName, ByteString key)
     {
-
         _GetRequest request = new _GetRequest() { CacheKey = key };
         _GetResponse response;
         var metadata = MetadataWithCache(cacheName);

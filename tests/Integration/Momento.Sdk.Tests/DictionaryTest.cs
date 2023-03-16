@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Requests;
-using Momento.Sdk.Responses;
-using Momento.Sdk.Tests;
 
 namespace Momento.Sdk.Tests;
 
