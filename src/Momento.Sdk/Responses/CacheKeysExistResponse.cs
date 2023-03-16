@@ -1,4 +1,6 @@
-﻿namespace Momento.Sdk.Responses;
+﻿using System;
+
+namespace Momento.Sdk.Responses;
 
 using System.Collections.Generic;
 using System.Linq;
@@ -65,7 +67,7 @@ public abstract class CacheKeysExistResponse
                 var i = 0;
                 foreach (var exists in ExistsEnumerable)
                 {
-                    result[keys[i].ToStringUtf8()] = exists;
+                    result[this.keys[i].ToStringUtf8()] = exists;
                     i++;
                 }
                 return result;

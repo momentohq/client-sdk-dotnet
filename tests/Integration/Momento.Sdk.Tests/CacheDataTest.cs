@@ -138,9 +138,9 @@ public class CacheDataTest : TestBase
     [Fact]
     public async Task KeysExistAsync_String()
     {
-        var key1 = "foo";
-        var key2 = "bar";
-        var key3 = "baz";
+        var key1 = Utils.NewGuidString();
+        var key2 = Utils.NewGuidString();
+        var key3 = Utils.NewGuidString();
 
         await client.SetAsync(cacheName, key1, key1);
         await client.SetAsync(cacheName, key3, key3);
