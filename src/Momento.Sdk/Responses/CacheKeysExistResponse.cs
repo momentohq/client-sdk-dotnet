@@ -50,9 +50,16 @@ public abstract class CacheKeysExistResponse
         /// A dictionary whose keys are the cache keys from the request, and whose values are
         ///  True if the specified key exists in the cache, false otherwise.
         /// </summary>
-        public IDictionary<string, bool> ExistsDictionary
+        protected readonly Lazy<IDictionary<string, bool>> _existsDictionary;
+        public IDictionary<string, bool> ExistsDictionary { get => _existsDictionary.Value; }
+
+        /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
+        public Success(IEnumerable<ByteString> keys, _KeysExistResponse response)
         {
-            get {
+            this.keys = keys.ToList();
+            ExistsEnumerable = response.Exists;
+            _existsDictionary = new(() =>
+            {
                 Dictionary<string, bool> result = new();
 
                 var i = 0;
@@ -62,15 +69,7 @@ public abstract class CacheKeysExistResponse
                     i++;
                 }
                 return result;
-            }
-        }
-
-        /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
-        public Success(IEnumerable<ByteString> keys, _KeysExistResponse response)
-        {
-            this.keys = keys.ToList();
-            ExistsEnumerable = response.Exists;
-
+            });
         }
 
         /// <inheritdoc />
