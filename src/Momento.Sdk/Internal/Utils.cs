@@ -12,18 +12,6 @@ namespace Momento.Sdk.Internal;
 public static class Utils
 {
     /// <summary>
-    /// Make a globally unique ID as a string.
-    /// </summary>
-    /// <returns>A GUID as a string.</returns>
-    public static string NewGuidString() => Guid.NewGuid().ToString();
-
-    /// <summary>
-    /// Make a globally unique ID as a byte array.
-    /// </summary>
-    /// <returns>A GUID as a byte array.</returns>
-    public static byte[] NewGuidByteArray() => Guid.NewGuid().ToByteArray();
-
-    /// <summary>
     /// Convert a UTF-8 encoded string to a byte array.
     /// </summary>
     /// <param name="s">The string to convert.</param>

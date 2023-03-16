@@ -791,8 +791,8 @@ public class DictionaryTest : TestBase
 
         var otherDictionary = hit.ValueDictionaryStringByteArray;
         Assert.Equal(2, otherDictionary.Count);
-        Assert.Equal(otherDictionary[field1], Utils.Utf8ToByteArray(value1));
-        Assert.Equal(otherDictionary[field2], Utils.Utf8ToByteArray(value2));
+        Assert.Equal(otherDictionary[field1], Internal.Utils.Utf8ToByteArray(value1));
+        Assert.Equal(otherDictionary[field2], Internal.Utils.Utf8ToByteArray(value2));
     }
 
     [Fact]
