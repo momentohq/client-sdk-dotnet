@@ -61,7 +61,7 @@ public class CacheControlTest : TestBase
     [Fact]
     public async Task FlushCacheAsync_HappyPath()
     {
-        string cacheName = Utils.NewGuidString();
+        string cacheName = Utils.TestCacheName();
         await client.CreateCacheAsync(cacheName);
 
         try
@@ -112,7 +112,7 @@ public class CacheControlTest : TestBase
     public async Task ListCachesAsync_OneCache_HappyPath()
     {
         // Create cache
-        string cacheName = Utils.NewGuidString();
+        string cacheName = Utils.TestCacheName();
         await client.CreateCacheAsync(cacheName);
 
         // Test cache exists
@@ -140,7 +140,7 @@ public class CacheControlTest : TestBase
         // TODO: increase limit after pagination is enabled
         foreach (int val in Enumerable.Range(1, 3))
         {
-            String cacheName = Utils.NewGuidString();
+            String cacheName = Utils.TestCacheName();
             cacheNames.Add(cacheName);
             await client.CreateCacheAsync(cacheName);
         }
