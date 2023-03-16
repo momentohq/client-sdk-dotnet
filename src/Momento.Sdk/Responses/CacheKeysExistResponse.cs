@@ -48,11 +48,11 @@ public abstract class CacheKeysExistResponse
         /// </summary>
         public IEnumerable<bool> ExistsEnumerable { get; private set; }
 
+        protected readonly Lazy<IDictionary<string, bool>> _existsDictionary;
         /// <summary>
         /// A dictionary whose keys are the cache keys from the request, and whose values are
         ///  True if the specified key exists in the cache, false otherwise.
         /// </summary>
-        protected readonly Lazy<IDictionary<string, bool>> _existsDictionary;
         public IDictionary<string, bool> ExistsDictionary { get => _existsDictionary.Value; }
 
         /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
