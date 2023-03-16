@@ -444,7 +444,7 @@ public class CacheDataTest : TestBase
         goodResponse = (CacheGetResponse.Hit)response;
         setValue = goodResponse.ValueString;
         Assert.Equal(originalValue, setValue);
-        
+
         await client.DeleteAsync(cacheName, key);
 
         // Set with TTL
@@ -567,7 +567,7 @@ public class CacheDataTest : TestBase
     public async Task SetIfNotExistsAsync_KeyIsStringValueIsByteArray_HappyPath()
     {
         // Set without TTL
-        string key =  Utils.NewGuidString();
+        string key = Utils.NewGuidString();
         byte[] originalValue = new byte[] { 0x00 };
         var setIfNotExistsResponse = await client.SetIfNotExistsAsync(cacheName, key, originalValue);
         Assert.True(setIfNotExistsResponse is CacheSetIfNotExistsResponse.Stored, $"Unexpected response: {setIfNotExistsResponse}");
@@ -593,7 +593,7 @@ public class CacheDataTest : TestBase
 
         // Set with TTL
         key = Utils.NewGuidString();
-        byte[] value =  new byte[] { 0x00 };
+        byte[] value = new byte[] { 0x00 };
         setIfNotExistsResponse = await client.SetIfNotExistsAsync(cacheName, key, value, ttl: TimeSpan.FromSeconds(15));
         Assert.True(setIfNotExistsResponse is CacheSetIfNotExistsResponse.Stored, $"Unexpected response: {setIfNotExistsResponse}");
 
@@ -707,7 +707,7 @@ public class CacheDataTest : TestBase
     public async Task IncrementAsync_KeyIsString_HappyPath()
     {
         // Key does not exists; Set without TTL and default amount
-        string key =  Utils.NewGuidString();
+        string key = Utils.NewGuidString();
         var incrementResponse = await client.IncrementAsync(cacheName, key);
         Assert.True(incrementResponse is CacheIncrementResponse.Success, $"Unexpected response: {incrementResponse}");
         var response = await client.GetAsync(cacheName, key);

@@ -10,7 +10,7 @@ using Momento.Sdk.Internal;
 public class EnvMomentoTokenProvider : ICredentialProvider
 {
     private readonly string envVarName;
-    
+
     /// <inheritdoc />
     public string AuthToken { get; private set; }
     /// <inheritdoc />
@@ -25,7 +25,7 @@ public class EnvMomentoTokenProvider : ICredentialProvider
     public EnvMomentoTokenProvider(string name)
     {
         this.envVarName = name;
-        
+
         AuthToken = Environment.GetEnvironmentVariable(name);
         if (String.IsNullOrEmpty(AuthToken))
         {

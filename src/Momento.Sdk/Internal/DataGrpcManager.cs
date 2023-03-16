@@ -256,7 +256,7 @@ public class DataGrpcManager : IDisposable
                 _logger.LogWarning("Failed to eagerly connect to the server; continuing with execution in case failure is recoverable later.");
             }
         }
-        
+
         Client = new DataClientWithMiddleware(client, middlewares);
     }
 

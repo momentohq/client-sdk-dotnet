@@ -19,7 +19,7 @@ public class CacheEagerConnectionTest
     });
     private readonly TimeSpan defaultTtl = TimeSpan.FromMinutes(1);
     private readonly ICredentialProvider authProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
-    
+
     [Fact]
     public void CacheClientConstructor_LazyConnection()
     {
@@ -27,7 +27,7 @@ public class CacheEagerConnectionTest
         // just validating that we can construct the client
         var client = new CacheClient(config, authProvider, defaultTtl);
     }
-    
+
     [Fact]
     public void CacheClientConstructor_EagerConnection_Success()
     {
@@ -36,8 +36,8 @@ public class CacheEagerConnectionTest
         // just validating that we can construct the client when the eager connection is successful
         var client = new CacheClient(config, authProvider, defaultTtl);
     }
-    
-    
+
+
     [Fact]
     public void CacheClientConstructor_EagerConnection_BadEndpoint()
     {
