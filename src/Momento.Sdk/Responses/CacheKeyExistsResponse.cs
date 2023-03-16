@@ -32,7 +32,8 @@ public abstract class CacheKeyExistsResponse
 {
 
     /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
-    public class Success : CacheKeyExistsResponse {
+    public class Success : CacheKeyExistsResponse
+    {
         /// <summary>
         /// True if the specified key exists in the cache, false otherwise.
         /// </summary>

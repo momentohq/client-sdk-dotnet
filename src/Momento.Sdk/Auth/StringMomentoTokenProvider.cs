@@ -31,7 +31,7 @@ public class StringMomentoTokenProvider : ICredentialProvider
         ControlEndpoint = claims.ControlEndpoint;
         CacheEndpoint = claims.CacheEndpoint;
     }
-    
+
     /// <inheritdoc />
     public ICredentialProvider WithCacheEndpoint(string cacheEndpoint)
     {

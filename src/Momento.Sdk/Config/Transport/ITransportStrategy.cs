@@ -13,7 +13,7 @@ public interface ITransportStrategy
     /// allow onto the wire at a given time.
     /// </summary>
     public int MaxConcurrentRequests { get; }
-    
+
     /// <summary>
     /// If null, the client will only attempt to connect to the server lazily when the first request is executed.
     /// If provided, the client will attempt to connect to the server immediately upon construction; if the connection
@@ -21,7 +21,7 @@ public interface ITransportStrategy
     /// and proceed with execution so that the application doesn't hang.
     /// </summary>
     public TimeSpan? EagerConnectionTimeout { get; }
-    
+
     /// <summary>
     /// Configures the low-level gRPC settings for the Momento client's communication
     /// with the Momento server.

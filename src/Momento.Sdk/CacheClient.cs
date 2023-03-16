@@ -167,7 +167,7 @@ public class CacheClient : ICacheClient
         return await this.DataClient.SetAsync(cacheName, key, value, ttl);
     }
 
-     /// <inheritdoc />
+    /// <inheritdoc />
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, TimeSpan? ttl = null)
     {
         try
@@ -211,7 +211,7 @@ public class CacheClient : ICacheClient
         return await this.DataClient.SetAsync(cacheName, key, value, ttl);
     }
 
-   
+
     /// <inheritdoc />
     public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
     {

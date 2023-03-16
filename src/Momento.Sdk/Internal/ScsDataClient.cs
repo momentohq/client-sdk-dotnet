@@ -98,12 +98,12 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, TimeSpan? ttl = null)
     {
-        return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(),  ttl: ttl);
+        return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttl: ttl);
     }
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, TimeSpan? ttl = null)
     {
-        return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(),  ttl: ttl);
+        return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttl: ttl);
     }
 
     public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, TimeSpan? ttl = null)

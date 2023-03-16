@@ -22,7 +22,7 @@ public class DictionaryTest : TestBase
         Assert.True(response is CacheDictionaryGetFieldResponse.Error, $"Unexpected response: {response}");
         var errResponse = (CacheDictionaryGetFieldResponse.Error)response;
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheDictionaryGetFieldResponse.Error)response).ErrorCode);
-        Assert.Equal(field ?? new byte[] {}, ((CacheDictionaryGetFieldResponse.Error)response).FieldByteArray);
+        Assert.Equal(field ?? new byte[] { }, ((CacheDictionaryGetFieldResponse.Error)response).FieldByteArray);
     }
 
     [Theory]

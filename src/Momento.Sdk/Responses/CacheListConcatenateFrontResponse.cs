@@ -42,7 +42,7 @@ public abstract class CacheListConcatenateFrontResponse
         /// 
         /// </summary>
         /// <param name="response">The cache response</param>
-	public Success(_ListConcatenateFrontResponse response)
+        public Success(_ListConcatenateFrontResponse response)
         {
             ListLength = checked((int)response.ListLength);
         }
