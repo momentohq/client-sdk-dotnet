@@ -76,12 +76,47 @@ internal sealed class ScsDataClient : ScsDataClientBase
         this._logger = config.LoggerFactory.CreateLogger<ScsDataClient>();
     }
 
+    public async Task<CacheKeyExistsResponse> KeyExistsAsync(string cacheName, byte[] key)
+    {
+        return await this.SendKeyExistsAsync(cacheName, key: key.ToByteString());
+    }
+
+    public async Task<CacheKeyExistsResponse> KeyExistsAsync(string cacheName, string key)
+    {
+        return await this.SendKeyExistsAsync(cacheName, key: key.ToByteString());
+    }
+
+    public async Task<CacheKeysExistResponse> KeysExistAsync(string cacheName, IEnumerable<byte[]> keys)
+    {
+        return await this.SendKeysExistAsync(cacheName, keys: keys.ToEnumerableByteString());
+    }
+
+    public async Task<CacheKeysExistResponse> KeysExistAsync(string cacheName, IEnumerable<string> keys)
+    {
+        return await this.SendKeysExistAsync(cacheName, keys: keys.ToEnumerableByteString());
+    }
+
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, TimeSpan? ttl = null)
     {
-        return await this.SendSetAsync(cacheName, value: value.ToByteString(), key: key.ToByteString(), ttl: ttl);
+        return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttl: ttl);
+    }
+
+    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, TimeSpan? ttl = null)
+    {
+        return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttl: ttl);
+    }
+
+    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, TimeSpan? ttl = null)
+    {
+        return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttl: ttl);
     }
 
     public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
+    {
+        return await this.SendGetAsync(cacheName, key.ToByteString());
+    }
+
+    public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
     {
         return await this.SendGetAsync(cacheName, key.ToByteString());
     }
@@ -91,24 +126,39 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return await this.SendDeleteAsync(cacheName, key.ToByteString());
     }
 
-    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, string value, TimeSpan? ttl = null)
-    {
-        return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttl: ttl);
-    }
-
-    public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
-    {
-        return await this.SendGetAsync(cacheName, key.ToByteString());
-    }
-
     public async Task<CacheDeleteResponse> DeleteAsync(string cacheName, string key)
     {
         return await this.SendDeleteAsync(cacheName, key.ToByteString());
     }
 
-    public async Task<CacheSetResponse> SetAsync(string cacheName, string key, byte[] value, TimeSpan? ttl = null)
+    public async Task<CacheIncrementResponse> IncrementAsync(string cacheName, string field, long amount = 1, TimeSpan? ttl = null)
     {
-        return await this.SendSetAsync(cacheName, value: value.ToByteString(), key: key.ToByteString(), ttl: ttl);
+        return await SendIncrementAsync(cacheName, field.ToByteString(), amount, ttl);
+    }
+
+    public async Task<CacheIncrementResponse> IncrementAsync(string cacheName, byte[] field, long amount = 1, TimeSpan? ttl = null)
+    {
+        return await SendIncrementAsync(cacheName, field.ToByteString(), amount, ttl);
+    }
+
+    public async Task<CacheSetIfNotExistsResponse> SetIfNotExistsAsync(string cacheName, string key, string value, TimeSpan? ttl = null)
+    {
+        return await this.SendSetIfNotExistsAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttl: ttl);
+    }
+
+    public async Task<CacheSetIfNotExistsResponse> SetIfNotExistsAsync(string cacheName, string key, byte[] value, TimeSpan? ttl = null)
+    {
+        return await this.SendSetIfNotExistsAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttl: ttl);
+    }
+
+    public async Task<CacheSetIfNotExistsResponse> SetIfNotExistsAsync(string cacheName, byte[] key, string value, TimeSpan? ttl = null)
+    {
+        return await this.SendSetIfNotExistsAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttl: ttl);
+    }
+
+    public async Task<CacheSetIfNotExistsResponse> SetIfNotExistsAsync(string cacheName, byte[] key, byte[] value, TimeSpan? ttl = null)
+    {
+        return await SendSetIfNotExistsAsync(cacheName, key.ToByteString(), value.ToByteString(), ttl);
     }
 
     private _DictionaryFieldValuePair[] ToSingletonFieldValuePair(byte[] field, byte[] value) => new _DictionaryFieldValuePair[] { new _DictionaryFieldValuePair() { Field = field.ToByteString(), Value = value.ToByteString() } };
@@ -316,6 +366,45 @@ internal sealed class ScsDataClient : ScsDataClientBase
     /**
      * "Send" methods
      */
+    const string REQUEST_TYPE_KEY_EXISTS = "KEY_EXISTS";
+    private async Task<CacheKeyExistsResponse> SendKeyExistsAsync(string cacheName, ByteString key)
+    {
+        _KeysExistRequest request = new _KeysExistRequest();
+        request.CacheKeys.Add(key);
+        var metadata = MetadataWithCache(cacheName);
+        _KeysExistResponse response;
+        try
+        {
+            this._logger.LogTraceExecutingRequest(REQUEST_TYPE_KEY_EXISTS, cacheName, key, null, null);
+            response = await this.grpcManager.Client.KeysExistAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+        }
+        catch (Exception e)
+        {
+            return this._logger.LogTraceRequestError(REQUEST_TYPE_KEY_EXISTS, cacheName, key, null, null, new CacheKeyExistsResponse.Error(_exceptionMapper.Convert(e, metadata)));
+        }
+
+        return this._logger.LogTraceRequestSuccess(REQUEST_TYPE_KEY_EXISTS, cacheName, key, null, null, new CacheKeyExistsResponse.Success(response.Exists[0]));
+    }
+
+    const string REQUEST_TYPE_KEYS_EXIST = "KEYS_EXIST";
+    private async Task<CacheKeysExistResponse> SendKeysExistAsync(string cacheName, IEnumerable<ByteString> keys)
+    {
+        _KeysExistRequest request = new _KeysExistRequest();
+        request.CacheKeys.Add(keys);
+        var metadata = MetadataWithCache(cacheName);
+        _KeysExistResponse response;
+        try
+        {
+            this._logger.LogTraceExecutingRequest(REQUEST_TYPE_KEYS_EXIST, cacheName, keys.ToString().ToByteString(), null, null);
+            response = await this.grpcManager.Client.KeysExistAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+        }
+        catch (Exception e)
+        {
+            return this._logger.LogTraceRequestError(REQUEST_TYPE_KEYS_EXIST, cacheName, keys.ToString().ToByteString(), null, null, new CacheKeysExistResponse.Error(_exceptionMapper.Convert(e, metadata)));
+        }
+
+        return this._logger.LogTraceRequestSuccess(REQUEST_TYPE_KEYS_EXIST, cacheName, keys.ToString().ToByteString(), null, null, new CacheKeysExistResponse.Success(keys, response));
+    }
 
     const string REQUEST_TYPE_SET = "SET";
     private async Task<CacheSetResponse> SendSetAsync(string cacheName, ByteString key, ByteString value, TimeSpan? ttl = null)
@@ -339,7 +428,6 @@ internal sealed class ScsDataClient : ScsDataClientBase
     const string REQUEST_TYPE_GET = "GET";
     private async Task<CacheGetResponse> SendGetAsync(string cacheName, ByteString key)
     {
-
         _GetRequest request = new _GetRequest() { CacheKey = key };
         _GetResponse response;
         var metadata = MetadataWithCache(cacheName);
@@ -372,10 +460,60 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
         catch (Exception e)
         {
-            return this._logger.LogTraceRequestSuccess(REQUEST_TYPE_GET, cacheName, key, null, null, new CacheDeleteResponse.Error(_exceptionMapper.Convert(e, metadata)));
+            return this._logger.LogTraceRequestError(REQUEST_TYPE_DELETE, cacheName, key, null, null, new CacheDeleteResponse.Error(_exceptionMapper.Convert(e, metadata)));
         }
         return this._logger.LogTraceRequestSuccess(REQUEST_TYPE_DELETE, cacheName, key, null, null, new CacheDeleteResponse.Success());
 
+    }
+
+    const string REQUEST_TYPE_SET_IF_NOT_EXISTS = "SET_IF_NOT_EXISTS";
+    private async Task<CacheSetIfNotExistsResponse> SendSetIfNotExistsAsync(string cacheName, ByteString key, ByteString value, TimeSpan? ttl = null)
+    {
+
+        _SetIfNotExistsRequest request = new _SetIfNotExistsRequest() { CacheBody = value, CacheKey = key, TtlMilliseconds = TtlToMilliseconds(ttl) };
+        _SetIfNotExistsResponse response;
+        var metadata = MetadataWithCache(cacheName);
+        try
+        {
+            this._logger.LogTraceExecutingRequest(REQUEST_TYPE_SET_IF_NOT_EXISTS, cacheName, key, value, ttl);
+            response = await this.grpcManager.Client.SetIfNotExistsAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+        }
+        catch (Exception e)
+        {
+            return this._logger.LogTraceRequestError(REQUEST_TYPE_SET_IF_NOT_EXISTS, cacheName, key, value, ttl, new CacheSetIfNotExistsResponse.Error(_exceptionMapper.Convert(e, metadata)));
+        }
+
+        if (response.ResultCase.Equals(_SetIfNotExistsResponse.ResultOneofCase.Stored))
+        {
+            return this._logger.LogTraceRequestSuccess(REQUEST_TYPE_SET_IF_NOT_EXISTS, cacheName, key, value, ttl, new CacheSetIfNotExistsResponse.Stored());
+        }
+
+        return this._logger.LogTraceRequestSuccess(REQUEST_TYPE_SET_IF_NOT_EXISTS, cacheName, key, value, ttl, new CacheSetIfNotExistsResponse.NotStored());
+    }
+
+    const string REQUEST_TYPE_INCREMENT = "INCREMENT";
+    private async Task<CacheIncrementResponse> SendIncrementAsync(string cacheName, ByteString field, long amount, TimeSpan? ttl = null)
+    {
+        _IncrementRequest request = new()
+        {
+            CacheKey = field,
+            Amount = amount,
+            TtlMilliseconds = TtlToMilliseconds(ttl)
+        };
+        _IncrementResponse response;
+        var metadata = MetadataWithCache(cacheName);
+
+        try
+        {
+            this._logger.LogTraceExecutingRequest(REQUEST_TYPE_INCREMENT, cacheName, field, null, ttl);
+            response = await this.grpcManager.Client.IncrementAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+        }
+        catch (Exception e)
+        {
+            return this._logger.LogTraceRequestError(REQUEST_TYPE_INCREMENT, cacheName, field, null, ttl, new CacheIncrementResponse.Error(_exceptionMapper.Convert(e, metadata)));
+        }
+
+        return this._logger.LogTraceRequestSuccess(REQUEST_TYPE_INCREMENT, cacheName, field, null, ttl, new CacheIncrementResponse.Success(response));
     }
 
     const string REQUEST_TYPE_DICTIONARY_FETCH = "DICTIONARY_FETCH";

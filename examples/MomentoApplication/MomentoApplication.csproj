@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Momento.Sdk" Version="1.5.0" />
+    <PackageReference Include="Momento.Sdk" Version="1.6.0" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Microsoft.Extensions.Logging.Console" />

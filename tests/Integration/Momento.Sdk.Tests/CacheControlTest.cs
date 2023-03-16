@@ -5,15 +5,15 @@ using Momento.Sdk.Auth;
 
 namespace Momento.Sdk.Tests;
 
-[Collection("SimpleCacheClient")]
-public class SimpleCacheControlTest : TestBase
+[Collection("CacheClient")]
+public class CacheControlTest : TestBase
 {
-    public SimpleCacheControlTest(SimpleCacheClientFixture fixture) : base(fixture)
+    public CacheControlTest(CacheClientFixture fixture) : base(fixture)
     {
     }
 
     [Fact]
-    public void SimpleCacheClientConstructor_BadJWT_InvalidJwtException()
+    public void CacheClientConstructor_BadJWT_InvalidJwtException()
     {
         Environment.SetEnvironmentVariable("BAD_MOMENTO_AUTH_TOKEN", "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJpbnRlZ3JhdGlvbiJ9.ZOgkTs");
         Assert.Throws<InvalidArgumentException>(
@@ -23,7 +23,7 @@ public class SimpleCacheControlTest : TestBase
     }
 
     [Fact]
-    public void SimpleCacheClientConstructor_NullJWT_InvalidJwtException()
+    public void CacheClientConstructor_NullJWT_InvalidJwtException()
     {
         Environment.SetEnvironmentVariable("BAD_MOMENTO_AUTH_TOKEN", null);
         Assert.Throws<InvalidArgumentException>(
@@ -61,7 +61,7 @@ public class SimpleCacheControlTest : TestBase
     [Fact]
     public async Task FlushCacheAsync_HappyPath()
     {
-        string cacheName = Utils.NewGuidString();
+        string cacheName = Utils.TestCacheName();
         await client.CreateCacheAsync(cacheName);
 
         try
@@ -112,7 +112,7 @@ public class SimpleCacheControlTest : TestBase
     public async Task ListCachesAsync_OneCache_HappyPath()
     {
         // Create cache
-        string cacheName = Utils.NewGuidString();
+        string cacheName = Utils.TestCacheName();
         await client.CreateCacheAsync(cacheName);
 
         // Test cache exists
@@ -140,7 +140,7 @@ public class SimpleCacheControlTest : TestBase
         // TODO: increase limit after pagination is enabled
         foreach (int val in Enumerable.Range(1, 3))
         {
-            String cacheName = Utils.NewGuidString();
+            String cacheName = Utils.TestCacheName();
             cacheNames.Add(cacheName);
             await client.CreateCacheAsync(cacheName);
         }

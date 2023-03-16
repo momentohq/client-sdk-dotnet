@@ -1,24 +1,24 @@
-﻿using Momento.Protos.CacheClient;
+using Momento.Protos.CacheClient;
 using Momento.Sdk.Exceptions;
 
 namespace Momento.Sdk.Responses;
 
 /// <summary>
-/// Parent response type for a cache list concatenate front request. The
+/// Parent response type for a cache increment request. The
 /// response object is resolved to a type-safe object of one of
 /// the following subtypes:
 /// <list type="bullet">
-/// <item><description>CacheListConcatenateFrontResponse.Success</description></item>
-/// <item><description>CacheListConcatenateFrontResponse.Error</description></item>
+/// <item><description>CacheIncrementResponse.Success</description></item>
+/// <item><description>CacheIncrementResponse.Error</description></item>
 /// </list>
 /// Pattern matching can be used to operate on the appropriate subtype.
 /// For example:
 /// <code>
-/// if (response is CacheListConcatenateFrontResponse.Success successResponse)
+/// if (response is CacheIncrementResponse.Success successResponse)
 /// {
-///     return successResponse.ListLength;
+///     return response.Value;
 /// }
-/// else if (response is CacheListConcatenateFrontResponse.Error errorResponse)
+/// else if (response is CacheIncrementResponse.Error errorResponse)
 /// {
 ///     // handle error as appropriate
 /// }
@@ -28,34 +28,31 @@ namespace Momento.Sdk.Responses;
 /// }
 /// </code>
 /// </summary>
-public abstract class CacheListConcatenateFrontResponse
+public abstract class CacheIncrementResponse
 {
     /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
-    public class Success : CacheListConcatenateFrontResponse
+    public class Success : CacheIncrementResponse
     {
         /// <summary>
-        /// The length of the list post-concatenate (and post-truncate, if that applies).
+        /// The value of the field post-increment.
         /// </summary>
-        public int ListLength { get; private set; }
+        public long Value { get; private set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="response">The cache response</param>
-        public Success(_ListConcatenateFrontResponse response)
+        /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
+        public Success(_IncrementResponse response)
         {
-            ListLength = checked((int)response.ListLength);
+            Value = response.Value;
         }
 
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{base.ToString()}: ListLength: {ListLength}";
+            return $"{base.ToString()}: Value: {Value}";
         }
     }
 
     /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
-    public class Error : CacheListConcatenateFrontResponse
+    public class Error : CacheIncrementResponse
     {
         private readonly SdkException _error;
 

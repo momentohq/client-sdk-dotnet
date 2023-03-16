@@ -7,7 +7,7 @@ namespace Momento.Sdk.Exceptions;
 
 /// <summary>
 /// This class maps low-level exceptions that occur during
-/// <see cref="Momento.Sdk.SimpleCacheClient" /> requests to
+/// <see cref="Momento.Sdk.CacheClient" /> requests to
 /// Momento <see cref="Momento.Sdk.Exceptions.SdkException" />
 /// exceptions. The <c>SdkException</c> is returned to the caller
 /// as part of an <c>Error</c> response object.
@@ -21,7 +21,7 @@ public class CacheExceptionMapper
 
     /// <summary>
     /// This class maps low-level exceptions that occur during
-    /// <see cref="Momento.Sdk.SimpleCacheClient" /> requests to
+    /// <see cref="Momento.Sdk.CacheClient" /> requests to
     /// Momento <see cref="Momento.Sdk.Exceptions.SdkException" />
     /// exceptions. The <c>SdkException</c> is returned to the caller
     /// as part of an <c>Error</c> response object.

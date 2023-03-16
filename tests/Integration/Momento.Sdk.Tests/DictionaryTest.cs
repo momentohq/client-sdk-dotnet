@@ -2,15 +2,13 @@
 using System.Threading.Tasks;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Requests;
-using Momento.Sdk.Responses;
-using Momento.Sdk.Tests;
 
 namespace Momento.Sdk.Tests;
 
-[Collection("SimpleCacheClient")]
+[Collection("CacheClient")]
 public class DictionaryTest : TestBase
 {
-    public DictionaryTest(SimpleCacheClientFixture fixture) : base(fixture)
+    public DictionaryTest(CacheClientFixture fixture) : base(fixture)
     {
     }
 
@@ -24,7 +22,7 @@ public class DictionaryTest : TestBase
         Assert.True(response is CacheDictionaryGetFieldResponse.Error, $"Unexpected response: {response}");
         var errResponse = (CacheDictionaryGetFieldResponse.Error)response;
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheDictionaryGetFieldResponse.Error)response).ErrorCode);
-        Assert.Equal(field ?? new byte[] {}, ((CacheDictionaryGetFieldResponse.Error)response).FieldByteArray);
+        Assert.Equal(field ?? new byte[] { }, ((CacheDictionaryGetFieldResponse.Error)response).FieldByteArray);
     }
 
     [Theory]
@@ -793,8 +791,8 @@ public class DictionaryTest : TestBase
 
         var otherDictionary = hit.ValueDictionaryStringByteArray;
         Assert.Equal(2, otherDictionary.Count);
-        Assert.Equal(otherDictionary[field1], Utils.Utf8ToByteArray(value1));
-        Assert.Equal(otherDictionary[field2], Utils.Utf8ToByteArray(value2));
+        Assert.Equal(otherDictionary[field1], Internal.Utils.Utf8ToByteArray(value1));
+        Assert.Equal(otherDictionary[field2], Internal.Utils.Utf8ToByteArray(value2));
     }
 
     [Fact]

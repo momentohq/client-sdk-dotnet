@@ -438,7 +438,7 @@ If you have questions or need help experimenting further, please reach out to us
                 /// our pre-built configurations that are optimized for Laptop vs InRegion environments,
                 /// or build your own.
                 ///
-                IConfiguration config = Configurations.Laptop.Latest(loggerFactory);
+                IConfiguration config = Configurations.Laptop.V1(loggerFactory);
 
                 CsharpLoadGenerator loadGenerator = new CsharpLoadGenerator(
                     config,
