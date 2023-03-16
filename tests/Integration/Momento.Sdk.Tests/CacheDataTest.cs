@@ -115,9 +115,9 @@ public class CacheDataTest : TestBase
     [Fact]
     public async Task KeysExistAsync_ByteArray()
     {
-        byte[] key1 = Encoding.UTF8.GetBytes("foo");
-        byte[] key2 = Encoding.UTF8.GetBytes("bar");
-        byte[] key3 = Encoding.UTF8.GetBytes("baz");
+        byte[] key1 = Utils.NewGuidByteArray();
+        byte[] key2 = Utils.NewGuidByteArray();
+        byte[] key3 = Utils.NewGuidByteArray();
 
         await client.SetAsync(cacheName, key1, key1);
         await client.SetAsync(cacheName, key3, key3);
