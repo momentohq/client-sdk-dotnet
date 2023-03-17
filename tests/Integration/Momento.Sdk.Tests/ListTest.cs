@@ -30,7 +30,7 @@ public class ListTest : TestBase
     [InlineData("cache", "my-list", 3, 1)]
     [InlineData("cache", "my-list", 3, 3)]
     [InlineData("cache", "my-list", -2, -3)]
-    public async Task ListFetchAsync_InvalidIndex_IsError(string cacheName, string listName, int startIndex, int endIndex)
+    public async Task ListFetchAsync_InvalidIndex_IsError(string cacheName, string listName, int? startIndex, int? endIndex)
     {
         string[] values = new string[] { Utils.NewGuidString(), Utils.NewGuidString(), Utils.NewGuidString(), Utils.NewGuidString() };
         CacheListConcatenateFrontResponse response = await client.ListConcatenateFrontAsync(cacheName, listName, values);
@@ -80,7 +80,7 @@ public class ListTest : TestBase
     [Theory]
     [InlineData("cache", "my-list", null, 1)]
     [InlineData("cache", "my-list", null, -3)]
-    public async Task ListFetchAsync_WithNullStartIndex_HappyPath(string cacheName, string listName, int startIndex, int endIndex)
+    public async Task ListFetchAsync_WithNullStartIndex_HappyPath(string cacheName, string listName, int? startIndex, int? endIndex)
     {
         string value1 = Utils.NewGuidString();
         string value2 = Utils.NewGuidString();
