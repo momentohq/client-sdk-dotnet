@@ -134,18 +134,17 @@ public static class Utils
     /// <exception cref="Momento.Sdk.Exceptions.InvalidArgumentException"><paramref name="endIndex"/> is less than or equal to <paramref name="startIndex"/></exception>
     public static void ValidateStartEndIndex(int? startIndex, int? endIndex)
     {
-        if (startIndex is null || endIndex is null)
-        {
-            return;
-        }
-
-        if (startIndex > 0 || endIndex < 0)
-        {
-            return;
-        }
-        if (endIndex <= startIndex)
+        if (startIndex >= 0 && endIndex >= 0 && startIndex >= endIndex)
         {
             throw new Momento.Sdk.Exceptions.InvalidArgumentException("endIndex (exclusive) must be larger than startIndex (inclusive)");
+        }
+        if (startIndex < 0 && endIndex < 0 && startIndex >= endIndex)
+        {
+            throw new Momento.Sdk.Exceptions.InvalidArgumentException("endIndex (exclusive) must be larger than startIndex (inclusive)");
+        }
+        else
+        {
+            return;
         }
     }
 }

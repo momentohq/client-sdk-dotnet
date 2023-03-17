@@ -593,7 +593,7 @@ public interface ICacheClient : IDisposable
     /// <param name="startIndex">Start inclusive index for fetch operation. Must be smaller than the endIndex.</param>
     /// <param name="endIndex">End exclusive index for fetch operation. Must be larger than the startIndex.</param>
     /// <returns>Task representing with the status of the fetch operation and the associated list.</returns>
-    public Task<CacheListFetchResponse> ListFetchAsync(string cacheName, string listName, int? startIndex, int? endIndex);
+    public Task<CacheListFetchResponse> ListFetchAsync(string cacheName, string listName, int? startIndex = null, int? endIndex = null);
 
     /// <summary>
     /// Remove all elements in a list equal to a particular value.
