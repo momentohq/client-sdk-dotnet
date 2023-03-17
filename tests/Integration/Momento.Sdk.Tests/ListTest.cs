@@ -123,10 +123,17 @@ public class ListTest : TestBase
         CacheListConcatenateFrontResponse response = await client.ListConcatenateFrontAsync(cacheName, listName, values);
         Assert.True(response is CacheListConcatenateFrontResponse.Success, $"Unexpected response: {response}");
 
-        CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName, 0, null);
+        // valid case for a negative startIndex and null endIndex
+        CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName, -3, null);
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
-        Assert.Equal(values, hitResponse.ValueListString);
+        Assert.Equal(new string[] { value2, value3, value4 }, hitResponse.ValueListString);
+
+        // valid case for a positive startIndex and null endIndex
+        fetchResponse = await client.ListFetchAsync(cacheName, listName, 2, null);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
+        hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
+        Assert.Equal(new string[] { value3, value4 }, hitResponse.ValueListString);
     }
 
     [Fact]

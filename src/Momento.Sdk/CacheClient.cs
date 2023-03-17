@@ -1060,7 +1060,7 @@ public class CacheClient : ICacheClient
     }
 
     /// <inheritdoc />
-    public async Task<CacheListFetchResponse> ListFetchAsync(string cacheName, string listName, int? startIndex, int? endIndex)
+    public async Task<CacheListFetchResponse> ListFetchAsync(string cacheName, string listName, int? startIndex = null, int? endIndex = null)
     {
         try
         {
