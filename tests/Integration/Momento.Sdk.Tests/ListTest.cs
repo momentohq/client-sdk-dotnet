@@ -26,17 +26,26 @@ public class ListTest : TestBase
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheListConcatenateFrontResponse.Error)response).ErrorCode);
     }
 
-    [Theory]
-    [InlineData("cache", "my-list", 3, 1)]
-    [InlineData("cache", "my-list", 3, 3)]
-    [InlineData("cache", "my-list", -2, -3)]
-    public async Task ListFetchAsync_InvalidIndex_IsError(string cacheName, string listName, int? startIndex, int? endIndex)
+    [Fact]
+    public async Task ListFetchAsync_InvalidIndices_AreError()
     {
+        var listName = Utils.NewGuidString();
         string[] values = new string[] { Utils.NewGuidString(), Utils.NewGuidString(), Utils.NewGuidString(), Utils.NewGuidString() };
         CacheListConcatenateFrontResponse response = await client.ListConcatenateFrontAsync(cacheName, listName, values);
         Assert.True(response is CacheListConcatenateFrontResponse.Success, $"Unexpected response: {response}");
 
-        CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName, startIndex, endIndex);
+        // the positive startIndex is larger than the positive endIndex
+        CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName, 3, 1);
+        Assert.True(fetchResponse is CacheListFetchResponse.Error, $"Unexpected response: {fetchResponse}");
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheListFetchResponse.Error)fetchResponse).ErrorCode);
+
+        // the positive startIndex is the same value as the positive endIndex
+        fetchResponse = await client.ListFetchAsync(cacheName, listName, 3, 3);
+        Assert.True(fetchResponse is CacheListFetchResponse.Error, $"Unexpected response: {fetchResponse}");
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheListFetchResponse.Error)fetchResponse).ErrorCode);
+
+        // the negative startIndex is larger than the negative endIndex
+        fetchResponse = await client.ListFetchAsync(cacheName, listName, -2, -3);
         Assert.True(fetchResponse is CacheListFetchResponse.Error, $"Unexpected response: {fetchResponse}");
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheListFetchResponse.Error)fetchResponse).ErrorCode);
     }
@@ -77,11 +86,10 @@ public class ListTest : TestBase
         Assert.Equal(new string[] { value3 }, hitResponse.ValueListString);
     }
 
-    [Theory]
-    [InlineData("cache", "my-list", null, 1)]
-    [InlineData("cache", "my-list", null, -3)]
-    public async Task ListFetchAsync_WithNullStartIndex_HappyPath(string cacheName, string listName, int? startIndex, int? endIndex)
+    [Fact]
+    public async Task ListFetchAsync_WithNullStartIndex_HappyPath()
     {
+        var listName = Utils.NewGuidString();
         string value1 = Utils.NewGuidString();
         string value2 = Utils.NewGuidString();
         string value3 = Utils.NewGuidString();
@@ -90,9 +98,16 @@ public class ListTest : TestBase
         CacheListConcatenateFrontResponse response = await client.ListConcatenateFrontAsync(cacheName, listName, values);
         Assert.True(response is CacheListConcatenateFrontResponse.Success, $"Unexpected response: {response}");
 
-        CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName, startIndex, endIndex);
+        // valid case for null startIndex and positive endIndex
+        CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName, null, 1);
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
+        Assert.Equal(new string[] { value1 }, hitResponse.ValueListString);
+
+        // valid case for null startIndex and negative endIndex
+        fetchResponse = await client.ListFetchAsync(cacheName, listName, null, -3);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
+        hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value1 }, hitResponse.ValueListString);
     }
 
