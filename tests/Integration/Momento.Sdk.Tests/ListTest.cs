@@ -137,6 +137,106 @@ public class ListTest : TestBase
     }
 
     [Fact]
+    public async Task ListRetainAsync_InvalidIndices_AreError()
+    {
+        var listName = Utils.NewGuidString();
+        
+        // the positive startIndex is larger than the positive endIndex
+        CacheListRetainResponse fetchResponse = await client.ListRetainAsync(cacheName, listName, 3, 1);
+        Assert.True(fetchResponse is CacheListRetainResponse.Error, $"Unexpected response: {fetchResponse}");
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheListRetainResponse.Error)fetchResponse).ErrorCode);
+
+        // the positive startIndex is the same value as the positive endIndex
+        fetchResponse = await client.ListRetainAsync(cacheName, listName, 3, 3);
+        Assert.True(fetchResponse is CacheListRetainResponse.Error, $"Unexpected response: {fetchResponse}");
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheListRetainResponse.Error)fetchResponse).ErrorCode);
+
+        // the negative startIndex is larger than the negative endIndex
+        fetchResponse = await client.ListRetainAsync(cacheName, listName, -2, -3);
+        Assert.True(fetchResponse is CacheListRetainResponse.Error, $"Unexpected response: {fetchResponse}");
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheListRetainResponse.Error)fetchResponse).ErrorCode);
+    }
+    
+    [Fact]
+    public async Task ListRetainAsync_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        string value1 = Utils.NewGuidString();
+        string value2 = Utils.NewGuidString();
+        string value3 = Utils.NewGuidString();
+        string value4 = Utils.NewGuidString();
+        string value5 = Utils.NewGuidString();
+        string value6 = Utils.NewGuidString();
+        string[] values = new string[] { value1, value2, value3, value4, value5, value6 };
+
+        var resetList = async () =>
+        {
+            await client.DeleteAsync(cacheName, listName);
+            await client.ListConcatenateFrontAsync(cacheName, listName, values);
+        };
+
+        await resetList();
+        CacheListRetainResponse retainResponse = await client.ListRetainAsync(cacheName, listName, 1, 4);
+        Assert.True(retainResponse is CacheListRetainResponse.Success, $"Unexpected response: {retainResponse}");
+        var fetchResponse = await client.ListFetchAsync(cacheName, listName);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit);
+        var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
+        Assert.Equal(new string[] { value2, value3, value4 }, hitResponse.ValueListString);
+        
+        await resetList();
+        retainResponse = await client.ListRetainAsync(cacheName, listName, 2, -1);
+        Assert.True(retainResponse is CacheListRetainResponse.Success, $"Unexpected response: {retainResponse}");
+        fetchResponse = await client.ListFetchAsync(cacheName, listName);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit);
+        hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
+        Assert.Equal(new string[] { value3, value4, value5 }, hitResponse.ValueListString);
+        
+        await resetList();
+        retainResponse = await client.ListRetainAsync(cacheName, listName, -4, -1);
+        Assert.True(retainResponse is CacheListRetainResponse.Success, $"Unexpected response: {retainResponse}");
+        fetchResponse = await client.ListFetchAsync(cacheName, listName);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit);
+        hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
+        Assert.Equal(new string[] { value3, value4, value5 }, hitResponse.ValueListString);
+        
+        await resetList();        
+        // valid case for a negative startIndex and null endIndex
+        retainResponse = await client.ListRetainAsync(cacheName, listName, -3, null);
+        Assert.True(retainResponse is CacheListRetainResponse.Success, $"Unexpected response: {retainResponse}");
+        fetchResponse = await client.ListFetchAsync(cacheName, listName);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit);
+        hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
+        Assert.Equal(new string[] { value4, value5, value6 }, hitResponse.ValueListString);
+
+        await resetList();
+        // valid case for a positive startIndex and null endIndex
+        retainResponse = await client.ListRetainAsync(cacheName, listName, 2);
+        Assert.True(retainResponse is CacheListRetainResponse.Success, $"Unexpected response: {retainResponse}");
+        fetchResponse = await client.ListFetchAsync(cacheName, listName);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit);
+        hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
+        Assert.Equal(new string[] { value3, value4, value5, value6 }, hitResponse.ValueListString);
+        
+        await resetList();
+        // valid case for null startIndex and positive endIndex
+        retainResponse = await client.ListRetainAsync(cacheName, listName, null, 1);
+        Assert.True(retainResponse is CacheListRetainResponse.Success, $"Unexpected response: {retainResponse}");
+        fetchResponse = await client.ListFetchAsync(cacheName, listName);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit);
+        hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
+        Assert.Equal(new string[] { value1 }, hitResponse.ValueListString);
+
+        await resetList();
+        // valid case for null startIndex and negative endIndex
+        retainResponse = await client.ListRetainAsync(cacheName, listName, endIndex: -3);
+        Assert.True(retainResponse is CacheListRetainResponse.Success, $"Unexpected response: {retainResponse}");
+        fetchResponse = await client.ListFetchAsync(cacheName, listName);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit);
+        hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
+        Assert.Equal(new string[] { value1, value2, value3 }, hitResponse.ValueListString);
+    }
+
+    [Fact]
     public async Task ListConcatenateFrontFetch_ValueIsByteArray_HappyPath()
     {
         var listName = Utils.NewGuidString();

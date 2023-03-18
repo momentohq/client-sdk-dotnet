@@ -48,7 +48,7 @@ public abstract class CacheKeysExistResponse
         /// </summary>
         public IEnumerable<bool> ExistsEnumerable { get; private set; }
 
-        protected readonly Lazy<IDictionary<string, bool>> _existsDictionary;
+        private readonly Lazy<IDictionary<string, bool>> _existsDictionary;
         /// <summary>
         /// A dictionary whose keys are the cache keys from the request, and whose values are
         ///  True if the specified key exists in the cache, false otherwise.
