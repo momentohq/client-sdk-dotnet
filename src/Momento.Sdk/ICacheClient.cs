@@ -590,8 +590,10 @@ public interface ICacheClient : IDisposable
     /// </summary>
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
     /// <param name="listName">The list to fetch.</param>
+    /// <param name="startIndex">Start inclusive index for fetch operation. Must be smaller than the endIndex.</param>
+    /// <param name="endIndex">End exclusive index for fetch operation. Must be larger than the startIndex.</param>
     /// <returns>Task representing with the status of the fetch operation and the associated list.</returns>
-    public Task<CacheListFetchResponse> ListFetchAsync(string cacheName, string listName);
+    public Task<CacheListFetchResponse> ListFetchAsync(string cacheName, string listName, int? startIndex = null, int? endIndex = null);
 
     /// <summary>
     /// Remove all elements in a list equal to a particular value.

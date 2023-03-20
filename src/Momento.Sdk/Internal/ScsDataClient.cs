@@ -343,9 +343,9 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return await SendListPopBackAsync(cacheName, listName);
     }
 
-    public async Task<CacheListFetchResponse> ListFetchAsync(string cacheName, string listName)
+    public async Task<CacheListFetchResponse> ListFetchAsync(string cacheName, string listName, int? startIndex, int? endIndex)
     {
-        return await SendListFetchAsync(cacheName, listName);
+        return await SendListFetchAsync(cacheName, listName, startIndex, endIndex);
     }
 
     public async Task<CacheListRemoveValueResponse> ListRemoveValueAsync(string cacheName, string listName, byte[] value)
@@ -1012,9 +1012,26 @@ internal sealed class ScsDataClient : ScsDataClientBase
     }
 
     const string REQUEST_TYPE_LIST_FETCH = "LIST_FETCH";
-    private async Task<CacheListFetchResponse> SendListFetchAsync(string cacheName, string listName)
+    private async Task<CacheListFetchResponse> SendListFetchAsync(string cacheName, string listName, int? startIndex, int? endIndex)
     {
         _ListFetchRequest request = new() { ListName = listName.ToByteString() };
+        if (startIndex is null)
+        {
+            request.UnboundedStart = new _Unbounded { };
+        }
+        else
+        {
+            request.InclusiveStart = startIndex.Value;
+        }
+        if (endIndex is null)
+        {
+            request.UnboundedEnd = new _Unbounded { };
+        }
+        else
+        {
+            request.ExclusiveEnd = endIndex.Value;
+        }
+
         _ListFetchResponse response;
         var metadata = MetadataWithCache(cacheName);
 

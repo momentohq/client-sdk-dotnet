@@ -27,6 +27,116 @@ public class ListTest : TestBase
     }
 
     [Fact]
+    public async Task ListFetchAsync_InvalidIndices_AreError()
+    {
+        var listName = Utils.NewGuidString();
+        string[] values = new string[] { Utils.NewGuidString(), Utils.NewGuidString(), Utils.NewGuidString(), Utils.NewGuidString() };
+        CacheListConcatenateFrontResponse response = await client.ListConcatenateFrontAsync(cacheName, listName, values);
+        Assert.True(response is CacheListConcatenateFrontResponse.Success, $"Unexpected response: {response}");
+
+        // the positive startIndex is larger than the positive endIndex
+        CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName, 3, 1);
+        Assert.True(fetchResponse is CacheListFetchResponse.Error, $"Unexpected response: {fetchResponse}");
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheListFetchResponse.Error)fetchResponse).ErrorCode);
+
+        // the positive startIndex is the same value as the positive endIndex
+        fetchResponse = await client.ListFetchAsync(cacheName, listName, 3, 3);
+        Assert.True(fetchResponse is CacheListFetchResponse.Error, $"Unexpected response: {fetchResponse}");
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheListFetchResponse.Error)fetchResponse).ErrorCode);
+
+        // the negative startIndex is larger than the negative endIndex
+        fetchResponse = await client.ListFetchAsync(cacheName, listName, -2, -3);
+        Assert.True(fetchResponse is CacheListFetchResponse.Error, $"Unexpected response: {fetchResponse}");
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheListFetchResponse.Error)fetchResponse).ErrorCode);
+    }
+
+    [Fact]
+    public async Task ListFetchAsync_WithPositiveStartEndIndcies_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        string value1 = Utils.NewGuidString();
+        string value2 = Utils.NewGuidString();
+        string value3 = Utils.NewGuidString();
+        string value4 = Utils.NewGuidString();
+        string[] values = new string[] { value1, value2, value3, value4 };
+        CacheListConcatenateFrontResponse response = await client.ListConcatenateFrontAsync(cacheName, listName, values);
+        Assert.True(response is CacheListConcatenateFrontResponse.Success, $"Unexpected response: {response}");
+
+        CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName, 1, 3);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
+        var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
+        Assert.Equal(new string[] { value2, value3 }, hitResponse.ValueListString);
+    }
+
+    [Fact]
+    public async Task ListFetchAsync_WithNegativeStartEndIndcies_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        string value1 = Utils.NewGuidString();
+        string value2 = Utils.NewGuidString();
+        string value3 = Utils.NewGuidString();
+        string value4 = Utils.NewGuidString();
+        string[] values = new string[] { value1, value2, value3, value4 };
+        CacheListConcatenateFrontResponse response = await client.ListConcatenateFrontAsync(cacheName, listName, values);
+        Assert.True(response is CacheListConcatenateFrontResponse.Success, $"Unexpected response: {response}");
+
+        CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName, -2, -1);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
+        var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
+        Assert.Equal(new string[] { value3 }, hitResponse.ValueListString);
+    }
+
+    [Fact]
+    public async Task ListFetchAsync_WithNullStartIndex_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        string value1 = Utils.NewGuidString();
+        string value2 = Utils.NewGuidString();
+        string value3 = Utils.NewGuidString();
+        string value4 = Utils.NewGuidString();
+        string[] values = new string[] { value1, value2, value3, value4 };
+        CacheListConcatenateFrontResponse response = await client.ListConcatenateFrontAsync(cacheName, listName, values);
+        Assert.True(response is CacheListConcatenateFrontResponse.Success, $"Unexpected response: {response}");
+
+        // valid case for null startIndex and positive endIndex
+        CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName, null, 1);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
+        var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
+        Assert.Equal(new string[] { value1 }, hitResponse.ValueListString);
+
+        // valid case for null startIndex and negative endIndex
+        fetchResponse = await client.ListFetchAsync(cacheName, listName, null, -3);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
+        hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
+        Assert.Equal(new string[] { value1 }, hitResponse.ValueListString);
+    }
+
+    [Fact]
+    public async Task ListFetchAsync_WithNullEndIndex_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        string value1 = Utils.NewGuidString();
+        string value2 = Utils.NewGuidString();
+        string value3 = Utils.NewGuidString();
+        string value4 = Utils.NewGuidString();
+        string[] values = new string[] { value1, value2, value3, value4 };
+        CacheListConcatenateFrontResponse response = await client.ListConcatenateFrontAsync(cacheName, listName, values);
+        Assert.True(response is CacheListConcatenateFrontResponse.Success, $"Unexpected response: {response}");
+
+        // valid case for a negative startIndex and null endIndex
+        CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName, -3, null);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
+        var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
+        Assert.Equal(new string[] { value2, value3, value4 }, hitResponse.ValueListString);
+
+        // valid case for a positive startIndex and null endIndex
+        fetchResponse = await client.ListFetchAsync(cacheName, listName, 2, null);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
+        hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
+        Assert.Equal(new string[] { value3, value4 }, hitResponse.ValueListString);
+    }
+
+    [Fact]
     public async Task ListConcatenateFrontFetch_ValueIsByteArray_HappyPath()
     {
         var listName = Utils.NewGuidString();

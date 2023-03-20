@@ -125,4 +125,27 @@ public static class Utils
     /// so comparisons operate on byte-array content instead of reference.
     /// </summary>
     public static StructuralEqualityComparer<byte[]> ByteArrayComparer = new();
+
+    /// <summary>
+    /// Thrown an exception if the end index is larger than the start index.
+    /// </summary>
+    /// <param name="startIndex">Starting inclusive index of operation.</param>
+    /// <param name="endIndex">Ending exclusive index of operation.</param>
+    /// <exception cref="Momento.Sdk.Exceptions.InvalidArgumentException"><paramref name="endIndex"/> is less than or equal to <paramref name="startIndex"/></exception>
+    public static void ValidateStartEndIndex(int? startIndex, int? endIndex)
+    {
+        if (startIndex.HasValue && endIndex.HasValue)
+        {
+            if (startIndex >= 0 && endIndex >= 0 && startIndex >= endIndex)
+            {
+                throw new Momento.Sdk.Exceptions.InvalidArgumentException("endIndex (exclusive) must be larger than startIndex (inclusive)");
+            }
+            if (startIndex < 0 && endIndex < 0 && startIndex >= endIndex)
+            {
+                throw new Momento.Sdk.Exceptions.InvalidArgumentException("endIndex (exclusive) must be larger than startIndex (inclusive)");
+            }
+            return;
+        }
+        return;
+    }
 }
