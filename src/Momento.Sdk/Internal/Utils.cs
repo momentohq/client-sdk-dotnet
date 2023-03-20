@@ -144,14 +144,8 @@ public static class Utils
             {
                 throw new Momento.Sdk.Exceptions.InvalidArgumentException("endIndex (exclusive) must be larger than startIndex (inclusive)");
             }
-            else
-            {
-                return;
-            }
-        }
-        else
-        {
             return;
         }
+        return;
     }
 }
