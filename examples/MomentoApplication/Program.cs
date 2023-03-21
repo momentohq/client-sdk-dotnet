@@ -11,7 +11,7 @@ ICredentialProvider authProvider = new EnvMomentoTokenProvider("MOMENTO_AUTH_TOK
 
 TimeSpan DEFAULT_TTL = TimeSpan.FromSeconds(60);
 
-using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.V1(), authProvider, DEFAULT_TTL))
+using (ICacheClient client = new CacheClient(Configurations.Laptop.V1(), authProvider, DEFAULT_TTL))
 {
     await AdvancedExamples.CreateCacheExample(client);
     await AdvancedExamples.ListCachesExample(client);
@@ -29,7 +29,7 @@ public class AdvancedExamples {
     const string KEY = "MyKey";
     const string VALUE = "MyData";
 
-    public static async Task CreateCacheExample(ISimpleCacheClient client)
+    public static async Task CreateCacheExample(ICacheClient client)
     {
 
         Console.WriteLine($"Creating cache {CACHE_NAME}");
@@ -55,7 +55,7 @@ public class AdvancedExamples {
         }
     }
 
-    public static async Task ListCachesExample(ISimpleCacheClient client) {
+    public static async Task ListCachesExample(ICacheClient client) {
         Console.WriteLine("\nListing caches:");
         ListCachesResponse listCachesResponse = await client.ListCachesAsync();
         if (listCachesResponse is ListCachesResponse.Success listCachesSuccess)
@@ -72,7 +72,7 @@ public class AdvancedExamples {
         }
     }
 
-    public static async Task SetGetDeleteExample(ISimpleCacheClient client) {
+    public static async Task SetGetDeleteExample(ICacheClient client) {
         Console.WriteLine($"\nSetting key: {KEY} with value: {VALUE}");
         var setResponse = await client.SetAsync(CACHE_NAME, KEY, VALUE);
         if (setResponse is CacheSetResponse.Error setError)
@@ -108,7 +108,7 @@ public class AdvancedExamples {
         }
     }
 
-    public static async Task DeleteCacheExample(ISimpleCacheClient client) {
+    public static async Task DeleteCacheExample(ICacheClient client) {
 
         Console.WriteLine($"\nDeleting cache {CACHE_NAME}");
         var deleteCacheResponse = await client.DeleteCacheAsync(CACHE_NAME);
@@ -133,7 +133,7 @@ public class AdvancedExamples {
         var config = Configurations.Laptop.V1();
         var eagerConnectionConfig = config.WithTransportStrategy(config.TransportStrategy.WithEagerConnectionTimeout(TimeSpan.FromSeconds(10)));
         Console.WriteLine("Creating a momento client with eager connection");
-        using (SimpleCacheClient client = new SimpleCacheClient(eagerConnectionConfig, authProvider, defaultTtl)) {
+        using (CacheClient client = new CacheClient(eagerConnectionConfig, authProvider, defaultTtl)) {
             Console.WriteLine("Successfully created a momento client with eager connection");
         }
 

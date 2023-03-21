@@ -25,7 +25,7 @@ public class Driver
         var cacheName = ReadCacheName();
 
         // Set up the client
-        using var client = new SimpleCacheClient(Configurations.Laptop.V1(), authToken, TimeSpan.FromSeconds(60));
+        using ICacheClient client = new CacheClient(Configurations.Laptop.V1(), authToken, TimeSpan.FromSeconds(60));
         await EnsureCacheExistsAsync(client, cacheName);
 
         // Set a value
@@ -205,7 +205,7 @@ public class Driver
         return "default-cache";
     }
 
-    private static async Task EnsureCacheExistsAsync(ISimpleCacheClient client, string cacheName)
+    private static async Task EnsureCacheExistsAsync(ICacheClient client, string cacheName)
     {
         _logger.LogInformation($"Creating cache {cacheName} if it doesn't already exist.");
         var createCacheResponse = await client.CreateCacheAsync(cacheName);

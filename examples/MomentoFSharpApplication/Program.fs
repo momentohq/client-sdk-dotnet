@@ -10,7 +10,7 @@ let authProvider = new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN")
 
 let exerciseCache() = (
     printfn "Howdy"
-    using(new SimpleCacheClient(Configurations.Laptop.V1(), authProvider, DEFAULT_TTL)) (fun client ->
+    using(new CacheClient(Configurations.Laptop.V1(), authProvider, DEFAULT_TTL)) (fun client ->
         let createCacheResult = client.CreateCacheAsync(CACHE_NAME) |> Async.AwaitTask
         
         printfn("Listing caches:")        
