@@ -1060,19 +1060,45 @@ public class CacheClient : ICacheClient
     }
 
     /// <inheritdoc />
-    public async Task<CacheListFetchResponse> ListFetchAsync(string cacheName, string listName)
+    public async Task<CacheListFetchResponse> ListFetchAsync(string cacheName, string listName, int? startIndex = null, int? endIndex = null)
     {
         try
         {
             Utils.ArgumentNotNull(cacheName, nameof(cacheName));
             Utils.ArgumentNotNull(listName, nameof(listName));
+            Utils.ValidateStartEndIndex(startIndex, endIndex);
         }
         catch (ArgumentNullException e)
         {
             return new CacheListFetchResponse.Error(new InvalidArgumentException(e.Message));
         }
+        catch (Momento.Sdk.Exceptions.InvalidArgumentException e)
+        {
+            return new CacheListFetchResponse.Error(new InvalidArgumentException(e.Message));
+        }
 
-        return await this.DataClient.ListFetchAsync(cacheName, listName);
+        return await this.DataClient.ListFetchAsync(cacheName, listName, startIndex, endIndex);
+    }
+
+    /// <inheritdoc />
+    public async Task<CacheListRetainResponse> ListRetainAsync(string cacheName, string listName, int? startIndex = null, int? endIndex = null)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(listName, nameof(listName));
+            Utils.ValidateStartEndIndex(startIndex, endIndex);
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheListRetainResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        catch (Momento.Sdk.Exceptions.InvalidArgumentException e)
+        {
+            return new CacheListRetainResponse.Error(new InvalidArgumentException(e.Message));
+        }
+
+        return await this.DataClient.ListRetainAsync(cacheName, listName, startIndex, endIndex);
     }
 
     /// <inheritdoc />
