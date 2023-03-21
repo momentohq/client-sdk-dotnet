@@ -348,6 +348,12 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return await SendListFetchAsync(cacheName, listName, startIndex, endIndex);
     }
 
+    public async Task<CacheListRetainResponse> ListRetainAsync(string cacheName, string listName, int? startIndex,
+        int? endIndex)
+    {
+        return await SendListRetainAsync(cacheName, listName, startIndex, endIndex);
+    }
+
     public async Task<CacheListRemoveValueResponse> ListRemoveValueAsync(string cacheName, string listName, byte[] value)
     {
         return await SendListRemoveValueAsync(cacheName, listName, value.ToByteString());
@@ -1052,7 +1058,44 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
         return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_LIST_FETCH, cacheName, listName, new CacheListFetchResponse.Miss());
     }
+    
+    const string REQUEST_TYPE_LIST_RETAIN = "LIST_RETAIN";
+    private async Task<CacheListRetainResponse> SendListRetainAsync(string cacheName, string listName, int? startIndex, int? endIndex)
+    {
+        _ListRetainRequest request = new() { ListName = listName.ToByteString() };
+        if (startIndex is null)
+        {
+            request.UnboundedStart = new _Unbounded { };
+        }
+        else
+        {
+            request.InclusiveStart = startIndex.Value;
+        }
+        if (endIndex is null)
+        {
+            request.UnboundedEnd = new _Unbounded { };
+        }
+        else
+        {
+            request.ExclusiveEnd = endIndex.Value;
+        }
 
+        _ListRetainResponse response;
+        var metadata = MetadataWithCache(cacheName);
+
+        try
+        {
+            this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_LIST_RETAIN, cacheName, listName);
+            response = await this.grpcManager.Client.ListRetainAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+        }
+        catch (Exception e)
+        {
+            return this._logger.LogTraceCollectionRequestError(REQUEST_TYPE_LIST_RETAIN, cacheName, listName, new CacheListRetainResponse.Error(_exceptionMapper.Convert(e, metadata)));
+        }
+
+        return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_LIST_RETAIN, cacheName, listName, new CacheListRetainResponse.Success());
+    }
+    
     const string REQUEST_TYPE_LIST_REMOVE_VALUE = "LIST_REMOVE_VALUE";
     private async Task<CacheListRemoveValueResponse> SendListRemoveValueAsync(string cacheName, string listName, ByteString value)
     {
