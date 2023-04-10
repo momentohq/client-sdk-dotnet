@@ -24,7 +24,7 @@ Momento Serverless Cache の .NET クライアント SDK：従来のキャッシ
 
 ### Momento レスポンスタイプ
 
-Momento の`SimpleCacheClient`クラスの戻り値は IDE が容易にエラーを含む、有り得るレスポンスを予測できる様にデザインしてあります。[パターンマッチング](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/pattern-matching)を使用し、様々なレスポンスタイプを区別します。そうすることで、それらの API を使用する時、ランタイムでバグを発見するよりも、コンパイル時での安全性があります。
+Momento の`CacheClient`クラスの戻り値は IDE が容易にエラーを含む、有り得るレスポンスを予測できる様にデザインしてあります。[パターンマッチング](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/pattern-matching)を使用し、様々なレスポンスタイプを区別します。そうすることで、それらの API を使用する時、ランタイムでバグを発見するよりも、コンパイル時での安全性があります。
 
 以下が使用例です:
 
@@ -70,7 +70,7 @@ const string KEY = "MyKey";
 const string VALUE = "MyData";
 TimeSpan DEFAULT_TTL = TimeSpan.FromSeconds(60);
 
-using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.Latest(), authProvider, DEFAULT_TTL))
+using (CacheClient client = new CacheClient(Configurations.Laptop.Latest(), authProvider, DEFAULT_TTL))
 {
     var createCacheResponse = await client.CreateCacheAsync(CACHE_NAME);
     if (createCacheResponse is CreateCacheResponse.Error createError)
@@ -105,9 +105,9 @@ using (SimpleCacheClient client = new SimpleCacheClient(Configurations.Laptop.La
 
 ### エラーの処理法
 
-従来の例外処理とは異なり、SimpleCacheClient のメソッドを呼び出した際に起こるエラーは戻り値として浮上します。こうすることで、エラーの可視化を行い、必要なエラーのみを処理する際に IDE が更に役立つ様になります。（もっと例外についての私達の哲学を知りたい方はこちらの[例外はバグだ](https://www.gomomento.com/blog/exceptions-are-bugs)をぜひお読みください。またフィードバックもお待ちしております！）
+従来の例外処理とは異なり、CacheClient のメソッドを呼び出した際に起こるエラーは戻り値として浮上します。こうすることで、エラーの可視化を行い、必要なエラーのみを処理する際に IDE が更に役立つ様になります。（もっと例外についての私達の哲学を知りたい方はこちらの[例外はバグだ](https://www.gomomento.com/blog/exceptions-are-bugs)をぜひお読みください。またフィードバックもお待ちしております！）
 
-SimpleCacheClient メソッドからの戻り値の好ましい対応の仕方は[パターンマッチング](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/pattern-matching)を使用する方法です。こちらが簡単な例です：
+CacheClient メソッドからの戻り値の好ましい対応の仕方は[パターンマッチング](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/pattern-matching)を使用する方法です。こちらが簡単な例です：
 
 ```csharp
 CacheGetResponse getResponse = await client.GetAsync(CACHE_NAME, KEY);
@@ -136,8 +136,8 @@ if (getResponse is CacheGetResponse.Error errorResponse)
 }
 ```
 
-SimpleCacheClient の戻り値以外では例外が起こる可能性があり、それらは通常通り処理する必要があるのでご注意ください。
-例えば、SimpleCacheClient のインスタンスを生成する際、無効なオーセンティケーショントークンは IllegalArgumentException の発生原因になります。
+CacheClient の戻り値以外では例外が起こる可能性があり、それらは通常通り処理する必要があるのでご注意ください。
+例えば、CacheClient のインスタンスを生成する際、無効なオーセンティケーショントークンは IllegalArgumentException の発生原因になります。
 
 ### チューニング
 
