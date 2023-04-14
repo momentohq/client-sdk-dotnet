@@ -10,8 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Momento.Sdk" Version="1.6.0">
-      <GeneratePathProperty></GeneratePathProperty>
-    </PackageReference>
+    <ProjectReference Include="..\..\src\Momento.Sdk\Momento.Sdk.csproj" />
   </ItemGroup>
 </Project>

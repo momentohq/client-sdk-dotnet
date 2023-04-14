@@ -25,6 +25,10 @@ public class EnvMomentoTokenProvider : ICredentialProvider
     public EnvMomentoTokenProvider(string name)
     {
         this.envVarName = name;
+        if (String.IsNullOrEmpty(name))
+        {
+            throw new InvalidArgumentException($"Environment variable name is empty or null.");
+        }
 
         AuthToken = Environment.GetEnvironmentVariable(name);
         if (String.IsNullOrEmpty(AuthToken))
@@ -32,9 +36,10 @@ public class EnvMomentoTokenProvider : ICredentialProvider
             throw new InvalidArgumentException($"Environment variable '{name}' is empty or null.");
         }
 
-        var claims = AuthUtils.TryDecodeAuthToken(AuthToken);
-        ControlEndpoint = claims.ControlEndpoint;
-        CacheEndpoint = claims.CacheEndpoint;
+        var tokenData = AuthUtils.TryDecodeAuthToken(AuthToken);
+        ControlEndpoint = tokenData.ControlEndpoint;
+        CacheEndpoint = tokenData.CacheEndpoint;
+        AuthToken = tokenData.AuthToken;
     }
 
     /// <inheritdoc />

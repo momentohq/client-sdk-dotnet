@@ -8,6 +8,9 @@ using Momento.Sdk.Exceptions;
 /// </summary>
 public class StringMomentoTokenProvider : ICredentialProvider
 {
+    // For V1 tokens, the original token is necessary to reconstruct
+    // the provider in WithCacheEndpoint.
+    private readonly string origAuthToken;
     /// <inheritdoc />
     public string AuthToken { get; private set; }
     /// <inheritdoc />
@@ -21,21 +24,23 @@ public class StringMomentoTokenProvider : ICredentialProvider
     /// <param name="token">The JWT token.</param>
     public StringMomentoTokenProvider(string token)
     {
+        origAuthToken = token;
         AuthToken = token;
         if (String.IsNullOrEmpty(AuthToken))
         {
             throw new InvalidArgumentException($"String '{token}' is empty or null.");
         }
 
-        var claims = AuthUtils.TryDecodeAuthToken(AuthToken);
-        ControlEndpoint = claims.ControlEndpoint;
-        CacheEndpoint = claims.CacheEndpoint;
+        var tokenData = AuthUtils.TryDecodeAuthToken(AuthToken);
+        ControlEndpoint = tokenData.ControlEndpoint;
+        CacheEndpoint = tokenData.CacheEndpoint;
+        AuthToken = tokenData.AuthToken;
     }
 
     /// <inheritdoc />
     public ICredentialProvider WithCacheEndpoint(string cacheEndpoint)
     {
-        var updated = new StringMomentoTokenProvider(this.AuthToken);
+        var updated = new StringMomentoTokenProvider(this.origAuthToken);
         updated.CacheEndpoint = cacheEndpoint;
         return updated;
     }
