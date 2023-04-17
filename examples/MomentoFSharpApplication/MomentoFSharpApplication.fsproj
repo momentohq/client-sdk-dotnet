@@ -10,6 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Momento.Sdk\Momento.Sdk.csproj" />
+    <PackageReference Include="Momento.Sdk" Version="1.9.0" />
   </ItemGroup>
 </Project>
