@@ -27,7 +27,7 @@ public class EnvMomentoTokenProvider : ICredentialProvider
         this.envVarName = name;
         if (String.IsNullOrEmpty(name))
         {
-            throw new InvalidArgumentException($"Environment variable name is empty or null.");
+            throw new InvalidArgumentException($"Environment variable '{name}' is empty or null.");
         }
 
         AuthToken = Environment.GetEnvironmentVariable(name);
