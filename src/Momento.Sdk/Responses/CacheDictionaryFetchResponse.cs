@@ -60,20 +60,23 @@ public abstract class CacheDictionaryFetchResponse
             items = response.Found.Items;
             _dictionaryByteArrayByteArray = new(() =>
             {
-                return new Dictionary<byte[], byte[]>(
-                    items.Select(kv => new KeyValuePair<byte[], byte[]>(kv.Field.ToByteArray(), kv.Value.ToByteArray())),
-                    Utils.ByteArrayComparer);
+                var dictionary = new Dictionary<byte[], byte[]>(Utils.ByteArrayComparer);
+                dictionary.AddRange(items.Select(kv => new KeyValuePair<byte[], byte[]>(kv.Field.ToByteArray(), kv.Value.ToByteArray())));
+                return dictionary;
+
             });
 
             _dictionaryStringString = new(() =>
             {
-                return new Dictionary<string, string>(
-                    items.Select(kv => new KeyValuePair<string, string>(kv.Field.ToStringUtf8(), kv.Value.ToStringUtf8())));
+                var dictionary = new Dictionary<string, string>();
+                dictionary.AddRange(items.Select(kv => new KeyValuePair<string, string>(kv.Field.ToStringUtf8(), kv.Value.ToStringUtf8())));
+                return dictionary;
             });
             _dictionaryStringByteArray = new(() =>
             {
-                return new Dictionary<string, byte[]>(
-                    items.Select(kv => new KeyValuePair<string, byte[]>(kv.Field.ToStringUtf8(), kv.Value.ToByteArray())));
+                var dictionary = new Dictionary<string, byte[]>();
+                dictionary.AddRange(items.Select(kv => new KeyValuePair<string, byte[]>(kv.Field.ToStringUtf8(), kv.Value.ToByteArray())));
+                return dictionary;
             });
         }
 

@@ -87,26 +87,31 @@ public abstract class CacheDictionaryGetFieldsResponse
 
             _dictionaryByteArrayByteArray = new(() =>
             {
-                return new Dictionary<byte[], byte[]>(
+                var dictionary = new Dictionary<byte[], byte[]>(Utils.ByteArrayComparer);
+                dictionary.AddRange(
                     fields.Zip(responses.Found.Items, (f, r) => new ValueTuple<ByteString, _DictionaryGetResponsePart>(f, r))
                         .Where(pair => pair.Item2.Result == ECacheResult.Hit)
-                        .Select(pair => new KeyValuePair<byte[], byte[]>(pair.Item1.ToByteArray(), pair.Item2.CacheBody.ToByteArray())),
-                    Utils.ByteArrayComparer);
+                        .Select(pair => new KeyValuePair<byte[], byte[]>(pair.Item1.ToByteArray(), pair.Item2.CacheBody.ToByteArray())));
+                return dictionary;
             });
 
             _dictionaryStringString = new(() =>
             {
-                return new Dictionary<string, string>(
+                var dictionary = new Dictionary<string, string>();
+                dictionary.AddRange(
                     fields.Zip(responses.Found.Items, (f, r) => new ValueTuple<ByteString, _DictionaryGetResponsePart>(f, r))
                         .Where(pair => pair.Item2.Result == ECacheResult.Hit)
                         .Select(pair => new KeyValuePair<string, string>(pair.Item1.ToStringUtf8(), pair.Item2.CacheBody.ToStringUtf8())));
+                return dictionary;
             });
             _dictionaryStringByteArray = new(() =>
             {
-                return new Dictionary<string, byte[]>(
+                var dictionary = new Dictionary<string, byte[]>();
+                dictionary.AddRange(
                     fields.Zip(responses.Found.Items, (f, r) => new ValueTuple<ByteString, _DictionaryGetResponsePart>(f, r))
                         .Where(pair => pair.Item2.Result == ECacheResult.Hit)
                         .Select(pair => new KeyValuePair<string, byte[]>(pair.Item1.ToStringUtf8(), pair.Item2.CacheBody.ToByteArray())));
+                return dictionary;
             });
         }
 
