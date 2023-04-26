@@ -1,9 +1,4 @@
-﻿#if NETFRAMEWORK
-// Because .NET Framework does not support HTTP/2, we need to use gRPC-Web over HTTP/1.1
-#define USE_GRPC_WEB
-#endif
-
-#pragma warning disable 1591
+﻿#pragma warning disable 1591
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
