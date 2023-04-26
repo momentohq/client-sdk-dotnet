@@ -6,7 +6,14 @@ on:
 
 jobs:
   build_csharp:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target-framework: net6.0
+          - os: windows-latest
+            target-framework: net461
+    runs-on: ${{ matrix.os }}
     env:
       TEST_AUTH_TOKEN: ${{ secrets.ALPHA_TEST_AUTH_TOKEN }}
       TEST_CACHE_NAME: client-sdk-dotnet-${{ github.sha }}
@@ -26,19 +33,13 @@ jobs:
           dotnet-version: "6.0.x"
 
       - name: Build
-        run: |
-          dotnet build
-        shell: bash
+        run: dotnet build
 
       - name: Unit Test
-        run: |
-          dotnet test tests/Unit/Momento.Sdk.Tests
-        shell: bash
+        run: dotnet test -f ${{ matrix.target-framework }} tests/Unit/Momento.Sdk.Tests
 
       - name: Integration Test
-        run: |
-          dotnet test tests/Integration/Momento.Sdk.Tests
-        shell: bash
+        run: dotnet test -f ${{ matrix.target-framework }} tests/Integration/Momento.Sdk.Tests
 
       - name: Generate README
         uses: momentohq/standards-and-practices/github-actions/generate-and-commit-oss-readme@gh-actions-v1
