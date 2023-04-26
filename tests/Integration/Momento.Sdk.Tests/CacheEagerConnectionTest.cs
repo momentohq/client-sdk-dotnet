@@ -44,6 +44,7 @@ public class CacheEagerConnectionTest
         var config = Configurations.Laptop.Latest(loggerFactory);
         config = config.WithTransportStrategy(config.TransportStrategy.WithEagerConnectionTimeout(TimeSpan.FromSeconds(2)));
         var authProviderWithBadCacheEndpoint = authProvider.WithCacheEndpoint("cache.cell-external-beta-1.prod.a.momentohq.com:65000");
+        Console.WriteLine($"Hello developer!  We are about to run a test that verifies that the cache client is still operational even if our eager connection (ping) fails.  So you will see the test log a warning message about that.  It's expected, don't worry!");
         // validating that the constructor doesn't fail when the eager connection fails
         var client = new CacheClient(config, authProviderWithBadCacheEndpoint, defaultTtl);
     }
