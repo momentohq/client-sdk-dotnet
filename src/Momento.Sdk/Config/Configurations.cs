@@ -163,5 +163,33 @@ public class Configurations
                 return new LowLatency(finalLoggerFactory, retryStrategy, transportStrategy);
             }
         }
+
+        /// <summary>
+        /// This config optimizes for lambda environments. In addition to the in region settings of
+        /// <see cref="Default"/>, this configures the clients to eagerly connect to the Momento service
+        /// to avoid the cold start penalty of establishing a connection on the first request.
+        /// </summary>
+        public class Lambda : Configuration
+        {
+            private Lambda(ILoggerFactory loggerFactory, IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
+                : base(loggerFactory, retryStrategy, transportStrategy)
+            {
+
+            }
+
+            /// <summary>
+            /// Provides the latest recommended configuration for a lambda environment.
+            /// </summary>
+            /// <param name="loggerFactory"></param>
+            /// <returns></returns>
+            public static IConfiguration Latest(ILoggerFactory? loggerFactory = null)
+            {
+                var config = Default.V1(loggerFactory);
+                var transportStrategy = config.TransportStrategy.WithEagerConnectionTimeout(
+                    TimeSpan.FromSeconds(30)
+                );
+                return config.WithTransportStrategy(transportStrategy);
+            }
+        }
     }
 }

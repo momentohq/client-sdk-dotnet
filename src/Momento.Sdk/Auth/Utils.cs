@@ -7,7 +7,7 @@ namespace Momento.Sdk.Auth;
 
 internal class TokenAndEndpoints
 {
-    public string AuthToken { get;  }
+    public string AuthToken { get; }
     public string ControlEndpoint { get; }
     public string CacheEndpoint { get; }
 
@@ -29,8 +29,15 @@ internal static class AuthUtils
 {
     public static bool IsBase64String(string base64)
     {
-        Span<byte> buffer = new Span<byte>(new byte[base64.Length]);
-        return Convert.TryFromBase64String(base64, buffer, out int bytesParsed);
+        try
+        {
+            Convert.FromBase64String(base64);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     public static TokenAndEndpoints TryDecodeAuthToken(string authToken)
@@ -47,7 +54,7 @@ internal static class AuthUtils
                     throw new InvalidArgumentException("");
                 }
                 return new TokenAndEndpoints(
-                    decodedToken.api_key,
+                    decodedToken.api_key!,
                     "control." + decodedToken.endpoint,
                     "cache." + decodedToken.endpoint
                 );
