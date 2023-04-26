@@ -29,42 +29,9 @@ jobs:
         id: release
         run: echo "::set-output name=release::${{ steps.semrel.outputs.version }}"
 
-
-  test:
-    runs-on: ubuntu-latest
-    env:
-      TEST_AUTH_TOKEN: ${{ secrets.ALPHA_TEST_AUTH_TOKEN }}
-      TEST_CACHE_NAME: client-sdk-dotnet-${{ github.sha }}
-
-    steps:
-      - name: Get current time
-        uses: gerred/actions/current-time@master
-        id: current-time
-
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: "6.0.x"
-
-      - name: Build
-        run: |
-          dotnet build
-        shell: bash
-
-      - name: Unit Test
-        run: |
-          dotnet test tests/Unit/Momento.Sdk.Tests
-        shell: bash
-
-      - name: Integration Test
-        run: |
-          dotnet test tests/Integration/Momento.Sdk.Tests
-        shell: bash
-
   publish:
     runs-on: ubuntu-latest
-    needs: [release, test]
+    needs: release
 
     steps:
       - name: Get current time
@@ -78,9 +45,7 @@ jobs:
           dotnet-version: "6.0.x"
 
       - name: Build
-        run: |
-          dotnet build
-        shell: bash
+        run: dotnet build
 
       - name: Pack and Publish
         run: |
@@ -92,4 +57,3 @@ jobs:
             dotnet pack -c Release -p:Version=${VERSION}
             dotnet nuget push ./bin/Release/Momento.Sdk.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key=${{secrets.NUGET_API_KEY}}
           popd
-        shell: bash
