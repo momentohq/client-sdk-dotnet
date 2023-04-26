@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<!-- Build Configuration -->
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<!-- Include documentation in build -->
@@ -55,6 +55,10 @@
 	    <PrivateAssets>all</PrivateAssets>
 	  </PackageReference>
 	  <PackageReference Include="System.Threading" Version="4.3.0" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net461'">
+	  <!-- Because .NET Framework does not support HTTP/2, we fall back to gRPC-Web over HTTP/1.1 -->
+	  <PackageReference Include="Grpc.Net.Client.Web" Version="2.52.0" />
 	</ItemGroup>
 	<ProjectExtensions>
 	  <MonoDevelop>

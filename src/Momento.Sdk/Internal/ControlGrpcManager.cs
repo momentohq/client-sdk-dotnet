@@ -1,9 +1,18 @@
-﻿#pragma warning disable 1591
+﻿#if NETFRAMEWORK
+// Because .NET Framework does not support HTTP/2, we need to use gRPC-Web over HTTP/1.1
+#define USE_GRPC_WEB
+#endif
+
+#pragma warning disable 1591
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Net.Client;
+#if USE_GRPC_WEB
+using System.Net.Http;
+using Grpc.Net.Client.Web;
+#endif
 using Microsoft.Extensions.Logging;
 using Momento.Protos.ControlClient;
 using Momento.Sdk.Config.Middleware;
@@ -79,7 +88,13 @@ internal sealed class ControlGrpcManager : IDisposable
     public ControlGrpcManager(ILoggerFactory loggerFactory, string authToken, string endpoint)
     {
         var uri = $"https://{endpoint}";
-        this.channel = GrpcChannel.ForAddress(uri, new GrpcChannelOptions() { Credentials = ChannelCredentials.SecureSsl });
+        this.channel = GrpcChannel.ForAddress(uri, new GrpcChannelOptions()
+        {
+            Credentials = ChannelCredentials.SecureSsl,
+#if USE_GRPC_WEB
+            HttpHandler = new GrpcWebHandler(new HttpClientHandler())
+#endif
+        });
         List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version), new Header(name: Header.RuntimeVersionKey, value: runtimeVersion) };
         CallInvoker invoker = this.channel.CreateCallInvoker();
 
