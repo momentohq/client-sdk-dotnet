@@ -5,6 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Net.Client;
+#if USE_GRPC_WEB
+using System.Net.Http;
+using Grpc.Net.Client.Web;
+#endif
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient;
 using Momento.Protos.CachePing;
@@ -230,6 +234,9 @@ public class DataGrpcManager : IDisposable
             channelOptions.LoggerFactory = config.LoggerFactory;
         }
         channelOptions.Credentials = ChannelCredentials.SecureSsl;
+#if USE_GRPC_WEB
+        channelOptions.HttpHandler = new GrpcWebHandler(new HttpClientHandler());
+#endif
 
         this.channel = GrpcChannel.ForAddress(url, channelOptions);
         List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version), new Header(name: Header.RuntimeVersionKey, value: runtimeVersion) };
