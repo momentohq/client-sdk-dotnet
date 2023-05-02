@@ -33,7 +33,7 @@ public abstract class CacheDeleteResponse
     public class Success : CacheDeleteResponse { }
 
     /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
-    public class Error : CacheDeleteResponse
+    public class Error : CacheDeleteResponse, IError
     {
         private readonly SdkException _error;
 
@@ -43,19 +43,19 @@ public abstract class CacheDeleteResponse
             _error = error;
         }
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="InnerException"]/*' />
+        /// <inheritdoc />
         public SdkException InnerException
         {
             get => _error;
         }
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="ErrorCode"]/*' />
+        /// <inheritdoc />
         public MomentoErrorCode ErrorCode
         {
             get => _error.ErrorCode;
         }
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="Message"]/*' />
+        /// <inheritdoc />
         public string Message
         {
             get => $"{_error.MessageWrapper}: {_error.Message}";
