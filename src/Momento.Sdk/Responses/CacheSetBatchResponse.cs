@@ -9,7 +9,7 @@ public abstract class CacheSetBatchResponse
 
     public class Success : CacheSetBatchResponse { }
 
-    public class Error : CacheSetBatchResponse
+    public class Error : CacheSetBatchResponse, IError
     {
         private readonly SdkException _error;
         public Error(SdkException error)

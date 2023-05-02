@@ -111,7 +111,7 @@ public abstract class CacheDictionaryFetchResponse
     }
 
     /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
-    public class Error : CacheDictionaryFetchResponse
+    public class Error : CacheDictionaryFetchResponse, IError
     {
         private readonly SdkException _error;
 
@@ -121,19 +121,19 @@ public abstract class CacheDictionaryFetchResponse
             _error = error;
         }
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="InnerException"]/*' />
+        /// <inheritdoc />
         public SdkException InnerException
         {
             get => _error;
         }
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="ErrorCode"]/*' />
+        /// <inheritdoc />
         public MomentoErrorCode ErrorCode
         {
             get => _error.ErrorCode;
         }
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/prop[@name="Message"]/*' />
+        /// <inheritdoc />
         public string Message
         {
             get => $"{_error.MessageWrapper}: {_error.Message}";

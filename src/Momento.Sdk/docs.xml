@@ -27,29 +27,6 @@
         </list>
       </summary>
     </description>
-    <prop name="ErrorCode">
-      <summary>
-        The <c>Momento.Sdk.Exceptions.MomentoErrorCode</c> value for the
-        <c>Error</c> object. Example:<br/>
-        <code>
-          if (errorResponse.ErrorCode == MomentoErrorCode.TIMEOUT_ERROR)
-          {
-            // handle timeout error
-          }
-        </code>
-      </summary>
-    </prop>
-    <prop name="InnerException">
-      <summary>
-        The <c>SdkException</c> object used to construct the response.
-      </summary>
-    </prop>
-    <prop name="Message">
-      <summary>
-        An explanation of conditions that caused and potential
-        ways to resolve the error.
-      </summary>
-    </prop>
   </class>
   <class name="SdkException">
       <description>
