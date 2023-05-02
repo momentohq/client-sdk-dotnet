@@ -58,7 +58,7 @@ public abstract class CacheGetBatchResponse
         }
     }
 
-    public class Error : CacheGetBatchResponse
+    public class Error : CacheGetBatchResponse, IError
     {
         private readonly SdkException _error;
         public Error(SdkException error)
