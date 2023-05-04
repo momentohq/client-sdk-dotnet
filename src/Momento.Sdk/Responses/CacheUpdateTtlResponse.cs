@@ -8,7 +8,7 @@ using Momento.Sdk.Exceptions;
 /// response object is resolved to a type-safe object of one of
 /// the following subtypes:
 /// <list type="bullet">
-/// <item><description>CacheUpdateTtlResponse.Hit</description></item>
+/// <item><description>CacheUpdateTtlResponse.Set</description></item>
 /// <item><description>CacheUpdateTtlResponse.Miss</description></item>
 /// <item><description>CacheUpdateTtlResponse.Error</description></item>
 /// </list>
@@ -40,7 +40,7 @@ public abstract class CacheUpdateTtlResponse
     /// <summary>
     /// Indicates the key was found in the cache and the ttl was updated.
     /// </summary>
-    public class Hit : CacheUpdateTtlResponse { }
+    public class Set : CacheUpdateTtlResponse { }
 
     /// <summary>
     /// Indicates the key was not found in the cache, hence the ttl was not updated.

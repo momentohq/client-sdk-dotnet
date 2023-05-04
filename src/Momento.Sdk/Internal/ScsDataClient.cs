@@ -444,7 +444,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
         if (response.ResultCase == _UpdateTtlResponse.ResultOneofCase.Set)
         {
-            return this._logger.LogTraceRequestSuccess(REQUEST_TYPE_UPDATE_TTL, cacheName, key, null, ttl, new CacheUpdateTtlResponse.Hit());
+            return this._logger.LogTraceRequestSuccess(REQUEST_TYPE_UPDATE_TTL, cacheName, key, null, ttl, new CacheUpdateTtlResponse.Set());
         }
         else if (response.ResultCase == _UpdateTtlResponse.ResultOneofCase.Missing)
         {

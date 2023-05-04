@@ -58,7 +58,7 @@ public class TtlTest : TestBase
     }
 
     [Fact]
-    public async Task UpdateTtlAsync_KeyIsByteArrayAndExists_UpdatesTtl()
+    public async Task UpdateTtlAsync_KeyIsByteArrayAndExists_IsSet()
     {
         // Add an item with a minute ttl
         byte[] key = Utils.NewGuidByteArray();
@@ -73,7 +73,7 @@ public class TtlTest : TestBase
 
         // Let's make the TTL really small.
         var updateTtlResponse = await client.UpdateTtlAsync(cacheName, key, TimeSpan.FromSeconds(1));
-        Assert.True(updateTtlResponse is CacheUpdateTtlResponse.Hit, $"UpdateTtl call should have been Hit but was: {response}");
+        Assert.True(updateTtlResponse is CacheUpdateTtlResponse.Set, $"UpdateTtl call should have been Set but was: {response}");
 
         // Wait for the TTL to expire
         await Task.Delay(1000);
@@ -85,7 +85,7 @@ public class TtlTest : TestBase
     }
 
     [Fact]
-    public async Task UpdateTtlAsync_KeyIsStringAndExists_UpdatesTtl()
+    public async Task UpdateTtlAsync_KeyIsStringAndExists_IsSet()
     {
         // Add an item with a minute ttl
         string key = Utils.NewGuidString();
@@ -100,7 +100,7 @@ public class TtlTest : TestBase
 
         // Let's make the TTL really small.
         var updateTtlResponse = await client.UpdateTtlAsync(cacheName, key, TimeSpan.FromSeconds(1));
-        Assert.True(updateTtlResponse is CacheUpdateTtlResponse.Hit, $"UpdateTtl call should have been Hit but was: {response}");
+        Assert.True(updateTtlResponse is CacheUpdateTtlResponse.Set, $"UpdateTtl call should have been Set but was: {response}");
 
         // Wait for the TTL to expire
         await Task.Delay(1000);
