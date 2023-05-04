@@ -15,14 +15,13 @@ using Momento.Sdk.Exceptions;
 /// Pattern matching can be used to operate on the appropriate subtype.
 /// For example:
 /// <code>
-/// if (response is CacheUpdateTtlResponse.Hit hitResponse)
+/// if (response is CacheUpdateTtlResponse.Set setResponse)
 /// {
-///    // handle hit as appropriate
-///    return hitResponse.ValueString;
+///    // handle ttl updated as appropriate
 /// }
 /// else if (response is CacheUpdateTtlResponse.Miss missResponse)
 /// {
-///    // handle miss as appropriate
+///    // handle ttl not updated because key was not found as appropriate
 /// }
 /// else if (response is CacheUpdateTtlResponse.Error errorResponse)
 /// {
