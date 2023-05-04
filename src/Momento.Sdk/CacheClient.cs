@@ -84,7 +84,7 @@ public class CacheClient : ICacheClient
     }
 
     /// <inheritdoc />
-    async Task<CacheKeyExistsResponse> ICacheClient.KeyExistsAsync(string cacheName, byte[] key)
+    public async Task<CacheKeyExistsResponse> KeyExistsAsync(string cacheName, byte[] key)
     {
         try
         {
@@ -99,7 +99,7 @@ public class CacheClient : ICacheClient
     }
 
     /// <inheritdoc />
-    async Task<CacheKeyExistsResponse> ICacheClient.KeyExistsAsync(string cacheName, string key)
+    public async Task<CacheKeyExistsResponse> KeyExistsAsync(string cacheName, string key)
     {
         try
         {
@@ -114,7 +114,7 @@ public class CacheClient : ICacheClient
     }
 
     /// <inheritdoc />
-    async Task<CacheKeysExistResponse> ICacheClient.KeysExistAsync(string cacheName, IEnumerable<byte[]> keys)
+    public async Task<CacheKeysExistResponse> KeysExistAsync(string cacheName, IEnumerable<byte[]> keys)
     {
         try
         {
@@ -130,7 +130,7 @@ public class CacheClient : ICacheClient
     }
 
     /// <inheritdoc />
-    async Task<CacheKeysExistResponse> ICacheClient.KeysExistAsync(string cacheName, IEnumerable<string> keys)
+    public async Task<CacheKeysExistResponse> KeysExistAsync(string cacheName, IEnumerable<string> keys)
     {
         try
         {
@@ -145,6 +145,45 @@ public class CacheClient : ICacheClient
         return await this.DataClient.KeysExistAsync(cacheName, keys);
     }
 
+    /// <inheritdoc />
+    public async Task<CacheUpdateTtlResponse> UpdateTtlAsync(string cacheName, byte[] key, TimeSpan ttl)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(key, nameof(key));
+            Utils.ArgumentStrictlyPositive(ttl, nameof(ttl));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheUpdateTtlResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return new CacheUpdateTtlResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        return await this.DataClient.UpdateTtlAsync(cacheName, key, ttl);
+    }
+
+    /// <inheritdoc />
+    public async Task<CacheUpdateTtlResponse> UpdateTtlAsync(string cacheName, string key, TimeSpan ttl)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(key, nameof(key));
+            Utils.ArgumentStrictlyPositive(ttl, nameof(ttl));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheUpdateTtlResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return new CacheUpdateTtlResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        return await this.DataClient.UpdateTtlAsync(cacheName, key, ttl);
+    }
 
     /// <inheritdoc />
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, TimeSpan? ttl = null)
