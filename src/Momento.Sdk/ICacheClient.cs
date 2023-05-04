@@ -160,6 +160,17 @@ public interface ICacheClient : IDisposable
     /// <inheritdoc cref="KeysExistAsync(string, IEnumerable{byte[]})"/>
     public Task<CacheKeysExistResponse> KeysExistAsync(string cacheName, IEnumerable<string> keys);
 
+    /// <summary>
+    /// Overwrites the TTL of a cache item with the provided TTL.
+    /// </summary>
+    /// <param name="cacheName">The name of the cache to perform the lookup in.</param>
+    /// <param name="key">The key to update the TTL for.</param>
+    /// <param name="ttl">The new TTL for the item.</param>
+    /// <returns>Task representing the result of the update TTL operation.</returns>
+    public Task<CacheUpdateTtlResponse> UpdateTtlAsync(string cacheName, byte[] key, TimeSpan ttl);
+
+    /// <inheritdoc cref="UpdateTtlAsync(string, byte[], TimeSpan)"/>
+    public Task<CacheUpdateTtlResponse> UpdateTtlAsync(string cacheName, string key, TimeSpan ttl);
 
     /// <summary>
     /// Set the value in cache with a given time to live (TTL) seconds.

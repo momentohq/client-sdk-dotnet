@@ -23,6 +23,7 @@ namespace Momento.Sdk.Internal;
 public interface IDataClient
 {
     public Task<_KeysExistResponse> KeysExistAsync(_KeysExistRequest request, CallOptions callOptions);
+    public Task<_UpdateTtlResponse> UpdateTtlAsync(_UpdateTtlRequest request, CallOptions callOptions);
     public Task<_GetResponse> GetAsync(_GetRequest request, CallOptions callOptions);
     public Task<_SetResponse> SetAsync(_SetRequest request, CallOptions callOptions);
     public Task<_DeleteResponse> DeleteAsync(_DeleteRequest request, CallOptions callOptions);
@@ -71,6 +72,12 @@ public class DataClientWithMiddleware : IDataClient
     public async Task<_KeysExistResponse> KeysExistAsync(_KeysExistRequest request, CallOptions callOptions)
     {
         var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.KeysExistAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_UpdateTtlResponse> UpdateTtlAsync(_UpdateTtlRequest request, CallOptions callOptions)
+    {
+        var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.UpdateTtlAsync(r, o));
         return await wrapped.ResponseAsync;
     }
 

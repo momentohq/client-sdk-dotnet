@@ -96,6 +96,16 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return await this.SendKeysExistAsync(cacheName, keys: keys.ToEnumerableByteString());
     }
 
+    public async Task<CacheUpdateTtlResponse> UpdateTtlAsync(string cacheName, byte[] key, TimeSpan ttl)
+    {
+        return await this.SendUpdateTtlAsync(cacheName, key: key.ToByteString(), ttl: ttl);
+    }
+
+    public async Task<CacheUpdateTtlResponse> UpdateTtlAsync(string cacheName, string key, TimeSpan ttl)
+    {
+        return await this.SendUpdateTtlAsync(cacheName, key: key.ToByteString(), ttl: ttl);
+    }
+
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, TimeSpan? ttl = null)
     {
         return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttl: ttl);
@@ -410,6 +420,42 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
 
         return this._logger.LogTraceRequestSuccess(REQUEST_TYPE_KEYS_EXIST, cacheName, keys.ToString().ToByteString(), null, null, new CacheKeysExistResponse.Success(keys, response));
+    }
+
+    const string REQUEST_TYPE_UPDATE_TTL = "UPDATE_TTL";
+    private async Task<CacheUpdateTtlResponse> SendUpdateTtlAsync(string cacheName, ByteString key, TimeSpan ttl)
+    {
+        _UpdateTtlRequest request = new _UpdateTtlRequest()
+        {
+            CacheKey = key,
+            OverwriteToMilliseconds = TtlToMilliseconds(ttl)
+        };
+        _UpdateTtlResponse response;
+        var metadata = MetadataWithCache(cacheName);
+        try
+        {
+            this._logger.LogTraceExecutingRequest(REQUEST_TYPE_UPDATE_TTL, cacheName, key, null, ttl);
+            response = await this.grpcManager.Client.UpdateTtlAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+        }
+        catch (Exception e)
+        {
+            return this._logger.LogTraceRequestError(REQUEST_TYPE_UPDATE_TTL, cacheName, key, null, ttl, new CacheUpdateTtlResponse.Error(_exceptionMapper.Convert(e, metadata)));
+        }
+
+        if (response.ResultCase == _UpdateTtlResponse.ResultOneofCase.Set)
+        {
+            return this._logger.LogTraceRequestSuccess(REQUEST_TYPE_UPDATE_TTL, cacheName, key, null, ttl, new CacheUpdateTtlResponse.Hit());
+        }
+        else if (response.ResultCase == _UpdateTtlResponse.ResultOneofCase.Missing)
+        {
+            return this._logger.LogTraceRequestSuccess(REQUEST_TYPE_UPDATE_TTL, cacheName, key, null, ttl, new CacheUpdateTtlResponse.Miss());
+        }
+        else
+        {
+            // The other alternative is "NotSet", which is impossible when doing OverwriteTtl.
+            return this._logger.LogTraceRequestError(REQUEST_TYPE_UPDATE_TTL, cacheName, key, null, ttl, new CacheUpdateTtlResponse.Error(
+                _exceptionMapper.Convert(new Exception("Unknown response type"), metadata)));
+        }
     }
 
     const string REQUEST_TYPE_SET = "SET";
@@ -1058,7 +1104,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
         return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_LIST_FETCH, cacheName, listName, new CacheListFetchResponse.Miss());
     }
-    
+
     const string REQUEST_TYPE_LIST_RETAIN = "LIST_RETAIN";
     private async Task<CacheListRetainResponse> SendListRetainAsync(string cacheName, string listName, int? startIndex, int? endIndex)
     {
@@ -1095,7 +1141,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
         return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_LIST_RETAIN, cacheName, listName, new CacheListRetainResponse.Success());
     }
-    
+
     const string REQUEST_TYPE_LIST_REMOVE_VALUE = "LIST_REMOVE_VALUE";
     private async Task<CacheListRemoveValueResponse> SendListRemoveValueAsync(string cacheName, string listName, ByteString value)
     {
