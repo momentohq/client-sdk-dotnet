@@ -47,7 +47,7 @@ public class SetTest : TestBase
         var setName = Utils.NewGuidString();
         var element = Utils.NewGuidByteArray();
 
-        CacheSetAddElementResponse response = await client.SetAddElementAsync(cacheName, setName, element, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(5)).WithNoRefreshTtlOnUpdates());
+        CacheSetAddElementResponse response = await client.SetAddElementAsync(cacheName, setName, element, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(4)).WithNoRefreshTtlOnUpdates());
         Assert.True(response is CacheSetAddElementResponse.Success, $"Unexpected response: {response}");
         await Task.Delay(100);
 
@@ -108,7 +108,7 @@ public class SetTest : TestBase
         var setName = Utils.NewGuidString();
         var element = Utils.NewGuidString();
 
-        CacheSetAddElementResponse response = await client.SetAddElementAsync(cacheName, setName, element, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(5)).WithNoRefreshTtlOnUpdates());
+        CacheSetAddElementResponse response = await client.SetAddElementAsync(cacheName, setName, element, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(4)).WithNoRefreshTtlOnUpdates());
         Assert.True(response is CacheSetAddElementResponse.Success, $"Unexpected response: {response}");
         await Task.Delay(100);
 
@@ -185,7 +185,7 @@ public class SetTest : TestBase
         var element = Utils.NewGuidByteArray();
         var content = new List<byte[]>() { element };
 
-        CacheSetAddElementsResponse response = await client.SetAddElementsAsync(cacheName, setName, content, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(5)).WithNoRefreshTtlOnUpdates());
+        CacheSetAddElementsResponse response = await client.SetAddElementsAsync(cacheName, setName, content, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(4)).WithNoRefreshTtlOnUpdates());
         Assert.True(response is CacheSetAddElementsResponse.Success, $"Unexpected response: {response}");
         await Task.Delay(100);
 
@@ -265,7 +265,7 @@ public class SetTest : TestBase
         var element = Utils.NewGuidString();
         var content = new List<string>() { element };
 
-        CacheSetAddElementsResponse response = await client.SetAddElementsAsync(cacheName, setName, content, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(5)).WithNoRefreshTtlOnUpdates());
+        CacheSetAddElementsResponse response = await client.SetAddElementsAsync(cacheName, setName, content, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(4)).WithNoRefreshTtlOnUpdates());
         Assert.True(response is CacheSetAddElementsResponse.Success, $"Unexpected response: {response}");
         await Task.Delay(100);
 
