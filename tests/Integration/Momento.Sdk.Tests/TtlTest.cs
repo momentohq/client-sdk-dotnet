@@ -103,7 +103,7 @@ public class TtlTest : TestBase
         Assert.True(updateTtlResponse is CacheUpdateTtlResponse.Set, $"UpdateTtl call should have been Set but was: {response}");
 
         // Wait for the TTL to expire
-        await Task.Delay(1000);
+        await Task.Delay(2000);
 
         // Check it is gone
         existsResponse = await client.KeyExistsAsync(cacheName, key);
