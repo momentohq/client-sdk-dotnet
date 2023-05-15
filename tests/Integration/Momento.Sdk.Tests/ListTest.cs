@@ -285,11 +285,11 @@ public class ListTest : TestBase
         var listName = Utils.NewGuidString();
         byte[][] values = new byte[][] { Utils.NewGuidByteArray() };
 
-        await client.ListConcatenateFrontAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.initialRefreshTtl)).WithNoRefreshTtlOnUpdates());
-        await Task.Delay(Utils.waitForItemToBeSet);
+        await client.ListConcatenateFrontAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.InitialRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        await Task.Delay(Utils.WaitForItemToBeSet);
 
-        await client.ListConcatenateFrontAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
-        await Task.Delay(Utils.waitForInitialItemToExpire);
+        await client.ListConcatenateFrontAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        await Task.Delay(Utils.WaitForInitialItemToExpire);
 
         CacheListFetchResponse response = await client.ListFetchAsync(cacheName, listName);
         Assert.True(response is CacheListFetchResponse.Miss, $"Unexpected response: {response}");
@@ -302,7 +302,7 @@ public class ListTest : TestBase
         byte[][] values = new byte[][] { Utils.NewGuidByteArray() };
 
         await client.ListConcatenateFrontAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(2)).WithNoRefreshTtlOnUpdates());
-        await client.ListConcatenateFrontAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)));
+        await client.ListConcatenateFrontAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)));
         await Task.Delay(2000);
 
         CacheListFetchResponse response = await client.ListFetchAsync(cacheName, listName);
@@ -365,11 +365,11 @@ public class ListTest : TestBase
         var listName = Utils.NewGuidString();
         string[] values = new string[] { Utils.NewGuidString() };
 
-        await client.ListConcatenateFrontAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.initialRefreshTtl)).WithNoRefreshTtlOnUpdates());
-        await Task.Delay(Utils.waitForItemToBeSet);
+        await client.ListConcatenateFrontAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.InitialRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        await Task.Delay(Utils.WaitForItemToBeSet);
 
-        await client.ListConcatenateFrontAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
-        await Task.Delay(Utils.waitForInitialItemToExpire);
+        await client.ListConcatenateFrontAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        await Task.Delay(Utils.WaitForInitialItemToExpire);
 
         CacheListFetchResponse response = await client.ListFetchAsync(cacheName, listName);
         Assert.True(response is CacheListFetchResponse.Miss, $"Unexpected response: {response}");
@@ -382,7 +382,7 @@ public class ListTest : TestBase
         string[] values = new string[] { Utils.NewGuidString() };
 
         await client.ListConcatenateFrontAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(2)).WithNoRefreshTtlOnUpdates());
-        await client.ListConcatenateFrontAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)).WithRefreshTtlOnUpdates());
+        await client.ListConcatenateFrontAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)).WithRefreshTtlOnUpdates());
         await Task.Delay(2000);
 
         CacheListFetchResponse response = await client.ListFetchAsync(cacheName, listName);
@@ -461,10 +461,10 @@ public class ListTest : TestBase
         var listName = Utils.NewGuidString();
         byte[][] values = new byte[][] { Utils.NewGuidByteArray() };
 
-        await client.ListConcatenateBackAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.initialRefreshTtl)).WithNoRefreshTtlOnUpdates());
-        await Task.Delay(Utils.waitForItemToBeSet);
-        await client.ListConcatenateBackAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
-        await Task.Delay(Utils.waitForInitialItemToExpire);
+        await client.ListConcatenateBackAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.InitialRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        await Task.Delay(Utils.WaitForItemToBeSet);
+        await client.ListConcatenateBackAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        await Task.Delay(Utils.WaitForInitialItemToExpire);
 
         CacheListFetchResponse response = await client.ListFetchAsync(cacheName, listName);
         Assert.True(response is CacheListFetchResponse.Miss, $"Unexpected response: {response}");
@@ -476,8 +476,8 @@ public class ListTest : TestBase
         var listName = Utils.NewGuidString();
         byte[][] values = new byte[][] { Utils.NewGuidByteArray() };
 
-        await client.ListConcatenateBackAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.initialRefreshTtl)).WithNoRefreshTtlOnUpdates());
-        await client.ListConcatenateBackAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)).WithRefreshTtlOnUpdates());
+        await client.ListConcatenateBackAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.InitialRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        await client.ListConcatenateBackAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)).WithRefreshTtlOnUpdates());
         await Task.Delay(2000);
 
         CacheListFetchResponse response = await client.ListFetchAsync(cacheName, listName);
@@ -540,11 +540,11 @@ public class ListTest : TestBase
         var listName = Utils.NewGuidString();
         string[] values = new string[] { Utils.NewGuidString() };
 
-        await client.ListConcatenateBackAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.initialRefreshTtl)).WithNoRefreshTtlOnUpdates());
-        await Task.Delay(Utils.waitForItemToBeSet);
+        await client.ListConcatenateBackAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.InitialRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        await Task.Delay(Utils.WaitForItemToBeSet);
 
-        await client.ListConcatenateBackAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
-        await Task.Delay(Utils.waitForInitialItemToExpire);
+        await client.ListConcatenateBackAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        await Task.Delay(Utils.WaitForInitialItemToExpire);
 
         CacheListFetchResponse response = await client.ListFetchAsync(cacheName, listName);
         Assert.True(response is CacheListFetchResponse.Miss, $"Unexpected response: {response}");
@@ -556,8 +556,8 @@ public class ListTest : TestBase
         var listName = Utils.NewGuidString();
         string[] values = new string[] { Utils.NewGuidString() };
 
-        await client.ListConcatenateBackAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.initialRefreshTtl)).WithNoRefreshTtlOnUpdates());
-        await client.ListConcatenateBackAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        await client.ListConcatenateBackAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.InitialRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        await client.ListConcatenateBackAsync(cacheName, listName, values, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
         await Task.Delay(2000);
 
         CacheListFetchResponse response = await client.ListFetchAsync(cacheName, listName);
@@ -629,11 +629,11 @@ public class ListTest : TestBase
         var listName = Utils.NewGuidString();
         var value = Utils.NewGuidByteArray();
 
-        await client.ListPushFrontAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.initialRefreshTtl)).WithNoRefreshTtlOnUpdates());
-        await Task.Delay(Utils.waitForItemToBeSet);
+        await client.ListPushFrontAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.InitialRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        await Task.Delay(Utils.WaitForItemToBeSet);
 
-        await client.ListPushFrontAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
-        await Task.Delay(Utils.waitForInitialItemToExpire);
+        await client.ListPushFrontAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        await Task.Delay(Utils.WaitForInitialItemToExpire);
 
         CacheListFetchResponse response = await client.ListFetchAsync(cacheName, listName);
         Assert.True(response is CacheListFetchResponse.Miss, $"Unexpected response: {response}");
@@ -646,7 +646,7 @@ public class ListTest : TestBase
         var value = Utils.NewGuidByteArray();
 
         await client.ListPushFrontAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(2)).WithNoRefreshTtlOnUpdates());
-        await client.ListPushFrontAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)));
+        await client.ListPushFrontAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)));
         await Task.Delay(2000);
 
         CacheListFetchResponse response = await client.ListFetchAsync(cacheName, listName);
@@ -716,11 +716,11 @@ public class ListTest : TestBase
         var listName = Utils.NewGuidString();
         var value = Utils.NewGuidString();
 
-        await client.ListPushFrontAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.initialRefreshTtl)).WithNoRefreshTtlOnUpdates());
-        await Task.Delay(Utils.waitForItemToBeSet);
+        await client.ListPushFrontAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.InitialRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        await Task.Delay(Utils.WaitForItemToBeSet);
 
-        await client.ListPushFrontAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
-        await Task.Delay(Utils.waitForInitialItemToExpire);
+        await client.ListPushFrontAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        await Task.Delay(Utils.WaitForInitialItemToExpire);
 
         CacheListFetchResponse response = await client.ListFetchAsync(cacheName, listName);
         Assert.True(response is CacheListFetchResponse.Miss, $"Unexpected response: {response}");
@@ -733,7 +733,7 @@ public class ListTest : TestBase
         var value = Utils.NewGuidString();
 
         await client.ListPushFrontAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(2)).WithNoRefreshTtlOnUpdates());
-        await client.ListPushFrontAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)));
+        await client.ListPushFrontAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)));
         await Task.Delay(2000);
 
         CacheListFetchResponse response = await client.ListFetchAsync(cacheName, listName);
@@ -802,11 +802,11 @@ public class ListTest : TestBase
         var listName = Utils.NewGuidString();
         var value = Utils.NewGuidByteArray();
 
-        await client.ListPushBackAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.initialRefreshTtl)).WithNoRefreshTtlOnUpdates());
-        await Task.Delay(Utils.waitForItemToBeSet);
+        await client.ListPushBackAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.InitialRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        await Task.Delay(Utils.WaitForItemToBeSet);
 
-        await client.ListPushBackAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
-        await Task.Delay(Utils.waitForInitialItemToExpire);
+        await client.ListPushBackAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        await Task.Delay(Utils.WaitForInitialItemToExpire);
 
         CacheListFetchResponse response = await client.ListFetchAsync(cacheName, listName);
         Assert.True(response is CacheListFetchResponse.Miss, $"Unexpected response: {response}");
@@ -819,7 +819,7 @@ public class ListTest : TestBase
         var value = Utils.NewGuidByteArray();
 
         await client.ListPushBackAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(2)).WithNoRefreshTtlOnUpdates());
-        await client.ListPushBackAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)));
+        await client.ListPushBackAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)));
         await Task.Delay(2000);
 
         CacheListFetchResponse response = await client.ListFetchAsync(cacheName, listName);
@@ -961,10 +961,10 @@ public class ListTest : TestBase
         var value = Utils.NewGuidString();
 
         await client.ListPushBackAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(2)).WithNoRefreshTtlOnUpdates());
-        await Task.Delay(Utils.waitForItemToBeSet);
+        await Task.Delay(Utils.WaitForItemToBeSet);
 
-        await client.ListPushBackAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
-        await Task.Delay(Utils.waitForInitialItemToExpire);
+        await client.ListPushBackAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        await Task.Delay(Utils.WaitForInitialItemToExpire);
 
         CacheListFetchResponse response = await client.ListFetchAsync(cacheName, listName);
         Assert.True(response is CacheListFetchResponse.Miss, $"Unexpected response: {response}");
@@ -977,7 +977,7 @@ public class ListTest : TestBase
         var value = Utils.NewGuidString();
 
         await client.ListPushBackAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(2)));
-        await client.ListPushBackAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)));
+        await client.ListPushBackAsync(cacheName, listName, value, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)));
         await Task.Delay(2000);
 
         CacheListFetchResponse response = await client.ListFetchAsync(cacheName, listName);

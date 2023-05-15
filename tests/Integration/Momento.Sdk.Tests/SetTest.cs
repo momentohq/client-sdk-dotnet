@@ -47,13 +47,13 @@ public class SetTest : TestBase
         var setName = Utils.NewGuidString();
         var element = Utils.NewGuidByteArray();
 
-        CacheSetAddElementResponse response = await client.SetAddElementAsync(cacheName, setName, element, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.initialRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        CacheSetAddElementResponse response = await client.SetAddElementAsync(cacheName, setName, element, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.InitialRefreshTtl)).WithNoRefreshTtlOnUpdates());
         Assert.True(response is CacheSetAddElementResponse.Success, $"Unexpected response: {response}");
-        await Task.Delay(Utils.waitForItemToBeSet);
+        await Task.Delay(Utils.WaitForItemToBeSet);
 
-        response = await client.SetAddElementAsync(cacheName, setName, element, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        response = await client.SetAddElementAsync(cacheName, setName, element, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
         Assert.True(response is CacheSetAddElementResponse.Success, $"Unexpected response: {response}");
-        await Task.Delay(Utils.waitForInitialItemToExpire);
+        await Task.Delay(Utils.WaitForInitialItemToExpire);
         CacheSetFetchResponse fetchResponse = await client.SetFetchAsync(cacheName, setName);
         Assert.True(fetchResponse is CacheSetFetchResponse.Miss, $"Unexpected response: {fetchResponse}");
     }
@@ -66,7 +66,7 @@ public class SetTest : TestBase
 
         CacheSetAddElementResponse response = await client.SetAddElementAsync(cacheName, setName, element, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(2)).WithNoRefreshTtlOnUpdates());
         Assert.True(response is CacheSetAddElementResponse.Success, $"Unexpected response: {response}");
-        await client.SetAddElementAsync(cacheName, setName, element, CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)));
+        await client.SetAddElementAsync(cacheName, setName, element, CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)));
         await Task.Delay(2000);
 
         CacheSetFetchResponse fetchResponse = await client.SetFetchAsync(cacheName, setName);
@@ -108,13 +108,13 @@ public class SetTest : TestBase
         var setName = Utils.NewGuidString();
         var element = Utils.NewGuidString();
 
-        CacheSetAddElementResponse response = await client.SetAddElementAsync(cacheName, setName, element, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.initialRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        CacheSetAddElementResponse response = await client.SetAddElementAsync(cacheName, setName, element, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.InitialRefreshTtl)).WithNoRefreshTtlOnUpdates());
         Assert.True(response is CacheSetAddElementResponse.Success, $"Unexpected response: {response}");
-        await Task.Delay(Utils.waitForItemToBeSet);
+        await Task.Delay(Utils.WaitForItemToBeSet);
 
-        response = await client.SetAddElementAsync(cacheName, setName, element, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        response = await client.SetAddElementAsync(cacheName, setName, element, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
         Assert.True(response is CacheSetAddElementResponse.Success, $"Unexpected response: {response}");
-        await Task.Delay(Utils.waitForInitialItemToExpire);
+        await Task.Delay(Utils.WaitForInitialItemToExpire);
 
         CacheSetFetchResponse fetchResponse = await client.SetFetchAsync(cacheName, setName);
         Assert.True(fetchResponse is CacheSetFetchResponse.Miss, $"Unexpected response: {fetchResponse}");
@@ -128,7 +128,7 @@ public class SetTest : TestBase
 
         CacheSetAddElementResponse response = await client.SetAddElementAsync(cacheName, setName, element, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(2)).WithNoRefreshTtlOnUpdates());
         Assert.True(response is CacheSetAddElementResponse.Success, $"Unexpected response: {response}");
-        response = await client.SetAddElementAsync(cacheName, setName, element, CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)));
+        response = await client.SetAddElementAsync(cacheName, setName, element, CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)));
         Assert.True(response is CacheSetAddElementResponse.Success, $"Unexpected response: {response}");
         await Task.Delay(2000);
 
@@ -185,13 +185,13 @@ public class SetTest : TestBase
         var element = Utils.NewGuidByteArray();
         var content = new List<byte[]>() { element };
 
-        CacheSetAddElementsResponse response = await client.SetAddElementsAsync(cacheName, setName, content, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.initialRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        CacheSetAddElementsResponse response = await client.SetAddElementsAsync(cacheName, setName, content, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.InitialRefreshTtl)).WithNoRefreshTtlOnUpdates());
         Assert.True(response is CacheSetAddElementsResponse.Success, $"Unexpected response: {response}");
-        await Task.Delay(Utils.waitForItemToBeSet);
+        await Task.Delay(Utils.WaitForItemToBeSet);
 
-        response = await client.SetAddElementsAsync(cacheName, setName, content, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        response = await client.SetAddElementsAsync(cacheName, setName, content, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
         Assert.True(response is CacheSetAddElementsResponse.Success, $"Unexpected response: {response}");
-        await Task.Delay(Utils.waitForInitialItemToExpire);
+        await Task.Delay(Utils.WaitForInitialItemToExpire);
 
         CacheSetFetchResponse fetchResponse = await client.SetFetchAsync(cacheName, setName);
         Assert.True(fetchResponse is CacheSetFetchResponse.Miss, $"Unexpected response: {fetchResponse}");
@@ -206,7 +206,7 @@ public class SetTest : TestBase
 
         CacheSetAddElementsResponse response = await client.SetAddElementsAsync(cacheName, setName, content, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(2)).WithNoRefreshTtlOnUpdates());
         Assert.True(response is CacheSetAddElementsResponse.Success, $"Unexpected response: {response}");
-        await client.SetAddElementsAsync(cacheName, setName, content, CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)));
+        await client.SetAddElementsAsync(cacheName, setName, content, CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)));
         await Task.Delay(2000);
 
         CacheSetFetchResponse fetchResponse = await client.SetFetchAsync(cacheName, setName);
@@ -265,13 +265,13 @@ public class SetTest : TestBase
         var element = Utils.NewGuidString();
         var content = new List<string>() { element };
 
-        CacheSetAddElementsResponse response = await client.SetAddElementsAsync(cacheName, setName, content, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.initialRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        CacheSetAddElementsResponse response = await client.SetAddElementsAsync(cacheName, setName, content, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.InitialRefreshTtl)).WithNoRefreshTtlOnUpdates());
         Assert.True(response is CacheSetAddElementsResponse.Success, $"Unexpected response: {response}");
-        await Task.Delay(Utils.waitForItemToBeSet);
+        await Task.Delay(Utils.WaitForItemToBeSet);
 
-        response = await client.SetAddElementsAsync(cacheName, setName, content, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
+        response = await client.SetAddElementsAsync(cacheName, setName, content, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)).WithNoRefreshTtlOnUpdates());
         Assert.True(response is CacheSetAddElementsResponse.Success, $"Unexpected response: {response}");
-        await Task.Delay(Utils.waitForInitialItemToExpire);
+        await Task.Delay(Utils.WaitForInitialItemToExpire);
 
         CacheSetFetchResponse fetchResponse = await client.SetFetchAsync(cacheName, setName);
         Assert.True(fetchResponse is CacheSetFetchResponse.Miss, $"Unexpected response: {fetchResponse}");
@@ -286,7 +286,7 @@ public class SetTest : TestBase
 
         CacheSetAddElementsResponse response = await client.SetAddElementsAsync(cacheName, setName, content, ttl: CollectionTtl.Of(TimeSpan.FromSeconds(2)).WithNoRefreshTtlOnUpdates());
         Assert.True(response is CacheSetAddElementsResponse.Success, $"Unexpected response: {response}");
-        response = await client.SetAddElementsAsync(cacheName, setName, content, CollectionTtl.Of(TimeSpan.FromSeconds(Utils.updatedRefreshTtl)));
+        response = await client.SetAddElementsAsync(cacheName, setName, content, CollectionTtl.Of(TimeSpan.FromSeconds(Utils.UpdatedRefreshTtl)));
         Assert.True(response is CacheSetAddElementsResponse.Success, $"Unexpected response: {response}");
         await Task.Delay(2000);
 
