@@ -232,9 +232,13 @@ public class DataGrpcManager : IDisposable
     private readonly string runtimeVersion = "dotnet:" + Environment.Version;
     private readonly ILogger _logger;
 
-    internal DataGrpcManager(IConfiguration config, string authToken, string host)
+    internal DataGrpcManager(IConfiguration config, string authToken, string endpoint)
     {
-        var url = $"https://{host}";
+#if USE_GRPC_WEB
+        // Note: all web SDK requests are routed to a `web.` subdomain to allow us flexibility on the server
+        endpoint = $"web.{endpoint}";
+#endif
+        var uri = $"https://{endpoint}";
         var channelOptions = config.TransportStrategy.GrpcConfig.GrpcChannelOptions;
         if (channelOptions.LoggerFactory == null)
         {
@@ -245,7 +249,7 @@ public class DataGrpcManager : IDisposable
         channelOptions.HttpHandler = new GrpcWebHandler(new HttpClientHandler());
 #endif
 
-        this.channel = GrpcChannel.ForAddress(url, channelOptions);
+        this.channel = GrpcChannel.ForAddress(uri, channelOptions);
         List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version), new Header(name: Header.RuntimeVersionKey, value: runtimeVersion) };
 
         this._logger = config.LoggerFactory.CreateLogger<DataGrpcManager>();

@@ -82,6 +82,10 @@ internal sealed class ControlGrpcManager : IDisposable
 
     public ControlGrpcManager(ILoggerFactory loggerFactory, string authToken, string endpoint)
     {
+#if USE_GRPC_WEB
+        // Note: all web SDK requests are routed to a `web.` subdomain to allow us flexibility on the server
+        endpoint = $"web.{endpoint}";
+#endif
         var uri = $"https://{endpoint}";
         this.channel = GrpcChannel.ForAddress(uri, new GrpcChannelOptions()
         {
