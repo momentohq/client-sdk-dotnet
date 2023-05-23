@@ -226,10 +226,15 @@ public class DataGrpcManager : IDisposable
 
     public readonly IDataClient Client;
 
-    private readonly string version = "dotnet:" + GetAssembly(typeof(Responses.CacheGetResponse)).GetName().Version.ToString();
+#if USE_GRPC_WEB
+    private readonly static string moniker = "dotnet-web";
+#else
+    private readonly static string moniker = "dotnet";
+#endif
+    private readonly string version = $"{moniker}:{GetAssembly(typeof(Responses.CacheGetResponse)).GetName().Version.ToString()}";
     // Some System.Environment.Version remarks to be aware of
     // https://learn.microsoft.com/en-us/dotnet/api/system.environment.version?view=netstandard-2.0#remarks
-    private readonly string runtimeVersion = "dotnet:" + Environment.Version;
+    private readonly string runtimeVersion = $"{moniker}:{Environment.Version}";
     private readonly ILogger _logger;
 
     internal DataGrpcManager(IConfiguration config, string authToken, string endpoint)
