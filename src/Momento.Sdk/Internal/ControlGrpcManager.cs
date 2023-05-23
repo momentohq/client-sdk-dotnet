@@ -74,14 +74,24 @@ internal sealed class ControlGrpcManager : IDisposable
 {
     private readonly GrpcChannel channel;
     public IControlClient Client { get; }
-    private readonly string version = "dotnet:" + GetAssembly(typeof(Momento.Sdk.Responses.CacheGetResponse)).GetName().Version.ToString();
+
+#if USE_GRPC_WEB
+    private readonly static string moniker = "dotnet-web";
+#else
+    private readonly static string moniker = "dotnet";
+#endif
+    private readonly string version = $"{moniker}:{GetAssembly(typeof(Momento.Sdk.Responses.CacheGetResponse)).GetName().Version.ToString()}";
     // Some System.Environment.Version remarks to be aware of
     // https://learn.microsoft.com/en-us/dotnet/api/system.environment.version?view=netstandard-2.0#remarks
-    private readonly string runtimeVersion = "dotnet:" + System.Environment.Version;
+    private readonly string runtimeVersion = $"{moniker}:{System.Environment.Version}";
     private readonly ILogger _logger;
 
     public ControlGrpcManager(ILoggerFactory loggerFactory, string authToken, string endpoint)
     {
+#if USE_GRPC_WEB
+        // Note: all web SDK requests are routed to a `web.` subdomain to allow us flexibility on the server
+        endpoint = $"web.{endpoint}";
+#endif
         var uri = $"https://{endpoint}";
         this.channel = GrpcChannel.ForAddress(uri, new GrpcChannelOptions()
         {
