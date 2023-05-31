@@ -48,6 +48,13 @@ test-net6:
 test-net-framework:
 	@dotnet test -f net461
 
+
+.PHONY: run-examples
+## Run example applications and snippets
+run-examples:
+	@dotnet run --project examples/MomentoApplication
+	@dotnet run --project examples/DocExampleApis
+
 # See <https://gist.github.com/klmr/575726c7e05d8780505a> for explanation.
 .PHONY: help
 help:
