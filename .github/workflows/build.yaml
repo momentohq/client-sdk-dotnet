@@ -80,13 +80,23 @@ jobs:
         working-directory: ./examples/DocExampleApis
         run: dotnet run
 
+      - name: Test example failure
+        id: test-example-failure
+        run: |
+          if [[ "${{ steps.validation-momentoapplication.outcome }}" == "failure" || "${{ steps.validation-docexampleapis.outcome }}" == "failure" ]]
+          then
+            echo "failure=true" >> $GITHUB_OUTPUT
+          else
+            echo "failure=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Send CI failure mail
-        if: ${{ steps.validation-momentoapplication.outcome == 'failure' || steps.validation-docexampleapis.outcome == 'failure' }}
+        if: ${{ steps.test-example-failure.outputs.failure == 'true' }}
         uses: momentohq/standards-and-practices/github-actions/error-email-action@gh-actions-v1
         with:
           username: ${{secrets.MOMENTO_ROBOT_GMAIL_USERNAME}}
           password: ${{secrets.MOMENTO_ROBOT_GMAIL_PASSWORD}}
 
       - name: Flag Job Failure
-        if: ${{ steps.validation-momentoapplication.outcome == 'failure' || steps.validation-docexampleapis.outcome == 'failure' }}
+        if: ${{ steps.test-example-failure.outputs.failure == 'true' }}
         run: exit 1
