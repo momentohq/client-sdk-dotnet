@@ -1,19 +1,19 @@
-TODO: add more info here.
+# Running tests
 
-To run unit tests:
-
-```
-dotnet test tests/Unit/Momento.Sdk.Tests
-```
-
-To run integration tests:
+Unless you are testing older .NET runtimes on Windows, you should run the tests against the newer runtimes as follows:
 
 ```
-dotnet test tests/Integration/Momento.Sdk.Tests
+make test-net6
+```
+
+To test against older .NET runtimes run:
+
+```
+make test-net-framework
 ```
 
 To run specific tests:
 
 ```
-dotnet test --filter "FullyQualifiedName~CacheDataTest"
+dotnet test -f net6.0 --filter "FullyQualifiedName~CacheDataTest"
 ```
