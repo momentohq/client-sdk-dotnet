@@ -68,22 +68,25 @@ jobs:
         with:
           dotnet-version: "6.0.x"
 
-      - name: Run samples
-        id: validation
+      - name: Run MomentoApplication example
+        id: validation-momentoapplication
         continue-on-error: true
-        run: |
-          pushd examples
-            dotnet build MomentoApplication
-            dotnet run --project MomentoApplication
-          popd
+        working-directory: ./examples/MomentoApplication
+        run: dotnet run
+
+      - name: Run doc API snippets
+        id: validation-docexampleapis
+        continue-on-error: true
+        working-directory: ./examples/DocExampleApis
+        run: dotnet run
 
       - name: Send CI failure mail
-        if: ${{ steps.validation.outcome == 'failure' }}
+        if: ${{ steps.validation-momentoapplication.outcome == 'failure' || steps.validation-docexampleapis.outcome == 'failure' }}
         uses: momentohq/standards-and-practices/github-actions/error-email-action@gh-actions-v1
         with:
           username: ${{secrets.MOMENTO_ROBOT_GMAIL_USERNAME}}
           password: ${{secrets.MOMENTO_ROBOT_GMAIL_PASSWORD}}
 
       - name: Flag Job Failure
-        if: ${{ steps.validation.outcome == 'failure' }}
+        if: ${{ steps.validation-momentoapplication.outcome == 'failure' || steps.validation-docexampleapis.outcome == 'failure' }}
         run: exit 1
