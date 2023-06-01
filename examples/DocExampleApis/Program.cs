@@ -14,6 +14,7 @@ public class Program
             TimeSpan.FromSeconds(10));
 
         await Example_API_CreateCache(client);
+        await Example_API_FlushCache(client);
         await Example_API_DeleteCache(client);
         await Example_API_ListCaches(client);
     }
@@ -60,16 +61,17 @@ public class Program
             throw new Exception($"An error occurred while attempting to list caches: {result}");
         }
     }
-    /*
-    async function example_API_FlushCache(cacheClient: CacheClient) {
-      const result = await cacheClient.flushCache('test-cache');
-      if (result instanceof CacheFlush.Success) {
-        console.log("Cache 'test-cache' flushed");
-      } else if (result instanceof CacheFlush.Error) {
-        throw new Error(
-          `An error occurred while attempting to flush cache 'test-cache': ${result.errorCode()}: ${result.toString()}`
-        );
-      }
+
+    public static async Task Example_API_FlushCache(CacheClient cacheClient)
+    {
+        var result = await cacheClient.FlushCacheAsync("test-cache");
+        if (result is FlushCacheResponse.Success)
+        {
+            Console.WriteLine("Cache 'test-cache' flushed");
+        }
+        else if (result is FlushCacheResponse.Error)
+        {
+            throw new Exception($"An error occurred while attempting to flush cache 'test-cache': {result}");
+        }
     }
-    */
 }
