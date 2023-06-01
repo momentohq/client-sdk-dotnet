@@ -4,7 +4,7 @@ Japanese: [日本語](README.ja.md)
 
 ## Packages
 
-The Momento Dotnet SDK package is available on nuget: [momento](https://www.nuget.org/packages/Momento.Sdk).
+The Momento Dotnet SDK package is available on nuget: [momentohq/client-sdk-dotnet](https://www.nuget.org/packages/Momento.Sdk).
 
 ## Usage
 
