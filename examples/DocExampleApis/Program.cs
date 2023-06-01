@@ -27,34 +27,25 @@ public class Program
         {
             Console.WriteLine("Cache 'test-cache' already exists");
         }
-        else
+        else if (result is CreateCacheResponse.Error)
         {
             throw new Exception($"An error occurred while attempting to create cache 'test-cache': {result}");
         }
     }
+
+    public static async Task Example_API_DeleteCache(CacheClient cacheClient)
+    {
+        var result = await cacheClient.DeleteCacheAsync("test-cache");
+        if (result is DeleteCacheResponse.Success)
+        {
+            Console.WriteLine("Cache 'test-cache' deleted");
+        }
+        else if (result is DeleteCacheResponse.Error)
+        {
+            throw new Exception($"An error occurred while attempting to delete cache 'test-cache': {result}");
+        }
+    }
     /*
-    async function example_API_CreateCache(cacheClient: CacheClient) {
-      const result = await cacheClient.createCache('test-cache');
-      if (result instanceof CreateCache.Success) {
-        console.log("Cache 'test-cache' created");
-      } else if (result instanceof CreateCache.AlreadyExists) {
-        console.log("Cache 'test-cache' already exists");
-      } else {
-        throw new Error(`An error occurred while attempting to create cache 'test-cache': ${result.toString()}`);
-      }
-    }
-
-    async function example_API_DeleteCache(cacheClient: CacheClient) {
-      const result = await cacheClient.deleteCache('test-cache');
-      if (result instanceof DeleteCache.Success) {
-        console.log("Cache 'test-cache' deleted");
-      } else if (result instanceof DeleteCache.Error) {
-        throw new Error(
-          `An error occurred while attempting to delete cache 'test-cache': ${result.errorCode()}: ${result.toString()}`
-        );
-      }
-    }
-
     async function example_API_ListCaches(cacheClient: CacheClient) {
       const result = await cacheClient.listCaches();
       if (result instanceof ListCaches.Success) {
