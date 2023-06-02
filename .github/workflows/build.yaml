@@ -30,13 +30,15 @@ jobs:
           dotnet-version: "6.0.x"
 
       - name: Verify README generation
-        uses: momentohq/standards-and-practices/github-actions/oss-readme-template@gh-actions-v1
+        uses: momentohq/standards-and-practices/github-actions/oss-readme-template@gh-actions-v2
         with:
           project_status: official
           project_stability: stable
           project_type: sdk
           sdk_language: .NET
-          usage_example_path: ./examples/MomentoUsage/Program.cs
+          template_file: ./README.template.md
+          output_file: ./README.md
+          dev_docs_slug: dotnet
 
       - name: Commitlint and Other Shared Build Steps
         uses: momentohq/standards-and-practices/github-actions/shared-build@gh-actions-v1
