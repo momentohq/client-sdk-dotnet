@@ -50,4 +50,4 @@ jobs:
           sdk_language: .NET
           template_file: ./README.template.md
           output_file: ./README.md
-          dev_docs_slug: go
+          dev_docs_slug: dotnet
