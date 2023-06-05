@@ -19,11 +19,11 @@ namespace Momento.Sdk.Responses;
 /// {
 ///     return hitResponse.Length;
 /// }
-/// else if (response is CacheListLengthResponse.Miss missResponse)
+/// else if (response is CacheDictionaryLengthResponse.Miss missResponse)
 /// {
 ///     // handle missResponse as appropriate
 /// }
-/// else if (response is CacheListLengthResponse.Error errorResponse)
+/// else if (response is CacheDictionaryLengthResponse.Error errorResponse)
 /// {
 ///     // handle error as appropriate
 /// }
