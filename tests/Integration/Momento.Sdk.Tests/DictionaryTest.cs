@@ -1118,4 +1118,27 @@ public class DictionaryTest : TestBase
         Assert.True((await client.DictionaryGetFieldAsync(cacheName, dictionaryName, fields[1])) is CacheDictionaryGetFieldResponse.Miss);
         Assert.True((await client.DictionaryGetFieldAsync(cacheName, dictionaryName, otherField)) is CacheDictionaryGetFieldResponse.Hit);
     }
+
+    [Fact]
+    public async Task DictionaryLengthAsync_DictionaryIsMissing()
+    {
+        var dictionaryName = Utils.NewGuidString();
+        CacheDictionaryLengthResponse response = await client.DictionaryLengthAsync(cacheName, dictionaryName);
+        Assert.True(response is CacheDictionaryLengthResponse.Miss, $"Unexpected response: {response}");
+    }
+
+    [Fact]
+    public async Task DictionaryLengthAsync_HappyPath()
+    {
+        var dictionaryName = Utils.NewGuidString();
+        var field = Utils.NewGuidByteArray();
+        var value = Utils.NewGuidByteArray();
+
+        await client.DictionarySetFieldAsync(cacheName, dictionaryName, field, value);
+
+        CacheDictionaryLengthResponse lengthResponse = await client.DictionaryLengthAsync(cacheName, dictionaryName);
+        Assert.True(lengthResponse is CacheDictionaryLengthResponse.Hit, $"Unexpected response: {lengthResponse}");
+        var hitResponse = (CacheDictionaryLengthResponse.Hit)lengthResponse;
+        Assert.Equal(1, hitResponse.Length);
+    }
 }
