@@ -72,7 +72,7 @@ public abstract class CacheListFetchResponse
                 return new List<string>(values.Select(v => v.ToStringUtf8()));
             });
 
-            ListLength = checked((int)values.Count);
+            ListLength = values.Count;
         }
 
         /// <summary>
