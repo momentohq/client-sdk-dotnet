@@ -34,6 +34,8 @@ public interface IDataClient
     public Task<_DictionaryGetResponse> DictionaryGetAsync(_DictionaryGetRequest request, CallOptions callOptions);
     public Task<_DictionaryFetchResponse> DictionaryFetchAsync(_DictionaryFetchRequest request, CallOptions callOptions);
     public Task<_DictionaryDeleteResponse> DictionaryDeleteAsync(_DictionaryDeleteRequest request, CallOptions callOptions);
+    public Task<_DictionaryLengthResponse> DictionaryLengthAsync(_DictionaryLengthRequest request, CallOptions callOptions);
+
     public Task<_SetUnionResponse> SetUnionAsync(_SetUnionRequest request, CallOptions callOptions);
     public Task<_SetDifferenceResponse> SetDifferenceAsync(_SetDifferenceRequest request, CallOptions callOptions);
     public Task<_SetFetchResponse> SetFetchAsync(_SetFetchRequest request, CallOptions callOptions);
@@ -138,6 +140,12 @@ public class DataClientWithMiddleware : IDataClient
     public async Task<_DictionaryDeleteResponse> DictionaryDeleteAsync(_DictionaryDeleteRequest request, CallOptions callOptions)
     {
         var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.DictionaryDeleteAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_DictionaryLengthResponse> DictionaryLengthAsync(_DictionaryLengthRequest request, CallOptions callOptions)
+    {
+        var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.DictionaryLengthAsync(r, o));
         return await wrapped.ResponseAsync;
     }
 

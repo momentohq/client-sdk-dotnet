@@ -453,6 +453,15 @@ public interface ICacheClient : IDisposable
     public Task<CacheDictionaryRemoveFieldsResponse> DictionaryRemoveFieldsAsync(string cacheName, string dictionaryName, IEnumerable<string> fields);
 
     /// <summary>
+    /// Calculate the length of a dictionary in the cache.
+    ///
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+    /// <param name="dictionaryName">The dictionary to calculate length.</param>
+    /// <returns>Task representing the length of the dictionary.</returns>
+    public Task<CacheDictionaryLengthResponse> DictionaryLengthAsync(string cacheName, string dictionaryName);
+
+    /// <summary>
     /// Add an element to a set in the cache.
     ///
     /// After this operation, the set will contain the union

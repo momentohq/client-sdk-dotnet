@@ -47,6 +47,7 @@ namespace Momento.Sdk.Internal.Retry
             typeof(_DictionaryGetRequest),
             typeof(_DictionaryFetchRequest),
             typeof(_DictionaryDeleteRequest),
+            typeof(_DictionaryLengthRequest),
             typeof(_SetUnionRequest),
             typeof(_SetDifferenceRequest),
             typeof(_SetFetchRequest),

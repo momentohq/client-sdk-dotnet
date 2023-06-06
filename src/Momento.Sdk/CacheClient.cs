@@ -727,6 +727,22 @@ public class CacheClient : ICacheClient
         return await this.DataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
     }
 
+     /// <inheritdoc />
+    public async Task<CacheDictionaryLengthResponse> DictionaryLengthAsync(string cacheName, string dictionaryName)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(dictionaryName, nameof(dictionaryName));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheDictionaryLengthResponse.Error(new InvalidArgumentException(e.Message));
+        }
+
+        return await this.DataClient.DictionaryLengthAsync(cacheName, dictionaryName);
+    }
+
     /// <inheritdoc />
     public async Task<CacheSetAddElementResponse> SetAddElementAsync(string cacheName, string setName, byte[] element, CollectionTtl ttl = default(CollectionTtl))
     {
