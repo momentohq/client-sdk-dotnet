@@ -64,11 +64,13 @@ public class Function
 
     public async void FunctionHandler()
     {
+        Console.WriteLine("Hi there!");
         TimeSpan DEFAULT_TTL = TimeSpan.FromSeconds(60);
         ICredentialProvider authProvider = new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN");
         IConfiguration clientConfig = Configurations.InRegion.Lambda.Latest().WithClientTimeout(TimeSpan.FromSeconds(15));
         if (momento == null)
         {
+            Console.WriteLine("constructing client");
             momento = new CacheClient(
                 clientConfig, authProvider, DEFAULT_TTL
             );
@@ -100,8 +102,10 @@ public class Function
 
         // this will ensure that the program exits promptly if one of the async
         // tasks throws an uncaught exception.
+        Console.WriteLine("awaiting");
         var firstResult = await Task.WhenAny(asyncTasks);
         await firstResult;
+        Console.WriteLine("Got first result");
 
         await Task.WhenAll(asyncTasks);
         return;
@@ -134,6 +138,7 @@ public class Function
         if (getResponse is CacheGetResponse.Hit hitResponse)
         {
             var getDuration = getStartTime.ElapsedMilliseconds;
+            Console.WriteLine(getDuration);
             context.GetLatencies.RecordValue(getDuration);
             // TODO: sleep for random 1-10 sec interval and issue and time another get
         }
