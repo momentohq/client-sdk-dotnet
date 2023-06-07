@@ -33,7 +33,7 @@ public class Function
         string keyAttributeBase = "test-key";
 
         for (int i = 1; i <= numRequests; i++) {
-            Console.WriteLine("getting inside the loop");
+            Console.WriteLine("Getting inside the loop");
             string keyAttributeValue = $"{keyAttributeBase}-{i}";
             var request = new GetItemRequest
             {
@@ -44,9 +44,9 @@ public class Function
                 } 
             };
 
-            Console.WriteLine("request created");
+            Console.WriteLine("GetRequest created");
             var startTime = System.Diagnostics.Stopwatch.StartNew();
-            Console.WriteLine("starting the timer");
+            Console.WriteLine("Starting the stopwatch");
             var response = client.GetItemAsync(request);
             Console.WriteLine(response);
         
@@ -57,12 +57,12 @@ public class Function
                     return r;
                 }
             );
-            Console.WriteLine("continue with done");
+            Console.WriteLine("Stopped stopwatch");
         }
 
-        Console.WriteLine("Awaiting for the tasks");
+        Console.WriteLine("Awaiting pending tasks...");
         Task.WaitAll(tasks.Keys.ToArray());
-        Console.WriteLine("done awaiting");
+        Console.WriteLine("Done awaiting tasks");
 
         foreach(var entry in tasks)
         {

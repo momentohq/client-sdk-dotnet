@@ -13,7 +13,20 @@ namespace DynamoLambdaExample
             {
                 Runtime = Runtime.DOTNET_6,
                 Code = Code.FromAsset("./DynamoLambdaExampleHandler/src/DynamoLambdaExampleHandler/bin/Release/net6.0/publish"),
-                Handler = "DynamoLambdaExampleHandler::DynamoLambdaExampleHandler.Function::FunctionHandler"
+                Handler = "DynamoLambdaExampleHandler::DynamoLambdaExampleHandler.Function::FunctionHandler",
+                FunctionName = "PutItemHandler", 
+                MemorySize = 1024,
+                Timeout = Duration.Seconds(300)
+            });
+
+            Function fn1 = new Function(this, "DynamoLambdaExampleHandler1", new FunctionProps
+            {
+                Runtime = Runtime.DOTNET_6,
+                Code = Code.FromAsset("./DynamoLambdaExampleHandler1/src/DynamoLambdaExampleHandler1/bin/Release/net6.0/publish"),
+                Handler = "DynamoLambdaExampleHandler1::DynamoLambdaExampleHandler1.Function::FunctionHandler",
+                FunctionName = "GetItemHandler", 
+                MemorySize = 1024,
+                Timeout = Duration.Seconds(300)
             });
         }
     }
