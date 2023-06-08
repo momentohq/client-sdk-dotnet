@@ -46,7 +46,7 @@ public abstract class CacheListLengthResponse
         {
             if (response.ListCase == _ListLengthResponse.ListOneofCase.Found)
             {
-                Length = (int)response.Found.Length;
+                Length = checked((int)response.Found.Length);
             }
         }
 

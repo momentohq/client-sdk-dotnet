@@ -56,7 +56,7 @@ public abstract class CacheListPopBackResponse
         public Hit(_ListPopBackResponse response)
         {
             this.value = response.Found.Back;
-            ListLength = (int)response.Found.ListLength;
+            ListLength = checked((int)response.Found.ListLength);
         }
 
         /// <summary>

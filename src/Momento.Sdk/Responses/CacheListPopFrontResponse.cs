@@ -56,7 +56,7 @@ public abstract class CacheListPopFrontResponse
         public Hit(_ListPopFrontResponse response)
         {
             this.value = response.Found.Front;
-            ListLength = (int)response.Found.ListLength;
+            ListLength = checked((int)response.Found.ListLength);
         }
 
         /// <summary>
