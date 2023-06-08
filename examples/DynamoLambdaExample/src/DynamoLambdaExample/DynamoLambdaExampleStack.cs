@@ -2,6 +2,7 @@ using Amazon.CDK;
 using Amazon.CDK.AWS.Lambda;
 using Constructs;
 using Amazon.CDK.AWS.IAM;
+using Amazon.CDK.AWS.EC2;
 
 namespace DynamoLambdaExample
 {
@@ -9,6 +10,14 @@ namespace DynamoLambdaExample
     {
         internal DynamoLambdaExampleStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
         {
+            // Existing VPC configuration
+            var vpc = Vpc.FromLookup(this, "DefaultVpc", new VpcLookupOptions
+            {
+                VpcId = "vpc-00e94e9613dde8d21"
+            });
+
+            var existingSubnet = Subnet.FromSubnetId(this, "ExistingSubnet", "subnet-09e0ce2f2c6b2faac"); 
+
             // Create the IAM role for the Lambda function
             Role lambdaRole = new Role(this, "LambdaRole", new RoleProps
             {
@@ -19,6 +28,8 @@ namespace DynamoLambdaExample
             // Attach the managed policies
             lambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
             lambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonDynamoDBFullAccess"));
+            lambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonEC2FullAccess"));
+            lambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonElastiCacheFullAccess"));
             lambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AWSLambdaInvocation-DynamoDB"));
 
             Function fn = new Function(this, "DynamoLambdaExampleHandler", new FunctionProps
@@ -29,7 +40,10 @@ namespace DynamoLambdaExample
                 FunctionName = "PutItemHandler", 
                 MemorySize = 1024,
                 Timeout = Duration.Seconds(300),
-                Role = lambdaRole
+                Role = lambdaRole,
+                Vpc = vpc,
+                VpcSubnets = new SubnetSelection { Subnets = new[] { existingSubnet } },
+                AllowPublicSubnet = true
             });
 
             Function fn1 = new Function(this, "DynamoLambdaExampleHandler1", new FunctionProps
@@ -40,7 +54,10 @@ namespace DynamoLambdaExample
                 FunctionName = "GetItemHandler", 
                 MemorySize = 1024,
                 Timeout = Duration.Seconds(300),
-                Role = lambdaRole
+                Role = lambdaRole,
+                Vpc = vpc,
+                VpcSubnets = new SubnetSelection { Subnets = new[] { existingSubnet } },
+                AllowPublicSubnet = true
             });
         }
     }
