@@ -66,7 +66,6 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value2, value3 }, hitResponse.ValueListString);
-        Assert.Equal(2, hitResponse.ListLength);
     }
 
     [Fact]
@@ -85,7 +84,6 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value3 }, hitResponse.ValueListString);
-        Assert.Equal(1, hitResponse.ListLength);
     }
 
     [Fact]
@@ -105,14 +103,12 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value1 }, hitResponse.ValueListString);
-        Assert.Equal(1, hitResponse.ListLength);
 
         // valid case for null startIndex and negative endIndex
         fetchResponse = await client.ListFetchAsync(cacheName, listName, null, -3);
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value1 }, hitResponse.ValueListString);
-        Assert.Equal(1, hitResponse.ListLength);
     }
 
     [Fact]
@@ -132,14 +128,12 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value2, value3, value4 }, hitResponse.ValueListString);
-        Assert.Equal(3, hitResponse.ListLength);
 
         // valid case for a positive startIndex and null endIndex
         fetchResponse = await client.ListFetchAsync(cacheName, listName, 2, null);
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value3, value4 }, hitResponse.ValueListString);
-        Assert.Equal(2, hitResponse.ListLength);
     }
 
     [Fact]
@@ -188,7 +182,6 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit);
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value2, value3, value4 }, hitResponse.ValueListString);
-        Assert.Equal(3, hitResponse.ListLength);
         
         await resetList();
         retainResponse = await client.ListRetainAsync(cacheName, listName, 2, -1);
@@ -197,7 +190,6 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit);
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value3, value4, value5 }, hitResponse.ValueListString);
-        Assert.Equal(3, hitResponse.ListLength);
         
         await resetList();
         retainResponse = await client.ListRetainAsync(cacheName, listName, -4, -1);
@@ -206,7 +198,6 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit);
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value3, value4, value5 }, hitResponse.ValueListString);
-        Assert.Equal(3, hitResponse.ListLength);
         
         await resetList();        
         // valid case for a negative startIndex and null endIndex
@@ -216,7 +207,6 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit);
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value4, value5, value6 }, hitResponse.ValueListString);
-        Assert.Equal(3, hitResponse.ListLength);
 
         await resetList();
         // valid case for a positive startIndex and null endIndex
@@ -226,7 +216,6 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit);
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value3, value4, value5, value6 }, hitResponse.ValueListString);
-        Assert.Equal(4, hitResponse.ListLength);
         
         await resetList();
         // valid case for null startIndex and positive endIndex
@@ -236,7 +225,6 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit);
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value1 }, hitResponse.ValueListString);
-        Assert.Equal(1, hitResponse.ListLength);
 
         await resetList();
         // valid case for null startIndex and negative endIndex
@@ -246,7 +234,6 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit);
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value1, value2, value3 }, hitResponse.ValueListString);
-        Assert.Equal(3, hitResponse.ListLength);
     }
 
     [Fact]
@@ -1197,7 +1184,6 @@ public class ListTest : TestBase
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
 
         Assert.Equal(hitResponse.ValueListString, contentList);
-        Assert.Equal(hitResponse.ListLength, contentList.Count);
     }
 
     [Fact]
@@ -1217,7 +1203,6 @@ public class ListTest : TestBase
 
         Assert.Contains(field1, hitResponse.ValueListByteArray!);
         Assert.Contains(field2, hitResponse.ValueListByteArray!);
-        Assert.Equal(hitResponse.ListLength, contentList.Count);
     }
 
     [Fact]
