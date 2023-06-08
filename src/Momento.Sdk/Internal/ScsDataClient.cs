@@ -258,6 +258,11 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return await SendDictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields.ToEnumerableByteString());
     }
 
+    public async Task<CacheDictionaryLengthResponse> DictionaryLengthAsync(string cacheName, string dictionaryName)
+    {
+        return await SendDictionaryLengthAsync(cacheName, dictionaryName);
+    }
+
     public async Task<CacheSetAddElementResponse> SetAddElementAsync(string cacheName, string setName, byte[] element, CollectionTtl ttl = default(CollectionTtl))
     {
         return await SendSetAddElementAsync(cacheName, setName, element.ToSingletonByteString(), ttl);
@@ -783,6 +788,31 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_DICTIONARY_REMOVE_FIELDS, cacheName, dictionaryName, fields, null, new CacheDictionaryRemoveFieldsResponse.Success());
     }
 
+    const string REQUEST_TYPE_DICTIONARY_LENGTH = "DICTIONARY_LENGTH";
+    private async Task<CacheDictionaryLengthResponse> SendDictionaryLengthAsync(string cacheName, string dictionaryName)
+    {
+        _DictionaryLengthRequest request = new() { DictionaryName = dictionaryName.ToByteString() };
+        _DictionaryLengthResponse response;
+        var metadata = MetadataWithCache(cacheName);
+
+        try
+        {
+            this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_DICTIONARY_LENGTH, cacheName, dictionaryName);
+            response = await this.grpcManager.Client.DictionaryLengthAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+        }
+        catch (Exception e)
+        {
+            return this._logger.LogTraceCollectionRequestError(REQUEST_TYPE_DICTIONARY_LENGTH, cacheName, dictionaryName, new CacheDictionaryLengthResponse.Error(_exceptionMapper.Convert(e, metadata)));
+        }
+
+        if (response.DictionaryCase == _DictionaryLengthResponse.DictionaryOneofCase.Missing)
+        {
+            return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_DICTIONARY_LENGTH, cacheName, dictionaryName, new CacheDictionaryLengthResponse.Miss());
+        }
+
+        return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_DICTIONARY_LENGTH, cacheName, dictionaryName, new CacheDictionaryLengthResponse.Hit(response));
+    }
+
     const string REQUEST_TYPE_SET_ADD_ELEMENT = "SET_ADD_ELEMENT";
     private async Task<CacheSetAddElementResponse> SendSetAddElementAsync(string cacheName, string setName, IEnumerable<ByteString> elements, CollectionTtl ttl)
     {
@@ -1139,7 +1169,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
             return this._logger.LogTraceCollectionRequestError(REQUEST_TYPE_LIST_RETAIN, cacheName, listName, new CacheListRetainResponse.Error(_exceptionMapper.Convert(e, metadata)));
         }
 
-        return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_LIST_RETAIN, cacheName, listName, new CacheListRetainResponse.Success());
+        return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_LIST_RETAIN, cacheName, listName, new CacheListRetainResponse.Success(response));
     }
 
     const string REQUEST_TYPE_LIST_REMOVE_VALUE = "LIST_REMOVE_VALUE";
@@ -1150,19 +1180,20 @@ internal sealed class ScsDataClient : ScsDataClientBase
             ListName = listName.ToByteString(),
             AllElementsWithValue = value
         };
+        _ListRemoveResponse response;
         var metadata = MetadataWithCache(cacheName);
 
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_LIST_REMOVE_VALUE, cacheName, listName, value, null);
-            await this.grpcManager.Client.ListRemoveAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.ListRemoveAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
         }
         catch (Exception e)
         {
             return this._logger.LogTraceCollectionRequestError(REQUEST_TYPE_LIST_REMOVE_VALUE, cacheName, listName, value, null, new CacheListRemoveValueResponse.Error(_exceptionMapper.Convert(e, metadata)));
         }
 
-        return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_LIST_REMOVE_VALUE, cacheName, listName, value, null, new CacheListRemoveValueResponse.Success());
+        return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_LIST_REMOVE_VALUE, cacheName, listName, value, null, new CacheListRemoveValueResponse.Success(response));
     }
 
     const string REQUEST_TYPE_LIST_LENGTH = "LIST_LENGTH";

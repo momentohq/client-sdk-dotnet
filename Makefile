@@ -37,6 +37,24 @@ test:
 	@dotnet test
 
 
+.PHONY: test-net6
+## Run unit and integration tests on the .NET 6.0 runtime
+test-net6:
+	@dotnet test -f net6.0
+
+
+.PHONY: test-net-framework
+## Run unit and integration tests on the .NET Framework runtime
+test-net-framework:
+	@dotnet test -f net461
+
+
+.PHONY: run-examples
+## Run example applications and snippets
+run-examples:
+	@dotnet run --project examples/MomentoApplication
+	@dotnet run --project examples/DocExampleApis
+
 # See <https://gist.github.com/klmr/575726c7e05d8780505a> for explanation.
 .PHONY: help
 help:

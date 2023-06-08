@@ -30,13 +30,15 @@ jobs:
           dotnet-version: "6.0.x"
 
       - name: Verify README generation
-        uses: momentohq/standards-and-practices/github-actions/oss-readme-template@gh-actions-v1
+        uses: momentohq/standards-and-practices/github-actions/oss-readme-template@gh-actions-v2
         with:
           project_status: official
           project_stability: stable
           project_type: sdk
           sdk_language: .NET
-          usage_example_path: ./examples/MomentoUsage/Program.cs
+          template_file: ./README.template.md
+          output_file: ./README.md
+          dev_docs_slug: dotnet
 
       - name: Commitlint and Other Shared Build Steps
         uses: momentohq/standards-and-practices/github-actions/shared-build@gh-actions-v1
@@ -68,22 +70,35 @@ jobs:
         with:
           dotnet-version: "6.0.x"
 
-      - name: Run samples
-        id: validation
+      - name: Run MomentoApplication example
+        id: validation-momentoapplication
         continue-on-error: true
+        working-directory: ./examples/MomentoApplication
+        run: dotnet run
+
+      - name: Run doc API snippets
+        id: validation-docexampleapis
+        continue-on-error: true
+        working-directory: ./examples/DocExampleApis
+        run: dotnet run
+
+      - name: Test example failure
+        id: test-example-failure
         run: |
-          pushd examples
-            dotnet build MomentoApplication
-            dotnet run --project MomentoApplication
-          popd
+          if [[ "${{ steps.validation-momentoapplication.outcome }}" == "failure" || "${{ steps.validation-docexampleapis.outcome }}" == "failure" ]]
+          then
+            echo "failure=true" >> $GITHUB_OUTPUT
+          else
+            echo "failure=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Send CI failure mail
-        if: ${{ steps.validation.outcome == 'failure' }}
+        if: ${{ steps.test-example-failure.outputs.failure == 'true' }}
         uses: momentohq/standards-and-practices/github-actions/error-email-action@gh-actions-v1
         with:
           username: ${{secrets.MOMENTO_ROBOT_GMAIL_USERNAME}}
           password: ${{secrets.MOMENTO_ROBOT_GMAIL_PASSWORD}}
 
       - name: Flag Job Failure
-        if: ${{ steps.validation.outcome == 'failure' }}
+        if: ${{ steps.test-example-failure.outputs.failure == 'true' }}
         run: exit 1

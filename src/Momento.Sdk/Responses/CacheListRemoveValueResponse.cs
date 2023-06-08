@@ -1,4 +1,5 @@
-﻿using Momento.Sdk.Exceptions;
+﻿using Momento.Protos.CacheClient;
+using Momento.Sdk.Exceptions;
 
 namespace Momento.Sdk.Responses;
 
@@ -32,6 +33,27 @@ public abstract class CacheListRemoveValueResponse
     /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
     public class Success : CacheListRemoveValueResponse
     {
+        /// <summary>
+        /// The length of the list post-remove operation.
+        /// </summary>
+        public int ListLength { get; private set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="response">The cache response</param>
+        public Success(_ListRemoveResponse response)
+        {
+            if (response.ListCase == _ListRemoveResponse.ListOneofCase.Found) {
+                ListLength = checked((int)response.Found.ListLength);
+            }
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{base.ToString()}: ListLength: {ListLength}";
+        }
     }
 
     /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
