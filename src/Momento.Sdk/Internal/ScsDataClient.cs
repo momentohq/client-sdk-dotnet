@@ -1169,7 +1169,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
             return this._logger.LogTraceCollectionRequestError(REQUEST_TYPE_LIST_RETAIN, cacheName, listName, new CacheListRetainResponse.Error(_exceptionMapper.Convert(e, metadata)));
         }
 
-        return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_LIST_RETAIN, cacheName, listName, new CacheListRetainResponse.Success());
+        return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_LIST_RETAIN, cacheName, listName, new CacheListRetainResponse.Success(response));
     }
 
     const string REQUEST_TYPE_LIST_REMOVE_VALUE = "LIST_REMOVE_VALUE";
@@ -1180,19 +1180,20 @@ internal sealed class ScsDataClient : ScsDataClientBase
             ListName = listName.ToByteString(),
             AllElementsWithValue = value
         };
+        _ListRemoveResponse response;
         var metadata = MetadataWithCache(cacheName);
 
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_LIST_REMOVE_VALUE, cacheName, listName, value, null);
-            await this.grpcManager.Client.ListRemoveAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.ListRemoveAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
         }
         catch (Exception e)
         {
             return this._logger.LogTraceCollectionRequestError(REQUEST_TYPE_LIST_REMOVE_VALUE, cacheName, listName, value, null, new CacheListRemoveValueResponse.Error(_exceptionMapper.Convert(e, metadata)));
         }
 
-        return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_LIST_REMOVE_VALUE, cacheName, listName, value, null, new CacheListRemoveValueResponse.Success());
+        return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_LIST_REMOVE_VALUE, cacheName, listName, value, null, new CacheListRemoveValueResponse.Success(response));
     }
 
     const string REQUEST_TYPE_LIST_LENGTH = "LIST_LENGTH";

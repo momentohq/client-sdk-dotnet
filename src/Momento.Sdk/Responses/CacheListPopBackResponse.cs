@@ -45,12 +45,18 @@ public abstract class CacheListPopBackResponse
 #pragma warning restore 1591
 
         /// <summary>
+        /// The length of the list post-pop (and post-truncate, if that applies).
+        /// </summary>
+        public int ListLength { get; private set; }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="response">The cache response.</param>
         public Hit(_ListPopBackResponse response)
         {
             this.value = response.Found.Back;
+            ListLength = checked((int)response.Found.ListLength);
         }
 
         /// <summary>
@@ -69,7 +75,7 @@ public abstract class CacheListPopBackResponse
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{base.ToString()}: ValueString: \"{ValueString.Truncate()}\" ValueByteArray: \"{ValueByteArray.ToPrettyHexString().Truncate()}\"";
+            return $"{base.ToString()}: ValueString: \"{ValueString.Truncate()}\" ValueByteArray: \"{ValueByteArray.ToPrettyHexString().Truncate()}\" ListLength: {ListLength}";
         }
     }
 

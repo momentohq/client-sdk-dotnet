@@ -66,6 +66,7 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value2, value3 }, hitResponse.ValueListString);
+        Assert.Equal(2, hitResponse.ListLength);
     }
 
     [Fact]
@@ -84,6 +85,7 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value3 }, hitResponse.ValueListString);
+        Assert.Equal(1, hitResponse.ListLength);
     }
 
     [Fact]
@@ -103,12 +105,14 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value1 }, hitResponse.ValueListString);
+        Assert.Equal(1, hitResponse.ListLength);
 
         // valid case for null startIndex and negative endIndex
         fetchResponse = await client.ListFetchAsync(cacheName, listName, null, -3);
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value1 }, hitResponse.ValueListString);
+        Assert.Equal(1, hitResponse.ListLength);
     }
 
     [Fact]
@@ -128,12 +132,14 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value2, value3, value4 }, hitResponse.ValueListString);
+        Assert.Equal(3, hitResponse.ListLength);
 
         // valid case for a positive startIndex and null endIndex
         fetchResponse = await client.ListFetchAsync(cacheName, listName, 2, null);
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value3, value4 }, hitResponse.ValueListString);
+        Assert.Equal(2, hitResponse.ListLength);
     }
 
     [Fact]
@@ -182,6 +188,7 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit);
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value2, value3, value4 }, hitResponse.ValueListString);
+        Assert.Equal(3, hitResponse.ListLength);
         
         await resetList();
         retainResponse = await client.ListRetainAsync(cacheName, listName, 2, -1);
@@ -190,6 +197,7 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit);
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value3, value4, value5 }, hitResponse.ValueListString);
+        Assert.Equal(3, hitResponse.ListLength);
         
         await resetList();
         retainResponse = await client.ListRetainAsync(cacheName, listName, -4, -1);
@@ -198,6 +206,7 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit);
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value3, value4, value5 }, hitResponse.ValueListString);
+        Assert.Equal(3, hitResponse.ListLength);
         
         await resetList();        
         // valid case for a negative startIndex and null endIndex
@@ -207,6 +216,7 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit);
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value4, value5, value6 }, hitResponse.ValueListString);
+        Assert.Equal(3, hitResponse.ListLength);
 
         await resetList();
         // valid case for a positive startIndex and null endIndex
@@ -216,6 +226,7 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit);
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value3, value4, value5, value6 }, hitResponse.ValueListString);
+        Assert.Equal(4, hitResponse.ListLength);
         
         await resetList();
         // valid case for null startIndex and positive endIndex
@@ -225,6 +236,7 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit);
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value1 }, hitResponse.ValueListString);
+        Assert.Equal(1, hitResponse.ListLength);
 
         await resetList();
         // valid case for null startIndex and negative endIndex
@@ -234,6 +246,7 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit);
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value1, value2, value3 }, hitResponse.ValueListString);
+        Assert.Equal(3, hitResponse.ListLength);
     }
 
     [Fact]
@@ -279,6 +292,32 @@ public class ListTest : TestBase
             Assert.Contains(value, list);
         }
     }
+
+    [Fact]
+    public async Task CacheListRetainReponse_ToString_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        string value1 = Utils.NewGuidString();
+        string value2 = Utils.NewGuidString();
+        string value3 = Utils.NewGuidString();
+        string value4 = Utils.NewGuidString();
+        string value5 = Utils.NewGuidString();
+        string value6 = Utils.NewGuidString();
+        string[] values = new string[] { value1, value2, value3, value4, value5, value6 };
+
+        var resetList = async () =>
+        {
+            await client.DeleteAsync(cacheName, listName);
+            await client.ListConcatenateFrontAsync(cacheName, listName, values);
+        };
+
+        await resetList();
+        CacheListRetainResponse response = await client.ListRetainAsync(cacheName, listName, 1, 4);
+        Assert.True(response is CacheListRetainResponse.Success, $"Unexpected response: {response}");
+        var successResponse = (CacheListRetainResponse.Success)response;
+        Assert.Equal("Momento.Sdk.Responses.CacheListRetainResponse+Success: ListLength: 3", successResponse.ToString());
+    }
+
     [Fact]
     public async Task ListConcatenateFrontFetch_ValueIsByteArray_NoRefreshTtl()
     {
@@ -1026,6 +1065,7 @@ public class ListTest : TestBase
         var hitResponse = (CacheListPopFrontResponse.Hit)response;
 
         Assert.Equal(value2, hitResponse.ValueByteArray);
+        Assert.Equal(1, hitResponse.ListLength);
     }
 
     [Fact]
@@ -1042,6 +1082,7 @@ public class ListTest : TestBase
         var hitResponse = (CacheListPopFrontResponse.Hit)response;
 
         Assert.Equal(value2, hitResponse.ValueString);
+        Assert.Equal(1, hitResponse.ListLength);
     }
 
     [Fact]
@@ -1054,7 +1095,7 @@ public class ListTest : TestBase
         CacheListPopFrontResponse response = await client.ListPopFrontAsync(cacheName, listName);
         Assert.True(response is CacheListPopFrontResponse.Hit, $"Unexpected response: {response}");
         var hitResponse = (CacheListPopFrontResponse.Hit)response;
-        Assert.Equal("Momento.Sdk.Responses.CacheListPopFrontResponse+Hit: ValueString: \"a\" ValueByteArray: \"61\"", hitResponse.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheListPopFrontResponse+Hit: ValueString: \"a\" ValueByteArray: \"61\" ListLength: 0", hitResponse.ToString());
     }
 
     [Theory]
@@ -1089,6 +1130,7 @@ public class ListTest : TestBase
         var hitResponse = (CacheListPopBackResponse.Hit)response;
 
         Assert.Equal(value2, hitResponse.ValueByteArray);
+        Assert.Equal(1, hitResponse.ListLength);
     }
 
     [Fact]
@@ -1105,6 +1147,7 @@ public class ListTest : TestBase
         var hitResponse = (CacheListPopBackResponse.Hit)response;
 
         Assert.Equal(value2, hitResponse.ValueString);
+        Assert.Equal(1, hitResponse.ListLength);
     }
 
     [Fact]
@@ -1117,7 +1160,7 @@ public class ListTest : TestBase
         CacheListPopBackResponse response = await client.ListPopBackAsync(cacheName, listName);
         Assert.True(response is CacheListPopBackResponse.Hit, $"Unexpected response: {response}");
         var hitResponse = (CacheListPopBackResponse.Hit)response;
-        Assert.Equal("Momento.Sdk.Responses.CacheListPopBackResponse+Hit: ValueString: \"a\" ValueByteArray: \"61\"", hitResponse.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheListPopBackResponse+Hit: ValueString: \"a\" ValueByteArray: \"61\" ListLength: 0", hitResponse.ToString());
     }
 
     [Theory]
@@ -1154,6 +1197,7 @@ public class ListTest : TestBase
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
 
         Assert.Equal(hitResponse.ValueListString, contentList);
+        Assert.Equal(hitResponse.ListLength, contentList.Count);
     }
 
     [Fact]
@@ -1173,7 +1217,7 @@ public class ListTest : TestBase
 
         Assert.Contains(field1, hitResponse.ValueListByteArray!);
         Assert.Contains(field2, hitResponse.ValueListByteArray!);
-        Assert.Equal(2, hitResponse.ValueListByteArray!.Count);
+        Assert.Equal(hitResponse.ListLength, contentList.Count);
     }
 
     [Fact]
@@ -1186,7 +1230,7 @@ public class ListTest : TestBase
 
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
-        Assert.Equal("Momento.Sdk.Responses.CacheListFetchResponse+Hit: ValueListString: [\"a\", \"b\"] ValueListByteArray: [\"61\", \"62\"]", hitResponse.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheListFetchResponse+Hit: ValueListString: [\"a\", \"b\"] ValueListByteArray: [\"61\", \"62\"] ListLength: 2", hitResponse.ToString());
     }
 
     [Theory]
@@ -1217,7 +1261,10 @@ public class ListTest : TestBase
         await client.ListPushBackAsync(cacheName, listName, valueOfInterest);
 
         // Remove value of interest
-        await client.ListRemoveValueAsync(cacheName, listName, valueOfInterest);
+        var removeResponse = await client.ListRemoveValueAsync(cacheName, listName, valueOfInterest);
+        Assert.True(removeResponse is CacheListRemoveValueResponse.Success, $"Unexpected response: {removeResponse}");
+        var successRemoveResponse = (CacheListRemoveValueResponse.Success)removeResponse;
+        Assert.Equal(3, successRemoveResponse.ListLength);
 
         // Test not there
         var response = await client.ListFetchAsync(cacheName, listName);
@@ -1237,7 +1284,10 @@ public class ListTest : TestBase
             await client.ListPushBackAsync(cacheName, listName, value);
         }
 
-        await client.ListRemoveValueAsync(cacheName, listName, Utils.NewGuidByteArray());
+        var removeResponse = await client.ListRemoveValueAsync(cacheName, listName, Utils.NewGuidByteArray());
+        Assert.True(removeResponse is CacheListRemoveValueResponse.Success, $"Unexpected response: {removeResponse}");
+        var successRemoveResponse = (CacheListRemoveValueResponse.Success)removeResponse;
+        Assert.Equal(3, successRemoveResponse.ListLength);
 
         var response = await client.ListFetchAsync(cacheName, listName);
         Assert.True(response is CacheListFetchResponse.Hit, $"Unexpected response: {response}");
@@ -1282,7 +1332,10 @@ public class ListTest : TestBase
         await client.ListPushBackAsync(cacheName, listName, valueOfInterest);
 
         // Remove value of interest
-        await client.ListRemoveValueAsync(cacheName, listName, valueOfInterest);
+        var removeResponse = await client.ListRemoveValueAsync(cacheName, listName, valueOfInterest);
+        Assert.True(removeResponse is CacheListRemoveValueResponse.Success, $"Unexpected response: {removeResponse}");
+        var successRemoveResponse = (CacheListRemoveValueResponse.Success)removeResponse;
+        Assert.Equal(3, successRemoveResponse.ListLength);
 
         // Test not there
         var response = await client.ListFetchAsync(cacheName, listName);
@@ -1302,7 +1355,10 @@ public class ListTest : TestBase
             await client.ListPushBackAsync(cacheName, listName, value);
         }
 
-        await client.ListRemoveValueAsync(cacheName, listName, Utils.NewGuidString());
+        var removeResponse = await client.ListRemoveValueAsync(cacheName, listName, Utils.NewGuidString());
+        Assert.True(removeResponse is CacheListRemoveValueResponse.Success, $"Unexpected response: {removeResponse}");
+        var successRemoveResponse = (CacheListRemoveValueResponse.Success)removeResponse;
+        Assert.Equal(3, successRemoveResponse.ListLength);
 
         var response = await client.ListFetchAsync(cacheName, listName);
         Assert.True(response is CacheListFetchResponse.Hit, $"Unexpected response: {response}");
@@ -1317,6 +1373,23 @@ public class ListTest : TestBase
         Assert.True(await client.ListFetchAsync(cacheName, listName) is CacheListFetchResponse.Miss);
         await client.ListRemoveValueAsync(cacheName, listName, Utils.NewGuidString());
         Assert.True(await client.ListFetchAsync(cacheName, listName) is CacheListFetchResponse.Miss);
+    }
+
+    [Fact]
+    public async Task CacheListRemoveValueReponse_ToString_HappyPath()
+    {
+        var listName = Utils.NewGuidString();
+        var list = new List<string>() { Utils.NewGuidString(), Utils.NewGuidString(), Utils.NewGuidString() };
+
+        foreach (var value in list)
+        {
+            await client.ListPushBackAsync(cacheName, listName, value);
+        }
+
+        var removeResponse = await client.ListRemoveValueAsync(cacheName, listName, Utils.NewGuidString());
+        Assert.True(removeResponse is CacheListRemoveValueResponse.Success, $"Unexpected response: {removeResponse}");
+        var successResponse = (CacheListRemoveValueResponse.Success)removeResponse;
+        Assert.Equal("Momento.Sdk.Responses.CacheListRemoveValueResponse+Success: ListLength: 3", successResponse.ToString());
     }
 
     [Theory]
