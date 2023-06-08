@@ -1215,7 +1215,7 @@ public class ListTest : TestBase
 
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
-        Assert.Equal("Momento.Sdk.Responses.CacheListFetchResponse+Hit: ValueListString: [\"a\", \"b\"] ValueListByteArray: [\"61\", \"62\"] ListLength: 2", hitResponse.ToString());
+        Assert.Equal("Momento.Sdk.Responses.CacheListFetchResponse+Hit: ValueListString: [\"a\", \"b\"] ValueListByteArray: [\"61\", \"62\"]", hitResponse.ToString());
     }
 
     [Theory]
