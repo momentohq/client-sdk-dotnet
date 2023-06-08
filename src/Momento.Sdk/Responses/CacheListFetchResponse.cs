@@ -51,11 +51,6 @@ public abstract class CacheListFetchResponse
 #pragma warning restore 1591
 
         /// <summary>
-        /// The length of the list.
-        /// </summary>
-        public int ListLength { get; private set; }
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="response">The cache response.</param>
@@ -71,8 +66,6 @@ public abstract class CacheListFetchResponse
             {
                 return new List<string>(values.Select(v => v.ToStringUtf8()));
             });
-
-            ListLength = values.Count;
         }
 
         /// <summary>
@@ -90,7 +83,7 @@ public abstract class CacheListFetchResponse
         {
             var stringRepresentation = String.Join(", ", ValueListString.Select(value => $"\"{value}\""));
             var byteArrayRepresentation = String.Join(", ", ValueListByteArray.Select(value => $"\"{value.ToPrettyHexString()}\""));
-            return $"{base.ToString()}: ValueListString: [{stringRepresentation.Truncate()}] ValueListByteArray: [{byteArrayRepresentation.Truncate()}] ListLength: {ListLength}";
+            return $"{base.ToString()}: ValueListString: [{stringRepresentation.Truncate()}] ValueListByteArray: [{byteArrayRepresentation.Truncate()}]";
         }
     }
 
