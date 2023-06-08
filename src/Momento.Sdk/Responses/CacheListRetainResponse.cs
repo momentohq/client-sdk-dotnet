@@ -44,7 +44,7 @@ public abstract class CacheListRetainResponse
         /// <param name="response">The cache response</param>
         public Success(_ListRetainResponse response)
         {
-            ListLength = checked((int)response.Found.ListLength);
+            ListLength = (int)response.Found.ListLength;
         }
 
         /// <inheritdoc />
