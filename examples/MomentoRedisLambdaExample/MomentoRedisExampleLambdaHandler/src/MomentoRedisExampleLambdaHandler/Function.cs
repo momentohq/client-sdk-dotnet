@@ -7,7 +7,6 @@ using Momento.Sdk.Responses;
 using System;
 using System.IO;
 using System.IO.Compression;
-using Momento.Sdk.Responses;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -50,7 +49,7 @@ public class Function
         );
 
         // Create cache if not already exists
-        createMomentoCache(momentoClient);
+        await createMomentoCache(momentoClient);
 
         // Create a Redis connection
         // Console.WriteLine("Creating redis client");
@@ -69,9 +68,7 @@ public class Function
         // while (lambdaStartTime.Elapsed.TotalMinutes < 4) {
             // Fire momento and redis requests
             var momentoSetTasks = await DoMomentoSets(momentoClient);
-            Console.WriteLine("momentoSetTasks.Count " + momentoSetTasks.Count);
-            var momentoGetTasks = DoMomentoGets(momentoClient);
-            Console.WriteLine("momentoGetTasks.Count " + momentoGetTasks.Count);
+            var momentoGetTasks = await DoMomentoGets(momentoClient);
             // DoRedisSets(db, startKeyId);
             // DoRedisGets(db, startKeyId);
 
@@ -86,10 +83,10 @@ public class Function
             Console.WriteLine("------- MOMENTO SET RESULT -------");
             foreach(var entry in momentoSetTasks) {
                 var key = await entry.Key;
-                if (key is CacheSetResponse.Error err) {
+                if (key.Item1 is CacheSetResponse.Error err) {
                    Console.WriteLine("ERROR: " + err.Message);
-               } else if (key is CacheSetResponse.Success hit) {
-                   Console.WriteLine("Set in " + entry.Value.ElapsedMilliseconds);
+               } else if (key.Item1 is CacheSetResponse.Success hit) {
+                   Console.WriteLine("Set in " + key.Item2.ElapsedMilliseconds);
                }
             }
 
@@ -98,12 +95,12 @@ public class Function
             foreach(var entry in momentoGetTasks)
             {
                 var key = await entry.Key;
-                if (key is CacheGetResponse.Miss) {
-                    Console.WriteLine("Unexpected MISS in " + entry.Value.ElapsedMilliseconds);
-                } else if (key is CacheGetResponse.Error err) {
+                if (key.Item1 is CacheGetResponse.Miss) {
+                    Console.WriteLine("Unexpected MISS in " + key.Item2.ElapsedMilliseconds);
+                } else if (key.Item1 is CacheGetResponse.Error err) {
                     Console.WriteLine("ERROR: " + err.Message);
-                } else if (key is CacheGetResponse.Hit hit) {
-                    Console.WriteLine("Got " + hit.ValueString.Length + " in " + entry.Value.ElapsedMilliseconds);
+                } else if (key.Item1 is CacheGetResponse.Hit hit) {
+                    Console.WriteLine("Got " + hit.ValueString.Length + " in " + key.Item2.ElapsedMilliseconds);
                 }
             }
 
@@ -136,10 +133,10 @@ public class Function
         var response = await client.CreateCacheAsync(CACHE_NAME);
     }
     
-    private async Task<Dictionary<Task<CacheSetResponse>, System.Diagnostics.Stopwatch>> DoMomentoSets(CacheClient client) {
+    private async Task<Dictionary<Task<(CacheSetResponse, System.Diagnostics.Stopwatch)>, System.Diagnostics.Stopwatch>> DoMomentoSets(CacheClient client) {
         try {
 
-            Dictionary<Task<CacheSetResponse>, System.Diagnostics.Stopwatch> momentoSetTasks = new Dictionary<Task<CacheSetResponse>, System.Diagnostics.Stopwatch>();
+            Dictionary<Task<(CacheSetResponse, System.Diagnostics.Stopwatch)>, System.Diagnostics.Stopwatch> momentoSetTasks = new Dictionary<Task<(CacheSetResponse, System.Diagnostics.Stopwatch)>, System.Diagnostics.Stopwatch>();
 
             Console.WriteLine("Executing MomentoSets");
             string compressedString = Compress();
@@ -148,79 +145,78 @@ public class Function
                 Console.WriteLine("Setting inside the loop");
                 string key = $"key-{i}";
 
-                Console.WriteLine("Starting the stopwatch");
-                var stopWatch = System.Diagnostics.Stopwatch.StartNew();
                 Console.WriteLine("Setting key " + key);
-                Task<CacheSetResponse> response = client.SetAsync(CACHE_NAME, key, compressedString, TimeSpan.FromSeconds(600));
-                // momentoSetTasks[response] = startTime;
-                var continued = await response.ContinueWith(
+                var responseWithStopwatch = SetAsyncWithStopwatch(client, CACHE_NAME, key, compressedString, TimeSpan.FromSeconds(600));
+
+                // Task<CacheSetResponse> response = client.SetAsync(CACHE_NAME, key, compressedString, TimeSpan.FromSeconds(600));
+                var continued = await responseWithStopwatch.ContinueWith(
                     (r) => {
-                        try {
-                            stopWatch.Stop();
-                            Console.WriteLine("Stopped stopwatch");
-                            return r;
-                        } catch(Exception e) {
-                            Console.WriteLine("Exception in set continuedWith  " + e);
-                            throw e;
-                        }
-                        
+                        var (response, stopwatch) = r.Result;
+                        stopwatch.Stop();
+                        Console.WriteLine("Stopwatch stopped for key " + key);
+                        return r;
                     }
                 );
-                momentoSetTasks[continued] = stopWatch;
+                momentoSetTasks[continued] = continued.Result.Item2;
             }
             return momentoSetTasks;
         } catch (Exception e) {
             Console.WriteLine("Exception in set " + e);
-            throw e;
+            throw new Exception();
         }
-        
     }
 
-    private Dictionary<Task<CacheGetResponse>, System.Diagnostics.Stopwatch> DoMomentoGets(CacheClient client) {
-        Dictionary<Task<CacheGetResponse>, System.Diagnostics.Stopwatch> momentoGetTasks = new Dictionary<Task<CacheGetResponse>, System.Diagnostics.Stopwatch>();
+    private async Task<(CacheSetResponse, System.Diagnostics.Stopwatch)> SetAsyncWithStopwatch(CacheClient client, string cacheName, string key, string value, TimeSpan expirationTime)
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var response = await client.SetAsync(cacheName, key, value, expirationTime);
+        return (response, stopwatch);
+    }
+
+    private async Task<Dictionary<Task<(CacheGetResponse, System.Diagnostics.Stopwatch)>, System.Diagnostics.Stopwatch>> DoMomentoGets(CacheClient client) {
+        Dictionary<Task<(CacheGetResponse, System.Diagnostics.Stopwatch)>, System.Diagnostics.Stopwatch> momentoGetTasks = new Dictionary<Task<(CacheGetResponse, System.Diagnostics.Stopwatch)>, System.Diagnostics.Stopwatch>();
 
         for (int i = 1; i <= numMomentoGetRequests; i++) {
             Console.WriteLine("Getting inside the loop");
             string key = $"key-{i}";
 
-            Console.WriteLine("Starting the stopwatch");
-            var stopWatch = System.Diagnostics.Stopwatch.StartNew();
             Console.WriteLine("Getting key " + key);
-            Task<CacheGetResponse> response = client.GetAsync(CACHE_NAME, key);
+            var responseWithStopwatch = GetAsyncWithStopwatch(client, CACHE_NAME, key);
 
             // momentoGetTasks[response] = startTime;
-            response.ContinueWith(
+            var continuedTask = responseWithStopwatch.ContinueWith(
                 async (r) => {
                     try {
                         Console.WriteLine("In ContinueWith");
-                        var result = await r;
-                        stopWatch.Stop();
-                        momentoGetTasks[r] = stopWatch;
+                        var (response, stopwatch) = r.Result;
+                        stopwatch.Stop();
+                        Console.WriteLine("Stopwatch stopped for key " + key);
+                        momentoGetTasks[r] = stopwatch;
                     
-                        var hitResult = (CacheGetResponse.Hit)result;
-                        Console.WriteLine("hitResult " + hitResult.GetType() + hitResult);
+                        var hitResult = (CacheGetResponse.Hit)response;
                         string hitValue = hitResult.ValueString;
 
+                        // Decompressing compressed strings
                         string decompressedString = await DecompressAsync(hitValue);
-                        Console.WriteLine("decompressedString " + decompressedString);
-                        // await LogDecompressedStringAsync(decompressedString);
                         return r;
                     } catch(Exception e) {
                         Console.WriteLine(e.Message);
-                        throw e;
+                        throw new Exception();
                     }
-                    
                 }
             );
-            Console.WriteLine("Stopped stopwatch");
+
+            await continuedTask;
         }
         return momentoGetTasks;
     }
 
-    // private async Task LogDecompressedStringAsync(string decompressedString)
-    // {
-    //     Console.WriteLine("Decompressed string: " + decompressedString);
-    // }
+    private async Task<(CacheGetResponse, System.Diagnostics.Stopwatch)> GetAsyncWithStopwatch(CacheClient client, string cacheName, string key)
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var response = await client.GetAsync(cacheName, key);
+        return (response, stopwatch);
+    }
 
     private string Compress() {
         string compressedString;
@@ -263,7 +259,6 @@ public class Function
             byte[] decompressedBytes = decompressedStream.ToArray();
             string decompressedString = System.Text.Encoding.UTF8.GetString(decompressedBytes);
 
-            Console.WriteLine(decompressedString);
             return decompressedString;
         }
     }
@@ -331,7 +326,9 @@ public class Function
     static void Main(string[] args) {
         try {
             Console.WriteLine("Calling DoStuff");
-            new Function().DoStuff();
+            var task = new Function().DoStuff();
+            Console.WriteLine("Waiting for task via task.Result");
+            Console.WriteLine($"RESULT: {task.Result}");
         } catch(Exception ex) {
             Console.WriteLine("Caught Exception");
             Console.WriteLine(ex);
