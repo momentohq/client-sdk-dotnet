@@ -3,6 +3,7 @@ using Amazon.CDK.AWS.Lambda;
 using Constructs;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.EC2;
+using Amazon.CDK.AWS.S3;
 using Amazon.CDK.AWS.Events;
 using Amazon.CDK.AWS.Events.Targets;
 
@@ -43,8 +44,9 @@ namespace MomentoRedisLambdaExample
             lambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
             lambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonEC2FullAccess"));
             lambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonElastiCacheFullAccess"));
+            lambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonS3FullAccess"));
 
-            var MOMENTO_AUTH_TOKEN = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyaXNodGlAbW9tZW50b2hxLmNvbSIsImNwIjoiY29udHJvbC5jZWxsLTQtdXMtd2VzdC0yLTEucHJvZC5hLm1vbWVudG9ocS5jb20iLCJjIjoiY2FjaGUuY2VsbC00LXVzLXdlc3QtMi0xLnByb2QuYS5tb21lbnRvaHEuY29tIn0.eGgz9D7-R_6T9TVL-zsE8rnNf6TaVG6qKh7G0PmuaOBkWDC61hVOvZPwvu-n43Ld5NV5-sfTFQwY5BL0iL9Dpw";
+            var MOMENTO_AUTH_TOKEN = "replace this with your momento auth token";
 
             Function fn1 = new Function(this, "MomentoRedisLambdaExampleHandler", new FunctionProps
             {
@@ -62,18 +64,6 @@ namespace MomentoRedisLambdaExample
                     { "MOMENTO_AUTH_TOKEN", MOMENTO_AUTH_TOKEN}
                 } 
             });
-
-            // Create an event rule with a schedule expression for every 5 minutes
-            // var rule = new Rule(this, "MomentoRedisExampleLambdaTriggerRule", new RuleProps
-            // {
-            //     Schedule = Schedule.Cron(new CronOptions
-            //     {
-            //         Minute = "*/5" // Run every 5 minutes
-            //     })
-            // });
-
-            // Add the Lambda function as a target for the event rule
-            // rule.AddTarget(new LambdaFunction(fn1));
         }
     }
 }

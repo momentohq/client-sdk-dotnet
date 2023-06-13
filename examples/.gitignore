@@ -403,3 +403,4 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
+/MomentoRedisLambdaExample/MomentoRedisExampleLambdaHandler/src/MomentoRedisExampleLambdaHandler/super-secret-source-data.json

@@ -406,3 +406,4 @@ ASALocalRun/
 
 # VS Code
 .vscode
+/exportToHTML/
