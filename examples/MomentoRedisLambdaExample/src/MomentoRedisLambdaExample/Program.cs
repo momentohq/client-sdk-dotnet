@@ -1,7 +1,4 @@
 ﻿using Amazon.CDK;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MomentoRedisLambdaExample
 {
@@ -12,10 +9,10 @@ namespace MomentoRedisLambdaExample
             var app = new App();
             new MomentoRedisLambdaExampleStack(app, "MomentoRedisLambdaExampleStack", new StackProps
             {
-                Env = new Amazon.CDK.Environment 
+                Env = new Environment 
                 {
-                    Account = "287427698164",
-                    Region = "us-west-2"
+                    Account = Aws.ACCOUNT_ID,
+                    Region = Aws.REGION
                 }
             });
             app.Synth();
