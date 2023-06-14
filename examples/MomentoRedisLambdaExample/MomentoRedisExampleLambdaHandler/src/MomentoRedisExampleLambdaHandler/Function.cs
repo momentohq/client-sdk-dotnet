@@ -12,11 +12,11 @@ namespace MomentoRedisExampleLambdaHandler;
 
 public class Input
 {
-    public bool RunMomentoWithCompression { get; set; }
-    public bool RunMomentoCompressionWithSleep { get; set; } 
-    public bool RunMomentoWithoutCompression { get; set; }
-    public bool RunRedisWithCompression { get; set; }
-    public bool RunRedisWithoutCompression { get; set; }
+    public bool RunMomento { get; set; }
+    public bool CompressMomento { get; set; }
+    public bool SleepMomento { get; set; }
+    public bool RunRedis { get; set; }
+    public bool CompressRedis { get; set; }
 }
 
 public record struct GetResult(
@@ -100,178 +100,31 @@ public class Function
         Console.WriteLine("Inside Execute Lambda function");
         Console.WriteLine($"Input {input}");
 
-        if (input is { RunMomentoWithCompression: true, RunMomentoWithoutCompression: true } or { RunRedisWithCompression: true, RunRedisWithoutCompression: true })
-        {
-            Console.WriteLine("Cannot run with and without compression configurations together!");
-            throw new Exception("Invalid combination of parameters.");
-        }
-
-        if (input is { RunMomentoCompressionWithSleep: true, RunMomentoWithCompression: false})
-        {
-            Console.WriteLine("RunMomentoCompressionWithSleep can run only when RunMomentoWithCompression is true.");
-            throw new Exception("Invalid combination of parameters. RunMomentoCompressionWithSleep can run only when RunMomentoWithCompression is true.");
-        }
-
-        var trueCount = 0;
-        if (input.RunMomentoWithCompression) trueCount++;
-        if (input.RunMomentoWithoutCompression) trueCount++;
-        if (input.RunRedisWithCompression) trueCount++;
-        if (input.RunRedisWithoutCompression) trueCount++;
-
         List<Task<SetResult>> momentoSetTasks;
         List<Task<GetResult>> momentoGetTasks;
         List<Task<RedisSetResult>> redisSetTasks;
         List<Task<RedisGetResult>> redisGetTasks;
+        
+        momentoSetTasks = input.RunMomento ? await momentoCache.DoMomentoSets(_numMomentoSetRequests, withSleep: input.SleepMomento) : new List<Task<SetResult>>();
+        redisSetTasks = input.RunRedis ? await redisCache.DoRedisSets(_numRedisSetRequests) : new List<Task<RedisSetResult>>();
+        momentoGetTasks = input.RunMomento ? await momentoCache.DoMomentoGets(_numMomentoGetRequests, compressValue: input.CompressMomento, withSleep: input.SleepMomento) : new List<Task<GetResult>>();
+        redisGetTasks = input.RunRedis ? await redisCache.DoRedisGets(_numRedisGetRequests, compressValue: input.CompressRedis) : new List<Task<RedisGetResult>>();
 
-        switch (trueCount)
-        {
-            case 1 when input.RunMomentoWithCompression:
-                // Execute code for running Momento with compression
-                Console.WriteLine("------- RUNNING MOMENTO WITH COMPRESSION -------");
-                momentoSetTasks = await momentoCache.DoMomentoSets(_numMomentoSetRequests, withSleep: input.RunMomentoCompressionWithSleep);
-                momentoGetTasks = await momentoCache.DoMomentoGets(_numMomentoGetRequests, compressValue: true, withSleep: input.RunMomentoCompressionWithSleep);
-                
-                Console.WriteLine("Awaiting pending tasks");
-                Task.WaitAll(momentoSetTasks.Select(task => (Task)task).ToArray());
-                Task.WaitAll(momentoGetTasks.Select(task => (Task)task).ToArray());
-                Console.Write("Done awaiting tasks");
-                
-                momentoCache.LogMomentoSetResult(momentoSetTasks);
-                momentoCache.LogMomentoGetResult(momentoGetTasks, compressValue: true);
-                break;
-            
-            case 1 when input.RunMomentoWithoutCompression:
-                // Execute code for running Momento without compression
-                Console.WriteLine("------- RUNNING MOMENTO WITHOUT COMPRESSION -------");
-                momentoSetTasks = await momentoCache.DoMomentoSets(_numMomentoSetRequests);
-                momentoGetTasks = await momentoCache.DoMomentoGets(_numMomentoGetRequests, compressValue: false);
-                
-                Console.WriteLine("Awaiting pending tasks");
-                Task.WaitAll(momentoSetTasks.Select(task => (Task)task).ToArray());
-                Task.WaitAll(momentoGetTasks.Select(task => (Task)task).ToArray());
-                Console.Write("Done awaiting tasks");
-                
-                momentoCache.LogMomentoSetResult(momentoSetTasks);
-                momentoCache.LogMomentoGetResult(momentoGetTasks, compressValue: false);
-                break;
-            
-            case 1 when input.RunRedisWithCompression:
-                // Execute code for running Redis with compression
-                Console.WriteLine("------- RUNNING REDIS WITH COMPRESSION -------");
-                redisSetTasks = await redisCache.DoRedisSets(_numRedisSetRequests);
-                redisGetTasks = await redisCache.DoRedisGets(_numRedisGetRequests, compressValue: true);
-                
-                Console.WriteLine("Awaiting pending tasks");
-                Task.WaitAll(redisSetTasks.Select(task => (Task)task).ToArray());
-                Task.WaitAll(redisGetTasks.Select(task => (Task)task).ToArray());
-                Console.Write("Done awaiting tasks");
-                
-                redisCache.LogRedisSetResult(redisSetTasks);
-                redisCache.LogRedisGetResult(redisGetTasks, compressValue: true);
-                break;
-            
-            case 1 when input.RunRedisWithoutCompression:
-                // Execute code for running Redis without compression
-                Console.WriteLine("------- RUNNING REDIS WITHOUT COMPRESSION -------");
-                redisSetTasks = await redisCache.DoRedisSets(_numRedisSetRequests);
-                redisGetTasks = await redisCache.DoRedisGets(_numRedisGetRequests, compressValue: false);
-                
-                Console.WriteLine("Awaiting pending tasks");
-                Task.WaitAll(redisSetTasks.Select(task => (Task)task).ToArray());
-                Task.WaitAll(redisGetTasks.Select(task => (Task)task).ToArray());
-                Console.Write("Done awaiting tasks");
-                
-                redisCache.LogRedisSetResult(redisSetTasks);
-                redisCache.LogRedisGetResult(redisGetTasks, compressValue: false);
-                break;
-            
-            case 2 when input is { RunMomentoWithCompression: true, RunRedisWithCompression: true }:
-                // Execute code for running Momento with compression and Redis with compression
-                Console.WriteLine("------- RUNNING MOMENTO AND REDIS WITH COMPRESSION -------");
-                momentoSetTasks = await momentoCache.DoMomentoSets(_numMomentoSetRequests, withSleep: input.RunMomentoCompressionWithSleep);
-                redisSetTasks = await redisCache.DoRedisSets(_numRedisSetRequests);
-                momentoGetTasks = await momentoCache.DoMomentoGets(_numMomentoGetRequests, compressValue: true, withSleep: input.RunMomentoCompressionWithSleep);
-                redisGetTasks = await redisCache.DoRedisGets(_numRedisGetRequests, compressValue: true);
-                
-                Console.WriteLine("Awaiting pending tasks");
-                Task.WaitAll(momentoSetTasks.Select(task => (Task)task).ToArray());
-                Task.WaitAll(redisSetTasks.Select(task => (Task)task).ToArray());
-                Task.WaitAll(momentoGetTasks.Select(task => (Task)task).ToArray());
-                Task.WaitAll(redisGetTasks.Select(task => (Task)task).ToArray());
-                Console.Write("Done awaiting tasks");
-                
-                momentoCache.LogMomentoSetResult(momentoSetTasks);
-                momentoCache.LogMomentoGetResult(momentoGetTasks, compressValue: true);
-                redisCache.LogRedisSetResult(redisSetTasks);
-                redisCache.LogRedisGetResult(redisGetTasks, compressValue: true);
-                break;
-            
-            case 2 when input is { RunMomentoWithCompression: true, RunRedisWithoutCompression: true }:
-                // Execute code for running Momento with compression and Redis without compression
-                Console.WriteLine("------- RUNNING MOMENTO WITH COMPRESSION AND REDIS WITHOUT COMPRESSION -------");
-                momentoSetTasks = await momentoCache.DoMomentoSets(_numMomentoSetRequests, withSleep: input.RunMomentoCompressionWithSleep);
-                redisSetTasks = await redisCache.DoRedisSets(_numRedisSetRequests);
-                momentoGetTasks = await momentoCache.DoMomentoGets(_numMomentoGetRequests, compressValue: true, withSleep: input.RunMomentoCompressionWithSleep);
-                redisGetTasks = await redisCache.DoRedisGets(_numRedisGetRequests, compressValue: false);
-                
-                Console.WriteLine("Awaiting pending tasks");
-                Task.WaitAll(momentoSetTasks.Select(task => (Task)task).ToArray());
-                Task.WaitAll(redisSetTasks.Select(task => (Task)task).ToArray());
-                Task.WaitAll(momentoGetTasks.Select(task => (Task)task).ToArray());
-                Task.WaitAll(redisGetTasks.Select(task => (Task)task).ToArray());
-                Console.Write("Done awaiting tasks");
-                
-                momentoCache.LogMomentoSetResult(momentoSetTasks);
-                momentoCache.LogMomentoGetResult(momentoGetTasks, compressValue: true);
-                redisCache.LogRedisSetResult(redisSetTasks);
-                redisCache.LogRedisGetResult(redisGetTasks, compressValue: false);
-                break;
-            
-            case 2 when input is { RunMomentoWithoutCompression: true, RunRedisWithCompression: true }:
-                // Execute code for running Momento without compression and Redis with compression
-                Console.WriteLine("------- RUNNING MOMENTO WITHOUT COMPRESSION AND REDIS WITH COMPRESSION -------");
-                momentoSetTasks = await momentoCache.DoMomentoSets(_numMomentoSetRequests);
-                redisSetTasks = await redisCache.DoRedisSets(_numRedisSetRequests);
-                momentoGetTasks = await momentoCache.DoMomentoGets(_numMomentoGetRequests, compressValue: false);
-                redisGetTasks = await redisCache.DoRedisGets(_numRedisGetRequests, compressValue: true);
-                
-                Console.WriteLine("Awaiting pending tasks");
-                Task.WaitAll(momentoSetTasks.Select(task => (Task)task).ToArray());
-                Task.WaitAll(redisSetTasks.Select(task => (Task)task).ToArray());
-                Task.WaitAll(momentoGetTasks.Select(task => (Task)task).ToArray());
-                Task.WaitAll(redisGetTasks.Select(task => (Task)task).ToArray());
-                Console.Write("Done awaiting tasks");
-                
-                momentoCache.LogMomentoSetResult(momentoSetTasks);
-                momentoCache.LogMomentoGetResult(momentoGetTasks, compressValue: false);
-                redisCache.LogRedisSetResult(redisSetTasks);
-                redisCache.LogRedisGetResult(redisGetTasks, compressValue: true);
-                break;
-            
-            case 2 when input is { RunMomentoWithoutCompression: true, RunRedisWithoutCompression: true }:
-                // Execute code for running Momento without compression and Redis without compression
-                Console.WriteLine("------- RUNNING MOMENTO AND REDIS WITHOUT COMPRESSION-------");
-                momentoSetTasks = await momentoCache.DoMomentoSets(_numMomentoSetRequests);
-                redisSetTasks = await redisCache.DoRedisSets(_numRedisSetRequests);
-                momentoGetTasks = await momentoCache.DoMomentoGets(_numMomentoGetRequests, compressValue: false);
-                redisGetTasks = await redisCache.DoRedisGets(_numRedisGetRequests, compressValue: false);
-                
-                Console.WriteLine("Awaiting pending tasks");
-                Task.WaitAll(momentoSetTasks.Select(task => (Task)task).ToArray());
-                Task.WaitAll(redisSetTasks.Select(task => (Task)task).ToArray());
-                Task.WaitAll(momentoGetTasks.Select(task => (Task)task).ToArray());
-                Task.WaitAll(redisGetTasks.Select(task => (Task)task).ToArray());
-                Console.Write("Done awaiting tasks");
-                
-                momentoCache.LogMomentoSetResult(momentoSetTasks);
-                momentoCache.LogMomentoGetResult(momentoGetTasks, compressValue: false);
-                redisCache.LogRedisSetResult(redisSetTasks);
-                redisCache.LogRedisGetResult(redisGetTasks, compressValue: false);
-                break;
+        Console.WriteLine("Awaiting pending tasks");
+        // empty lists should no-op
+        Task.WaitAll(momentoSetTasks.Select(task => (Task)task).ToArray());
+        Task.WaitAll(redisSetTasks.Select(task => (Task)task).ToArray());
+        Task.WaitAll(momentoGetTasks.Select(task => (Task)task).ToArray());
+        Task.WaitAll(redisGetTasks.Select(task => (Task)task).ToArray());
+        Console.Write("Done awaiting tasks");
 
-            default:
-                // Handle the case when no parameters are set to true or more than two parameters are set to true
-                throw new Exception("Invalid combination of parameters.");
+        if (input.RunMomento) {
+            momentoCache.LogMomentoSetResult(momentoSetTasks);
+            momentoCache.LogMomentoGetResult(momentoGetTasks, compressValue: input.CompressMomento);
+        }
+        if (input.RunRedis) {
+            redisCache.LogRedisSetResult(redisSetTasks);
+            redisCache.LogRedisGetResult(redisGetTasks, compressValue: input.CompressRedis);
         }
 
         return "Lambda Execution Complete";
@@ -280,13 +133,13 @@ public class Function
     static void Main() {
         try {
             Console.WriteLine("Calling DoStuff");
-            Input input = new Input
+            var input = new Input
             {
-                RunMomentoWithCompression = true,
-                RunMomentoCompressionWithSleep = false,
-                RunMomentoWithoutCompression = false,
-                RunRedisWithCompression = false,
-                RunRedisWithoutCompression = false
+                RunMomento = true,
+                CompressMomento = false,
+                SleepMomento = false,
+                RunRedis = false,
+                CompressRedis = false
             };
             var task = new Function().DoStuff(input);
             Console.WriteLine("Waiting for task via task.Result");

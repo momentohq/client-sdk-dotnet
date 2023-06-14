@@ -3,9 +3,6 @@ using Amazon.CDK.AWS.Lambda;
 using Constructs;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.EC2;
-using Amazon.CDK.AWS.S3;
-using Amazon.CDK.AWS.Events;
-using Amazon.CDK.AWS.Events.Targets;
 
 namespace MomentoRedisLambdaExample
 {
@@ -46,7 +43,7 @@ namespace MomentoRedisLambdaExample
             lambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonElastiCacheFullAccess"));
             lambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonS3FullAccess"));
 
-            var MOMENTO_AUTH_TOKEN = "replace this with your momento auth token";
+            var MOMENTO_AUTH_TOKEN = "replace with your momento auth token";
 
             Function fn1 = new Function(this, "MomentoRedisLambdaExampleHandler", new FunctionProps
             {
