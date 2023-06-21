@@ -530,6 +530,16 @@ public interface ICacheClient : IDisposable
     /// <param name="setName">The set to fetch.</param>
     /// <returns>Task representing with the status of the fetch operation and the associated set.</returns>
     public Task<CacheSetFetchResponse> SetFetchAsync(string cacheName, string setName);
+    
+    /// <summary>
+    /// Calculate the length of a set in the cache.
+    ///
+    /// A set that does not exist is interpreted to have length 0.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+    /// <param name="setName">The dictionary to calculate length.</param>
+    /// <returns>Task representing the length of the dictionary.</returns>
+    public Task<CacheSetLengthResponse> SetLengthAsync(string cacheName, string setName);
 
     /// <summary>
     /// Push multiple values to the beginning of a list.

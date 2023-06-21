@@ -608,4 +608,26 @@ public class SetTest : TestBase
         Assert.True(deleteResponse is CacheDeleteResponse.Success, $"Unexpected response: {deleteResponse}");
         Assert.True(await client.SetFetchAsync(cacheName, setName) is CacheSetFetchResponse.Miss);
     }
+    
+    [Fact]
+    public async Task SetLengthAsync_SetIsMissing()
+    {
+        var setName = Utils.NewGuidString();
+        CacheSetLengthResponse response = await client.SetLengthAsync(cacheName, setName);
+        Assert.True(response is CacheSetLengthResponse.Miss, $"Unexpected response: {response}");
+    }
+
+    [Fact]
+    public async Task SetLengthAsync_HappyPath()
+    {
+        var setName = Utils.NewGuidString();
+        var element = Utils.NewGuidByteArray();
+
+        await client.SetAddElementAsync(cacheName, setName, element);
+
+        CacheSetLengthResponse lengthResponse = await client.SetLengthAsync(cacheName, setName);
+        Assert.True(lengthResponse is CacheSetLengthResponse.Hit, $"Unexpected response: {lengthResponse}");
+        var hitResponse = (CacheSetLengthResponse.Hit)lengthResponse;
+        Assert.Equal(1, hitResponse.Length);
+    }
 }
