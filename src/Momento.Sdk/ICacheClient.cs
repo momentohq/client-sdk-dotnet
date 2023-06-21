@@ -537,8 +537,8 @@ public interface ICacheClient : IDisposable
     /// A set that does not exist is interpreted to have length 0.
     /// </summary>
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
-    /// <param name="setName">The dictionary to calculate length.</param>
-    /// <returns>Task representing the length of the dictionary.</returns>
+    /// <param name="setName">The set to calculate length.</param>
+    /// <returns>Task representing the length of the set.</returns>
     public Task<CacheSetLengthResponse> SetLengthAsync(string cacheName, string setName);
 
     /// <summary>
