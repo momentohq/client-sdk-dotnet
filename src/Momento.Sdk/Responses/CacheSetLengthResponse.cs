@@ -39,7 +39,7 @@ public abstract class CacheSetLengthResponse
     public class Hit : CacheSetLengthResponse
     {
         /// <summary>
-        /// The length of the set. If the set is missing or empty, the result is zero.
+        /// The length of the set. If the set is missing or empty, the result is a miss.
         /// </summary>
         public int Length { get; private set; } = 0;
 

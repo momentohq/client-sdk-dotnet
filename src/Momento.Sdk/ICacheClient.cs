@@ -455,6 +455,7 @@ public interface ICacheClient : IDisposable
     /// <summary>
     /// Calculate the length of a dictionary in the cache.
     ///
+    /// A dictionary that does not exist is interpreted to be a miss.
     /// </summary>
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
     /// <param name="dictionaryName">The dictionary to calculate length.</param>
@@ -534,7 +535,7 @@ public interface ICacheClient : IDisposable
     /// <summary>
     /// Calculate the length of a set in the cache.
     ///
-    /// A set that does not exist is interpreted to have length 0.
+    /// A set that does not exist is interpreted to be a miss.
     /// </summary>
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
     /// <param name="setName">The set to calculate length.</param>

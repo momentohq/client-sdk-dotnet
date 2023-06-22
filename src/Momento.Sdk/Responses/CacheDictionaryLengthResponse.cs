@@ -39,7 +39,7 @@ public abstract class CacheDictionaryLengthResponse
     public class Hit : CacheDictionaryLengthResponse
     {
         /// <summary>
-        /// The length of the dictionary. If the dictionary is missing or empty, the result is zero.
+        /// The length of the dictionary. If the dictionary is missing or empty, the result is a miss.
         /// </summary>
         public int Length { get; private set; } = 0;
 
