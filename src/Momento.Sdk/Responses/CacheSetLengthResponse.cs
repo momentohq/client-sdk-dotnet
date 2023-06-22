@@ -4,26 +4,26 @@ using Momento.Sdk.Exceptions;
 namespace Momento.Sdk.Responses;
 
 /// <summary>
-/// Parent response type for a cache dictionary length request. The
+/// Parent response type for a cache set length request. The
 /// response object is resolved to a type-safe object of one of
 /// the following subtypes:
 /// <list type="bullet">
-/// <item><description>CacheDictionaryLengthResponse.Hit</description></item>
-/// <item><description>CacheDictionaryLengthResponse.Miss</description></item>
-/// <item><description>CacheDictionaryLengthResponse.Error</description></item>
+/// <item><description>CacheSetLengthResponse.Hit</description></item>
+/// <item><description>CacheSetLengthResponse.Miss</description></item>
+/// <item><description>CacheSetLengthResponse.Error</description></item>
 /// </list>
 /// Pattern matching can be used to operate on the appropriate subtype.
 /// For example:
 /// <code>
-/// if (response is CacheDictionaryLengthResponse.Hit hitResponse)
+/// if (response is CacheSetLengthResponse.Hit hitResponse)
 /// {
 ///     return hitResponse.Length;
 /// }
-/// else if (response is CacheDictionaryLengthResponse.Miss missResponse)
+/// else if (response is CacheSetLengthResponse.Miss missResponse)
 /// {
 ///     // handle missResponse as appropriate
 /// }
-/// else if (response is CacheDictionaryLengthResponse.Error errorResponse)
+/// else if (response is CacheSetLengthResponse.Error errorResponse)
 /// {
 ///     // handle error as appropriate
 /// }
@@ -33,13 +33,13 @@ namespace Momento.Sdk.Responses;
 /// }
 /// </code>
 /// </summary>
-public abstract class CacheDictionaryLengthResponse
+public abstract class CacheSetLengthResponse
 {
     /// <include file="../docs.xml" path='docs/class[@name="Hit"]/description/*' />
-    public class Hit : CacheDictionaryLengthResponse
+    public class Hit : CacheSetLengthResponse
     {
         /// <summary>
-        /// The length of the dictionary. If the dictionary is missing or empty, the result is a miss.
+        /// The length of the set. If the set is missing or empty, the result is a miss.
         /// </summary>
         public int Length { get; private set; } = 0;
 
@@ -47,9 +47,9 @@ public abstract class CacheDictionaryLengthResponse
         ///
         /// </summary>
         /// <param name="response">The cache response.</param>
-        public Hit(_DictionaryLengthResponse response)
+        public Hit(_SetLengthResponse response)
         {
-            if(response.DictionaryCase == _DictionaryLengthResponse.DictionaryOneofCase.Found) {
+            if(response.SetCase == _SetLengthResponse.SetOneofCase.Found) {
                 Length = checked((int)response.Found.Length);
             }
         }
@@ -62,13 +62,13 @@ public abstract class CacheDictionaryLengthResponse
     }
 
     /// <include file="../docs.xml" path='docs/class[@name="Miss"]/description/*' />
-    public class Miss : CacheDictionaryLengthResponse
+    public class Miss : CacheSetLengthResponse
     {
 
     }
 
     /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
-    public class Error : CacheDictionaryLengthResponse, IError
+    public class Error : CacheSetLengthResponse, IError
     {
         private readonly SdkException _error;
 

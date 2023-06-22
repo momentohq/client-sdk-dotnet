@@ -307,6 +307,11 @@ internal sealed class ScsDataClient : ScsDataClientBase
     {
         return await SendSetFetchAsync(cacheName, setName);
     }
+    
+    public async Task<CacheSetLengthResponse> SetLengthAsync(string cacheName, string setName)
+    {
+        return await SendSetLengthAsync(cacheName, setName);
+    }
 
     public async Task<CacheListConcatenateFrontResponse> ListConcatenateFrontAsync(string cacheName, string listName, IEnumerable<byte[]> values, int? truncateBackToSize = null, CollectionTtl ttl = default(CollectionTtl))
     {
@@ -933,6 +938,31 @@ internal sealed class ScsDataClient : ScsDataClientBase
         }
 
         return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_SET_FETCH, cacheName, setName, new CacheSetFetchResponse.Miss());
+    }
+    
+    const string REQUEST_TYPE_SET_LENGTH = "SET_LENGTH";
+    private async Task<CacheSetLengthResponse> SendSetLengthAsync(string cacheName, string setName)
+    {
+        _SetLengthRequest request = new() { SetName = setName.ToByteString() };
+        _SetLengthResponse response;
+        var metadata = MetadataWithCache(cacheName);
+
+        try
+        {
+            this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_SET_LENGTH, cacheName, setName);
+            response = await this.grpcManager.Client.SetLengthAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+        }
+        catch (Exception e)
+        {
+            return this._logger.LogTraceCollectionRequestError(REQUEST_TYPE_SET_LENGTH, cacheName, setName, new CacheSetLengthResponse.Error(_exceptionMapper.Convert(e, metadata)));
+        }
+
+        if (response.SetCase == _SetLengthResponse.SetOneofCase.Missing)
+        {
+            return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_SET_LENGTH, cacheName, setName, new CacheSetLengthResponse.Miss());
+        }
+
+        return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_SET_LENGTH, cacheName, setName, new CacheSetLengthResponse.Hit(response));
     }
 
     const string REQUEST_TYPE_LIST_CONCATENATE_FRONT = "LIST_CONCATENATE_FRONT";
