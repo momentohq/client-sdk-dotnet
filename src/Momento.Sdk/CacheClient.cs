@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
@@ -899,6 +898,22 @@ public class CacheClient : ICacheClient
         }
 
         return await this.DataClient.SetFetchAsync(cacheName, setName);
+    }
+    
+    /// <inheritdoc />
+    public async Task<CacheSetLengthResponse> SetLengthAsync(string cacheName, string setName)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(setName, nameof(setName));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheSetLengthResponse.Error(new InvalidArgumentException(e.Message));
+        }
+
+        return await this.DataClient.SetLengthAsync(cacheName, setName);
     }
 
     /// <inheritdoc />
