@@ -62,7 +62,7 @@ public class CacheControlTest : TestBase
     public async Task FlushCacheAsync_HappyPath()
     {
         string cacheName = Utils.TestCacheName();
-        await client.CreateCacheAsync(cacheName);
+        Utils.CreateCacheForTest(client, cacheName);
 
         try
         {
@@ -113,7 +113,7 @@ public class CacheControlTest : TestBase
     {
         // Create cache
         string cacheName = Utils.TestCacheName();
-        await client.CreateCacheAsync(cacheName);
+        Utils.CreateCacheForTest(client, cacheName);
 
         // Test cache exists
         ListCachesResponse result = await client.ListCachesAsync();
@@ -142,7 +142,7 @@ public class CacheControlTest : TestBase
         {
             String cacheName = Utils.TestCacheName();
             cacheNames.Add(cacheName);
-            await client.CreateCacheAsync(cacheName);
+            Utils.CreateCacheForTest(client, cacheName);
         }
         try
         {

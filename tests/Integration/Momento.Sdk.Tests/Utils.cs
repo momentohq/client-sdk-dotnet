@@ -19,4 +19,13 @@ public static class Utils
     public static int WaitForItemToBeSet { get; } = 100;
 
     public static int WaitForInitialItemToExpire { get; } = 4900;
+
+    public static void CreateCacheForTest(ICacheClient cacheClient, string cacheName)
+    {
+        var result = cacheClient.CreateCacheAsync(cacheName).Result;
+        if (result is not (CreateCacheResponse.Success or CreateCacheResponse.CacheAlreadyExists))
+        {
+            throw new Exception($"Error when creating cache: {result}");
+        }
+    }
 }
