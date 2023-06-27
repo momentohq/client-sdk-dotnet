@@ -21,8 +21,7 @@ public class CacheClientFixture : IDisposable
     public CacheClientFixture()
     {
         AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
-        CacheName = Environment.GetEnvironmentVariable("TEST_CACHE_NAME") ??
-            throw new NullReferenceException("TEST_CACHE_NAME environment variable must be set.");
+        CacheName = $"dotnet-integration-{Utils.NewGuidString()}";
         Client = new CacheClient(Configurations.Laptop.Latest(LoggerFactory.Create(builder =>
                 {
                     builder.AddSimpleConsole(options =>
@@ -35,8 +34,7 @@ public class CacheClientFixture : IDisposable
                     builder.SetMinimumLevel(LogLevel.Information);
                 })),
                 AuthProvider, defaultTtl: DefaultTtl);
-
-        var result = Client.CreateCacheAsync(CacheName).Result;
+        Utils.CreateCacheForTest(Client, CacheName);
     }
 
     public void Dispose()
