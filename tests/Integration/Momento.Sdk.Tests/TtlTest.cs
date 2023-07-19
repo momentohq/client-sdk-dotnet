@@ -123,7 +123,7 @@ public class TtlTest : TestBase
         var ttlResponse = await client.ItemGetTtlAsync(cacheName, key);
         Assert.True(ttlResponse is CacheItemGetTtlResponse.Hit, $"Unexpected response: {ttlResponse}");
         var theTtl = ((CacheItemGetTtlResponse.Hit)ttlResponse).Value;
-        Assert.True(theTtl.Milliseconds < 60000 && theTtl.Milliseconds > 55000);
+        Assert.True(theTtl.TotalMilliseconds < 60000 && theTtl.TotalMilliseconds > 55000);
 
         await Task.Delay(1000);
 
@@ -131,7 +131,7 @@ public class TtlTest : TestBase
         Assert.True(ttlResponse2 is CacheItemGetTtlResponse.Hit, $"Unexpected response: {ttlResponse}");
         var theTtl2 = ((CacheItemGetTtlResponse.Hit)ttlResponse2).Value;
 
-        Assert.True(theTtl2.Milliseconds <= theTtl.Milliseconds - 1000);
+        Assert.True(theTtl2.TotalMilliseconds <= theTtl.TotalMilliseconds - 1000);
     }
 
     [Fact]
