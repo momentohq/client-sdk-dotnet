@@ -1,5 +1,6 @@
 ﻿namespace Momento.Sdk.Responses;
 
+using System;
 using Momento.Protos.CacheClient;
 using Momento.Sdk.Exceptions;
 
@@ -53,9 +54,9 @@ public abstract class CacheItemGetTtlResponse
         /// <summary>
         /// The value of the ttl.
         /// </summary>
-        public ulong Value
+        public TimeSpan Value
         {
-            get => value;
+            get => TimeSpan.FromMilliseconds(value);
         }
 
         /// <inheritdoc />

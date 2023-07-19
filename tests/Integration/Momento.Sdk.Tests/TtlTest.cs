@@ -123,7 +123,7 @@ public class TtlTest : TestBase
         var ttlResponse = await client.ItemGetTtlAsync(cacheName, key);
         Assert.True(ttlResponse is CacheItemGetTtlResponse.Hit, $"Unexpected response: {ttlResponse}");
         var theTtl = ((CacheItemGetTtlResponse.Hit)ttlResponse).Value;
-        Assert.True(theTtl < 60000 && theTtl > 55000);
+        Assert.True(theTtl.Milliseconds < 60000 && theTtl.Milliseconds > 55000);
 
         await Task.Delay(1000);
 
@@ -131,7 +131,7 @@ public class TtlTest : TestBase
         Assert.True(ttlResponse2 is CacheItemGetTtlResponse.Hit, $"Unexpected response: {ttlResponse}");
         var theTtl2 = ((CacheItemGetTtlResponse.Hit)ttlResponse2).Value;
 
-        Assert.True(theTtl2 <= theTtl - 1000);
+        Assert.True(theTtl2.Milliseconds <= theTtl.Milliseconds - 1000);
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public class TtlTest : TestBase
     [Fact]
     public async Task ItemGetTtl_EmptyCacheNameError()
     {
-        var ttlResponse = await client.ItemGetTtlAsync(null, Utils.NewGuidString());
+        var ttlResponse = await client.ItemGetTtlAsync(null!, Utils.NewGuidString());
         Assert.True(ttlResponse is CacheItemGetTtlResponse.Error, $"Unexpected response: {ttlResponse}");
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheItemGetTtlResponse.Error)ttlResponse).ErrorCode);
     }
