@@ -110,4 +110,50 @@ public class TtlTest : TestBase
         Assert.True(existsResponse is CacheKeyExistsResponse.Success, "exists response should be success");
         Assert.False(((CacheKeyExistsResponse.Success)existsResponse).Exists, "Key should not exist");
     }
+
+    [Fact]
+    public async Task ItemGetTtl_HappyPath()
+    {
+        // Add an item with a minute ttl
+        string key = Utils.NewGuidString();
+        var ttl = TimeSpan.FromSeconds(60);
+        var response = await client.SetAsync(cacheName, key, Utils.NewGuidString(), ttl);
+        Assert.True(response is CacheSetResponse.Success, $"Unexpected response: {response}");
+
+        var ttlResponse = await client.ItemGetTtlAsync(cacheName, key);
+        Assert.True(ttlResponse is CacheItemGetTtlResponse.Hit, $"Unexpected response: {ttlResponse}");
+        var theTtl = ((CacheItemGetTtlResponse.Hit)ttlResponse).Value;
+        Assert.True(theTtl < 60000 && theTtl > 55000);
+
+        await Task.Delay(1000);
+
+        var ttlResponse2 = await client.ItemGetTtlAsync(cacheName, key);
+        Assert.True(ttlResponse2 is CacheItemGetTtlResponse.Hit, $"Unexpected response: {ttlResponse}");
+        var theTtl2 = ((CacheItemGetTtlResponse.Hit)ttlResponse2).Value;
+
+        Assert.True(theTtl2 <= theTtl - 1000);
+    }
+
+    [Fact]
+    public async Task ItemGetTtl_Miss()
+    {
+        var ttlResponse = await client.ItemGetTtlAsync(cacheName, Utils.NewGuidString());
+        Assert.True(ttlResponse is CacheItemGetTtlResponse.Miss, $"Unexpected response: {ttlResponse}");
+    }
+
+    [Fact]
+    public async Task ItemGetTtl_NonexistentCacheError()
+    {
+        var ttlResponse = await client.ItemGetTtlAsync(Utils.NewGuidString(), Utils.NewGuidString());
+        Assert.True(ttlResponse is CacheItemGetTtlResponse.Error, $"Unexpected response: {ttlResponse}");
+        Assert.Equal(MomentoErrorCode.NOT_FOUND_ERROR, ((CacheItemGetTtlResponse.Error)ttlResponse).ErrorCode);
+    }
+
+    [Fact]
+    public async Task ItemGetTtl_EmptyCacheNameError()
+    {
+        var ttlResponse = await client.ItemGetTtlAsync(null, Utils.NewGuidString());
+        Assert.True(ttlResponse is CacheItemGetTtlResponse.Error, $"Unexpected response: {ttlResponse}");
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheItemGetTtlResponse.Error)ttlResponse).ErrorCode);
+    }
 }

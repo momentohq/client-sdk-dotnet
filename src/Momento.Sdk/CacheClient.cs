@@ -185,6 +185,44 @@ public class CacheClient : ICacheClient
     }
 
     /// <inheritdoc />
+    public async Task<CacheItemGetTtlResponse> ItemGetTtlAsync(string cacheName, byte[] key)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(key, nameof(key));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheItemGetTtlResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return new CacheItemGetTtlResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        return await this.DataClient.ItemGetTtlAsync(cacheName, key);
+    }
+
+    /// <inheritdoc />
+    public async Task<CacheItemGetTtlResponse> ItemGetTtlAsync(string cacheName, string key)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(key, nameof(key));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheItemGetTtlResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return new CacheItemGetTtlResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        return await this.DataClient.ItemGetTtlAsync(cacheName, key);
+    }
+
+    /// <inheritdoc />
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, TimeSpan? ttl = null)
     {
         try

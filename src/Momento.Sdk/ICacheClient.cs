@@ -173,6 +173,17 @@ public interface ICacheClient : IDisposable
     public Task<CacheUpdateTtlResponse> UpdateTtlAsync(string cacheName, string key, TimeSpan ttl);
 
     /// <summary>
+    /// Get the TTL of a cache item.
+    /// </summary>
+    /// <param name="cacheName">The name of the cache to perform the lookup in.</param>
+    /// <param name="key">The key to get the TTL for.</param>
+    /// <returns>Task representing the result of the item get TTL operation.</returns>
+    public Task<CacheItemGetTtlResponse> ItemGetTtlAsync(string cacheName, byte[] key);
+
+    /// <inheritdoc cref="ItemGetTtlAsync(string, byte[])"/>
+    public Task<CacheItemGetTtlResponse> ItemGetTtlAsync(string cacheName, string key);
+
+    /// <summary>
     /// Set the value in cache with a given time to live (TTL) seconds.
     /// </summary>
     /// <param name="cacheName">Name of the cache to store the item in.</param>
@@ -531,7 +542,7 @@ public interface ICacheClient : IDisposable
     /// <param name="setName">The set to fetch.</param>
     /// <returns>Task representing with the status of the fetch operation and the associated set.</returns>
     public Task<CacheSetFetchResponse> SetFetchAsync(string cacheName, string setName);
-    
+
     /// <summary>
     /// Calculate the length of a set in the cache.
     ///

@@ -106,6 +106,16 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return await this.SendUpdateTtlAsync(cacheName, key: key.ToByteString(), ttl: ttl);
     }
 
+    public async Task<CacheItemGetTtlResponse> ItemGetTtlAsync(string cacheName, byte[] key)
+    {
+        return await this.SendItemGetTtlAsync(cacheName, key: key.ToByteString());
+    }
+
+    public async Task<CacheItemGetTtlResponse> ItemGetTtlAsync(string cacheName, string key)
+    {
+        return await this.SendItemGetTtlAsync(cacheName, key: key.ToByteString());
+    }
+
     public async Task<CacheSetResponse> SetAsync(string cacheName, byte[] key, byte[] value, TimeSpan? ttl = null)
     {
         return await this.SendSetAsync(cacheName, key: key.ToByteString(), value: value.ToByteString(), ttl: ttl);
@@ -307,7 +317,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
     {
         return await SendSetFetchAsync(cacheName, setName);
     }
-    
+
     public async Task<CacheSetLengthResponse> SetLengthAsync(string cacheName, string setName)
     {
         return await SendSetLengthAsync(cacheName, setName);
@@ -464,6 +474,37 @@ internal sealed class ScsDataClient : ScsDataClientBase
         {
             // The other alternative is "NotSet", which is impossible when doing OverwriteTtl.
             return this._logger.LogTraceRequestError(REQUEST_TYPE_UPDATE_TTL, cacheName, key, null, ttl, new CacheUpdateTtlResponse.Error(
+                _exceptionMapper.Convert(new Exception("Unknown response type"), metadata)));
+        }
+    }
+
+    const string REQUEST_TYPE_ITEM_GET_TTL = "ITEM_GET_TTL";
+    private async Task<CacheItemGetTtlResponse> SendItemGetTtlAsync(string cacheName, ByteString key)
+    {
+        _ItemGetTtlRequest request = new _ItemGetTtlRequest() { CacheKey = key };
+        _ItemGetTtlResponse response;
+        var metadata = MetadataWithCache(cacheName);
+        try
+        {
+            this._logger.LogTraceExecutingRequest(REQUEST_TYPE_UPDATE_TTL, cacheName, key, null, null);
+            response = await this.grpcManager.Client.ItemGetTtlAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+        }
+        catch (Exception e)
+        {
+            return this._logger.LogTraceRequestError(REQUEST_TYPE_UPDATE_TTL, cacheName, key, null, null, new CacheItemGetTtlResponse.Error(_exceptionMapper.Convert(e, metadata)));
+        }
+
+        if (response.ResultCase == _ItemGetTtlResponse.ResultOneofCase.Missing)
+        {
+            return this._logger.LogTraceRequestSuccess(REQUEST_TYPE_ITEM_GET_TTL, cacheName, key, null, null, new CacheItemGetTtlResponse.Miss());
+        }
+        else if (response.ResultCase == _ItemGetTtlResponse.ResultOneofCase.Found)
+        {
+            return this._logger.LogTraceRequestSuccess(REQUEST_TYPE_ITEM_GET_TTL, cacheName, key, null, null, new CacheItemGetTtlResponse.Hit(response));
+        }
+        else
+        {
+            return this._logger.LogTraceRequestError(REQUEST_TYPE_ITEM_GET_TTL, cacheName, key, null, null, new CacheItemGetTtlResponse.Error(
                 _exceptionMapper.Convert(new Exception("Unknown response type"), metadata)));
         }
     }
@@ -939,7 +980,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
         return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_SET_FETCH, cacheName, setName, new CacheSetFetchResponse.Miss());
     }
-    
+
     const string REQUEST_TYPE_SET_LENGTH = "SET_LENGTH";
     private async Task<CacheSetLengthResponse> SendSetLengthAsync(string cacheName, string setName)
     {
