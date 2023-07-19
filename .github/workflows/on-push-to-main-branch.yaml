@@ -16,7 +16,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       TEST_AUTH_TOKEN: ${{ secrets.ALPHA_TEST_AUTH_TOKEN }}
-      TEST_CACHE_NAME: client-sdk-dotnet-${{ github.sha }}-${{ matrix.target-framework }}
 
     steps:
       - name: Get current time

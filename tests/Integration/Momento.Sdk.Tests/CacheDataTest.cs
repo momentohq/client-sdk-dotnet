@@ -167,7 +167,6 @@ public class CacheDataTest : TestBase
         Assert.Equal(expectedDict, goodResponse.ExistsDictionary);
     }
 
-
     [Theory]
     [InlineData(null, new byte[] { 0x00 }, new byte[] { 0x00 })]
     [InlineData("cache", null, new byte[] { 0x00 })]
