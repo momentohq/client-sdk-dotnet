@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using Momento.Sdk;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
-using Momento.Sdk.Config.Transport;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Responses;
 
@@ -70,7 +69,6 @@ namespace MomentoLoadGen
     {
         const int CACHE_ITEM_TTL_SECONDS = 60;
         const string CACHE_NAME = "dotnet-momento-loadgen";
-        const int NUM_REQUESTS_PER_OPERATION = 2;
 
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<CsharpLoadGenerator> _logger;
