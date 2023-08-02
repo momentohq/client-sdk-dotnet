@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
+using Momento.Sdk.Config.Transport;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal;
 using Momento.Sdk.Internal.ExtensionMethods;
@@ -52,7 +53,20 @@ public class CacheClient : ICacheClient
         Utils.ArgumentStrictlyPositive(defaultTtl, "defaultTtl");
         this.controlClient = new(_loggerFactory, authProvider.AuthToken, authProvider.ControlEndpoint);
         this.dataClients = new List<ScsDataClient>();
-        for (var i = 1; i <= config.TransportStrategy.GrpcConfig.MinNumGrpcChannels; i++)
+        int minNumGrpcChannels = this.config.TransportStrategy.GrpcConfig.MinNumGrpcChannels;
+        int currentMaxConcurrentRequests = this.config.TransportStrategy.MaxConcurrentRequests;
+        if (minNumGrpcChannels > 1)
+        {
+            
+            int newMaxConcurrentRequests = (currentMaxConcurrentRequests / minNumGrpcChannels);
+            ITransportStrategy transportStrategy = this.config.TransportStrategy;
+            transportStrategy = transportStrategy.WithMaxConcurrentRequests(newMaxConcurrentRequests);
+            this.config = this.config.WithTransportStrategy(transportStrategy);
+            _logger.LogWarning("Overriding maxConcurrentRequests for each gRPC channel to {}." +
+                               " Min gRPC channels: {}, total maxConcurrentRequests: {}", newMaxConcurrentRequests,
+                                minNumGrpcChannels, currentMaxConcurrentRequests);
+        }
+        for (var i = 1; i <= minNumGrpcChannels; i++)
         {
             this.dataClients.Add(new(config, authProvider.AuthToken, authProvider.CacheEndpoint, defaultTtl));
         }

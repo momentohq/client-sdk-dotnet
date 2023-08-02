@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
@@ -12,7 +13,8 @@ namespace Momento.Sdk.Internal.Middleware
     internal class FairAsyncSemaphore
     {
         private readonly Channel<bool> _ticketChannel;
-
+        private int _currentTicketCount;
+        
         internal FairAsyncSemaphore(int numTickets)
         {
             _ticketChannel = Channel.CreateBounded<bool>(numTickets);
@@ -25,11 +27,14 @@ namespace Momento.Sdk.Internal.Middleware
                     throw new ApplicationException("Unable to initialize async channel");
                 }
             }
+            
+            _currentTicketCount = numTickets;
         }
 
         public async Task WaitOne()
         {
             await _ticketChannel.Reader.ReadAsync();
+            Interlocked.Decrement(ref _currentTicketCount);
         }
 
         public void Release()
@@ -39,6 +44,12 @@ namespace Momento.Sdk.Internal.Middleware
             {
                 throw new ApplicationException("more releases than waits! These must be 1:1");
             }
+            Interlocked.Increment(ref _currentTicketCount);
+        }
+        
+        public int GetCurrentTicketCount()
+        {
+            return Interlocked.CompareExchange(ref _currentTicketCount, 0, 0);
         }
     }
 }
