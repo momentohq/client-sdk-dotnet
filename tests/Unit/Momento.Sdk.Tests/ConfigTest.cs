@@ -2,8 +2,6 @@ using System;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Transport;
 using Xunit;
-using Xunit.Abstractions;
-using Xunit.Sdk;
 
 public class ConfigTest
 {

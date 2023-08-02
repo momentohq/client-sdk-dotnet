@@ -46,12 +46,13 @@ public class CacheEagerConnectionTest
         grpcConfiguration = grpcConfiguration.WithMinNumGrpcChannels(10);
         config = config.WithTransportStrategy(config.TransportStrategy
                                                     .WithGrpcConfig(grpcConfiguration)
-                                                    .WithMaxConcurrentRequests(500));
-        // still 500; clients shouldn't know we are doing 500/10 magic internally
-        Assert.Equal(500, config.TransportStrategy.MaxConcurrentRequests);
-        Assert.Equal(10, config.TransportStrategy.GrpcConfig.MinNumGrpcChannels);
+                                                    .WithMaxConcurrentRequests(2));
+       
         // just validating that we can construct the client wh
         var client = new CacheClient(config, authProvider, defaultTtl);
+        // still 2; clients shouldn't know we are doing 2/10 magic internally
+        Assert.Equal(2, config.TransportStrategy.MaxConcurrentRequests);
+        Assert.Equal(10, config.TransportStrategy.GrpcConfig.MinNumGrpcChannels);
     }
 
     [Fact]
