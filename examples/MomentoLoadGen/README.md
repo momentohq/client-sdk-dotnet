@@ -40,3 +40,11 @@ Within the `MomentoLoadGen` directory you can run:
 # Run example load generator
 MOMENTO_AUTH_TOKEN=<YOUR AUTH TOKEN> dotnet run
 ```
+
+If you make modifications to the code, remember to do a clean otherwise
+the program might not run.
+
+```bash
+dotnet clean
+MOMENTO_AUTH_TOKEN=<YOUR AUTH TOKEN> dotnet run
+```
