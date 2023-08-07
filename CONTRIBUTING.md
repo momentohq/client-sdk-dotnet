@@ -1,6 +1,7 @@
 # Running tests
 
 Unless you are testing older .NET runtimes on Windows, you should run the tests against the newer runtimes as follows:
+  - https://dotnet.microsoft.com/en-us/download/dotnet/6.0
 
 ```
 make test-net6
