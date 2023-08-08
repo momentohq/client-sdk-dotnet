@@ -30,6 +30,8 @@ public interface ITransportStrategy
 
     /// <summary>
     /// Copy constructor to update the maximum number of concurrent requests.
+    /// For every 100 concurrent requests, a new gRPC connection gets created. This value essentially limits
+    /// the number of connections you will get for your gRPC client.
     /// </summary>
     /// <param name="maxConcurrentRequests"></param>
     /// <returns>A new ITransportStrategy with the specified maxConccurrentRequests</returns>

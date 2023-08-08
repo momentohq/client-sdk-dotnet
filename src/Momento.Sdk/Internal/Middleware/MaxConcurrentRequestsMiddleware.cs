@@ -38,11 +38,13 @@ namespace Momento.Sdk.Internal.Middleware
     {
         private readonly int _maxConcurrentRequests;
         private readonly FairAsyncSemaphore _semaphore;
+        private readonly ILogger _logger;
 
         public MaxConcurrentRequestsMiddleware(ILoggerFactory loggerFactory, int maxConcurrentRequests)
         {
             _maxConcurrentRequests = maxConcurrentRequests;
             _semaphore = new FairAsyncSemaphore(maxConcurrentRequests);
+            _logger = loggerFactory.CreateLogger<MaxConcurrentRequestsMiddleware>();
         }
 
         public async Task<MiddlewareResponseState<TResponse>> WrapRequest<TRequest, TResponse>(
@@ -51,7 +53,14 @@ namespace Momento.Sdk.Internal.Middleware
             Func<TRequest, CallOptions, Task<MiddlewareResponseState<TResponse>>> continuation
         ) where TRequest : class where TResponse : class
         {
+            if (_semaphore.GetCurrentTicketCount() == 0)
+            {
+                _logger.LogDebug("Max concurrent requests reached. The client will wait until one or more requests " +
+                                 " have completed.");
+            }
+
             await _semaphore.WaitOne();
+            
             try
             {
                 var result = await continuation(request, callOptions);

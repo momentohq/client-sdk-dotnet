@@ -1,9 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
-using System.Security.Cryptography;
-using System.Text;
-using Grpc.Core;
+﻿using System.Diagnostics;
 using HdrHistogram;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk;
@@ -30,7 +25,9 @@ namespace MomentoLoadGen
         UNAVAILABLE,
         TIMEOUT,
         LIMIT_EXCEEDED,
-        RST_STREAM
+        RST_STREAM,
+        UNKNOWN,
+        CANCELLED
     };
 
     internal class CsharpLoadGeneratorContext
@@ -45,6 +42,8 @@ namespace MomentoLoadGen
         public int GlobalUnavailableCount;
         public int GlobalTimeoutExceededCount;
         public int GlobalLimitExceededCount;
+        public int GlobalUnknownCount;
+        public int GlobalCancelledCount;
         public int GlobalRstStreamCount;
 
         public CsharpLoadGeneratorContext()
@@ -58,6 +57,8 @@ namespace MomentoLoadGen
             GlobalSuccessCount = 0;
             GlobalTimeoutExceededCount = 0;
             GlobalLimitExceededCount = 0;
+            GlobalUnknownCount = 0;
+            GlobalCancelledCount = 0;
             GlobalRstStreamCount = 0;
             GlobalUnavailableCount = 0;
         }
@@ -67,8 +68,7 @@ namespace MomentoLoadGen
     public class CsharpLoadGenerator
     {
         const int CACHE_ITEM_TTL_SECONDS = 60;
-        const string CACHE_NAME = "momento-loadgen";
-        const int NUM_REQUESTS_PER_OPERATION = 2;
+        const string CACHE_NAME = "dotnet-momento-loadgen";
 
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<CsharpLoadGenerator> _logger;
@@ -189,6 +189,8 @@ cumulative stats:
            unavailable: {context.GlobalUnavailableCount} ({PercentRequests(context, context.GlobalUnavailableCount)}%)
       timeout exceeded: {context.GlobalTimeoutExceededCount} ({PercentRequests(context, context.GlobalTimeoutExceededCount)}%)
         limit exceeded: {context.GlobalLimitExceededCount} ({PercentRequests(context, context.GlobalLimitExceededCount)}%)
+        cancelled: {context.GlobalCancelledCount} ({PercentRequests(context, context.GlobalCancelledCount)}%)
+        unknown: {context.GlobalUnknownCount} ({PercentRequests(context, context.GlobalUnknownCount)}%)
             rst stream: {context.GlobalRstStreamCount} ({PercentRequests(context, context.GlobalRstStreamCount)}%)
 
 cumulative set latencies:
@@ -306,9 +308,16 @@ cumulative get latencies:
             {
                 return AsyncSetGetResult.LIMIT_EXCEEDED;
             }
+            else if (errorCode is MomentoErrorCode.UNKNOWN_ERROR or MomentoErrorCode.UNKNOWN_SERVICE_ERROR)
+            {
+                return AsyncSetGetResult.UNKNOWN;
+            }
+            else if (errorCode == MomentoErrorCode.CANCELLED_ERROR)
+            {
+                return AsyncSetGetResult.CANCELLED;
+            }
             _logger.LogError("UNCAUGHT EXCEPTION: {}", ex);
             throw new ApplicationException($"Unsupported error code: {errorCode}");
-
         }
 
         private static void UpdateContextCountsForRequest(
@@ -324,6 +333,8 @@ cumulative get latencies:
                 AsyncSetGetResult.TIMEOUT => Interlocked.Increment(ref context.GlobalTimeoutExceededCount),
                 AsyncSetGetResult.LIMIT_EXCEEDED => Interlocked.Increment(ref context.GlobalLimitExceededCount),
                 AsyncSetGetResult.RST_STREAM => Interlocked.Increment(ref context.GlobalRstStreamCount),
+                AsyncSetGetResult.UNKNOWN => Interlocked.Increment(ref context.GlobalUnknownCount),
+                AsyncSetGetResult.CANCELLED => Interlocked.Increment(ref context.GlobalCancelledCount),
                 _ => throw new Exception($"Unrecognized result: {result}"),
             };
             return;
