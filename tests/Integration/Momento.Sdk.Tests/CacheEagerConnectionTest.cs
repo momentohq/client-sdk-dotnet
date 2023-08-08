@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
+using Momento.Sdk.Config.Transport;
 
 namespace Momento.Sdk.Tests.Integration;
 
@@ -37,6 +38,22 @@ public class CacheEagerConnectionTest
         var client = new CacheClient(config, authProvider, defaultTtl);
     }
 
+    [Fact]
+    public void CacheClientConstructor_WithChannelsAndMaxConn_Success()
+    {
+        var config = Configurations.Laptop.Latest(loggerFactory);
+        IGrpcConfiguration grpcConfiguration = config.TransportStrategy.GrpcConfig;
+        grpcConfiguration = grpcConfiguration.WithMinNumGrpcChannels(10);
+        config = config.WithTransportStrategy(config.TransportStrategy
+                                                    .WithGrpcConfig(grpcConfiguration)
+                                                    .WithMaxConcurrentRequests(2));
+       
+        // just validating that we can construct the client wh
+        var client = new CacheClient(config, authProvider, defaultTtl);
+        // still 2; clients shouldn't know we are doing 2/10 magic internally
+        Assert.Equal(2, config.TransportStrategy.MaxConcurrentRequests);
+        Assert.Equal(10, config.TransportStrategy.GrpcConfig.MinNumGrpcChannels);
+    }
 
     [Fact]
     public void CacheClientConstructor_EagerConnection_BadEndpoint()

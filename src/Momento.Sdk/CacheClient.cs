@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
+using Momento.Sdk.Config.Transport;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal;
 using Momento.Sdk.Internal.ExtensionMethods;
@@ -52,7 +53,46 @@ public class CacheClient : ICacheClient
         Utils.ArgumentStrictlyPositive(defaultTtl, "defaultTtl");
         this.controlClient = new(_loggerFactory, authProvider.AuthToken, authProvider.ControlEndpoint);
         this.dataClients = new List<ScsDataClient>();
-        for (var i = 1; i <= config.TransportStrategy.GrpcConfig.MinNumGrpcChannels; i++)
+        int minNumGrpcChannels = this.config.TransportStrategy.GrpcConfig.MinNumGrpcChannels;
+        int currentMaxConcurrentRequests = this.config.TransportStrategy.MaxConcurrentRequests;
+        /**
+        * Client Configuration Logic:
+        * 
+        * At the time of writing, customers have two client configurations affecting the number of gRPC connections spawned:
+        * 
+        * 1. MinNumGrpcChannels: Determines the number of unique data clients to create based on the provided value. 
+        *    Each client eagerly creates one unique connection.
+        * 
+        * 2. MaxConcurrentRequests: Configures each channel or data client to create a unique connection dynamically/lazily
+        *    when 100 client concurrent requests are hit.
+        * 
+        * For example, if we have 2 channels and a client provides a value of 200 for MaxConcurrentRequests, we can create a
+        * maximum of 2 * (200 / 100) ≈ 4 unique connections.
+        * 
+        * Understanding Client Expectations:
+        * 
+        * The client presumes that MaxConcurrentRequests is applied at a global level rather than per channel or data client.
+        * While some clients might utilize minNumGrpcChannels, it is expected that such clients are few and not the majority.
+        * 
+        * Logic Implementation:
+        * 
+        * This logic ensures that we honor the maxConcurrentRequests provided by a client if they also provide minNumGrpcChannels,
+        * and we internally "distribute" the max concurrent requests evenly over all the channels. This makes sure that
+         * we honor client's maxConcurrentRequests at a global level, and also create the number of channels they request.
+         * If they do not explicitly provide the number of channels, we default to 1 with the max concurrent requests
+         * applied to that single channel.
+        */
+        if (minNumGrpcChannels > 1)
+        {
+            int newMaxConcurrentRequests = Math.Max(1, currentMaxConcurrentRequests / minNumGrpcChannels);
+            ITransportStrategy transportStrategy = this.config.TransportStrategy
+                                                        .WithMaxConcurrentRequests(newMaxConcurrentRequests);
+            this.config = this.config.WithTransportStrategy(transportStrategy);
+            _logger.LogWarning("Overriding maxConcurrentRequests for each gRPC channel to {}." +
+                               " Min gRPC channels: {}, total maxConcurrentRequests: {}", newMaxConcurrentRequests,
+                                minNumGrpcChannels, currentMaxConcurrentRequests);
+        }
+        for (var i = 1; i <= minNumGrpcChannels; i++)
         {
             this.dataClients.Add(new(config, authProvider.AuthToken, authProvider.CacheEndpoint, defaultTtl));
         }

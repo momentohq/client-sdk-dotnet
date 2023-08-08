@@ -54,7 +54,7 @@ public class Configurations
             IRetryStrategy retryStrategy = new FixedCountRetryStrategy(finalLoggerFactory, maxAttempts: 3);
             ITransportStrategy transportStrategy = new StaticTransportStrategy(
                 loggerFactory: finalLoggerFactory,
-                maxConcurrentRequests: 100,
+                maxConcurrentRequests: 200, // max of 2 connections https://github.com/momentohq/client-sdk-dotnet/issues/460
                 grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(15000))
             );
             return new Laptop(finalLoggerFactory, retryStrategy, transportStrategy);
@@ -107,7 +107,7 @@ public class Configurations
                 IRetryStrategy retryStrategy = new FixedCountRetryStrategy(finalLoggerFactory, maxAttempts: 3);
                 ITransportStrategy transportStrategy = new StaticTransportStrategy(
                     loggerFactory: finalLoggerFactory,
-                    maxConcurrentRequests: 200,
+                    maxConcurrentRequests: 400, // max of 4 connections https://github.com/momentohq/client-sdk-dotnet/issues/460
                     grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(1100)));
                 return new Default(finalLoggerFactory, retryStrategy, transportStrategy);
             }
