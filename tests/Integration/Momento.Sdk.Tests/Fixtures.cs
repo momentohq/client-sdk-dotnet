@@ -22,7 +22,7 @@ public class CacheClientFixture : IDisposable
     {
         AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
         CacheName = $"dotnet-integration-{Utils.NewGuidString()}";
-        Client = new CacheClient(Configurations.Laptop.Latest(LoggerFactory.Create(builder =>
+        Client = new TestCacheClient(Configurations.Laptop.Latest(LoggerFactory.Create(builder =>
                 {
                     builder.AddSimpleConsole(options =>
                     {
