@@ -21,15 +21,13 @@ public class TestCacheClient : ICacheClient
     /// <summary>
     /// Wait for the service to settle any slow replication or intermediate response cache.
     /// Momento doesn't have strict read-after-write consistency guarantees, but a little
-    /// time should settle it in normal situations.
+    /// time should settle it in normal situations. This is mostly helpful when you're
+    /// running from a well-connected location, like inside of an AWS datacenter talking to
+    /// Momento in the same datacenter. From your laptop you'll pretty much always pay 10
+    /// milliseconds to lightspeed tax, at least in 2023.
     /// </summary>
-    /// <returns>task with action's result executed after the quiesce period</returns>
-    private Task<T> QuiesceAndThenRun<T>(Func<Task<T>> action) {
-        return ((Func<Task<T>>)(async () =>
-        {
-            await Task.Delay(TimeSpan.FromMilliseconds(10));
-            return await action();
-        }))();
+    private async Task Quiesce() {
+        await Task.Delay(TimeSpan.FromMilliseconds(10));
     }
 
     public Task<CreateCacheResponse> CreateCacheAsync(string cacheName)
@@ -147,14 +145,16 @@ public class TestCacheClient : ICacheClient
         return ((ICacheClient)client).FlushCacheAsync(cacheName);
     }
 
-    public Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
+    public async Task<CacheGetResponse> GetAsync(string cacheName, byte[] key)
     {
-        return QuiesceAndThenRun(() => ((ICacheClient)client).GetAsync(cacheName, key));
+        await Quiesce();
+        return await ((ICacheClient)client).GetAsync(cacheName, key);
     }
 
-    public Task<CacheGetResponse> GetAsync(string cacheName, string key)
+    public async Task<CacheGetResponse> GetAsync(string cacheName, string key)
     {
-        return ((ICacheClient)client).GetAsync(cacheName, key);
+        await Quiesce();
+        return await ((ICacheClient)client).GetAsync(cacheName, key);
     }
 
     public Task<CacheIncrementResponse> IncrementAsync(string cacheName, string field, long amount = 1, TimeSpan? ttl = null)
