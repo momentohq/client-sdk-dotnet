@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
@@ -87,7 +86,6 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
     public async Task PublishAndSubscribe_ByteArray_Succeeds()
     {
         const string topicName = "topic_bytes";
-        var skipMessage = new byte[] { 0x00 };
         var valuesToSend = new List<byte[]>
         {
             new byte[] { 0x01 },
@@ -108,10 +106,9 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             await foreach (var message in subscription)
             {
                 Assert.NotNull(message);
-                Assert.True(message is TopicMessage.Item, $"Unexpected message: {message}");
-                if (((TopicMessage.Item)message).ValueByteArray!.SequenceEqual(skipMessage)) continue;
+                Assert.True(message is TopicMessage.Binary, $"Unexpected message: {message}");
                 
-                Assert.Equal(valuesToSend[messageCount], ((TopicMessage.Item)message).ValueByteArray);
+                Assert.Equal(valuesToSend[messageCount], ((TopicMessage.Binary)message).Value());
 
                 messageCount++;
                 if (messageCount == valuesToSend.Count)
@@ -124,19 +121,8 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             return messageCount;
         });
         
-        // Send a few values to skip over to ensure the subscription received the messages under test
-        for (var i = 0; i < 5; i++)
-        {
-            await topicClient.PublishAsync(cacheName, topicName, skipMessage);
-            Thread.Sleep(100);
-        }
+        Thread.Sleep(1000);
         
-        foreach (var value in valuesToSend)
-        {
-            var publishResponse = await topicClient.PublishAsync(cacheName, topicName, value);
-            Assert.True(publishResponse is TopicPublishResponse.Success, $"Unexpected response: {publishResponse}");
-            Thread.Sleep(100);
-        }
         foreach (var value in valuesToSend)
         {
             var publishResponse = await topicClient.PublishAsync(cacheName, topicName, value);
@@ -151,7 +137,6 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
     public async Task PublishAndSubscribe_String_Succeeds()
     {
         const string topicName = "topic_string";
-        var skipMessage = "skip";
         var valuesToSend = new List<string>
         {
             "one",
@@ -172,10 +157,9 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             await foreach (var message in subscription)
             {
                 Assert.NotNull(message);
-                Assert.True(message is TopicMessage.Item, $"Unexpected message: {message}");
-                if (((TopicMessage.Item)message).ValueString!.Equals(skipMessage)) continue;
+                Assert.True(message is TopicMessage.Text, $"Unexpected message: {message}");
                 
-                Assert.Equal(valuesToSend[messageCount], ((TopicMessage.Item)message).ValueString);
+                Assert.Equal(valuesToSend[messageCount], ((TopicMessage.Text)message).Value);
 
                 messageCount++;
                 if (messageCount == valuesToSend.Count)
@@ -188,12 +172,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             return messageCount;
         });
         
-        // Send a few values to skip over to ensure the subscription received the messages under test
-        for (var i = 0; i < 5; i++)
-        {
-            await topicClient.PublishAsync(cacheName, topicName, skipMessage);
-            Thread.Sleep(100);
-        }
+        Thread.Sleep(1000);
         
         foreach (var value in valuesToSend)
         {

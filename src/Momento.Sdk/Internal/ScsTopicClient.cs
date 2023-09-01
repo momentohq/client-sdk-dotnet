@@ -152,8 +152,20 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                 switch (message.KindCase)
                 {
                     case _SubscriptionItem.KindOneofCase.Item:
-                        _logger.LogTraceTopicMessageReceived("item", cacheName, topicName);
-                        return new TopicMessage.Item(message.Item);
+                        switch (message.Item.Value.KindCase)
+                        {
+                            case _TopicValue.KindOneofCase.Text:
+                                _logger.LogTraceTopicMessageReceived("text", cacheName, topicName);
+                                return new TopicMessage.Text(message.Item);
+                            case _TopicValue.KindOneofCase.Binary:
+                                _logger.LogTraceTopicMessageReceived("binary", cacheName, topicName);
+                                return new TopicMessage.Binary(message.Item);
+                            case _TopicValue.KindOneofCase.None:
+                            default:
+                                _logger.LogTraceTopicMessageReceived("unknown", cacheName, topicName);
+                                break;
+                        }
+                        break;
                     case _SubscriptionItem.KindOneofCase.Discontinuity:
                         _logger.LogTraceTopicMessageReceived("discontinuity", cacheName, topicName);
                         break;

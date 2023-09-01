@@ -100,7 +100,8 @@ public abstract class TopicSubscribeResponse
             var nextMessage = await _moveNextFunction.Invoke(_cancellationToken);
             switch (nextMessage)
             {
-                case TopicMessage.Item:
+                case TopicMessage.Text:
+                case TopicMessage.Binary:
                     Current = nextMessage;
                     return true;
                 case TopicMessage.Error:

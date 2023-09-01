@@ -13,9 +13,13 @@ namespace Momento.Sdk.Responses;
 /// Pattern matching can be used to operate on the appropriate subtype.
 /// For example:
 /// <code>
-/// if (message is TopicMessage.Item item)
+/// if (message is TopicMessage.Text text)
 /// {
-///     return item.ValueString();
+///     return text.Value();
+/// }
+/// else if (message is TopicMessage.Binary binary)
+/// {
+///     return text.Value();
 /// }
 /// else if (message is TopicMessage.Error error)
 /// {
@@ -30,37 +34,51 @@ namespace Momento.Sdk.Responses;
 public abstract class TopicMessage
 {
     /// <summary>
-    /// A topic message containing a value. If the value is a string, ValueString
-    /// will return it. If the value is binary, ValueByteArray will return it.
+    /// A topic message containing a text value.
     /// </summary>
-    public class Item : TopicMessage
+    public class Text : TopicMessage
     {
-        private readonly _TopicValue _value;
+        public Text(_TopicItem topicItem)
+        {
+            Value = topicItem.Value.Text;
+            TopicSequenceNumber = topicItem.TopicSequenceNumber;
+        }
 
         /// <summary>
-        /// Constructs an Item from an internal _TopicItem
+        /// The text value of this message.
         /// </summary>
-        /// <param name="topicItem">Containing the binary or string value.</param>
-        public Item(_TopicItem topicItem)
+        public string Value { get; }
+        
+        /// <summary>
+        /// The number of this message in the topic sequence.
+        /// </summary>
+        public ulong TopicSequenceNumber { get; }
+    }
+    
+    /// <summary>
+    /// A topic message containing a binary value.
+    /// </summary>
+    public class Binary : TopicMessage
+    {
+        private byte[] _value;
+        public Binary(_TopicItem topicItem)
         {
-            _value = topicItem.Value;
+            _value = topicItem.Value.Binary.ToByteArray();
             TopicSequenceNumber = topicItem.TopicSequenceNumber;
+        }
+
+        /// <summary>
+        /// The binary value of this message.
+        /// </summary>
+        public byte[] Value()
+        {
+            return _value;
         }
         
         /// <summary>
         /// The number of this message in the topic sequence.
         /// </summary>
         public ulong TopicSequenceNumber { get; }
-
-        /// <summary>
-        /// The binary value of this message, if present.
-        /// </summary>
-        public byte[] ValueByteArray => _value.Binary.ToByteArray();
-        
-        /// <summary>
-        /// The string value of this message, if present.
-        /// </summary>
-        public string ValueString => _value.Text;
     }
 
     /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
