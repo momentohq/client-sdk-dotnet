@@ -85,6 +85,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
     [Fact(Timeout = 5000)]
     public async Task PublishAndSubscribe_ByteArray_Succeeds()
     {
+        testOutputHelper.WriteLine("starting binary publish and subscribe test");
         const string topicName = "topic_bytes";
         var valuesToSend = new List<byte[]>
         {
@@ -138,6 +139,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
     [Fact(Timeout = 5000)]
     public async Task PublishAndSubscribe_String_Succeeds()
     {
+        testOutputHelper.WriteLine("starting string publish and subscribe test");
         const string topicName = "topic_string";
         var valuesToSend = new List<string>
         {
@@ -191,6 +193,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
     [Fact(Timeout = 5000)]
     public async Task Subscribe_EnumerateClosed_Succeeds()
     {
+        testOutputHelper.WriteLine("starting enumerate after closed test");
         const string topicName = "topic_closed";
         const string messageValue = "value";
 
