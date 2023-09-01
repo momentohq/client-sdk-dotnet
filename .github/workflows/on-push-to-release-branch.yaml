@@ -66,7 +66,7 @@ jobs:
             VERSION="${{ needs.release.outputs.version }}"
             echo "version: ${VERSION}"
             dotnet build --configuration Release -f netstandard2.0 -p:DefineConstants=USE_GRPC_WEB
-            DLL_FILE=./bin/Release/Momento.Sdk.${VERSION}.dll
+            DLL_FILE=./bin/Release/netstandard2.0/Momento.Sdk.dll
             ARCHIVE_FILE_NAME=Momento.Sdk.Unity.${VERSION}.dll
             AUTH="Authorization: token ${{ secrets.MOMENTO_MACHINE_USER_GITHUB_TOKEN }}"
             LATEST_RELEASE=$(curl -sH "$AUTH" https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/v${VERSION})
