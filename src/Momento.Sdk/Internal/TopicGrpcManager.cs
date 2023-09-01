@@ -1,3 +1,5 @@
+#if NETSTANDARD2_0_OR_GREATER
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +11,6 @@ using System.Net.Http;
 using Grpc.Net.Client.Web;
 #endif
 using Microsoft.Extensions.Logging;
-using Momento.Protos.CacheClient;
 using Momento.Protos.CacheClient.Pubsub;
 using Momento.Protos.CachePing;
 using Momento.Sdk.Config;
@@ -150,3 +151,4 @@ public class TopicGrpcManager : IDisposable
         GC.SuppressFinalize(this);
     }
 }
+#endif

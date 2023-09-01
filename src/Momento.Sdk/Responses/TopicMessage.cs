@@ -1,3 +1,5 @@
+#if NETSTANDARD2_0_OR_GREATER
+
 using Momento.Protos.CacheClient.Pubsub;
 using Momento.Sdk.Exceptions;
 
@@ -109,3 +111,4 @@ public abstract class TopicMessage
 
     }
 }
+#endif

@@ -44,6 +44,16 @@ public class CacheClientFixture : IDisposable
     }
 }
 
+/// <summary>
+/// Register the fixture in xUnit.
+/// </summary>
+[CollectionDefinition("CacheClient")]
+public class CacheClientCollection : ICollectionFixture<CacheClientFixture>
+{
+
+}
+
+#if NET6_0_OR_GREATER
 public class TopicClientFixture : IDisposable
 {
     public ITopicClient Client { get; private set; }
@@ -75,8 +85,9 @@ public class TopicClientFixture : IDisposable
 /// <summary>
 /// Register the fixture in xUnit.
 /// </summary>
-[CollectionDefinition("CacheClient")]
-public class CacheClientCollection : ICollectionFixture<CacheClientFixture>
+[CollectionDefinition("TopicClient")]
+public class TopicClientCollection : ICollectionFixture<TopicClientFixture>
 {
 
 }
+#endif

@@ -1,3 +1,5 @@
+#if NET6_0_OR_GREATER
+
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -220,3 +222,4 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         Assert.Null(enumerator.Current);
     }
 }
+#endif

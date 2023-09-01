@@ -1,3 +1,5 @@
+#if NETSTANDARD2_0_OR_GREATER
+
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -197,3 +199,4 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         return null;
     }
 }
+#endif

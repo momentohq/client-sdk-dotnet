@@ -380,6 +380,8 @@ namespace Momento.Sdk.Internal
             return success;
         }
         
+#if NETSTANDARD2_0_OR_GREATER
+
         /// <summary>
         /// Logs a message at TRACE level that indicates that a topic request is about to be executed.
         /// </summary>
@@ -448,6 +450,7 @@ namespace Momento.Sdk.Internal
                 logger.LogTrace("Received '{}' message on: cacheName: {}; topicName: {}", messageType, cacheName, topicName);
             }
         }
+#endif
 
         private static string ReadableByteString(ByteString? input)
         {

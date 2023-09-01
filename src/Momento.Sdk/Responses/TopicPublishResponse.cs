@@ -1,3 +1,5 @@
+#if NETSTANDARD2_0_OR_GREATER
+
 using Momento.Sdk.Exceptions;
 
 namespace Momento.Sdk.Responses;
@@ -60,3 +62,4 @@ public abstract class TopicPublishResponse
 
     }
 }
+#endif

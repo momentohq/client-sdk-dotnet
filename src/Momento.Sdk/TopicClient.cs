@@ -1,3 +1,5 @@
+#if NETSTANDARD2_0_OR_GREATER
+
 using System;
 using System.Threading.Tasks;
 using Momento.Sdk.Auth;
@@ -79,3 +81,4 @@ public class TopicClient : ITopicClient
         scsTopicClient.Dispose();
     }
 }
+#endif
