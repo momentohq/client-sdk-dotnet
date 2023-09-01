@@ -87,7 +87,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
     [Fact(Timeout = 5000)]
     public async Task PublishAndSubscribe_ByteArray_Succeeds()
     {
-        testOutputHelper.WriteLine("starting binary publish and subscribe test");
+        await Console.Error.WriteLineAsync("starting binary publish and subscribe test");
         const string topicName = "topic_bytes";
         var valuesToSend = new List<byte[]>
         {
@@ -106,9 +106,13 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             $"Unexpected response: {subscribeResponse}");
         var subscription = ((TopicSubscribeResponse.Subscription)subscribeResponse).WithCancellation(cts.Token);
 
+        await Console.Error.WriteLineAsync("subscription created");
+        var taskCompletionSourceBool = new TaskCompletionSource<bool>();
         var testTask = Task.Run(async () =>
         {
             var messageCount = 0;
+            // semaphore.
+            taskCompletionSourceBool.SetResult(true);
             await foreach (var message in subscription)
             {
                 Assert.NotNull(message);
@@ -126,7 +130,8 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             return messageCount;
         }, cts.Token);
 
-        await Task.Delay(1000);
+        await Console.Error.WriteLineAsync("enumerator task started");
+        await taskCompletionSourceBool.Task;
 
         foreach (var value in valuesToSend)
         {
@@ -134,6 +139,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             Assert.True(publishResponse is TopicPublishResponse.Success, $"Unexpected response: {publishResponse}");
             await Task.Delay(100);
         }
+        await Console.Error.WriteLineAsync("messages sent");
 
         Assert.Equal(valuesToSend.Count, await testTask);
     }
