@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
+          - os: macos-latest
             target-framework: net6.0
           - os: windows-latest
             target-framework: net461

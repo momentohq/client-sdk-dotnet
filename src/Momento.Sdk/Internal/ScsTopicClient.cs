@@ -165,6 +165,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                                 _logger.LogTraceTopicMessageReceived("unknown", cacheName, topicName);
                                 break;
                         }
+
                         break;
                     case _SubscriptionItem.KindOneofCase.Discontinuity:
                         _logger.LogTraceTopicMessageReceived("discontinuity", cacheName, topicName);
@@ -187,7 +188,10 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         }
         catch (Exception e)
         {
-            return new TopicMessage.Error(_exceptionMapper.Convert(e));
+            var sdkException = _exceptionMapper.Convert(e);
+            return sdkException.ErrorCode == MomentoErrorCode.CANCELLED_ERROR
+                ? null
+                : new TopicMessage.Error(sdkException);
         }
 
         return null;

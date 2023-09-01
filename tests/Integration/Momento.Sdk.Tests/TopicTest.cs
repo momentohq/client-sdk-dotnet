@@ -95,11 +95,14 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             new byte[] { 0x05 }
         };
 
+        using var cts = new CancellationTokenSource();
+        cts.CancelAfter(4000);
+
         var subscribeResponse = await topicClient.SubscribeAsync(cacheName, topicName);
         Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription,
             $"Unexpected response: {subscribeResponse}");
-        var subscription = (TopicSubscribeResponse.Subscription)subscribeResponse;
-        
+        var subscription = ((TopicSubscribeResponse.Subscription)subscribeResponse).WithCancellation(cts.Token);
+
         var testTask = Task.Run(async () =>
         {
             var messageCount = 0;
@@ -107,7 +110,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             {
                 Assert.NotNull(message);
                 Assert.True(message is TopicMessage.Binary, $"Unexpected message: {message}");
-                
+
                 Assert.Equal(valuesToSend[messageCount], ((TopicMessage.Binary)message).Value());
 
                 messageCount++;
@@ -117,19 +120,18 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
                 }
             }
 
-            subscription.Dispose();
             return messageCount;
-        });
-        
+        }, cts.Token);
+
         Thread.Sleep(1000);
-        
+
         foreach (var value in valuesToSend)
         {
             var publishResponse = await topicClient.PublishAsync(cacheName, topicName, value);
             Assert.True(publishResponse is TopicPublishResponse.Success, $"Unexpected response: {publishResponse}");
             Thread.Sleep(100);
         }
-        
+
         Assert.Equal(valuesToSend.Count, await testTask);
     }
 
@@ -145,12 +147,15 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             "four",
             "five"
         };
-        
+
+        using var cts = new CancellationTokenSource();
+        cts.CancelAfter(4000);
+
         var subscribeResponse = await topicClient.SubscribeAsync(cacheName, topicName);
         Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription,
             $"Unexpected response: {subscribeResponse}");
-        var subscription = (TopicSubscribeResponse.Subscription)subscribeResponse;
-        
+        var subscription = ((TopicSubscribeResponse.Subscription)subscribeResponse).WithCancellation(cts.Token);
+
         var testTask = Task.Run(async () =>
         {
             var messageCount = 0;
@@ -158,7 +163,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             {
                 Assert.NotNull(message);
                 Assert.True(message is TopicMessage.Text, $"Unexpected message: {message}");
-                
+
                 Assert.Equal(valuesToSend[messageCount], ((TopicMessage.Text)message).Value);
 
                 messageCount++;
@@ -168,19 +173,18 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
                 }
             }
 
-            subscription.Dispose();
             return messageCount;
-        });
-        
+        }, cts.Token);
+
         Thread.Sleep(1000);
-        
+
         foreach (var value in valuesToSend)
         {
             var publishResponse = await topicClient.PublishAsync(cacheName, topicName, value);
             Assert.True(publishResponse is TopicPublishResponse.Success, $"Unexpected response: {publishResponse}");
             Thread.Sleep(100);
         }
-        
+
         Assert.Equal(valuesToSend.Count, await testTask);
     }
 
@@ -201,7 +205,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         var enumerator = subscription.GetAsyncEnumerator();
         Assert.Null(enumerator.Current);
         testOutputHelper.WriteLine("enumerator gotten");
-        
+
         var publishResponse = await topicClient.PublishAsync(cacheName, topicName, messageValue);
         Assert.True(publishResponse is TopicPublishResponse.Success, $"Unexpected response: {publishResponse}");
         testOutputHelper.WriteLine("message published");
@@ -209,7 +213,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         cts.Cancel();
 
         Assert.False(await enumerator.MoveNextAsync());
-        
+
         Assert.Null(enumerator.Current);
     }
 }
