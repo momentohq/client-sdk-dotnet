@@ -379,6 +379,75 @@ namespace Momento.Sdk.Internal
             }
             return success;
         }
+        
+        /// <summary>
+        /// Logs a message at TRACE level that indicates that a topic request is about to be executed.
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="requestType"></param>
+        /// <param name="cacheName"></param>
+        /// <param name="topicName"></param>
+        public static void LogTraceExecutingTopicRequest(this ILogger logger, string requestType, string cacheName, string topicName)
+        {
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.LogTrace("Executing '{}' request: cacheName: {}; topicName: {}", requestType, cacheName, topicName);
+            }
+        }
+        
+        /// <summary>
+        /// Logs a message at TRACE level that indicates that a topic request resulted in an error.
+        /// </summary>
+        /// <typeparam name="TError"></typeparam>
+        /// <param name="logger"></param>
+        /// <param name="requestType"></param>
+        /// <param name="cacheName"></param>
+        /// <param name="topicName"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public static TError LogTraceTopicRequestError<TError>(this ILogger logger, string requestType, string cacheName, string topicName, TError error)
+        {
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.LogTrace("An error occurred while executing a '{}' request: cacheName: {}; topicName: {}; error: {}", requestType, cacheName, topicName, error);
+            }
+            return error;
+        }
+
+        /// <summary>
+        /// /// Logs a message at TRACE level that indicates that a topic request resulted in a success.
+        /// </summary>
+        /// <typeparam name="TSuccess"></typeparam>
+        /// <param name="logger"></param>
+        /// <param name="requestType"></param>
+        /// <param name="cacheName"></param>
+        /// <param name="topicName"></param>
+        /// <param name="success"></param>
+        /// <returns></returns>
+        public static TSuccess LogTraceTopicRequestSuccess<TSuccess>(this ILogger logger, string requestType, string cacheName, string topicName, TSuccess success)
+        {
+
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.LogTrace("Successfully executed '{}' request: cacheName: {}; topicName: {}; success: {}", requestType, cacheName, topicName, success);
+            }
+            return success;
+        }
+        
+        /// <summary>
+        /// Logs a message at TRACE level that indicates that a topic message was received.
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="messageType"></param>
+        /// <param name="cacheName"></param>
+        /// <param name="topicName"></param>
+        public static void LogTraceTopicMessageReceived(this ILogger logger, string messageType, string cacheName, string topicName)
+        {
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.LogTrace("Received '{}' message on: cacheName: {}; topicName: {}", messageType, cacheName, topicName);
+            }
+        }
 
         private static string ReadableByteString(ByteString? input)
         {
