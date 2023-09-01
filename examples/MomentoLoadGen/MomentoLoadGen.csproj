@@ -28,6 +28,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Momento.Sdk" Version="1.16.0" />
+    <PackageReference Include="Momento.Sdk" Version="1.18.1" />
   </ItemGroup>
 </Project>
