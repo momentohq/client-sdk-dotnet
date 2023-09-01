@@ -4,17 +4,17 @@ Unless you are testing older .NET runtimes on Windows, you should run the tests 
   - https://dotnet.microsoft.com/en-us/download/dotnet/6.0
 
 ```
-make test-net6
+TEST_AUTH_TOKEN=$your_momento_token make test-net6
 ```
 
 To test against older .NET runtimes run:
 
 ```
-make test-net-framework
+TEST_AUTH_TOKEN=$your_momento_token make test-net-framework
 ```
 
 To run specific tests:
 
 ```
-dotnet test -f net6.0 --filter "FullyQualifiedName~CacheDataTest"
+TEST_AUTH_TOKEN=$your_momento_token dotnet test --framework net6.0 --filter "FullyQualifiedName~CacheDataTest"
 ```

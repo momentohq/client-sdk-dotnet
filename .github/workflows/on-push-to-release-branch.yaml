@@ -57,3 +57,21 @@ jobs:
             dotnet pack -c Release -p:Version=${VERSION}
             dotnet nuget push ./bin/Release/Momento.Sdk.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key=${{secrets.NUGET_API_KEY}}
           popd
+          
+      - name: Build for Unity
+        run: |
+          set -x
+          pushd src/Momento.Sdk
+            rm -rf bin
+            VERSION="${{ needs.release.outputs.version }}"
+            echo "version: ${VERSION}"
+            dotnet build --configuration Release -f netstandard20 -p:DefineConstants=USE_GRPC_WEB
+            DLL_FILE=./bin/Release/Momento.Sdk.${VERSION}.dll
+            ARCHIVE_FILE_NAME=Momento.Sdk.Unity.${VERSION}.dll
+            AUTH="Authorization: token ${{ secrets.MOMENTO_MACHINE_USER_GITHUB_TOKEN }}"
+            LATEST_RELEASE=$(curl -sH "$AUTH" https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/v${VERSION})
+            RELEASE_ID=$(echo $LATEST_RELEASE | jq -r .id)
+            GH_ASSET="https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets?name=${ARCHIVE_FILE_NAME}"
+            echo $GH_ASSET
+            curl --data-binary @$DLL_FILE -H "$AUTH" -H "Content-Type: application/octet-stream" $GH_ASSET
+          popd
