@@ -62,21 +62,17 @@ public abstract class TopicMessage
     /// </summary>
     public class Binary : TopicMessage
     {
-        private byte[] _value;
         public Binary(_TopicItem topicItem)
         {
-            _value = topicItem.Value.Binary.ToByteArray();
+            Value = topicItem.Value.Binary.ToByteArray();
             TopicSequenceNumber = topicItem.TopicSequenceNumber;
         }
 
         /// <summary>
         /// The binary value of this message.
         /// </summary>
-        public byte[] Value()
-        {
-            return _value;
-        }
-        
+        public byte[] Value { get; }
+
         /// <summary>
         /// The number of this message in the topic sequence.
         /// </summary>
