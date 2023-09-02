@@ -96,24 +96,11 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         var produceCtx = new CancellationTokenSource();
 
         var consumeTask = Task.Run(async () => await ConsumeMessages(topicName, produceCtx.Token));
-
         await Task.Delay(500);
         
-        foreach (var value in valuesToSend)
-        {
-            var publishResponse = await topicClient.PublishAsync(cacheName, topicName, value);
-            switch (publishResponse)
-            {
-                case TopicPublishResponse.Success success:
-                    await Task.Delay(100);
-                    break;
-                default:
-                    Assert.Fail("Unable to send message");
-                    break;
-            }
-        }
-
+        await Task.Run(async () => await ProduceMessages(topicName, valuesToSend));
         await Task.Delay(500);
+        
         produceCtx.Cancel();
         
         var consumedMessages = await consumeTask;
@@ -128,7 +115,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
     public async Task PublishAndSubscribe_String_Succeeds()
     {
         const string topicName = "topic_string";
-        var valuesToSend = new List<string>
+        var valuesToSend = new HashSet<string>
         {
             "one",
             "two",
@@ -140,24 +127,11 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         var produceCtx = new CancellationTokenSource();
 
         var consumeTask = Task.Run(async () => await ConsumeMessages(topicName, produceCtx.Token));
-
         await Task.Delay(500);
         
-        foreach (var value in valuesToSend)
-        {
-            var publishResponse = await topicClient.PublishAsync(cacheName, topicName, value);
-            switch (publishResponse)
-            {
-                case TopicPublishResponse.Success success:
-                    await Task.Delay(100);
-                    break;
-                default:
-                    Assert.Fail("Unable to send message");
-                    break;
-            }
-        }
-
+        await Task.Run(async () => await ProduceMessages(topicName, valuesToSend));
         await Task.Delay(500);
+        
         produceCtx.Cancel();
         
         var consumedMessages = await consumeTask;
@@ -165,6 +139,38 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         foreach (var message in consumedMessages)
         {
             Assert.Contains(((TopicMessage.Text)message).Value, valuesToSend);
+        }
+    }
+    
+    private async Task ProduceMessages(string topicName, HashSet<byte[]> valuesToSend)
+    {
+        foreach (var value in valuesToSend)
+        {
+            var publishResponse = await topicClient.PublishAsync(cacheName, topicName, value);
+            switch (publishResponse)
+            {
+                case TopicPublishResponse.Success:
+                    await Task.Delay(100);
+                    break;
+                default:
+                    throw new Exception("publish error");
+            }
+        }
+    }
+    
+    private async Task ProduceMessages(string topicName, HashSet<string> valuesToSend)
+    {
+        foreach (var value in valuesToSend)
+        {
+            var publishResponse = await topicClient.PublishAsync(cacheName, topicName, value);
+            switch (publishResponse)
+            {
+                case TopicPublishResponse.Success:
+                    await Task.Delay(100);
+                    break;
+                default:
+                    throw new Exception("publish error");
+            }
         }
     }
     
