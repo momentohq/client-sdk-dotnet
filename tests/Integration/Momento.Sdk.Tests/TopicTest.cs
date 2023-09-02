@@ -108,13 +108,13 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
 
         Console.WriteLine("subscription created");
         // var taskCompletionSourceBool = new TaskCompletionSource<bool>();
-        var semaphoreSlim = new SemaphoreSlim(0, 1);
+        // var semaphoreSlim = new SemaphoreSlim(0, 1);
         var testTask = Task.Run(async () =>
         {
             // var messageCount = 0;
             var receivedSet = new HashSet<byte[]>();
             // taskCompletionSourceBool.SetResult(true);
-            semaphoreSlim.Release();
+            // semaphoreSlim.Release();
             await Task.Delay(2000);
             // await foreach (var message in subscription)
             // {
@@ -132,18 +132,18 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             return receivedSet.Count;
         }, cts.Token);
 
-        // Console.WriteLine("enumerator task started");
-        // // await taskCompletionSourceBool.Task;
+        Console.WriteLine("enumerator task started");
+        // await taskCompletionSourceBool.Task;
         // await semaphoreSlim.WaitAsync(cts.Token);
-        // // await Task.Delay(1000);
-        //
-        // foreach (var value in valuesToSend)
-        // {
-        //     var publishResponse = await topicClient.PublishAsync(cacheName, topicName, value);
-        //     Assert.True(publishResponse is TopicPublishResponse.Success, $"Unexpected response: {publishResponse}");
-        //     await Task.Delay(100);
-        // }
-        // Console.WriteLine("messages sent");
+        // await Task.Delay(1000);
+
+        foreach (var value in valuesToSend)
+        {
+            var publishResponse = await topicClient.PublishAsync(cacheName, topicName, value);
+            Assert.True(publishResponse is TopicPublishResponse.Success, $"Unexpected response: {publishResponse}");
+            await Task.Delay(100);
+        }
+        Console.WriteLine("messages sent");
 
         int received = await testTask;
         Console.WriteLine("Found " + received);
