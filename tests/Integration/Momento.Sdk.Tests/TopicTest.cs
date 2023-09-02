@@ -97,57 +97,69 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             new byte[] { 0x04 },
             new byte[] { 0x05 }
         };
+        
+        var produceCtx = new CancellationTokenSource();
 
-        using var cts = new CancellationTokenSource();
-        cts.CancelAfter(4000);
+        var consumeTask = Task.Run(async () => await ConsumeItems(produceCtx.Token, topicName));
 
-        // var subscribeResponse = await topicClient.SubscribeAsync(cacheName, topicName);
-        // Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription,
-        //     $"Unexpected response: {subscribeResponse}");
-        // var subscription = ((TopicSubscribeResponse.Subscription)subscribeResponse).WithCancellation(cts.Token);
+        Console.Error.WriteLine("consume task created");
+        await Task.Delay(500);
+        Console.Error.WriteLine("first delay finished");
+        await ProduceItems(topicName, valuesToSend);
 
-        Console.WriteLine("subscription created");
-        // var taskCompletionSourceBool = new TaskCompletionSource<bool>();
-        // var semaphoreSlim = new SemaphoreSlim(0, 1);
-        var testTask = Task.Run(async () =>
-        {
-            // var messageCount = 0;
-            var receivedSet = new HashSet<byte[]>();
-            // taskCompletionSourceBool.SetResult(true);
-            // semaphoreSlim.Release();
-            await Task.Delay(2000);
-            // await foreach (var message in subscription)
-            // {
-            //     Assert.NotNull(message);
-            //     Assert.True(message is TopicMessage.Binary, $"Unexpected message: {message}");
-            //     var value = ((TopicMessage.Binary)message).Value();
-            //     receivedSet.Add(value);
-            //
-            //     Assert.Contains(value, valuesToSend);
-            //     if (receivedSet.Count == valuesToSend.Count)
-            //     {
-            //         break;
-            //     }
-            // }
-            return receivedSet.Count;
-        }, cts.Token);
-
-        Console.WriteLine("enumerator task started");
-        // await taskCompletionSourceBool.Task;
-        // await semaphoreSlim.WaitAsync(cts.Token);
-        // await Task.Delay(1000);
-
+        Console.Error.WriteLine("messages produced");
+        await Task.Delay(500);
+        Console.Error.WriteLine("second delay finished");
+        produceCtx.Cancel();
+        Console.Error.WriteLine("consume task cancelled");
+        var producedItems = await consumeTask;
+        Assert.Equal(valuesToSend.Count, producedItems.Count);
         foreach (var value in valuesToSend)
         {
-            var publishResponse = await topicClient.PublishAsync(cacheName, topicName, value);
-            Assert.True(publishResponse is TopicPublishResponse.Success, $"Unexpected response: {publishResponse}");
-            await Task.Delay(100);
+            Assert.Contains(value, valuesToSend);
         }
-        Console.WriteLine("messages sent");
+    }
 
-        int received = await testTask;
-        Console.WriteLine("Found " + received);
-        // Assert.Equal(valuesToSend.Count, received);
+    private async Task<HashSet<byte[]>> ConsumeItems(CancellationToken token, string topicName)
+    {
+        var subscribeResponse = await topicClient.SubscribeAsync(cacheName, topicName);
+        switch (subscribeResponse)
+        {
+            case TopicSubscribeResponse.Subscription subscription:
+                var cancellableSub = subscription.WithCancellation(token);
+                var receivedSet = new HashSet<byte[]>();
+                await foreach (var message in cancellableSub)
+                {
+                    switch (message)
+                    {
+                        case TopicMessage.Binary binary:
+                            receivedSet.Add(binary.Value());
+                            break;
+                        default:
+                            throw new Exception("bad message received");
+                    }
+                }
+                subscription.Dispose();
+                return receivedSet;
+            default:
+                throw new Exception("subscription error");
+        }
+    }
+
+    private async Task ProduceItems(string topicName, HashSet<byte[]> itemsToSend)
+    {
+        foreach (var value in itemsToSend)
+        {
+            var publishResponse = await topicClient.PublishAsync(cacheName, topicName, value);
+            switch (publishResponse)
+            {
+                case TopicPublishResponse.Success success:
+                    await Task.Delay(100);
+                    break;
+                default:
+                    throw new Exception("publish error");
+            }
+        }
     }
 
     // [Fact(Timeout = 5000)]
