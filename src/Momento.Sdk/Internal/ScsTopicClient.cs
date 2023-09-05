@@ -147,7 +147,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
 
         try
         {
-            while (await subscription.ResponseStream.MoveNext(cancellationToken).ConfigureAwait(false))
+            while (await subscription.ResponseStream.MoveNext(cancellationToken))
             {
                 var message = subscription.ResponseStream.Current;
 

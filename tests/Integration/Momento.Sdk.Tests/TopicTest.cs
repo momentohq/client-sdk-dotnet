@@ -115,40 +115,40 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         }
     }
 
-    // [Fact(Timeout = 5000)]
-    // public async Task PublishAndSubscribe_String_Succeeds()
-    // {
-    //     const string topicName = "topic_string";
-    //     var valuesToSend = new List<string>
-    //     {
-    //         "one",
-    //         "two",
-    //         "three",
-    //         "four",
-    //         "five"
-    //     };
-    //     
-    //     var produceCancellation = new CancellationTokenSource();
-    //     produceCancellation.CancelAfter(2000);
-    //
-    //     // we don't need to put this on a different thread
-    //     var consumeTask = ConsumeMessages(topicName, produceCancellation.Token);
-    //     await Task.Delay(50);
-    //     
-    //     await ProduceMessages(topicName, valuesToSend);
-    //     await Task.Delay(500);
-    //     
-    //     produceCancellation.Cancel();
-    //     
-    //     var consumedMessages = await consumeTask;
-    //     Assert.Equal(valuesToSend.Count, consumedMessages.Count);
-    //     for (var i = 0; i < valuesToSend.Count; ++i)
-    //     {
-    //         var message = (TopicMessage.Text)consumedMessages[i];
-    //         Assert.Equal(message.Value, valuesToSend[i]);
-    //     }
-    // }
-    
+    [Fact(Timeout = 5000)]
+    public async Task PublishAndSubscribe_String_Succeeds()
+    {
+        const string topicName = "topic_string";
+        var valuesToSend = new List<string>
+         {
+             "one",
+             "two",
+             "three",
+             "four",
+             "five"
+         };
+
+        var produceCancellation = new CancellationTokenSource();
+        produceCancellation.CancelAfter(2000);
+
+        // we don't need to put this on a different thread
+        var consumeTask = ConsumeMessages(topicName, produceCancellation.Token);
+        await Task.Delay(50);
+
+        await ProduceMessages(topicName, valuesToSend);
+        await Task.Delay(500);
+
+        produceCancellation.Cancel();
+
+        var consumedMessages = await consumeTask;
+        Assert.Equal(valuesToSend.Count, consumedMessages.Count);
+        for (var i = 0; i < valuesToSend.Count; ++i)
+        {
+            var message = (TopicMessage.Text)consumedMessages[i];
+            Assert.Equal(message.Value, valuesToSend[i]);
+        }
+    }
+
     private async Task ProduceMessages(string topicName, List<byte[]> valuesToSend)
     {
         foreach (var value in valuesToSend)
