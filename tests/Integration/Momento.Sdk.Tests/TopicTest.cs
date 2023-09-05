@@ -84,8 +84,9 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
     public async Task PublishAndSubscribe_ByteArray_Succeeds()
     {
         const string topicName = "topic_bytes";
-        var valuesToSend = new HashSet<byte[]>
+        var valuesToSend = new List<byte[]>
         {
+            new byte[] { 0x00 },
             new byte[] { 0x01 },
             new byte[] { 0x02 },
             new byte[] { 0x03 },
@@ -93,22 +94,24 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             new byte[] { 0x05 }
         };
         
-        var produceCtx = new CancellationTokenSource();
-        produceCtx.CancelAfter(2000);
+        var produceCancellation = new CancellationTokenSource();
+        produceCancellation.CancelAfter(2000);
 
-        var consumeTask = Task.Run(async () => await ConsumeMessages(topicName, produceCtx.Token));
+        // we don't need to put this on a different thread
+        var consumeTask = ConsumeMessages(topicName, produceCancellation.Token);
         await Task.Delay(500);
         
         await ProduceMessages(topicName, valuesToSend);
         await Task.Delay(500);
         
-        produceCtx.Cancel();
+        produceCancellation.Cancel();
         
         var consumedMessages = await consumeTask;
         Assert.Equal(valuesToSend.Count, consumedMessages.Count);
-        foreach (var message in consumedMessages)
+        for (var i = 0; i < valuesToSend.Count; ++i)
         {
-            Assert.Contains(((TopicMessage.Binary)message).Value, valuesToSend);
+            var message = (TopicMessage.Binary)consumedMessages[i];
+            Assert.Equal(message.Value, valuesToSend[i]);
         }
     }
 
@@ -116,7 +119,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
     public async Task PublishAndSubscribe_String_Succeeds()
     {
         const string topicName = "topic_string";
-        var valuesToSend = new HashSet<string>
+        var valuesToSend = new List<string>
         {
             "one",
             "two",
@@ -125,26 +128,28 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             "five"
         };
         
-        var produceCtx = new CancellationTokenSource();
-        produceCtx.CancelAfter(2000);
+        var produceCancellation = new CancellationTokenSource();
+        produceCancellation.CancelAfter(2000);
 
-        var consumeTask = Task.Run(async () => await ConsumeMessages(topicName, produceCtx.Token));
-        await Task.Delay(500);
+        // we don't need to put this on a different thread
+        var consumeTask = ConsumeMessages(topicName, produceCancellation.Token);
+        await Task.Delay(50);
         
         await ProduceMessages(topicName, valuesToSend);
         await Task.Delay(500);
         
-        produceCtx.Cancel();
+        produceCancellation.Cancel();
         
         var consumedMessages = await consumeTask;
         Assert.Equal(valuesToSend.Count, consumedMessages.Count);
-        foreach (var message in consumedMessages)
+        for (var i = 0; i < valuesToSend.Count; ++i)
         {
-            Assert.Contains(((TopicMessage.Text)message).Value, valuesToSend);
+            var message = (TopicMessage.Text)consumedMessages[i];
+            Assert.Equal(message.Value, valuesToSend[i]);
         }
     }
     
-    private async Task ProduceMessages(string topicName, HashSet<byte[]> valuesToSend)
+    private async Task ProduceMessages(string topicName, List<byte[]> valuesToSend)
     {
         foreach (var value in valuesToSend)
         {
@@ -160,7 +165,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         }
     }
     
-    private async Task ProduceMessages(string topicName, HashSet<string> valuesToSend)
+    private async Task ProduceMessages(string topicName, List<string> valuesToSend)
     {
         foreach (var value in valuesToSend)
         {
