@@ -94,6 +94,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         };
         
         var produceCtx = new CancellationTokenSource();
+        produceCtx.CancelAfter(2000);
 
         var consumeTask = Task.Run(async () => await ConsumeMessages(topicName, produceCtx.Token));
         await Task.Delay(500);
@@ -125,6 +126,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         };
         
         var produceCtx = new CancellationTokenSource();
+        produceCtx.CancelAfter(2000);
 
         var consumeTask = Task.Run(async () => await ConsumeMessages(topicName, produceCtx.Token));
         await Task.Delay(500);
@@ -180,9 +182,9 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         switch (subscribeResponse)
         {
             case TopicSubscribeResponse.Subscription subscription:
-                var cancellableSub = subscription.WithCancellation(token);
+                var cancellableSubscription = subscription.WithCancellation(token);
                 var receivedSet = new List<TopicMessage>();
-                await foreach (var message in cancellableSub)
+                await foreach (var message in cancellableSubscription)
                 {
                     switch (message)
                     {

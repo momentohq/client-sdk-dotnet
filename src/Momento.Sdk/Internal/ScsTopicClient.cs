@@ -132,7 +132,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
 
         var response = new TopicSubscribeResponse.Subscription(
             token => MoveNextAsync(subscription, token, cacheName, topicName),
-            () => subscription.Dispose());
+            subscription.Dispose);
         return _logger.LogTraceTopicRequestSuccess(RequestTypeTopicPublish, cacheName, topicName,
             response);
     }
