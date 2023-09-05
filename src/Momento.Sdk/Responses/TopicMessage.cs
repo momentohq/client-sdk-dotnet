@@ -36,6 +36,16 @@ namespace Momento.Sdk.Responses;
 public abstract class TopicMessage
 {
     /// <summary>
+    /// The binary value of this message, if present.
+    /// </summary>
+    public virtual byte[]? ValueByteArray => null;
+
+    /// <summary>
+    /// The text value of this message, if present.
+    /// </summary>
+    public virtual string? ValueString => null;
+
+    /// <summary>
     /// A topic message containing a text value.
     /// </summary>
     public class Text : TopicMessage
@@ -50,6 +60,11 @@ public abstract class TopicMessage
         /// The text value of this message.
         /// </summary>
         public string Value { get; }
+        
+        /// <summary>
+        /// The text value of this message.
+        /// </summary>
+        public override string ValueString => Value;
         
         /// <summary>
         /// The number of this message in the topic sequence.
@@ -72,6 +87,11 @@ public abstract class TopicMessage
         /// The binary value of this message.
         /// </summary>
         public byte[] Value { get; }
+        
+        /// <summary>
+        /// The binary value of this message.
+        /// </summary>
+        public override byte[] ValueByteArray => Value;
 
         /// <summary>
         /// The number of this message in the topic sequence.

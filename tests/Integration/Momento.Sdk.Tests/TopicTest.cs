@@ -27,7 +27,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         Assert.True(response is TopicPublishResponse.Error, $"Unexpected response: {response}");
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((TopicPublishResponse.Error)response).ErrorCode);
     }
-    
+
     [Fact]
     public async Task PublishAsync_PublishNullByteArray_IsError()
     {
@@ -35,7 +35,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         Assert.True(response is TopicPublishResponse.Error, $"Unexpected response: {response}");
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((TopicPublishResponse.Error)response).ErrorCode);
     }
-    
+
     [Fact]
     public async Task PublishAsync_BadCacheNameByteArray_IsError()
     {
@@ -43,7 +43,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         Assert.True(response is TopicPublishResponse.Error, $"Unexpected response: {response}");
         Assert.Equal(MomentoErrorCode.NOT_FOUND_ERROR, ((TopicPublishResponse.Error)response).ErrorCode);
     }
-    
+
     [Theory]
     [InlineData(null, "topic")]
     [InlineData("cache", null)]
@@ -53,7 +53,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         Assert.True(response is TopicPublishResponse.Error, $"Unexpected response: {response}");
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((TopicPublishResponse.Error)response).ErrorCode);
     }
-    
+
     [Fact]
     public async Task PublishAsync_PublishNullString_IsError()
     {
@@ -61,7 +61,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         Assert.True(response is TopicPublishResponse.Error, $"Unexpected response: {response}");
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((TopicPublishResponse.Error)response).ErrorCode);
     }
-    
+
     [Fact]
     public async Task PublishAsync_BadCacheNameString_IsError()
     {
@@ -69,7 +69,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         Assert.True(response is TopicPublishResponse.Error, $"Unexpected response: {response}");
         Assert.Equal(MomentoErrorCode.NOT_FOUND_ERROR, ((TopicPublishResponse.Error)response).ErrorCode);
     }
-    
+
     [Theory]
     [InlineData(null, "topic")]
     [InlineData("cache", null)]
@@ -93,25 +93,24 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             new byte[] { 0x04 },
             new byte[] { 0x05 }
         };
-        
+
         var produceCancellation = new CancellationTokenSource();
         produceCancellation.CancelAfter(2000);
 
         // we don't need to put this on a different thread
         var consumeTask = ConsumeMessages(topicName, produceCancellation.Token);
         await Task.Delay(500);
-        
+
         await ProduceMessages(topicName, valuesToSend);
         await Task.Delay(500);
-        
+
         produceCancellation.Cancel();
-        
+
         var consumedMessages = await consumeTask;
         Assert.Equal(valuesToSend.Count, consumedMessages.Count);
         for (var i = 0; i < valuesToSend.Count; ++i)
         {
-            var message = (TopicMessage.Binary)consumedMessages[i];
-            Assert.Equal(message.Value, valuesToSend[i]);
+            Assert.Equal(consumedMessages[i].ValueByteArray, valuesToSend[i]);
         }
     }
 
@@ -120,20 +119,20 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
     {
         const string topicName = "topic_string";
         var valuesToSend = new List<string>
-         {
-             "one",
-             "two",
-             "three",
-             "four",
-             "five"
-         };
+        {
+            "one",
+            "two",
+            "three",
+            "four",
+            "five"
+        };
 
         var produceCancellation = new CancellationTokenSource();
         produceCancellation.CancelAfter(2000);
 
         // we don't need to put this on a different thread
         var consumeTask = ConsumeMessages(topicName, produceCancellation.Token);
-        await Task.Delay(50);
+        await Task.Delay(500);
 
         await ProduceMessages(topicName, valuesToSend);
         await Task.Delay(500);
@@ -144,8 +143,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         Assert.Equal(valuesToSend.Count, consumedMessages.Count);
         for (var i = 0; i < valuesToSend.Count; ++i)
         {
-            var message = (TopicMessage.Text)consumedMessages[i];
-            Assert.Equal(message.Value, valuesToSend[i]);
+            Assert.Equal(consumedMessages[i].ValueString, valuesToSend[i]);
         }
     }
 
@@ -164,7 +162,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             }
         }
     }
-    
+
     private async Task ProduceMessages(string topicName, List<string> valuesToSend)
     {
         foreach (var value in valuesToSend)
@@ -180,7 +178,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             }
         }
     }
-    
+
     private async Task<List<TopicMessage>> ConsumeMessages(string topicName, CancellationToken token)
     {
         var subscribeResponse = await topicClient.SubscribeAsync(cacheName, topicName);
@@ -201,6 +199,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
                             throw new Exception("bad message received");
                     }
                 }
+
                 subscription.Dispose();
                 return receivedSet;
             default:
