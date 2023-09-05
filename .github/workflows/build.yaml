@@ -50,10 +50,10 @@ jobs:
         run: dotnet build
 
       - name: Unit Test
-        run: dotnet test --verbosity normal -f ${{ matrix.target-framework }} tests/Unit/Momento.Sdk.Tests
+        run: dotnet test --logger "console;verbosity=detailed" -f ${{ matrix.target-framework }} tests/Unit/Momento.Sdk.Tests
 
       - name: Integration Test
-        run: dotnet test --verbosity normal -f ${{ matrix.target-framework }} tests/Integration/Momento.Sdk.Tests
+        run: dotnet test --logger "console;verbosity=detailed" -f ${{ matrix.target-framework }} tests/Integration/Momento.Sdk.Tests
 
   build_examples:
     runs-on: ubuntu-latest
