@@ -21,7 +21,7 @@ public class ScsTopicClientBase : IDisposable
 
     protected readonly CacheExceptionMapper _exceptionMapper;
 
-    public ScsTopicClientBase(IConfiguration config, string authToken, string endpoint)
+    public ScsTopicClientBase(ITopicConfiguration config, string authToken, string endpoint)
     {
         this.grpcManager = new TopicGrpcManager(config, authToken, endpoint);
         this.dataClientOperationTimeout = config.TransportStrategy.GrpcConfig.Deadline;
@@ -49,7 +49,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
 {
     private readonly ILogger _logger;
 
-    public ScsTopicClient(IConfiguration config, string authToken, string endpoint)
+    public ScsTopicClient(ITopicConfiguration config, string authToken, string endpoint)
         : base(config, authToken, endpoint)
     {
         this._logger = config.LoggerFactory.CreateLogger<ScsTopicClient>();

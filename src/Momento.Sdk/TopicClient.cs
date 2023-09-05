@@ -21,9 +21,9 @@ public class TopicClient : ITopicClient
     /// <summary>
     /// Client to perform operations against Momento topics.
     /// </summary>
-    /// <param name="config">Configuration to use for the transport, retries, middlewares. See <see cref="Configurations"/> for out-of-the-box configuration choices, eg <see cref="Configurations.Laptop.Latest"/></param>
+    /// <param name="config">Configuration to use for the client.</param>
     /// <param name="authProvider">Momento auth provider.</param>
-    public TopicClient(IConfiguration config, ICredentialProvider authProvider)
+    public TopicClient(ITopicConfiguration config, ICredentialProvider authProvider)
     {
         scsTopicClient = new ScsTopicClient(config, authProvider.AuthToken, authProvider.CacheEndpoint);
     }

@@ -85,7 +85,7 @@ public class TopicGrpcManager : IDisposable
     private readonly string runtimeVersion = $"{Moniker}:{Environment.Version}";
     private readonly ILogger _logger;
 
-    internal TopicGrpcManager(IConfiguration config, string authToken, string endpoint)
+    internal TopicGrpcManager(ITopicConfiguration config, string authToken, string endpoint)
     {
 #if USE_GRPC_WEB
         // Note: all web SDK requests are routed to a `web.` subdomain to allow us flexibility on the server
@@ -114,14 +114,12 @@ public class TopicGrpcManager : IDisposable
         _logger = config.LoggerFactory.CreateLogger<TopicGrpcManager>();
 
         var invoker = channel.CreateCallInvoker();
-        
-        var middlewares = config.Middlewares.Concat(
-            new List<IMiddleware> {
-                new RetryMiddleware(config.LoggerFactory, config.RetryStrategy),
-                new HeaderMiddleware(config.LoggerFactory, headers),
-                new MaxConcurrentRequestsMiddleware(config.LoggerFactory, config.TransportStrategy.MaxConcurrentRequests)
-            }
-        ).ToList();
+
+        var middlewares = new List<IMiddleware>
+        {
+            new HeaderMiddleware(config.LoggerFactory, headers),
+            new MaxConcurrentRequestsMiddleware(config.LoggerFactory, config.TransportStrategy.MaxConcurrentRequests)
+        };
 
         var client = new Pubsub.PubsubClient(invoker);
 
