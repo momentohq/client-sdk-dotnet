@@ -98,7 +98,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         var consumeTask = Task.Run(async () => await ConsumeMessages(topicName, produceCtx.Token));
         await Task.Delay(500);
         
-        await Task.Run(async () => await ProduceMessages(topicName, valuesToSend));
+        await ProduceMessages(topicName, valuesToSend);
         await Task.Delay(500);
         
         produceCtx.Cancel();
@@ -129,7 +129,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         var consumeTask = Task.Run(async () => await ConsumeMessages(topicName, produceCtx.Token));
         await Task.Delay(500);
         
-        await Task.Run(async () => await ProduceMessages(topicName, valuesToSend));
+        await ProduceMessages(topicName, valuesToSend);
         await Task.Delay(500);
         
         produceCtx.Cancel();
