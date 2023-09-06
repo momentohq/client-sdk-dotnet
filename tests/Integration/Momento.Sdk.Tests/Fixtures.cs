@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
@@ -52,3 +51,42 @@ public class CacheClientCollection : ICollectionFixture<CacheClientFixture>
 {
 
 }
+
+#if NET6_0_OR_GREATER
+public class TopicClientFixture : IDisposable
+{
+    public ITopicClient Client { get; private set; }
+    public ICredentialProvider AuthProvider { get; private set; }
+
+    
+    public TopicClientFixture()
+    {
+        AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
+        Client = new TopicClient(TopicConfigurations.Laptop.latest(LoggerFactory.Create(builder =>
+        {
+            builder.AddSimpleConsole(options =>
+            {
+                options.IncludeScopes = true;
+                options.SingleLine = true;
+                options.TimestampFormat = "hh:mm:ss ";
+            });
+            builder.AddFilter("Grpc.Net.Client", LogLevel.Error);
+            builder.SetMinimumLevel(LogLevel.Information);
+        })), AuthProvider);
+    }
+
+    public void Dispose()
+    {
+        Client.Dispose();
+    }
+}
+
+/// <summary>
+/// Register the fixture in xUnit.
+/// </summary>
+[CollectionDefinition("TopicClient")]
+public class TopicClientCollection : ICollectionFixture<TopicClientFixture>
+{
+
+}
+#endif
