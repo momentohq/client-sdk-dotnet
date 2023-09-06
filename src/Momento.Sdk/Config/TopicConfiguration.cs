@@ -10,21 +10,21 @@ public class TopicConfiguration : ITopicConfiguration
     public ILoggerFactory LoggerFactory { get; }
 
     /// <inheritdoc />
-    public ITransportStrategy TransportStrategy { get; }
+    public ITopicTransportStrategy TransportStrategy { get; }
 
     /// <summary>
     /// Create a new instance of a Topic Configuration object with provided arguments: <see cref="Momento.Sdk.Config.ITopicConfiguration.TransportStrategy"/>, and <see cref="Momento.Sdk.Config.ITopicConfiguration.LoggerFactory"/>
     /// </summary>
     /// <param name="transportStrategy">This is responsible for configuring network tunables.</param>
     /// <param name="loggerFactory">This is responsible for configuring logging.</param>
-    public TopicConfiguration(ILoggerFactory loggerFactory, ITransportStrategy transportStrategy)
+    public TopicConfiguration(ILoggerFactory loggerFactory, ITopicTransportStrategy transportStrategy)
     {
         LoggerFactory = loggerFactory;
         TransportStrategy = transportStrategy;
     }
 
     /// <inheritdoc />
-    public ITopicConfiguration WithTransportStrategy(ITransportStrategy transportStrategy)
+    public ITopicConfiguration WithTransportStrategy(ITopicTransportStrategy transportStrategy)
     {
         return new TopicConfiguration(LoggerFactory, transportStrategy);
     }

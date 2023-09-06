@@ -12,7 +12,6 @@ using Grpc.Net.Client.Web;
 #endif
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient.Pubsub;
-using Momento.Protos.CachePing;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
@@ -118,27 +117,9 @@ public class TopicGrpcManager : IDisposable
         var middlewares = new List<IMiddleware>
         {
             new HeaderMiddleware(config.LoggerFactory, headers),
-            new MaxConcurrentRequestsMiddleware(config.LoggerFactory, config.TransportStrategy.MaxConcurrentRequests)
         };
 
         var client = new Pubsub.PubsubClient(invoker);
-
-        if (config.TransportStrategy.EagerConnectionTimeout != null)
-        {
-            var eagerConnectionTimeout = config.TransportStrategy.EagerConnectionTimeout.Value;
-            _logger.LogDebug("TransportStrategy EagerConnection is enabled; attempting to connect to server");
-            var pingClient = new Ping.PingClient(channel);
-            try
-            {
-                pingClient.Ping(new _PingRequest(),
-                    new CallOptions(deadline: DateTime.UtcNow.Add(eagerConnectionTimeout)));
-            }
-            catch (RpcException)
-            {
-                _logger.LogWarning(
-                    "Failed to eagerly connect to the server; continuing with execution in case failure is recoverable later.");
-            }
-        }
 
         Client = new PubsubClientWithMiddleware(client, middlewares, headerTuples);
     }

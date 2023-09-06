@@ -1,6 +1,7 @@
 #if NET6_0_OR_GREATER
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -110,7 +111,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         Assert.Equal(valuesToSend.Count, consumedMessages.Count);
         for (var i = 0; i < valuesToSend.Count; ++i)
         {
-            Assert.Equal(consumedMessages[i].ValueByteArray, valuesToSend[i]);
+            Assert.Equal(((TopicMessage.Binary)consumedMessages[i]).Value, valuesToSend[i]);
         }
     }
 
@@ -143,7 +144,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         Assert.Equal(valuesToSend.Count, consumedMessages.Count);
         for (var i = 0; i < valuesToSend.Count; ++i)
         {
-            Assert.Equal(consumedMessages[i].ValueString, valuesToSend[i]);
+            Assert.Equal(((TopicMessage.Text)consumedMessages[i]).Value, valuesToSend[i]);
         }
     }
 
@@ -205,6 +206,75 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             default:
                 throw new Exception("subscription error");
         }
+    }
+    
+    [Fact]
+    public async Task MultipleSubscriptions_HappyPath()
+    {
+        var numTopics = 20;
+
+        var subscriptionResponses = await Task.WhenAll(
+            Enumerable.Range(1, numTopics).Select(i =>
+                topicClient.SubscribeAsync(cacheName, $"topic{i}")
+                    .ContinueWith(r => Tuple.Create(i, r.Result))).ToList());
+        
+        var subscriptions = subscriptionResponses.Select(t =>
+        {
+            var (topicNum, subscriptionResponse) = t;
+            if (subscriptionResponse is TopicSubscribeResponse.Subscription subscription)
+            {
+                return Tuple.Create(topicNum, subscription);
+            }
+
+            throw new Exception($"Got an unexpected subscription response: {subscriptionResponse}");
+        }).ToList();
+
+        var subscribers = subscriptions.Select(t => Task.Run(async () =>
+        {
+            var (topicNum, subscription) = t;
+ 
+            int messageCount = 0;
+            await foreach (var message in subscription)
+            {
+                switch (message)
+                {
+                    case TopicMessage.Text:
+                        messageCount++;
+                        break;
+                }
+            }
+
+            return messageCount;
+        })).ToList();
+    
+        await Task.Delay(100);
+
+        const int numMessagesToPublish = 50;
+        foreach (var i in Enumerable.Range(0, numMessagesToPublish))
+        {
+            var randomTopic = Random.Shared.NextInt64(numTopics) + 1;
+            var messageId = $"message{i}";
+            var topic = $"topic{randomTopic}";
+            var publishResponse = await topicClient.PublishAsync(cacheName, topic, messageId);
+            if (publishResponse is not TopicPublishResponse.Success)
+            {
+                throw new Exception($"Publish did not succeed: {publishResponse}");
+            }
+
+            await Task.Delay(100);
+        }
+    
+        await Task.Delay(1_000);
+        
+        foreach (var subscriptionTuple in subscriptions)
+        {
+            var (_, subscription) = subscriptionTuple;
+            subscription.Dispose();
+        }
+    
+        var subscriberResults = await Task.WhenAll(subscribers);
+        var numMessagesReceived = subscriberResults.Sum();
+        Assert.Equal(numMessagesToPublish, numMessagesReceived);
     }
 }
 #endif

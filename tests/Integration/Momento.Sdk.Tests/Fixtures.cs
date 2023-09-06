@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
-using Momento.Sdk.Config.Transport;
 
 namespace Momento.Sdk.Tests;
 
@@ -63,7 +62,7 @@ public class TopicClientFixture : IDisposable
     public TopicClientFixture()
     {
         AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
-        var loggerFactory = LoggerFactory.Create(builder =>
+        Client = new TopicClient(TopicConfigurations.Laptop.latest(LoggerFactory.Create(builder =>
         {
             builder.AddSimpleConsole(options =>
             {
@@ -73,14 +72,7 @@ public class TopicClientFixture : IDisposable
             });
             builder.AddFilter("Grpc.Net.Client", LogLevel.Error);
             builder.SetMinimumLevel(LogLevel.Information);
-        });
-        var transportStrategy = new StaticTransportStrategy(
-            loggerFactory: loggerFactory,
-            maxConcurrentRequests: 200, // max of 2 connections https://github.com/momentohq/client-sdk-dotnet/issues/460
-            grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(15000))
-        );
-        var config = new TopicConfiguration(loggerFactory, transportStrategy);
-        Client = new TopicClient(config, AuthProvider);
+        })), AuthProvider);
     }
 
     public void Dispose()

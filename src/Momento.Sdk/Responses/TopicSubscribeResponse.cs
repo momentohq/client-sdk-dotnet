@@ -46,6 +46,7 @@ public abstract class TopicSubscribeResponse
     public class Subscription : TopicSubscribeResponse, IDisposable, IAsyncEnumerable<TopicMessage?>
     {
         private readonly Func<CancellationToken, ValueTask<TopicMessage?>> _moveNextFunction;
+        private CancellationTokenSource _subscriptionCancellationToken = new();
         private readonly Action _disposalAction;
 
         /// <summary>
@@ -63,7 +64,7 @@ public abstract class TopicSubscribeResponse
         /// </summary>
         public IAsyncEnumerator<TopicMessage?> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {
-            return new TopicMessageEnumerator(_moveNextFunction, _disposalAction, cancellationToken);
+            return new TopicMessageEnumerator(_moveNextFunction, _subscriptionCancellationToken.Token, cancellationToken);
         }
 
 
@@ -72,6 +73,7 @@ public abstract class TopicSubscribeResponse
         /// </summary>
         public void Dispose()
         {
+            _subscriptionCancellationToken.Cancel();
             _disposalAction.Invoke();
         }
     }
@@ -79,27 +81,30 @@ public abstract class TopicSubscribeResponse
     private class TopicMessageEnumerator : IAsyncEnumerator<TopicMessage?>
     {
         private readonly Func<CancellationToken, ValueTask<TopicMessage?>> _moveNextFunction;
-        private readonly Action _disposalAction;
-        private readonly CancellationToken _cancellationToken;
+        private readonly CancellationToken _subscriptionCancellationToken;
+        private readonly CancellationToken _enumeratorCancellationToken;
 
-        public TopicMessageEnumerator(Func<CancellationToken, ValueTask<TopicMessage?>> moveNextFunction, Action disposalAction, CancellationToken cancellationToken)
+        public TopicMessageEnumerator(
+            Func<CancellationToken, ValueTask<TopicMessage?>> moveNextFunction,
+            CancellationToken subscriptionCancellationToken,
+            CancellationToken enumeratorCancellationToken)
         {
             _moveNextFunction = moveNextFunction;
-            _disposalAction = disposalAction;
-            _cancellationToken = cancellationToken;
+            _subscriptionCancellationToken = subscriptionCancellationToken;
+            _enumeratorCancellationToken = enumeratorCancellationToken;
         }
 
         public TopicMessage? Current { get; private set; }
 
         public async ValueTask<bool> MoveNextAsync()
         {
-            if (_cancellationToken.IsCancellationRequested)
+            if (_subscriptionCancellationToken.IsCancellationRequested || _enumeratorCancellationToken.IsCancellationRequested)
             {
                 Current = null;
                 return false;
             }
             
-            var nextMessage = await _moveNextFunction.Invoke(_cancellationToken);
+            var nextMessage = await _moveNextFunction.Invoke(_enumeratorCancellationToken);
             switch (nextMessage)
             {
                 case TopicMessage.Text:
@@ -117,8 +122,6 @@ public abstract class TopicSubscribeResponse
 
         public ValueTask DisposeAsync()
         {
-            _disposalAction.Invoke();
-
             return new ValueTask();
         }
     }

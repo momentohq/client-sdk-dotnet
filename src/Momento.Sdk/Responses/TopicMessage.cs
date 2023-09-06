@@ -36,40 +36,22 @@ namespace Momento.Sdk.Responses;
 public abstract class TopicMessage
 {
     /// <summary>
-    /// The binary value of this message, if present.
-    /// </summary>
-    public virtual byte[]? ValueByteArray => null;
-
-    /// <summary>
-    /// The text value of this message, if present.
-    /// </summary>
-    public virtual string? ValueString => null;
-
-    /// <summary>
     /// A topic message containing a text value.
     /// </summary>
     public class Text : TopicMessage
     {
-        public Text(_TopicItem topicItem)
+        /// <summary>
+        /// A topic message containing a text value.
+        /// </summary>
+        public Text(_TopicValue topicValue)
         {
-            Value = topicItem.Value.Text;
-            TopicSequenceNumber = topicItem.TopicSequenceNumber;
+            Value = topicValue.Text;
         }
 
         /// <summary>
         /// The text value of this message.
         /// </summary>
         public string Value { get; }
-        
-        /// <summary>
-        /// The text value of this message.
-        /// </summary>
-        public override string ValueString => Value;
-        
-        /// <summary>
-        /// The number of this message in the topic sequence.
-        /// </summary>
-        public ulong TopicSequenceNumber { get; }
     }
     
     /// <summary>
@@ -77,26 +59,18 @@ public abstract class TopicMessage
     /// </summary>
     public class Binary : TopicMessage
     {
-        public Binary(_TopicItem topicItem)
+        /// <summary>
+        /// A topic message containing a binary value.
+        /// </summary>
+        public Binary(_TopicValue topicValue)
         {
-            Value = topicItem.Value.Binary.ToByteArray();
-            TopicSequenceNumber = topicItem.TopicSequenceNumber;
+            Value = topicValue.Binary.ToByteArray();
         }
 
         /// <summary>
         /// The binary value of this message.
         /// </summary>
         public byte[] Value { get; }
-        
-        /// <summary>
-        /// The binary value of this message.
-        /// </summary>
-        public override byte[] ValueByteArray => Value;
-
-        /// <summary>
-        /// The number of this message in the topic sequence.
-        /// </summary>
-        public ulong TopicSequenceNumber { get; }
     }
 
     /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />

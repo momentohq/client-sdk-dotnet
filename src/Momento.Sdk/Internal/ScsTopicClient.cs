@@ -80,6 +80,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
     }
 
     private const string RequestTypeTopicPublish = "TOPIC_PUBLISH";
+    private const string RequestTypeTopicSubscribe = "TOPIC_SUBSCRIBE";
 
     private async Task<TopicPublishResponse> SendPublish(string cacheName, string topicName, _TopicValue value)
     {
@@ -121,23 +122,23 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         AsyncServerStreamingCall<_SubscriptionItem> subscription;
         try
         {
-            _logger.LogTraceExecutingTopicRequest(RequestTypeTopicPublish, cacheName, topicName);
+            _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, cacheName, topicName);
             subscription = grpcManager.Client.subscribe(request, new CallOptions());
         }
         catch (Exception e)
         {
-            return _logger.LogTraceTopicRequestError(RequestTypeTopicPublish, cacheName, topicName,
+            return _logger.LogTraceTopicRequestError(RequestTypeTopicSubscribe, cacheName, topicName,
                 new TopicSubscribeResponse.Error(_exceptionMapper.Convert(e)));
         }
 
         var response = new TopicSubscribeResponse.Subscription(
-            cancellationToken => MoveNextAsync(subscription, cancellationToken, cacheName, topicName),
+            cancellationToken => GetNextRelevantMessageFromGrpcStreamAsync(subscription, cancellationToken, cacheName, topicName),
             subscription.Dispose);
-        return _logger.LogTraceTopicRequestSuccess(RequestTypeTopicPublish, cacheName, topicName,
+        return _logger.LogTraceTopicRequestSuccess(RequestTypeTopicSubscribe, cacheName, topicName,
             response);
     }
 
-    private async ValueTask<TopicMessage?> MoveNextAsync(AsyncServerStreamingCall<_SubscriptionItem> subscription,
+    private async ValueTask<TopicMessage?> GetNextRelevantMessageFromGrpcStreamAsync(AsyncServerStreamingCall<_SubscriptionItem> subscription,
         CancellationToken cancellationToken, string cacheName, string topicName)
     {
         if (cancellationToken.IsCancellationRequested)
@@ -158,10 +159,10 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                         {
                             case _TopicValue.KindOneofCase.Text:
                                 _logger.LogTraceTopicMessageReceived("text", cacheName, topicName);
-                                return new TopicMessage.Text(message.Item);
+                                return new TopicMessage.Text(message.Item.Value);
                             case _TopicValue.KindOneofCase.Binary:
                                 _logger.LogTraceTopicMessageReceived("binary", cacheName, topicName);
-                                return new TopicMessage.Binary(message.Item);
+                                return new TopicMessage.Binary(message.Item.Value);
                             case _TopicValue.KindOneofCase.None:
                             default:
                                 _logger.LogTraceTopicMessageReceived("unknown", cacheName, topicName);
