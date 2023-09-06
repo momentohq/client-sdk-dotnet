@@ -1,6 +1,6 @@
 using Momento.Sdk.Auth.AccessControl;
 using Momento.Sdk.Exceptions;
-using Token;
+using Momento.Protos.TokenClient;
 
 namespace Momento.Sdk.Responses;
 
