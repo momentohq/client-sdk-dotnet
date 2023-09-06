@@ -3,13 +3,13 @@ using Momento.Sdk.Config.Transport;
 
 namespace Momento.Sdk.Config;
 
-/// <inheritdoc cref="Momento.Sdk.Config.IAuthConfiguration" />
+/// <inheritdoc cref="IAuthConfiguration" />
 public class AuthConfiguration : IAuthConfiguration
 {
     /// <inheritdoc />
     public ILoggerFactory LoggerFactory { get; }
     /// <inheritdoc />
-    public ITransportStrategy TransportStrategy { get; }
+    public IAuthTransportStrategy TransportStrategy { get; }
 
     
     /// <summary>
@@ -17,14 +17,14 @@ public class AuthConfiguration : IAuthConfiguration
     /// </summary>
     /// <param name="transportStrategy">This is responsible for configuring network tunables.</param>
     /// <param name="loggerFactory">This is responsible for configuring logging.</param>
-    public AuthConfiguration(ILoggerFactory loggerFactory, ITransportStrategy transportStrategy)
+    public AuthConfiguration(ILoggerFactory loggerFactory, IAuthTransportStrategy transportStrategy)
     {
         LoggerFactory = loggerFactory;
         TransportStrategy = transportStrategy;
     }
 
     /// <inheritdoc />
-    public IAuthConfiguration WithTransportStrategy(ITransportStrategy transportStrategy)
+    public IAuthConfiguration WithTransportStrategy(IAuthTransportStrategy transportStrategy)
     {
         return new AuthConfiguration(LoggerFactory, transportStrategy);
     }
