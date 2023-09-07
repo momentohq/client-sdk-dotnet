@@ -17,6 +17,8 @@ public class EnvMomentoTokenProvider : ICredentialProvider
     public string ControlEndpoint { get; private set; }
     /// <inheritdoc />
     public string CacheEndpoint { get; private set; }
+    /// <inheritdoc />
+    public string TokenEndpoint { get; private set; }
 
     /// <summary>
     /// Reads and parses a JWT token stored as an environment variable.
@@ -39,6 +41,7 @@ public class EnvMomentoTokenProvider : ICredentialProvider
         var tokenData = AuthUtils.TryDecodeAuthToken(AuthToken);
         ControlEndpoint = tokenData.ControlEndpoint;
         CacheEndpoint = tokenData.CacheEndpoint;
+        TokenEndpoint = tokenData.TokenEndpoint;
         AuthToken = tokenData.AuthToken;
     }
 

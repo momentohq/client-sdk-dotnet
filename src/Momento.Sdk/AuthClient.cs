@@ -14,8 +14,7 @@ public class AuthClient : IAuthClient
 
     public AuthClient(IAuthConfiguration config, ICredentialProvider authProvider)
     {
-        // TODO: do we need to adjust the endpoint in the `ScsTokenClient` constructor?
-        scsTokenClient = new ScsTokenClient(config, authProvider);
+        scsTokenClient = new ScsTokenClient(config, authProvider.AuthToken, authProvider.TokenEndpoint);
     }
 
     public Task<GenerateDisposableTokenResponse> GenerateDisposableTokenAsync(DisposableTokenScope scope, ExpiresIn expiresIn)

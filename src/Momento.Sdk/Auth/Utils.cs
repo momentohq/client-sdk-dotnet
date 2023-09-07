@@ -10,12 +10,14 @@ internal class TokenAndEndpoints
     public string AuthToken { get; }
     public string ControlEndpoint { get; }
     public string CacheEndpoint { get; }
+    public string TokenEndpoint { get; }
 
-    public TokenAndEndpoints(string authToken, string controlEndpoint, string cacheEndpoint)
+    public TokenAndEndpoints(string authToken, string controlEndpoint, string cacheEndpoint, string tokenEndpoint)
     {
         AuthToken = authToken;
         ControlEndpoint = controlEndpoint;
         CacheEndpoint = cacheEndpoint;
+        TokenEndpoint = tokenEndpoint;
     }
 }
 
@@ -56,7 +58,8 @@ internal static class AuthUtils
                 return new TokenAndEndpoints(
                     decodedToken.api_key!,
                     "control." + decodedToken.endpoint,
-                    "cache." + decodedToken.endpoint
+                    "cache." + decodedToken.endpoint,
+                    "token." + decodedToken.endpoint
                 );
             }
             else
@@ -65,6 +68,9 @@ internal static class AuthUtils
                 return new TokenAndEndpoints(
                     authToken,
                     claims.ControlEndpoint,
+                    claims.CacheEndpoint,
+                    // TODO: assuming legacy tokens will never have a token endpoint. AFAIK, they can't be used
+                    //  to generate disposable tokens anyway, but verify and see if this needs to be fixed.
                     claims.CacheEndpoint
                 );
             }
