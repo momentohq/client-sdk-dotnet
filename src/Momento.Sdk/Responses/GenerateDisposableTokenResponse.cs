@@ -35,19 +35,20 @@ public abstract class GenerateDisposableTokenResponse
     public class Success : GenerateDisposableTokenResponse {
         public readonly string authToken;
         public readonly string endpoint;
-        public readonly ExpiresIn expiresIn;
+        public readonly ExpiresAt expiresAt;
 
         public Success(_GenerateDisposableTokenResponse response)
         {
             // TODO: make sure this works (keys are right, etc.)
             authToken = Newtonsoft.Json.JsonConvert.SerializeObject(new {endpoint=response.Endpoint, api_key=response.ApiKey});
             endpoint = response.Endpoint;
-            expiresIn = new ExpiresIn(response.ValidUntil);
+            // TODO: not quite sure about this cast. I may have the method support ulong instead (or in addition).
+            expiresAt = ExpiresAt.FromEpoch((int)response.ValidUntil);
         }
     }
 
     /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
-    public class Error : CacheGetResponse, IError
+    public class Error : GenerateDisposableTokenResponse, IError
     {
         private readonly SdkException _error;
 

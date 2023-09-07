@@ -29,12 +29,14 @@ internal sealed class ScsTokenClient : IDisposable
     private const string RequestTypeAuthGenerateDisposableToken = "GENERATE_DISPOSABLE_TOKEN";
     public async Task<GenerateDisposableTokenResponse> GenerateDisposableToken(DisposableTokenScope scope, ExpiresIn expiresIn)
     {
-        _GenerateDisposableTokenRequest request = new _GenerateDisposableTokenRequest();
-        // TODO: actually calculate the ValidForSeconds value
-        request.Expires = new _GenerateDisposableTokenRequest.Types.Expires(){ValidForSeconds=12345};
-        request.AuthToken = this.authToken;
-        // TODO: implement me here
-        request.Permissions = permissionsFromScope(scope);
+        _GenerateDisposableTokenRequest request = new _GenerateDisposableTokenRequest
+        {
+            // TODO: actually calculate the ValidForSeconds value
+            Expires = new _GenerateDisposableTokenRequest.Types.Expires() { ValidForSeconds = 12345 },
+            AuthToken = this.authToken,
+            // TODO: implement me here
+            Permissions = permissionsFromTokenScope(scope)
+        };
         try
         {
             _logger.LogTraceExecutingAuthRequest(RequestTypeAuthGenerateDisposableToken);
