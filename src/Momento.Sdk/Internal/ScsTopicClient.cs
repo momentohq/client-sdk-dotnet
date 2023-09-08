@@ -229,7 +229,8 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
 
                         break;
                     case _SubscriptionItem.KindOneofCase.Discontinuity:
-                        _logger.LogTraceTopicMessageReceived("discontinuity", _cacheName, _topicName);
+                        _logger.LogTraceTopicDiscontinuityReceived(_cacheName, _topicName,
+                            message.Discontinuity.LastTopicSequence, message.Discontinuity.NewTopicSequence);
                         break;
                     case _SubscriptionItem.KindOneofCase.Heartbeat:
                         _logger.LogTraceTopicMessageReceived("heartbeat", _cacheName, _topicName);
