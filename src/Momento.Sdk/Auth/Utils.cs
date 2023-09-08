@@ -10,12 +10,14 @@ internal class TokenAndEndpoints
     public string AuthToken { get; }
     public string ControlEndpoint { get; }
     public string CacheEndpoint { get; }
+    public string TokenEndpoint { get; }
 
-    public TokenAndEndpoints(string authToken, string controlEndpoint, string cacheEndpoint)
+    public TokenAndEndpoints(string authToken, string controlEndpoint, string cacheEndpoint, string tokenEndpoint)
     {
         AuthToken = authToken;
         ControlEndpoint = controlEndpoint;
         CacheEndpoint = cacheEndpoint;
+        TokenEndpoint = tokenEndpoint;
     }
 }
 
@@ -51,12 +53,13 @@ internal static class AuthUtils
                 var decodedToken = JsonConvert.DeserializeObject<Base64DecodedV1Token>(theString);
                 if (String.IsNullOrEmpty(decodedToken.api_key) || String.IsNullOrEmpty(decodedToken.endpoint))
                 {
-                    throw new InvalidArgumentException("");
+                    throw new InvalidArgumentException("Malformed authentication token");
                 }
                 return new TokenAndEndpoints(
                     decodedToken.api_key!,
                     "control." + decodedToken.endpoint,
-                    "cache." + decodedToken.endpoint
+                    "cache." + decodedToken.endpoint,
+                    "token." + decodedToken.endpoint
                 );
             }
             else
@@ -65,6 +68,7 @@ internal static class AuthUtils
                 return new TokenAndEndpoints(
                     authToken,
                     claims.ControlEndpoint,
+                    claims.CacheEndpoint,
                     claims.CacheEndpoint
                 );
             }

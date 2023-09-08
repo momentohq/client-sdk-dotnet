@@ -90,3 +90,39 @@ public class TopicClientCollection : ICollectionFixture<TopicClientFixture>
 
 }
 #endif
+
+public class AuthClientFixture : IDisposable
+{
+    public IAuthClient Client { get; private set; }
+    public ICredentialProvider AuthProvider { get; private set; }
+
+    public AuthClientFixture()
+    {
+        AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
+        Client = new AuthClient(AuthConfigurations.Default.Latest(LoggerFactory.Create(builder =>
+        {
+            builder.AddSimpleConsole(options =>
+            {
+                options.IncludeScopes = true;
+                options.SingleLine = true;
+                options.TimestampFormat = "hh:mm:ss ";
+            });
+            builder.AddFilter("Grpc.Net.Client", LogLevel.Error);
+            builder.SetMinimumLevel(LogLevel.Information);
+        })), AuthProvider);
+    }
+
+    public void Dispose()
+    {
+        Client.Dispose();
+    }
+}
+
+/// <summary>
+/// Register the fixture in xUnit.
+/// </summary>
+[CollectionDefinition("AuthClient")]
+public class AuthClientCollection : ICollectionFixture<AuthClientFixture>
+{
+
+}

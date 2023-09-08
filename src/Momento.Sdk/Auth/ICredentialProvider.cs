@@ -17,6 +17,10 @@ public interface ICredentialProvider
     /// The host which the Momento client will connect to the Momento data plane
     /// </summary>
     string CacheEndpoint { get; }
+    /// <summary>
+    /// The host which the Momento client will connect to the token endpoint
+    /// </summary>
+    string TokenEndpoint { get; }
 
     /// <summary>
     /// Copy constructor to override the CacheEndpoint

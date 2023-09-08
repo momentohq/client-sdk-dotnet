@@ -17,6 +17,8 @@ public class StringMomentoTokenProvider : ICredentialProvider
     public string ControlEndpoint { get; private set; }
     /// <inheritdoc />
     public string CacheEndpoint { get; private set; }
+    /// <inheritdoc />
+    public string TokenEndpoint { get; private set; }
 
     /// <summary>
     /// Reads and parses a JWT token from a string.
@@ -34,6 +36,7 @@ public class StringMomentoTokenProvider : ICredentialProvider
         var tokenData = AuthUtils.TryDecodeAuthToken(AuthToken);
         ControlEndpoint = tokenData.ControlEndpoint;
         CacheEndpoint = tokenData.CacheEndpoint;
+        TokenEndpoint = tokenData.TokenEndpoint;
         AuthToken = tokenData.AuthToken;
     }
 
