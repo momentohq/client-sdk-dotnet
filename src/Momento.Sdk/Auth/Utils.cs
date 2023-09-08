@@ -69,8 +69,6 @@ internal static class AuthUtils
                     authToken,
                     claims.ControlEndpoint,
                     claims.CacheEndpoint,
-                    // TODO: assuming legacy tokens will never have a token endpoint. AFAIK, they can't be used
-                    //  to generate disposable tokens anyway, but verify and see if this needs to be fixed.
                     claims.CacheEndpoint
                 );
             }
