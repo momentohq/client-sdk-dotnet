@@ -99,7 +99,7 @@ public class AuthClientFixture : IDisposable
     public AuthClientFixture()
     {
         AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
-        Client = new AuthClient(AuthConfigurations.Default.latest(LoggerFactory.Create(builder =>
+        Client = new AuthClient(AuthConfigurations.Default.Latest(LoggerFactory.Create(builder =>
         {
             builder.AddSimpleConsole(options =>
             {
