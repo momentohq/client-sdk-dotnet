@@ -14,9 +14,9 @@ public interface IAuthConfiguration
     public IAuthTransportStrategy TransportStrategy { get; }
 
     /// <summary>
-    /// Creates a new instance of the Configuration object, updated to use the specified transport strategy.
+    /// Creates a new instance of the AuthConfiguration object, updated to use the specified transport strategy.
     /// </summary>
     /// <param name="transportStrategy">This is responsible for configuring network tunables.</param>
-    /// <returns>Configuration object with custom transport strategy provided</returns>
+    /// <returns>AuthConfiguration object with custom transport strategy provided</returns>
     public IAuthConfiguration WithTransportStrategy(IAuthTransportStrategy transportStrategy);
 }

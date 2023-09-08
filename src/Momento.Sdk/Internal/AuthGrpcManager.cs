@@ -81,7 +81,8 @@ public class AuthGrpcManager : IDisposable
 
         var headerTuples = new List<Tuple<string, string>>
         {
-            new(Header.AuthorizationKey, authToken), new(Header.AgentKey, version),
+            new(Header.AuthorizationKey, authToken),
+            new(Header.AgentKey, version),
             new(Header.RuntimeVersionKey, runtimeVersion)
         };
         var headers = headerTuples.Select(tuple => new Header(name: tuple.Item1, value: tuple.Item2)).ToList();

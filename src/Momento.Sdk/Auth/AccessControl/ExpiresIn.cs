@@ -53,8 +53,6 @@ public class ExpiresIn : Expiration
         return new ExpiresIn(validForSeconds * 86400);
     }
 
-    // TODO: not sure yet what I really want to do with ulong vs int in these classes.
-    //  Prolly oughtta standardize on one or support both.
     public static ExpiresIn Epoch(ulong expiresIn)
     {
         ulong now = (ulong)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
