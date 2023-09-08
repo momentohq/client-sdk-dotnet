@@ -5,7 +5,7 @@ using Momento.Sdk.Responses;
 
 namespace Momento.Sdk;
 
-public interface IAuthClient
+public interface IAuthClient : IDisposable
 {
     public Task<GenerateDisposableTokenResponse> GenerateDisposableTokenAsync(DisposableTokenScope scope,
         ExpiresIn expiresIn);

@@ -30,4 +30,10 @@ public class AuthClient : IAuthClient
         }
         return await scsTokenClient.GenerateDisposableToken(scope, expiresIn);
     }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        scsTokenClient.Dispose();
+    }
 }
