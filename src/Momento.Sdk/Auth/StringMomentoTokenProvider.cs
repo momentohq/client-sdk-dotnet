@@ -36,6 +36,7 @@ public class StringMomentoTokenProvider : ICredentialProvider
         var tokenData = AuthUtils.TryDecodeAuthToken(AuthToken);
         ControlEndpoint = tokenData.ControlEndpoint;
         CacheEndpoint = tokenData.CacheEndpoint;
+        TokenEndpoint = tokenData.TokenEndpoint;
         AuthToken = tokenData.AuthToken;
     }
 
