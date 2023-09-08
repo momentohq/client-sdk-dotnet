@@ -201,10 +201,9 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
 
                     _logger.LogTraceTopicSubscriptionError(_cacheName, _topicName, sdkException);
 
+                    await Task.Delay(5_000, cancellationToken);
                     Dispose();
                     _subscription = Subscribe();
-                    
-                    await Task.Delay(5_000, cancellationToken);
                     continue;
                 }
 
