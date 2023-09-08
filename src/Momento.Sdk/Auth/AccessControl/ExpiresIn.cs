@@ -55,11 +55,16 @@ public class ExpiresIn : Expiration
 
     // TODO: not sure yet what I really want to do with ulong vs int in these classes.
     //  Prolly oughtta standardize on one or support both.
-    public static ExpiresIn Epoch(ulong expiresBy)
+    public static ExpiresIn Epoch(ulong expiresIn)
     {
         ulong now = (ulong)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-        return new ExpiresIn((int)(expiresBy - now));
+        return new ExpiresIn((int)(expiresIn - now));
     }
+
+    public static ExpiresIn Epoch(int expiresIn) {
+        return Epoch((ulong)expiresIn);
+    }
+
 }
 
 public class ExpiresAt : Expiration
