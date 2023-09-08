@@ -53,7 +53,7 @@ internal static class AuthUtils
                 var decodedToken = JsonConvert.DeserializeObject<Base64DecodedV1Token>(theString);
                 if (String.IsNullOrEmpty(decodedToken.api_key) || String.IsNullOrEmpty(decodedToken.endpoint))
                 {
-                    throw new InvalidArgumentException("");
+                    throw new InvalidArgumentException("Malformed authentication token");
                 }
                 return new TokenAndEndpoints(
                     decodedToken.api_key!,
