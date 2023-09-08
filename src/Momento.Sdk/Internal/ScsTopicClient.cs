@@ -119,11 +119,11 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
             request.ResumeAtTopicSequenceNumber = resumeAtTopicSequenceNumber.Value;
         }
 
-        AsyncServerStreamingCall<_SubscriptionItem> subscription;
+        SubscriptionWrapper subscriptionWrapper;
         try
         {
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, cacheName, topicName);
-            subscription = grpcManager.Client.subscribe(request, new CallOptions());
+            subscriptionWrapper = new SubscriptionWrapper(grpcManager, cacheName, topicName, _exceptionMapper, _logger);
         }
         catch (Exception e)
         {
@@ -132,72 +132,125 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         }
 
         var response = new TopicSubscribeResponse.Subscription(
-            cancellationToken => GetNextRelevantMessageFromGrpcStreamAsync(subscription, cancellationToken, cacheName, topicName),
-            subscription.Dispose);
+            cancellationToken => subscriptionWrapper.GetNextRelevantMessageFromGrpcStreamAsync(cancellationToken),
+            subscriptionWrapper.Dispose);
         return _logger.LogTraceTopicRequestSuccess(RequestTypeTopicSubscribe, cacheName, topicName,
             response);
     }
 
-    private async ValueTask<TopicMessage?> GetNextRelevantMessageFromGrpcStreamAsync(AsyncServerStreamingCall<_SubscriptionItem> subscription,
-        CancellationToken cancellationToken, string cacheName, string topicName)
+    private class SubscriptionWrapper : IDisposable
     {
-        if (cancellationToken.IsCancellationRequested)
+        private readonly TopicGrpcManager _grpcManager;
+        private readonly string _cacheName;
+        private readonly string _topicName;
+        private readonly CacheExceptionMapper _exceptionMapper;
+        private readonly ILogger _logger;
+
+        private AsyncServerStreamingCall<_SubscriptionItem> _subscription;
+        private ulong? _lastSequenceNumber;
+
+        public SubscriptionWrapper(TopicGrpcManager grpcManager, string cacheName,
+            string topicName, CacheExceptionMapper exceptionMapper, ILogger logger)
         {
-            return null;
+            _grpcManager = grpcManager;
+            _cacheName = cacheName;
+            _topicName = topicName;
+            _exceptionMapper = exceptionMapper;
+            _logger = logger;
+
+            _subscription = Subscribe();
         }
 
-        try
+        private AsyncServerStreamingCall<_SubscriptionItem> Subscribe()
         {
-            while (await subscription.ResponseStream.MoveNext(cancellationToken))
+            var request = new _SubscriptionRequest
             {
-                var message = subscription.ResponseStream.Current;
+                CacheName = _cacheName,
+                Topic = _topicName
+            };
+            if (_lastSequenceNumber != null)
+            {
+                request.ResumeAtTopicSequenceNumber = _lastSequenceNumber.Value;
+            }
+
+            _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, _cacheName, _topicName);
+            return _grpcManager.Client.subscribe(request, new CallOptions());
+        }
+
+        public async ValueTask<TopicMessage?> GetNextRelevantMessageFromGrpcStreamAsync(
+            CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                try
+                {
+                    await _subscription.ResponseStream.MoveNext(cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch (Exception e)
+                {
+                    var sdkException = _exceptionMapper.Convert(e);
+                    if (sdkException.ErrorCode == MomentoErrorCode.CANCELLED_ERROR)
+                    {
+                        break;
+                    }
+                    //TODO: Are there other errors that we should break for?
+
+                    _logger.LogTraceTopicSubscriptionError(_cacheName, _topicName, sdkException);
+
+                    Dispose();
+                    _subscription = Subscribe();
+                    
+                    await Task.Delay(5_000, cancellationToken);
+                    continue;
+                }
+
+                var message = _subscription.ResponseStream.Current;
 
                 switch (message.KindCase)
                 {
                     case _SubscriptionItem.KindOneofCase.Item:
+                        _lastSequenceNumber = message.Item.TopicSequenceNumber;
                         switch (message.Item.Value.KindCase)
                         {
                             case _TopicValue.KindOneofCase.Text:
-                                _logger.LogTraceTopicMessageReceived("text", cacheName, topicName);
+                                _logger.LogTraceTopicMessageReceived("text", _cacheName, _topicName);
                                 return new TopicMessage.Text(message.Item.Value);
                             case _TopicValue.KindOneofCase.Binary:
-                                _logger.LogTraceTopicMessageReceived("binary", cacheName, topicName);
+                                _logger.LogTraceTopicMessageReceived("binary", _cacheName, _topicName);
                                 return new TopicMessage.Binary(message.Item.Value);
                             case _TopicValue.KindOneofCase.None:
                             default:
-                                _logger.LogTraceTopicMessageReceived("unknown", cacheName, topicName);
+                                _logger.LogTraceTopicMessageReceived("unknown", _cacheName, _topicName);
                                 break;
                         }
 
                         break;
                     case _SubscriptionItem.KindOneofCase.Discontinuity:
-                        _logger.LogTraceTopicMessageReceived("discontinuity", cacheName, topicName);
+                        _logger.LogTraceTopicMessageReceived("discontinuity", _cacheName, _topicName);
                         break;
                     case _SubscriptionItem.KindOneofCase.Heartbeat:
-                        _logger.LogTraceTopicMessageReceived("heartbeat", cacheName, topicName);
+                        _logger.LogTraceTopicMessageReceived("heartbeat", _cacheName, _topicName);
                         break;
                     case _SubscriptionItem.KindOneofCase.None:
-                        _logger.LogTraceTopicMessageReceived("none", cacheName, topicName);
+                        _logger.LogTraceTopicMessageReceived("none", _cacheName, _topicName);
                         break;
                     default:
-                        _logger.LogTraceTopicMessageReceived("unknown", cacheName, topicName);
+                        _logger.LogTraceTopicMessageReceived("unknown", _cacheName, _topicName);
                         break;
                 }
             }
-        }
-        catch (OperationCanceledException)
-        {
+
             return null;
         }
-        catch (Exception e)
-        {
-            var sdkException = _exceptionMapper.Convert(e);
-            return sdkException.ErrorCode == MomentoErrorCode.CANCELLED_ERROR
-                ? null
-                : new TopicMessage.Error(sdkException);
-        }
 
-        return null;
+        public void Dispose()
+        {
+            _subscription.Dispose();
+        }
     }
 }
 #endif

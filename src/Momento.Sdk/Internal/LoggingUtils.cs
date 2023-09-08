@@ -450,6 +450,24 @@ namespace Momento.Sdk.Internal
                 logger.LogTrace("Received '{}' message on: cacheName: {}; topicName: {}", messageType, cacheName, topicName);
             }
         }
+        
+        /// <summary>
+        /// Logs a message at TRACE level that indicates that a topic subscription received an error.
+        /// </summary>
+        /// <typeparam name="TError"></typeparam>
+        /// <param name="logger"></param>
+        /// <param name="cacheName"></param>
+        /// <param name="topicName"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public static TError LogTraceTopicSubscriptionError<TError>(this ILogger logger, string cacheName, string topicName, TError error)
+        {
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.LogTrace("An error was received by a subscription: cacheName: {}; topicName: {}; error: {}", cacheName, topicName, error);
+            }
+            return error;
+        }
 #endif
 
         private static string ReadableByteString(ByteString? input)
