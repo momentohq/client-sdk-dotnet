@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Momento.Sdk.Exceptions;
 
 namespace Momento.Sdk.Internal;
 
@@ -98,6 +99,27 @@ public static class Utils
         if (argument <= 0)
         {
             throw new ArgumentOutOfRangeException(paramName, "TimeSpan must be strictly positive.");
+        }
+    }
+
+    /// <summary>
+    /// Throw an exception if the supplied ExpiresIn object is invalid.
+    /// </summary>
+    /// <param name="expiresIn">The value to test.</param>
+    /// <exception cref="InvalidArgumentException"></exception>
+    public static void CheckValidDisposableTokenExpiry(ExpiresIn expiresIn)
+    {
+        if (!expiresIn.DoesExpire())
+        {
+            throw new InvalidArgumentException("Disposable tokens must have an expiry");
+        }
+        else if (expiresIn.Seconds() < 0)
+        {
+            throw new InvalidArgumentException("Disposable token expiry must be positive");
+        }
+        else if (expiresIn.Seconds() > 60 * 60)
+        {
+            throw new InvalidArgumentException("Disposable token must expire within 1 hour");
         }
     }
 

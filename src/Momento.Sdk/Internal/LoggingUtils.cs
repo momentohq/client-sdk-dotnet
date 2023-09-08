@@ -452,6 +452,55 @@ namespace Momento.Sdk.Internal
         }
 #endif
 
+        /// <summary>
+        /// Logs a message at TRACE level that indicates that an auth request is about to be executed.
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="requestType"></param>
+        public static void LogTraceExecutingAuthRequest(this ILogger logger, string requestType)
+        {
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.LogTrace("Executing '{}' request", requestType);
+            }
+        }
+
+        /// <summary>
+        /// Logs a message at TRACE level that indicates that a topic request resulted in an error.
+        /// </summary>
+        /// <typeparam name="TError"></typeparam>
+        /// <param name="logger"></param>
+        /// <param name="requestType"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public static TError LogTraceAuthRequestError<TError>(this ILogger logger, string requestType, TError error)
+        {
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.LogTrace("An error occurred while executing a '{}' request: error: {}", requestType, error);
+            }
+            return error;
+        }
+
+        /// <summary>
+        /// /// Logs a message at TRACE level that indicates that a topic request resulted in a success.
+        /// </summary>
+        /// <typeparam name="TSuccess"></typeparam>
+        /// <param name="logger"></param>
+        /// <param name="requestType"></param>
+        /// <param name="success"></param>
+        /// <returns></returns>
+        public static TSuccess LogTraceAuthRequestSuccess<TSuccess>(this ILogger logger, string requestType, TSuccess success)
+        {
+
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.LogTrace("Successfully executed '{}' request: success: {}", requestType, success);
+            }
+            return success;
+        }
+
+
         private static string ReadableByteString(ByteString? input)
         {
             if (input == null)
