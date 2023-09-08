@@ -450,6 +450,40 @@ namespace Momento.Sdk.Internal
                 logger.LogTrace("Received '{}' message on: cacheName: {}; topicName: {}", messageType, cacheName, topicName);
             }
         }
+        
+        /// <summary>
+        /// Logs a message at TRACE level that indicates that a discontinuity was received.
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="cacheName"></param>
+        /// <param name="topicName"></param>
+        /// <param name="lastSequenceNumber"></param>
+        /// <param name="newSequenceNumber"></param>
+        public static void LogTraceTopicDiscontinuityReceived(this ILogger logger, string cacheName, string topicName, ulong lastSequenceNumber, ulong newSequenceNumber)
+        {
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.LogTrace("Received discontinuity: cacheName: {}; topicName: {}, lastSequenceNumber: {}, newSequenceNumber: {}", cacheName, topicName, lastSequenceNumber, newSequenceNumber);
+            }
+        }
+        
+        /// <summary>
+        /// Logs a message at TRACE level that indicates that a topic subscription received an error.
+        /// </summary>
+        /// <typeparam name="TError"></typeparam>
+        /// <param name="logger"></param>
+        /// <param name="cacheName"></param>
+        /// <param name="topicName"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public static TError LogTraceTopicSubscriptionError<TError>(this ILogger logger, string cacheName, string topicName, TError error)
+        {
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.LogTrace("An error was received by a subscription: cacheName: {}; topicName: {}; error: {}", cacheName, topicName, error);
+            }
+            return error;
+        }
 #endif
 
         /// <summary>
