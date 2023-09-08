@@ -21,6 +21,25 @@ public class AuthConfigurations
         }
 
         /// <summary>
+        /// Provides version 1 of the recommended default configuration.
+        /// </summary>
+        /// <remark>
+        /// This configuration is guaranteed not to change in future
+        /// releases of the Momento .NET SDK.
+        /// </remark>
+        /// <param name="loggerFactory"></param>
+        /// <returns></returns>
+        public static IAuthConfiguration V1(ILoggerFactory? loggerFactory = null)
+        {
+            var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
+            IAuthTransportStrategy transportStrategy = new StaticAuthTransportStrategy(
+                loggerFactory: finalLoggerFactory,
+                grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(15000))
+            );
+            return new Default(finalLoggerFactory, transportStrategy);
+        }
+
+        /// <summary>
         /// Provides the latest recommended default configuration.
         /// </summary>
         /// <remark>
@@ -29,14 +48,9 @@ public class AuthConfigurations
         /// </remark>
         /// <param name="loggerFactory"></param>
         /// <returns></returns>
-        public static IAuthConfiguration latest(ILoggerFactory? loggerFactory = null)
+        public static IAuthConfiguration Latest(ILoggerFactory? loggerFactory = null)
         {
-            var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
-            IAuthTransportStrategy transportStrategy = new StaticAuthTransportStrategy(
-                loggerFactory: finalLoggerFactory,
-                grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(15000))
-            );
-            return new Default(finalLoggerFactory, transportStrategy);
+            return V1(loggerFactory);
         }
     }
 }
