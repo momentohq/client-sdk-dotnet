@@ -50,10 +50,10 @@ public abstract class GenerateDisposableTokenResponse
         /// <param name="response"></param>
         public Success(_GenerateDisposableTokenResponse response)
         {
-            // TODO: make sure this works (keys are right, etc.)
-            AuthToken = Newtonsoft.Json.JsonConvert.SerializeObject(new {endpoint=response.Endpoint, api_key=response.ApiKey});
+            var jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(new {endpoint=response.Endpoint, api_key=response.ApiKey});
+            var jsonBytes = System.Text.Encoding.UTF8.GetBytes(jsonString);
+            AuthToken = System.Convert.ToBase64String(jsonBytes);
             Endpoint = response.Endpoint;
-            // TODO: not quite sure about this cast. I may have the method support ulong instead (or in addition).
             ExpiresAt = ExpiresAt.FromEpoch((int)response.ValidUntil);
         }
     }
