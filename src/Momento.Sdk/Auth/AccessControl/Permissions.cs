@@ -1,8 +1,4 @@
-using System.Text;
-
 namespace Momento.Sdk.Auth.AccessControl;
-
-
 
 public enum CacheRole
 {

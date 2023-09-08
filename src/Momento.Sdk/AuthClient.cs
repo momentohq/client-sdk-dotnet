@@ -1,7 +1,9 @@
+using System;
 using System.Threading.Tasks;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Auth.AccessControl;
 using Momento.Sdk.Config;
+using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal;
 using Momento.Sdk.Responses;
 
@@ -17,8 +19,15 @@ public class AuthClient : IAuthClient
         scsTokenClient = new ScsTokenClient(config, authProvider.AuthToken, authProvider.TokenEndpoint);
     }
 
-    public Task<GenerateDisposableTokenResponse> GenerateDisposableTokenAsync(DisposableTokenScope scope, ExpiresIn expiresIn)
+    public async Task<GenerateDisposableTokenResponse> GenerateDisposableTokenAsync(DisposableTokenScope scope, ExpiresIn expiresIn)
     {
-        throw new System.NotImplementedException();
+        try {
+            Utils.CheckValidDisposableTokenExpiry(expiresIn);
+        }
+        catch (Exception e)
+        {
+            return new GenerateDisposableTokenResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        return await scsTokenClient.GenerateDisposableToken(scope, expiresIn);
     }
 }

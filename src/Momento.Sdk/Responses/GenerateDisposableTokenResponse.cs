@@ -1,6 +1,6 @@
-using Momento.Sdk.Auth.AccessControl;
 using Momento.Sdk.Exceptions;
 using Momento.Protos.TokenClient;
+using System;
 
 namespace Momento.Sdk.Responses;
 
@@ -17,7 +17,9 @@ namespace Momento.Sdk.Responses;
 /// <code>
 /// if (response is GenerateDisposableTokenResponse.Success successResponse)
 /// {
-///     // handle success if needed
+///     var authToken = successResponse.AuthToken;
+///     var endpoint = successResponse.Endpoint;
+///     var expiryEpochTime = successResponse.ExpiresAt.Epoch();
 /// }
 /// else if (response is GenerateDisposableTokenResponse.Error errorResponse)
 /// {
@@ -33,17 +35,26 @@ public abstract class GenerateDisposableTokenResponse
 {
     /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
     public class Success : GenerateDisposableTokenResponse {
-        public readonly string authToken;
-        public readonly string endpoint;
-        public readonly ExpiresAt expiresAt;
+        public readonly string AuthToken;
+        public readonly string Endpoint;
+        public readonly ExpiresAt ExpiresAt;
 
+        /// <summary>
+        /// Indicates a disposable token has been generated and exposes the attributes of the token:
+        /// <list type="bullet">
+        /// <item><description>AuthToken</description></item>
+        /// <item><description>Endpoint</description></item>
+        /// <item><description>ExpiresAt</description> (use its `Epoch()` method to retrieve the expiry timestamp as Unix epoch) </item>
+        /// </list>
+        /// </summary>
+        /// <param name="response"></param>
         public Success(_GenerateDisposableTokenResponse response)
         {
             // TODO: make sure this works (keys are right, etc.)
-            authToken = Newtonsoft.Json.JsonConvert.SerializeObject(new {endpoint=response.Endpoint, api_key=response.ApiKey});
-            endpoint = response.Endpoint;
+            AuthToken = Newtonsoft.Json.JsonConvert.SerializeObject(new {endpoint=response.Endpoint, api_key=response.ApiKey});
+            Endpoint = response.Endpoint;
             // TODO: not quite sure about this cast. I may have the method support ulong instead (or in addition).
-            expiresAt = ExpiresAt.FromEpoch((int)response.ValidUntil);
+            ExpiresAt = ExpiresAt.FromEpoch((int)response.ValidUntil);
         }
     }
 
