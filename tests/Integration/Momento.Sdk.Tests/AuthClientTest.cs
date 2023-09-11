@@ -1,3 +1,4 @@
+#if !BUILD_FOR_UNITY
 using System.Threading.Tasks;
 using Momento.Sdk.Auth.AccessControl;
 
@@ -23,3 +24,4 @@ public class AuthClientTest : IClassFixture<AuthClientFixture>
     }
 
 }
+#endif

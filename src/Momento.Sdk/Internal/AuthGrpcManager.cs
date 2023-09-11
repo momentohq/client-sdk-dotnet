@@ -1,3 +1,4 @@
+#if !BUILD_FOR_UNITY
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -103,3 +104,4 @@ public class AuthGrpcManager : IDisposable
         GC.SuppressFinalize(this);
     }
 }
+#endif
