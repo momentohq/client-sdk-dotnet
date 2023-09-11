@@ -1,5 +1,6 @@
 ﻿using Momento.Sdk;
 using Momento.Sdk.Auth;
+using Momento.Sdk.Auth.AccessControl;
 using Momento.Sdk.Config;
 using Momento.Sdk.Responses;
 
@@ -12,6 +13,10 @@ public class Program
         var client = new CacheClient(config,
             new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN"),
             TimeSpan.FromSeconds(10));
+        IAuthClient authClient = new AuthClient(
+            AuthConfigurations.Default.Latest(), 
+            new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN")
+        );
 
         await Example_API_CreateCache(client);
         await Example_API_FlushCache(client);
@@ -22,6 +27,8 @@ public class Program
         await Example_API_Set(client);
         await Example_API_Get(client);
         await Example_API_Delete(client);
+
+        await Example_API_GenerateDisposableToken(authClient);
     }
 
     public static async Task Example_API_CreateCache(CacheClient cacheClient)
@@ -120,6 +127,42 @@ public class Program
         else if (result is CacheDeleteResponse.Error error)
         {
             throw new Exception($"An error occurred while attempting to delete key 'test-key' from cache 'test-cache': {error.ErrorCode}: {error}");
+        }
+    }
+
+    public static async Task Example_API_GenerateDisposableToken(IAuthClient authClient)
+    {
+        var scope = new DisposableTokenScope(Permissions: new List<DisposableTokenPermission>
+        {
+            new DisposableToken.CacheItemPermission(
+                CacheRole.ReadWrite,
+                CacheSelector.ByName("cache"),
+                CacheItemSelector.AllCacheItems
+            ),
+            new DisposableToken.CachePermission(
+                CacheRole.ReadOnly,
+                CacheSelector.ByName("topsecret")
+            ),
+            new DisposableToken.TopicPermission(
+                TopicRole.PublishSubscribe,
+                CacheSelector.ByName("cache"),
+                TopicSelector.ByName("example-topic")
+            )
+        });
+        var tokenResponse = await authClient.GenerateDisposableTokenAsync(
+            scope,
+            ExpiresIn.Minutes(5)
+        );
+
+        if (tokenResponse is GenerateDisposableTokenResponse.Success token)
+        {
+            Console.WriteLine("The generated disposable token is: " + token.AuthToken);
+            Console.WriteLine("The token endpoint is: " + token.Endpoint);
+            Console.WriteLine("The token expires at (epoch timestamp): " + token.ExpiresAt.Epoch());
+        }
+        else if (tokenResponse is GenerateDisposableTokenResponse.Error err)
+        {
+            Console.WriteLine("Error generating disposable token: " + err.Message);
         }
     }
 }
