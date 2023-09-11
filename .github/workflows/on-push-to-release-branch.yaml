@@ -65,7 +65,7 @@ jobs:
             rm -rf bin
             VERSION="${{ needs.release.outputs.version }}"
             echo "version: ${VERSION}"
-            dotnet build --configuration Release -f netstandard2.0 -p:DefineConstants=USE_GRPC_WEB;BUILD_FOR_UNITY
+            dotnet build --configuration Release -f netstandard2.0 -p:DefineConstants='USE_GRPC_WEB;BUILD_FOR_UNITY'
             DLL_FILE=./bin/Release/netstandard2.0/Momento.Sdk.dll
             ARCHIVE_FILE_NAME=Momento.Sdk.Unity.${VERSION}.dll
             AUTH="Authorization: token ${{ secrets.MOMENTO_MACHINE_USER_GITHUB_TOKEN }}"
