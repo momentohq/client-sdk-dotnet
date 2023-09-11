@@ -1,3 +1,4 @@
+#if !BUILD_FOR_UNITY
 using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -54,3 +55,4 @@ public class AuthConfigurations
         }
     }
 }
+#endif

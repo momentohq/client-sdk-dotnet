@@ -1,3 +1,4 @@
+#if !BUILD_FOR_UNITY
 namespace Momento.Sdk.Auth.AccessControl;
 
 public abstract record DisposableTokenPermission;
@@ -18,3 +19,4 @@ public abstract record DisposableToken
 
     public record TopicPermission(TopicRole Role, CacheSelector CacheSelector, TopicSelector TopicSelector) : DisposableTokenPermission;
 }
+#endif

@@ -1,3 +1,4 @@
+#if !BUILD_FOR_UNITY
 namespace Momento.Sdk.Auth.AccessControl;
 
 public enum CacheRole
@@ -65,3 +66,4 @@ public abstract record TopicSelector
         return new SelectByTopicName(topicName);
     }
 }
+#endif

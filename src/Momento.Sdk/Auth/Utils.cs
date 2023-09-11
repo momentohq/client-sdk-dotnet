@@ -10,14 +10,19 @@ internal class TokenAndEndpoints
     public string AuthToken { get; }
     public string ControlEndpoint { get; }
     public string CacheEndpoint { get; }
+
+    #if !BUILD_FOR_UNITY
     public string TokenEndpoint { get; }
+    #endif
 
     public TokenAndEndpoints(string authToken, string controlEndpoint, string cacheEndpoint, string tokenEndpoint)
     {
         AuthToken = authToken;
         ControlEndpoint = controlEndpoint;
         CacheEndpoint = cacheEndpoint;
+        #if !BUILD_FOR_UNITY
         TokenEndpoint = tokenEndpoint;
+        #endif
     }
 }
 
@@ -59,7 +64,9 @@ internal static class AuthUtils
                     decodedToken.api_key!,
                     "control." + decodedToken.endpoint,
                     "cache." + decodedToken.endpoint,
+                    #if !BUILD_FOR_UNITY
                     "token." + decodedToken.endpoint
+                    #endif
                 );
             }
             else
@@ -69,7 +76,9 @@ internal static class AuthUtils
                     authToken,
                     claims.ControlEndpoint,
                     claims.CacheEndpoint,
+                    #if !BUILD_FOR_UNITY
                     claims.CacheEndpoint
+                    #endif
                 );
             }
         }
