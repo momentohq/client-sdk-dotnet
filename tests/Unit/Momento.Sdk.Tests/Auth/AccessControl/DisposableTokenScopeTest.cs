@@ -1,3 +1,4 @@
+#if !BUILD_FOR_UNITY
 using System.Collections.Generic;
 using FluentAssertions;
 using Momento.Sdk.Auth.AccessControl;
@@ -407,3 +408,4 @@ public class DisposableTokenScopeTest
         }));
     }
 }
+#endif

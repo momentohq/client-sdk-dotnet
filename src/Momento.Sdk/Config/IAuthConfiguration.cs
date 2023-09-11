@@ -1,3 +1,4 @@
+#if !BUILD_FOR_UNITY
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config.Transport;
 
@@ -20,3 +21,4 @@ public interface IAuthConfiguration
     /// <returns>AuthConfiguration object with custom transport strategy provided</returns>
     public IAuthConfiguration WithTransportStrategy(IAuthTransportStrategy transportStrategy);
 }
+#endif

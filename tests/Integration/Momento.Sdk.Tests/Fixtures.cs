@@ -91,6 +91,7 @@ public class TopicClientCollection : ICollectionFixture<TopicClientFixture>
 }
 #endif
 
+#if !BUILD_FOR_UNITY
 public class AuthClientFixture : IDisposable
 {
     public IAuthClient Client { get; private set; }
@@ -117,6 +118,7 @@ public class AuthClientFixture : IDisposable
         Client.Dispose();
     }
 }
+#endif
 
 /// <summary>
 /// Register the fixture in xUnit.
