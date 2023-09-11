@@ -99,20 +99,6 @@ public class TopicConfigurations
             /// <returns></returns>
             public static ITopicConfiguration Latest(ILoggerFactory? loggerFactory = null)
             {
-                return V1(loggerFactory);
-            }
-
-            /// <summary>
-            /// Provides the version 1 configuration for an InRegion environment.
-            /// </summary>
-            /// <remark>
-            /// This configuration is guaranteed not to change in future
-            /// releases of the Momento .NET SDK.
-            /// </remark>
-            /// <param name="loggerFactory"></param>
-            /// <returns></returns>
-            public static ITopicConfiguration V1(ILoggerFactory? loggerFactory = null)
-            {
                 var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
                 ITopicTransportStrategy transportStrategy = new StaticTopicTransportStrategy(
                     loggerFactory: finalLoggerFactory,
@@ -146,21 +132,6 @@ public class TopicConfigurations
             /// <returns></returns>
             public static ITopicConfiguration Latest(ILoggerFactory? loggerFactory = null)
             {
-                return V1(loggerFactory);
-            }
-
-            /// <summary>
-            /// Provides the latest recommended configuration for a low-latency in-region
-            /// environment.
-            /// </summary>
-            /// <remark>
-            /// This configuration is guaranteed not to change in future
-            /// releases of the Momento .NET SDK.
-            /// </remark>
-            /// <param name="loggerFactory"></param>
-            /// <returns></returns>
-            public static ITopicConfiguration V1(ILoggerFactory? loggerFactory = null)
-            {
                 var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
                 ITopicTransportStrategy transportStrategy = new StaticTopicTransportStrategy(
                     loggerFactory: finalLoggerFactory,
@@ -168,7 +139,6 @@ public class TopicConfigurations
                 );
                 return new LowLatency(finalLoggerFactory, transportStrategy);
             }
-
         }
     }
 }
