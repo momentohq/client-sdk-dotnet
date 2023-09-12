@@ -17,6 +17,10 @@ public class Program
             AuthConfigurations.Default.Latest(), 
             new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN")
         );
+        ITopicClient topicClient = new TopicClient(
+            TopicConfigurations.Laptop.latest(), 
+            new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN")
+        );
 
         await Example_API_CreateCache(client);
         await Example_API_FlushCache(client);
@@ -29,6 +33,10 @@ public class Program
         await Example_API_Delete(client);
 
         await Example_API_GenerateDisposableToken(authClient);
+
+        await Example_API_InstantiateTopicClient();
+        await Example_API_TopicSubscribe(topicClient);
+        await Example_API_TopicPublish(topicClient);
     }
 
     public static async Task Example_API_CreateCache(CacheClient cacheClient)
@@ -163,6 +171,67 @@ public class Program
         else if (tokenResponse is GenerateDisposableTokenResponse.Error err)
         {
             Console.WriteLine("Error generating disposable token: " + err.Message);
+        }
+    }
+
+    public static async Task Example_API_InstantiateTopicClient()
+    {
+        new TopicClient(
+            TopicConfigurations.Laptop.latest(), 
+            new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN")
+        );
+    }
+    public static async Task Example_API_TopicPublish(ITopicClient topicClient)
+    {
+       var publishResponse =
+            await topicClient.PublishAsync("test-cache", "test-topic", "test-topic-value");
+        switch (publishResponse)
+        {
+            case TopicPublishResponse.Success:
+                Console.WriteLine("Successfully published message to 'test-topic'");
+                break;
+            case TopicPublishResponse.Error error:
+                throw new Exception($"An error occurred while publishing topic message: {error.ErrorCode}: {error}");
+                break;
+        }
+    }
+    public static async Task Example_API_TopicSubscribe(ITopicClient topicClient)
+    {
+        var produceCancellation = new CancellationTokenSource();
+        produceCancellation.CancelAfter(2000);
+
+        var subscribeResponse = await topicClient.SubscribeAsync("test-cache", "test-topic");
+        switch (subscribeResponse)
+        {
+            case TopicSubscribeResponse.Subscription subscription:
+                var cancellableSubscription = subscription.WithCancellation(produceCancellation.Token);
+
+                await Task.Delay(1_000);
+                await topicClient.PublishAsync("test-cache", "test-topic", "test-topic-value");
+                await Task.Delay(1_000);
+
+                await foreach (var message in cancellableSubscription)
+                {
+                    switch (message)
+                    {
+                        case TopicMessage.Binary:
+                            Console.WriteLine("Received unexpected binary message from topic.");
+                            break;
+                        case TopicMessage.Text text:
+                            Console.WriteLine($"Received string message from topic: {text.Value}");
+                            break;
+                        case TopicMessage.Error error:
+                            throw new Exception($"An error occurred while receiving topic message: {error.ErrorCode}: {error}");
+                            break;
+                        default:
+                            throw new Exception("Bad message received");
+                    }
+                }
+                subscription.Dispose();
+                break;
+            case TopicSubscribeResponse.Error error:
+                throw new Exception($"An error occurred subscribing to a topic: {error.ErrorCode}: {error}");
+                break;
         }
     }
 }
