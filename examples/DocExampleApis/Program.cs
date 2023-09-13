@@ -145,9 +145,9 @@ public class Program
             DisposableTokenScopes.CacheKeyReadWrite("squirrels", "mo"),
             ExpiresIn.Minutes(30)
         );
+
         if (oneKeyOneCacheToken is GenerateDisposableTokenResponse.Success token1)
         {
-            
             // logging only a substring of the tokens, because logging security credentials is not advisable :)
             Console.WriteLine("The generated disposable token starts with: " + token1.AuthToken.Substring(0, 10));
             Console.WriteLine("The token expires at (epoch timestamp): " + token1.ExpiresAt.Epoch());
@@ -162,6 +162,7 @@ public class Program
             DisposableTokenScopes.CacheKeyPrefixReadWrite(CacheSelector.AllCaches, "squirrel"),
             ExpiresIn.Minutes(30)
         );
+
         if (keyPrefixAllCachesToken is GenerateDisposableTokenResponse.Success token2)
         {
             // logging only a substring of the tokens, because logging security credentials is not advisable :)
@@ -178,6 +179,7 @@ public class Program
             DisposableTokenScopes.TopicSubscribeOnly(CacheSelector.ByName("squirrel"), TopicSelector.AllTopics),
             ExpiresIn.Minutes(30)
         );
+
         if (allTopicsOneCacheToken is GenerateDisposableTokenResponse.Success token3)
         {
             // logging only a substring of the tokens, because logging security credentials is not advisable :)
@@ -194,6 +196,7 @@ public class Program
             DisposableTokenScopes.TopicPublishOnly(CacheSelector.AllCaches, "acorn"),
             ExpiresIn.Minutes(30)
         );
+        
         if (oneTopicAllCachesToken is GenerateDisposableTokenResponse.Success token4)
         {
             // logging only a substring of the tokens, because logging security credentials is not advisable :)
@@ -225,7 +228,6 @@ public class Program
                 break;
             case TopicPublishResponse.Error error:
                 throw new Exception($"An error occurred while publishing topic message: {error.ErrorCode}: {error}");
-                break;
         }
     }
     public static async Task Example_API_TopicSubscribe(ITopicClient topicClient)
@@ -255,7 +257,6 @@ public class Program
                             break;
                         case TopicMessage.Error error:
                             throw new Exception($"An error occurred while receiving topic message: {error.ErrorCode}: {error}");
-                            break;
                         default:
                             throw new Exception("Bad message received");
                     }
@@ -264,7 +265,6 @@ public class Program
                 break;
             case TopicSubscribeResponse.Error error:
                 throw new Exception($"An error occurred subscribing to a topic: {error.ErrorCode}: {error}");
-                break;
         }
     }
 }
