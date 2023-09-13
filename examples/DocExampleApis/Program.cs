@@ -140,38 +140,71 @@ public class Program
 
     public static async Task Example_API_GenerateDisposableToken(IAuthClient authClient)
     {
-        var scope = new DisposableTokenScope(Permissions: new List<DisposableTokenPermission>
-        {
-            new DisposableToken.CacheItemPermission(
-                CacheRole.ReadWrite,
-                CacheSelector.ByName("cache"),
-                CacheItemSelector.AllCacheItems
-            ),
-            new DisposableToken.CachePermission(
-                CacheRole.ReadOnly,
-                CacheSelector.ByName("topsecret")
-            ),
-            new DisposableToken.TopicPermission(
-                TopicRole.PublishSubscribe,
-                CacheSelector.ByName("cache"),
-                TopicSelector.ByName("example-topic")
-            )
-        });
-        var tokenResponse = await authClient.GenerateDisposableTokenAsync(
-            scope,
-            ExpiresIn.Minutes(5)
+        // Generate a disposable token with read-write access to a specific key in one cache
+        var oneKeyOneCacheToken = await authClient.GenerateDisposableTokenAsync(
+            DisposableTokenScopes.CacheKeyReadWrite("squirrels", "mo"),
+            ExpiresIn.Minutes(30)
         );
-
-        if (tokenResponse is GenerateDisposableTokenResponse.Success token)
+        if (oneKeyOneCacheToken is GenerateDisposableTokenResponse.Success token1)
         {
-            Console.WriteLine("The generated disposable token is: " + token.AuthToken);
-            Console.WriteLine("The token endpoint is: " + token.Endpoint);
-            Console.WriteLine("The token expires at (epoch timestamp): " + token.ExpiresAt.Epoch());
+            
+            // logging only a substring of the tokens, because logging security credentials is not advisable :)
+            Console.WriteLine("The generated disposable token starts with: " + token1.AuthToken.Substring(0, 10));
+            Console.WriteLine("The token expires at (epoch timestamp): " + token1.ExpiresAt.Epoch());
         }
-        else if (tokenResponse is GenerateDisposableTokenResponse.Error err)
+        else if (oneKeyOneCacheToken is GenerateDisposableTokenResponse.Error err)
         {
             Console.WriteLine("Error generating disposable token: " + err.Message);
         }
+
+        // Generate a disposable token with read-write access to a specific key prefix in all caches
+        var keyPrefixAllCachesToken = await authClient.GenerateDisposableTokenAsync(
+            DisposableTokenScopes.CacheKeyPrefixReadWrite(CacheSelector.AllCaches, "squirrel"),
+            ExpiresIn.Minutes(30)
+        );
+        if (keyPrefixAllCachesToken is GenerateDisposableTokenResponse.Success token2)
+        {
+            // logging only a substring of the tokens, because logging security credentials is not advisable :)
+            Console.WriteLine("The generated disposable token starts with: " + token2.AuthToken.Substring(0, 10));
+            Console.WriteLine("The token expires at (epoch timestamp): " + token2.ExpiresAt.Epoch());
+        }
+        else if (keyPrefixAllCachesToken is GenerateDisposableTokenResponse.Error err)
+        {
+            Console.WriteLine("Error generating disposable token: " + err.Message);
+        }
+
+        // Generate a disposable token with read-only access to all topics in one cache
+        var allTopicsOneCacheToken = await authClient.GenerateDisposableTokenAsync(
+            DisposableTokenScopes.TopicSubscribeOnly(CacheSelector.ByName("squirrel"), TopicSelector.AllTopics),
+            ExpiresIn.Minutes(30)
+        );
+        if (allTopicsOneCacheToken is GenerateDisposableTokenResponse.Success token3)
+        {
+            // logging only a substring of the tokens, because logging security credentials is not advisable :)
+            Console.WriteLine("The generated disposable token starts with: " + token3.AuthToken.Substring(0, 10));
+            Console.WriteLine("The token expires at (epoch timestamp): " + token3.ExpiresAt.Epoch());
+        }
+        else if (allTopicsOneCacheToken is GenerateDisposableTokenResponse.Error err)
+        {
+            Console.WriteLine("Error generating disposable token: " + err.Message);
+        }
+
+        // Generate a disposable token with write-only access to a single topic in all caches
+        var oneTopicAllCachesToken = await authClient.GenerateDisposableTokenAsync(
+            DisposableTokenScopes.TopicPublishOnly(CacheSelector.AllCaches, "acorn"),
+            ExpiresIn.Minutes(30)
+        );
+        if (oneTopicAllCachesToken is GenerateDisposableTokenResponse.Success token4)
+        {
+            // logging only a substring of the tokens, because logging security credentials is not advisable :)
+            Console.WriteLine("The generated disposable token starts with: " + token4.AuthToken.Substring(0, 10));
+            Console.WriteLine("The token expires at (epoch timestamp): " + token4.ExpiresAt.Epoch());
+        }
+        else if (oneTopicAllCachesToken is GenerateDisposableTokenResponse.Error err)
+        {
+            Console.WriteLine("Error generating disposable token: " + err.Message);
+        }
+
     }
 
     public static async Task Example_API_InstantiateTopicClient()
