@@ -202,6 +202,11 @@ public record DisposableTokenScopes(List<DisposableTokenPermission> Permissions)
         return TopicPublishSubscribe(cacheSelector, TopicSelector.ByName(topicName));
     }
 
+    public static DisposableTokenScope TopicPublishSubscribe(string cacheName, TopicSelector topicSelector)
+    {
+        return TopicPublishSubscribe(CacheSelector.ByName(cacheName), topicSelector);
+    }
+
     public static DisposableTokenScope TopicPublishSubscribe(CacheSelector cacheSelector, TopicSelector topicSelector)
     {
         return new DisposableTokenScope(Permissions: new List<DisposableTokenPermission>
@@ -225,6 +230,11 @@ public record DisposableTokenScopes(List<DisposableTokenPermission> Permissions)
         return TopicSubscribeOnly(cacheSelector, TopicSelector.ByName(topicName));
     }
 
+    public static DisposableTokenScope TopicSubscribeOnly(string cacheName, TopicSelector topicSelector)
+    {
+        return TopicSubscribeOnly(CacheSelector.ByName(cacheName), topicSelector);
+    }
+
     public static DisposableTokenScope TopicSubscribeOnly(CacheSelector cacheSelector, TopicSelector topicSelector)
     {
         return new DisposableTokenScope(Permissions: new List<DisposableTokenPermission>
@@ -245,6 +255,11 @@ public record DisposableTokenScopes(List<DisposableTokenPermission> Permissions)
     public static DisposableTokenScope TopicPublishOnly(CacheSelector cacheSelector, string topicName)
     {
         return TopicPublishOnly(cacheSelector, TopicSelector.ByName(topicName));
+    }
+
+    public static DisposableTokenScope TopicPublishOnly(string cacheName, TopicSelector topicSelector)
+    {
+        return TopicPublishOnly(CacheSelector.ByName(cacheName), topicSelector);
     }
 
     public static DisposableTokenScope TopicPublishOnly(CacheSelector cacheSelector, TopicSelector topicSelector)
