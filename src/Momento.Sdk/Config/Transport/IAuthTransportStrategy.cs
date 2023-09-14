@@ -1,4 +1,3 @@
-#if !BUILD_FOR_UNITY
 using System;
 
 namespace Momento.Sdk.Config.Transport;
@@ -28,4 +27,3 @@ public interface IAuthTransportStrategy
     /// <returns>A new IAuthTransportStrategy with the specified client timeout</returns>
     public IAuthTransportStrategy WithClientTimeout(TimeSpan clientTimeout);
 }
-#endif

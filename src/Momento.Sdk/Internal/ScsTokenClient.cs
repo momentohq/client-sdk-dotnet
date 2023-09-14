@@ -1,4 +1,3 @@
-#if !BUILD_FOR_UNITY
 using System;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -236,4 +235,3 @@ internal sealed class ScsTokenClient : IDisposable
     }
 
 }
-#endif
