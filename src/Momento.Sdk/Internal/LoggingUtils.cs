@@ -486,7 +486,6 @@ namespace Momento.Sdk.Internal
         }
 #endif
 
-#if !BUILD_FOR_UNITY
         /// <summary>
         /// Logs a message at TRACE level that indicates that an auth request is about to be executed.
         /// </summary>
@@ -534,7 +533,6 @@ namespace Momento.Sdk.Internal
             }
             return success;
         }
-#endif
 
         private static string ReadableByteString(ByteString? input)
         {

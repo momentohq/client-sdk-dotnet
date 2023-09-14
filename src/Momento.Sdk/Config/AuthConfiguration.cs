@@ -1,4 +1,3 @@
-#if !BUILD_FOR_UNITY
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config.Transport;
 
@@ -50,4 +49,3 @@ public class AuthConfiguration : IAuthConfiguration
     }
 
 }
-#endif

@@ -1,4 +1,3 @@
-#if !BUILD_FOR_UNITY
 using System;
 using System.Threading.Tasks;
 using Momento.Sdk.Auth;
@@ -38,4 +37,3 @@ public class AuthClient : IAuthClient
         scsTokenClient.Dispose();
     }
 }
-#endif

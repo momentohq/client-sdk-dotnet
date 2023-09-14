@@ -1,4 +1,4 @@
-#if !NET5_0_OR_GREATER || !BUILD_FOR_UNITY
+#if !NET5_0_OR_GREATER
 
 using System.ComponentModel;
 

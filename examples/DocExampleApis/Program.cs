@@ -176,7 +176,7 @@ public class Program
 
         // Generate a disposable token with read-only access to all topics in one cache
         var allTopicsOneCacheToken = await authClient.GenerateDisposableTokenAsync(
-            DisposableTokenScopes.TopicSubscribeOnly(CacheSelector.ByName("squirrel"), TopicSelector.AllTopics),
+            DisposableTokenScopes.TopicSubscribeOnly("squirrel", TopicSelector.AllTopics),
             ExpiresIn.Minutes(30)
         );
 
