@@ -56,6 +56,11 @@ public abstract class GenerateDisposableTokenResponse
             Endpoint = response.Endpoint;
             ExpiresAt = ExpiresAt.FromEpoch((int)response.ValidUntil);
         }
+
+        public override string ToString()
+        {
+            return $"{AuthToken.Substring(0, 10)}...{AuthToken.Substring((AuthToken.Length - 10), 10)}";
+        }
     }
 
     /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />

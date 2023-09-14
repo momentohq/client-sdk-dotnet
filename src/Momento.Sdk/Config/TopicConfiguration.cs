@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config.Transport;
 
@@ -27,6 +28,15 @@ public class TopicConfiguration : ITopicConfiguration
     public ITopicConfiguration WithTransportStrategy(ITopicTransportStrategy transportStrategy)
     {
         return new TopicConfiguration(LoggerFactory, transportStrategy);
+    }
+
+    /// <inheritdoc/>
+    public ITopicConfiguration WithClientTimeout(TimeSpan clientTimeout)
+    {
+        return new TopicConfiguration(
+            loggerFactory: LoggerFactory,
+            transportStrategy: TransportStrategy.WithClientTimeout(clientTimeout)
+        );
     }
 
     /// <inheritdoc />
