@@ -1,4 +1,3 @@
-#if !BUILD_FOR_UNITY
 using Momento.Sdk.Exceptions;
 using Momento.Protos.TokenClient;
 using System;
@@ -95,4 +94,3 @@ public abstract class GenerateDisposableTokenResponse
         }
     }
 }
-#endif

@@ -1,4 +1,3 @@
-#if !BUILD_FOR_UNITY
 using System.Collections.Generic;
 
 namespace Momento.Sdk.Auth.AccessControl;
@@ -274,4 +273,3 @@ public record DisposableTokenScopes(List<DisposableTokenPermission> Permissions)
         });
     }
 }
-#endif

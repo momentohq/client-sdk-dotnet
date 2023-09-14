@@ -1,4 +1,3 @@
-#if !BUILD_FOR_UNITY
 using System;
 using Microsoft.Extensions.Logging;
 
@@ -63,4 +62,3 @@ public class StaticAuthTransportStrategy : IAuthTransportStrategy
         return base.GetHashCode();
     }
 }
-#endif

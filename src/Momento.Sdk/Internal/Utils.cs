@@ -103,7 +103,6 @@ public static class Utils
         }
     }
 
-    #if !BUILD_FOR_UNITY
     /// <summary>
     /// Throw an exception if the supplied ExpiresIn object is invalid.
     /// </summary>
@@ -124,7 +123,6 @@ public static class Utils
             throw new InvalidArgumentException("Disposable token must expire within 1 hour");
         }
     }
-    #endif
 
     /// <summary>
     /// Defines methods to support comparing containers of reference items by their

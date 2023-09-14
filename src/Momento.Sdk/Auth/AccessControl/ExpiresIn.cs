@@ -1,4 +1,3 @@
-#if !BUILD_FOR_UNITY
 using System;
 
 
@@ -91,4 +90,3 @@ public class ExpiresAt : Expiration
         return new ExpiresAt(epoch);
     }
 }
-#endif
