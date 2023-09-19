@@ -279,7 +279,6 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_WriteOnly_CanPublish()
     {
-        // TODO: why am I failing intermittently?
         const string messageValue = "hello";
         var writeOnlyTopicClient = await GetClientForTokenScope(
             DisposableTokenScopes.TopicPublishOnly(cacheName, topicName)
