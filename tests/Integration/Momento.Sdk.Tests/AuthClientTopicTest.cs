@@ -266,7 +266,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         }
     }
 
-    [Fact(Skip = "Enable when SubscribeAsync returns an error")]
+    [Fact]
     public async Task GenerateDisposableTopicAuthToken_WriteOnly_CantSubscribe()
     {
         var writeOnlyTopicClient = await GetClientForTokenScope(
@@ -308,10 +308,9 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         AssertPermissionError<TopicPublishResponse, TopicPublishResponse.Error>(response);
     }
 
-    [Fact(Skip = "Enable when SubscribeAsync returns an error")]
+    [Fact]
     public async Task GenerateDisposableTopicAuthToken_NoCachePerms_CantSubscribe()
     {
-        Assert.True(false);
         var noCachePermsClient = await GetClientForTokenScope(
             DisposableTokenScopes.TopicPublishSubscribe("notthecacheyourelookingfor", topicName)
         );
@@ -329,10 +328,9 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         AssertPermissionError<TopicPublishResponse, TopicPublishResponse.Error>(response);
     }
 
-    [Fact(Skip = "Enable when SubscribeAsync returns an error")]
+    [Fact]
     public async Task GenerateDisposableTopicAuthToken_NoTopicPerms_CantSubscribe()
     {
-        Assert.True(false);
         var noCachePermsClient = await GetClientForTokenScope(
             DisposableTokenScopes.TopicPublishSubscribe(cacheName, "notthetopicyourelookingfor")
         );
