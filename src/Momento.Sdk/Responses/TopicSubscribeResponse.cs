@@ -113,7 +113,7 @@ public abstract class TopicSubscribeResponse
                     return true;
                 case TopicMessage.Error:
                     Current = nextMessage;
-                    return true;
+                    return false;
                 default:
                     Current = null;
                     return false;
