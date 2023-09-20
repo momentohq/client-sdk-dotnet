@@ -222,6 +222,13 @@ internal sealed class ScsTokenClient : IDisposable
                 TopicName = byName.TopicName
             };
         }
+        else if (permission.TopicSelector is TopicSelector.SelectByTopicNamePrefix byTopicNamePrefix)
+        {
+            grpcPermission.TopicSelector = new PermissionsType.Types.TopicSelector
+            {
+                TopicNamePrefix = byTopicNamePrefix.TopicNamePrefix
+            };
+        }
         else
         {
             throw new UnknownException(

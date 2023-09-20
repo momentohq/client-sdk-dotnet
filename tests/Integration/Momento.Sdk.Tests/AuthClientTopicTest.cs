@@ -5,6 +5,7 @@ using System.Threading;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Auth.AccessControl;
 using Momento.Sdk.Config;
+using System.Collections.Generic;
 
 namespace Momento.Sdk.Tests;
 
@@ -13,16 +14,20 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
 {
     private readonly IAuthClient authClient;
     private readonly ITopicClient topicClient;
+    private readonly ICacheClient cacheClient;
     private readonly string cacheName;
     private readonly string topicName = "topic";
+    private readonly string topicNamePrefix;
 
     public AuthClientTopicTest(
         CacheClientFixture cacheFixture, AuthClientFixture authFixture, TopicClientFixture topicFixture
     )
     {
         authClient = authFixture.Client;
+        cacheClient = cacheFixture.Client;
         cacheName = cacheFixture.CacheName;
         topicClient = topicFixture.Client;
+        topicNamePrefix = topicName.Substring(0, 3);
     }
 
     private async Task<ITopicClient> GetClientForTokenScope(DisposableTokenScope scope)
@@ -149,6 +154,87 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
                 ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Success);
+
+        response = await authClient.GenerateDisposableTokenAsync(
+            DisposableTokenScopes.TopicNamePrefixPublishSubscribe("cache", "topic-"),
+            ExpiresIn.Minutes(10)
+        );
+        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        response = await authClient.GenerateDisposableTokenAsync(
+            DisposableTokenScopes.TopicNamePrefixPublishSubscribe(
+                CacheSelector.ByName("cache"), "topic-"
+            ),
+            ExpiresIn.Minutes(10)
+        );
+        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        response = await authClient.GenerateDisposableTokenAsync(
+            DisposableTokenScopes.TopicNamePrefixPublishSubscribe(
+                "cache", TopicSelector.ByTopicNamePrefix("topic-")
+            ),
+            ExpiresIn.Minutes(10)
+        );
+        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        response = await authClient.GenerateDisposableTokenAsync(
+            DisposableTokenScopes.TopicNamePrefixPublishSubscribe(
+                CacheSelector.ByName("cache"), TopicSelector.ByTopicNamePrefix("topic-")
+            ),
+            ExpiresIn.Minutes(10)
+        );
+        Assert.True(response is GenerateDisposableTokenResponse.Success);
+
+        response = await authClient.GenerateDisposableTokenAsync(
+            DisposableTokenScopes.TopicNamePrefixSubscribeOnly("cache", "topic-"),
+            ExpiresIn.Minutes(10)
+        );
+        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        response = await authClient.GenerateDisposableTokenAsync(
+            DisposableTokenScopes.TopicNamePrefixSubscribeOnly(
+                CacheSelector.ByName("cache"), "topic-"
+            ),
+            ExpiresIn.Minutes(10)
+        );
+        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        response = await authClient.GenerateDisposableTokenAsync(
+            DisposableTokenScopes.TopicNamePrefixSubscribeOnly(
+                "cache", TopicSelector.ByTopicNamePrefix("topic-")
+            ),
+            ExpiresIn.Minutes(10)
+        );
+        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        response = await authClient.GenerateDisposableTokenAsync(
+            DisposableTokenScopes.TopicNamePrefixSubscribeOnly(
+                CacheSelector.ByName("cache"), TopicSelector.ByTopicNamePrefix("topic-")
+            ),
+            ExpiresIn.Minutes(10)
+        );
+        Assert.True(response is GenerateDisposableTokenResponse.Success);
+
+        response = await authClient.GenerateDisposableTokenAsync(
+            DisposableTokenScopes.TopicNamePrefixPublishOnly("cache", "topic-"),
+            ExpiresIn.Minutes(10)
+        );
+        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        response = await authClient.GenerateDisposableTokenAsync(
+            DisposableTokenScopes.TopicNamePrefixPublishOnly(
+                CacheSelector.ByName("cache"), "topic-"
+            ),
+            ExpiresIn.Minutes(10)
+        );
+        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        response = await authClient.GenerateDisposableTokenAsync(
+            DisposableTokenScopes.TopicNamePrefixPublishOnly(
+                "cache", TopicSelector.ByTopicNamePrefix("topic-")
+            ),
+            ExpiresIn.Minutes(10)
+        );
+        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        response = await authClient.GenerateDisposableTokenAsync(
+            DisposableTokenScopes.TopicNamePrefixPublishOnly(
+                CacheSelector.ByName("cache"), TopicSelector.ByTopicNamePrefix("topic-")
+            ),
+            ExpiresIn.Minutes(10)
+        );
+        Assert.True(response is GenerateDisposableTokenResponse.Success);
     }
 
     [Theory]
@@ -230,13 +316,8 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         }
     }
 
-    [Fact]
-    public async Task GenerateDisposableTopicAuthToken_ReadWrite_HappyPath()
+    private async Task GenerateDisposableTopicAuthToken_ReadWrite_Common(ITopicClient readwriteTopicClient, string messageValue)
     {
-        const string messageValue = "hello";
-        var readwriteTopicClient = await GetClientForTokenScope(
-            DisposableTokenScopes.TopicPublishSubscribe(cacheName, topicName)
-        );
         var subscribeResponse = await readwriteTopicClient.SubscribeAsync(cacheName, topicName);
         Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription);
         var publishResponse = await readwriteTopicClient.PublishAsync(cacheName, topicName, messageValue);
@@ -249,12 +330,27 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     }
 
     [Fact]
-    public async Task GenerateDisposableTopicAuthToken_ReadOnly_HappyPath()
+    public async Task GenerateDisposableTopicAuthToken_ReadWrite_HappyPath()
     {
         const string messageValue = "hello";
-        var readonlyTopicClient = await GetClientForTokenScope(
-            DisposableTokenScopes.TopicSubscribeOnly(cacheName, topicName)
+        var readwriteTopicClient = await GetClientForTokenScope(
+            DisposableTokenScopes.TopicPublishSubscribe(cacheName, topicName)
         );
+        await GenerateDisposableTopicAuthToken_ReadWrite_Common(readwriteTopicClient, messageValue);
+    }
+
+    [Fact]
+    public async Task GenerateDisposableTopicAuthToken_ReadWrite_NamePrefix_HappyPath()
+    {
+        const string messageValue = "hello";
+        var readwriteTopicClient = await GetClientForTokenScope(
+            DisposableTokenScopes.TopicPublishSubscribe(cacheName, TopicSelector.ByTopicNamePrefix(topicNamePrefix))
+        );
+        await GenerateDisposableTopicAuthToken_ReadWrite_Common(readwriteTopicClient, messageValue);
+    }
+
+    private async Task GenerateDisposableTopicAuthToken_ReadOnly_Common(ITopicClient readonlyTopicClient, string messageValue)
+    {
         var subscribeResponse = await readonlyTopicClient.SubscribeAsync(cacheName, topicName);
         Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription);
         var publishResponse = await readonlyTopicClient.PublishAsync(cacheName, topicName, messageValue);
@@ -267,6 +363,26 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     }
 
     [Fact]
+    public async Task GenerateDisposableTopicAuthToken_ReadOnly_HappyPath()
+    {
+        const string messageValue = "hello";
+        var readonlyTopicClient = await GetClientForTokenScope(
+            DisposableTokenScopes.TopicSubscribeOnly(cacheName, topicName)
+        );
+        await GenerateDisposableTopicAuthToken_ReadOnly_Common(readonlyTopicClient, messageValue);
+    }
+
+    [Fact]
+    public async Task GenerateDisposableTopicAuthToken_ReadOnly_NamePrefix_HappyPath()
+    {
+        const string messageValue = "hello";
+        var readonlyTopicClient = await GetClientForTokenScope(
+            DisposableTokenScopes.TopicSubscribeOnly(cacheName, TopicSelector.ByTopicNamePrefix(topicNamePrefix))
+        );
+        await GenerateDisposableTopicAuthToken_ReadOnly_Common(readonlyTopicClient, messageValue);
+    }
+
+    [Fact]
     public async Task GenerateDisposableTopicAuthToken_WriteOnly_CantSubscribe()
     {
         var writeOnlyTopicClient = await GetClientForTokenScope(
@@ -274,16 +390,18 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         );
         var subscribeResponse = await writeOnlyTopicClient.SubscribeAsync(cacheName, topicName);
         Assert.True(subscribeResponse is TopicSubscribeResponse.Error, $"expected error got {subscribeResponse}");
+
+        writeOnlyTopicClient = await GetClientForTokenScope(
+            DisposableTokenScopes.TopicPublishOnly(cacheName, TopicSelector.ByTopicNamePrefix(topicNamePrefix))
+        );
+        subscribeResponse = await writeOnlyTopicClient.SubscribeAsync(cacheName, topicName);
+        Assert.True(subscribeResponse is TopicSubscribeResponse.Error, $"expected error got {subscribeResponse}");
     }
 
-    [Fact]
-    public async Task GenerateDisposableTopicAuthToken_WriteOnly_CanPublish()
+    private async Task GenerateDisposableTopicAuthToken_WriteOnly_CanPublish_Common(
+        ITopicClient writeOnlyTopicClient, string messageValue
+    )
     {
-        const string messageValue = "hello";
-        var writeOnlyTopicClient = await GetClientForTokenScope(
-            DisposableTokenScopes.TopicPublishOnly(cacheName, topicName)
-        );
-
         var subscribeResponse = await topicClient.SubscribeAsync(cacheName, topicName);
         Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription);
 
@@ -299,12 +417,40 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     }
 
     [Fact]
+    public async Task GenerateDisposableTopicAuthToken_WriteOnly_CanPublish()
+    {
+        const string messageValue = "hello";
+        var writeOnlyTopicClient = await GetClientForTokenScope(
+            DisposableTokenScopes.TopicPublishOnly(cacheName, topicName)
+        );
+        await GenerateDisposableTopicAuthToken_WriteOnly_CanPublish_Common(writeOnlyTopicClient, messageValue);
+    }
+
+    [Fact]
+    public async Task GenerateDisposableTopicAuthToken_WriteOnly_NamePrefix_CanPublish()
+    {
+        const string messageValue = "hello";
+        var writeOnlyTopicClient = await GetClientForTokenScope(
+            DisposableTokenScopes.TopicPublishOnly(cacheName, TopicSelector.ByTopicNamePrefix(topicNamePrefix))
+        );
+        await GenerateDisposableTopicAuthToken_WriteOnly_CanPublish_Common(writeOnlyTopicClient, messageValue);
+    }
+
+    [Fact]
     public async Task GenerateDisposableTopicAuthToken_NoCachePerms_CantPublish()
     {
         var noCachePermsClient = await GetClientForTokenScope(
             DisposableTokenScopes.TopicPublishSubscribe("notthecacheyourelookingfor", topicName)
         );
         var response = await noCachePermsClient.PublishAsync(cacheName, topicName, "iamdoomed");
+        AssertPermissionError<TopicPublishResponse, TopicPublishResponse.Error>(response);
+
+        noCachePermsClient = await GetClientForTokenScope(
+            DisposableTokenScopes.TopicPublishSubscribe(
+                "notthecacheyourelookingfor", TopicSelector.ByTopicNamePrefix(topicNamePrefix)
+            )
+        );
+        response = await noCachePermsClient.PublishAsync(cacheName, topicName, "iamdoomed");
         AssertPermissionError<TopicPublishResponse, TopicPublishResponse.Error>(response);
     }
 
@@ -315,6 +461,14 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
             DisposableTokenScopes.TopicPublishSubscribe("notthecacheyourelookingfor", topicName)
         );
         var response = await noCachePermsClient.SubscribeAsync(cacheName, topicName);
+        AssertPermissionError<TopicSubscribeResponse, TopicSubscribeResponse.Error>(response);
+
+        noCachePermsClient = await GetClientForTokenScope(
+            DisposableTokenScopes.TopicPublishSubscribe(
+                "notthecacheyourelookingfor", TopicSelector.ByTopicNamePrefix(topicNamePrefix)
+            )
+        );
+        response = await noCachePermsClient.SubscribeAsync(cacheName, topicName);
         AssertPermissionError<TopicSubscribeResponse, TopicSubscribeResponse.Error>(response);
     }
 
@@ -332,10 +486,64 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     public async Task GenerateDisposableTopicAuthToken_NoTopicPerms_CantSubscribe()
     {
         var noCachePermsClient = await GetClientForTokenScope(
-            DisposableTokenScopes.TopicPublishSubscribe(cacheName, "notthetopicyourelookingfor")
+            DisposableTokenScopes.TopicPublishSubscribe(cacheName, TopicSelector.ByTopicNamePrefix("notthe"))
         );
         var response = await noCachePermsClient.SubscribeAsync(cacheName, topicName);
         AssertPermissionError<TopicSubscribeResponse, TopicSubscribeResponse.Error>(response);
+    }
+
+    // Tests using DisposableTokenScopes composed from multiple permissions
+
+    [Fact]
+    public async Task GenerateDisposableTopicAuthToken_MultiplePerms()
+    {
+        var scope = new DisposableTokenScope(Permissions: new List<DisposableTokenPermission>
+        {
+            new DisposableToken.TopicPermission(
+                TopicRole.PublishOnly,
+                CacheSelector.ByName(cacheName),
+                TopicSelector.ByTopicNamePrefix(topicNamePrefix)
+            ),
+            new DisposableToken.TopicPermission(
+                TopicRole.SubscribeOnly,
+                CacheSelector.ByName(cacheName),
+                TopicSelector.ByName("fun-topic")
+            )
+        });
+        var multiPermsClient = await GetClientForTokenScope(scope);
+
+        // we can publish but not subscribe to topics prefixed with topicNamePrefix
+        var publishResponse = await multiPermsClient.PublishAsync(cacheName, topicName, "hi");
+        Assert.True(publishResponse is TopicPublishResponse.Success);
+        var subscribeResponse = await multiPermsClient.SubscribeAsync(cacheName, topicName);
+        AssertPermissionError<TopicSubscribeResponse, TopicSubscribeResponse.Error>(subscribeResponse);
+
+        // we can subscribe but not publish to fun-topic
+        publishResponse = await multiPermsClient.PublishAsync(cacheName, "fun-topic", "hi");
+        AssertPermissionError<TopicPublishResponse, TopicPublishResponse.Error>(publishResponse);
+        subscribeResponse = await multiPermsClient.SubscribeAsync(cacheName, "fun-topic");
+        Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription);
+
+        // we can neither publish nor subscribe to an unspecified topic
+        publishResponse = await multiPermsClient.PublishAsync(cacheName, "unknown-topic", "hi");
+        AssertPermissionError<TopicPublishResponse, TopicPublishResponse.Error>(publishResponse);
+        subscribeResponse = await multiPermsClient.SubscribeAsync(cacheName, "unknown-topic");
+        AssertPermissionError<TopicSubscribeResponse, TopicSubscribeResponse.Error>(subscribeResponse);
+
+        // we can neither publish nor subscribe to an unspecified cache
+        var cache2Name = cacheName + "-2";
+        try
+        {
+            Assert.True(await cacheClient.CreateCacheAsync(cache2Name) is CreateCacheResponse.Success);
+            publishResponse = await multiPermsClient.PublishAsync(cache2Name, topicName, "hi");
+            AssertPermissionError<TopicPublishResponse, TopicPublishResponse.Error>(publishResponse);
+            subscribeResponse = await multiPermsClient.SubscribeAsync(cache2Name, topicName);
+            AssertPermissionError<TopicSubscribeResponse, TopicSubscribeResponse.Error>(subscribeResponse);
+        }
+        finally
+        {
+            Assert.True(await cacheClient.DeleteCacheAsync(cache2Name) is DeleteCacheResponse.Success);
+        }
     }
 }
 #endif

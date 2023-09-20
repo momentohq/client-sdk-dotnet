@@ -64,4 +64,11 @@ public abstract record TopicSelector
     {
         return new SelectByTopicName(topicName);
     }
+
+    public record SelectByTopicNamePrefix(string TopicNamePrefix) : TopicSelector;
+
+    public static SelectByTopicNamePrefix ByTopicNamePrefix(string topicNamePrefix)
+    {
+        return new SelectByTopicNamePrefix(topicNamePrefix);
+    }
 }
