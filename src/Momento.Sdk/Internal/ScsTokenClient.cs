@@ -29,7 +29,7 @@ internal sealed class ScsTokenClient : IDisposable
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
     }
 
-    protected DateTime CalculateDeadline()
+    private DateTime CalculateDeadline()
     {
         return DateTime.UtcNow.Add(authClientOperationTimeout);
     }
@@ -39,14 +39,28 @@ internal sealed class ScsTokenClient : IDisposable
     public async Task<GenerateDisposableTokenResponse> GenerateDisposableToken(
         DisposableTokenScope scope, ExpiresIn expiresIn
     ) {
-        _GenerateDisposableTokenRequest request = new _GenerateDisposableTokenRequest
-        {
-            Expires = new _GenerateDisposableTokenRequest.Types.Expires() { ValidForSeconds = (uint)expiresIn.Seconds() },
-            AuthToken = this.authToken,
-            Permissions = PermissionsFromDisposableTokenScope(scope)
-        };
+        Permissions permissions;
         try
         {
+            permissions = PermissionsFromDisposableTokenScope(scope);
+        }
+        catch (ArgumentNullException e)
+        {
+            return _logger.LogTraceAuthRequestError(RequestTypeAuthGenerateDisposableToken,
+                new GenerateDisposableTokenResponse.Error(
+                    new InvalidArgumentException("Permissions parameters may not be null", null, e)
+                )
+            );
+        }
+
+        try
+        {
+            _GenerateDisposableTokenRequest request = new _GenerateDisposableTokenRequest
+            {
+                Expires = new _GenerateDisposableTokenRequest.Types.Expires() { ValidForSeconds = (uint)expiresIn.Seconds() },
+                AuthToken = this.authToken,
+                Permissions = permissions
+            };
             _logger.LogTraceExecutingAuthRequest(RequestTypeAuthGenerateDisposableToken);
             var response = await grpcManager.Client.generateDisposableToken(
                 request, new CallOptions(deadline: CalculateDeadline())
