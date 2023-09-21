@@ -64,4 +64,19 @@ public abstract record TopicSelector
     {
         return new SelectByTopicName(topicName);
     }
+
+    // This selector is currently only used to generate disposable tokens. There are plans to
+    // support topic name prefix in `generateApiToken` as well, but it is not yet implemented.
+    // Because we are only generating disposable tokens in the SDK now, this is fine. However,
+    // if topic name prefix is still unsupported server side when we add the code to generate
+    // API keys, we will need to add a second selector specific to API key generation that does
+    // not include `SelectByTopicNamePrefix` and refer to that selector when setting up API key
+    // permissions like the ones in `DisposableToken.cs`. That will ensure that usage of the
+    // correct type can be verified at compile time.
+    public record SelectByTopicNamePrefix(string TopicNamePrefix) : TopicSelector;
+
+    public static SelectByTopicNamePrefix ByTopicNamePrefix(string topicNamePrefix)
+    {
+        return new SelectByTopicNamePrefix(topicNamePrefix);
+    }
 }

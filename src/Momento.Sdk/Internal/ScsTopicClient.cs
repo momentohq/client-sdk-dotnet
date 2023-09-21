@@ -84,7 +84,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
 
     private async Task<TopicPublishResponse> SendPublish(string cacheName, string topicName, _TopicValue value)
     {
-        _PublishRequest request = new _PublishRequest
+        var request = new _PublishRequest
         {
             CacheName = cacheName,
             Topic = topicName,
@@ -124,6 +124,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         {
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, cacheName, topicName);
             subscriptionWrapper = new SubscriptionWrapper(grpcManager, cacheName, topicName, _exceptionMapper, _logger);
+            await subscriptionWrapper.Subscribe();
         }
         catch (Exception e)
         {
@@ -146,8 +147,9 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         private readonly CacheExceptionMapper _exceptionMapper;
         private readonly ILogger _logger;
 
-        private AsyncServerStreamingCall<_SubscriptionItem> _subscription;
+        private AsyncServerStreamingCall<_SubscriptionItem>? _subscription;
         private ulong? _lastSequenceNumber;
+        private bool _subscribed;
 
         public SubscriptionWrapper(TopicGrpcManager grpcManager, string cacheName,
             string topicName, CacheExceptionMapper exceptionMapper, ILogger logger)
@@ -157,11 +159,9 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
             _topicName = topicName;
             _exceptionMapper = exceptionMapper;
             _logger = logger;
-
-            _subscription = Subscribe();
         }
 
-        private AsyncServerStreamingCall<_SubscriptionItem> Subscribe()
+        public async Task Subscribe()
         {
             var request = new _SubscriptionRequest
             {
@@ -174,7 +174,19 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
             }
 
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, _cacheName, _topicName);
-            return _grpcManager.Client.subscribe(request, new CallOptions());
+            var subscription = _grpcManager.Client.subscribe(request, new CallOptions());
+
+            await subscription.ResponseStream.MoveNext();
+            var firstMessage = subscription.ResponseStream.Current;
+            // The first message to a new subscription will always be a heartbeat.
+            if (firstMessage.KindCase is not _SubscriptionItem.KindOneofCase.Heartbeat)
+            {
+                throw new InternalServerException(
+                    $"Expected heartbeat message for topic {_topicName} on cache {_cacheName}. Got: {firstMessage.KindCase}");
+            }
+
+            _subscription = subscription;
+            _subscribed = true;
         }
 
         public async ValueTask<TopicMessage?> GetNextRelevantMessageFromGrpcStreamAsync(
@@ -184,7 +196,13 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
             {
                 try
                 {
-                    await _subscription.ResponseStream.MoveNext(cancellationToken);
+                    if (!_subscribed)
+                    {
+                        await Subscribe();
+                        _subscribed = true;
+                    }
+                    
+                    await _subscription!.ResponseStream.MoveNext(cancellationToken);
                 }
                 catch (OperationCanceledException)
                 {
@@ -193,17 +211,24 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                 catch (Exception e)
                 {
                     var sdkException = _exceptionMapper.Convert(e);
-                    if (sdkException.ErrorCode == MomentoErrorCode.CANCELLED_ERROR)
+                    if (sdkException.ErrorCode is MomentoErrorCode.CANCELLED_ERROR)
                     {
                         break;
                     }
-                    //TODO: Are there other errors that we should break for?
 
                     _logger.LogTraceTopicSubscriptionError(_cacheName, _topicName, sdkException);
 
-                    await Task.Delay(5_000, cancellationToken);
+                    // Certain errors can never be recovered
+                    if (!IsErrorRecoverable(sdkException))
+                    {
+                        return new TopicMessage.Error(sdkException);
+                    }
+
+                    // If the error is recoverable, wait and attempt to resubscribe
                     Dispose();
-                    _subscription = Subscribe();
+                    await Task.Delay(5_000, cancellationToken);
+
+                    _subscribed = false;
                     continue;
                 }
 
@@ -248,9 +273,15 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
             return null;
         }
 
+        private static bool IsErrorRecoverable(SdkException exception)
+        {
+            return exception.ErrorCode is not (MomentoErrorCode.PERMISSION_ERROR
+                or MomentoErrorCode.AUTHENTICATION_ERROR);
+        }
+
         public void Dispose()
         {
-            _subscription.Dispose();
+            _subscription?.Dispose();
         }
     }
 }

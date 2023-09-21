@@ -272,4 +272,86 @@ public record DisposableTokenScopes(List<DisposableTokenPermission> Permissions)
             )
         });
     }
+
+
+    public static DisposableTokenScope TopicNamePrefixPublishSubscribe(string cacheName, string topicNamePrefix)
+    {
+        return TopicNamePrefixPublishSubscribe(CacheSelector.ByName(cacheName), TopicSelector.ByTopicNamePrefix(topicNamePrefix));
+    }
+
+    public static DisposableTokenScope TopicNamePrefixPublishSubscribe(CacheSelector cacheSelector, string topicNamePrefix)
+    {
+        return TopicNamePrefixPublishSubscribe(cacheSelector, TopicSelector.ByTopicNamePrefix(topicNamePrefix));
+    }
+
+    public static DisposableTokenScope TopicNamePrefixPublishSubscribe(string cacheName, TopicSelector topicSelector)
+    {
+        return TopicNamePrefixPublishSubscribe(CacheSelector.ByName(cacheName), topicSelector);
+    }
+
+    public static DisposableTokenScope TopicNamePrefixPublishSubscribe(CacheSelector cacheSelector, TopicSelector topicSelector)
+    {
+        return new DisposableTokenScope(Permissions: new List<DisposableTokenPermission>
+        {
+            new DisposableToken.TopicPermission(
+                TopicRole.PublishSubscribe,
+                cacheSelector,
+                topicSelector
+            )
+        });
+    }
+
+    public static DisposableTokenScope TopicNamePrefixSubscribeOnly(string cacheName, string topicNamePrefix)
+    {
+        return TopicNamePrefixSubscribeOnly(CacheSelector.ByName(cacheName), TopicSelector.ByTopicNamePrefix(topicNamePrefix));
+    }
+
+    public static DisposableTokenScope TopicNamePrefixSubscribeOnly(CacheSelector cacheSelector, string topicNamePrefix)
+    {
+        return TopicNamePrefixSubscribeOnly(cacheSelector, TopicSelector.ByTopicNamePrefix(topicNamePrefix));
+    }
+
+    public static DisposableTokenScope TopicNamePrefixSubscribeOnly(string cacheName, TopicSelector topicSelector)
+    {
+        return TopicNamePrefixSubscribeOnly(CacheSelector.ByName(cacheName), topicSelector);
+    }
+
+    public static DisposableTokenScope TopicNamePrefixSubscribeOnly(CacheSelector cacheSelector, TopicSelector topicSelector)
+    {
+        return new DisposableTokenScope(Permissions: new List<DisposableTokenPermission>
+        {
+            new DisposableToken.TopicPermission(
+                TopicRole.SubscribeOnly,
+                cacheSelector,
+                topicSelector
+            )
+        });
+    }
+
+    public static DisposableTokenScope TopicNamePrefixPublishOnly(string cacheName, string topicNamePrefix)
+    {
+        return TopicNamePrefixPublishOnly(CacheSelector.ByName(cacheName), TopicSelector.ByTopicNamePrefix(topicNamePrefix));
+    }
+
+    public static DisposableTokenScope TopicNamePrefixPublishOnly(CacheSelector cacheSelector, string topicNamePrefix)
+    {
+        return TopicNamePrefixPublishOnly(cacheSelector, TopicSelector.ByTopicNamePrefix(topicNamePrefix));
+    }
+
+    public static DisposableTokenScope TopicNamePrefixPublishOnly(string cacheName, TopicSelector topicSelector)
+    {
+        return TopicNamePrefixPublishOnly(CacheSelector.ByName(cacheName), topicSelector);
+    }
+
+    public static DisposableTokenScope TopicNamePrefixPublishOnly(CacheSelector cacheSelector, TopicSelector topicSelector)
+    {
+        return new DisposableTokenScope(Permissions: new List<DisposableTokenPermission>
+        {
+            new DisposableToken.TopicPermission(
+                TopicRole.PublishOnly,
+                cacheSelector,
+                topicSelector
+            )
+        });
+    }
 }
