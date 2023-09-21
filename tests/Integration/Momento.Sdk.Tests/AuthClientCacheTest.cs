@@ -623,100 +623,110 @@ public class AuthClientCacheTest : IClassFixture<CacheClientFixture>, IClassFixt
     [Fact]
     public async Task GenerateDisposableMultiPermission_ReadOnlyWithSelectorsAllCaches()
     {
-        // create a second cache
         var cache2Name = cacheName + "-2";
-        Assert.True(await cacheClient.CreateCacheAsync(cache2Name) is CreateCacheResponse.Success);
+        try
+        {
+            // create a second cache
+            Assert.True(await cacheClient.CreateCacheAsync(cache2Name) is CreateCacheResponse.Success);
 
-        var scope = new DisposableTokenScope(Permissions: new List<DisposableTokenPermission>{
-            new DisposableToken.CacheItemPermission(
-                CacheRole.ReadOnly,
-                CacheSelector.AllCaches,
-                CacheItemSelector.ByKey("cow")
-            ),
-            new DisposableToken.CacheItemPermission(
-                CacheRole.ReadOnly,
-                CacheSelector.AllCaches,
-                CacheItemSelector.ByKeyPrefix("pet")
-            )
-        });
-        var client = await GetClientForTokenScope(scope);
+            var scope = new DisposableTokenScope(Permissions: new List<DisposableTokenPermission>{
+                new DisposableToken.CacheItemPermission(
+                    CacheRole.ReadOnly,
+                    CacheSelector.AllCaches,
+                    CacheItemSelector.ByKey("cow")
+                ),
+                new DisposableToken.CacheItemPermission(
+                    CacheRole.ReadOnly,
+                    CacheSelector.AllCaches,
+                    CacheItemSelector.ByKeyPrefix("pet")
+                )
+            });
+            var client = await GetClientForTokenScope(scope);
 
-        // sets should fail for both caches
-        var setResponse = await client.SetAsync(cacheName, "cow", "moo");
-        AssertPermissionError<CacheSetResponse, CacheSetResponse.Error>(setResponse);
-        setResponse = await client.SetAsync(cache2Name, "pet-koala", "awwww");
-        AssertPermissionError<CacheSetResponse, CacheSetResponse.Error>(setResponse);
+            // sets should fail for both caches
+            var setResponse = await client.SetAsync(cacheName, "cow", "moo");
+            AssertPermissionError<CacheSetResponse, CacheSetResponse.Error>(setResponse);
+            setResponse = await client.SetAsync(cache2Name, "pet-koala", "awwww");
+            AssertPermissionError<CacheSetResponse, CacheSetResponse.Error>(setResponse);
 
-        // gets should succeed for specified key and key prefix but fail for other keys
-        await SetCacheKey(cacheName, "cow", "moo");
-        await SetCacheKey(cacheName, "pet-koala", "awww");
-        await SetCacheKey(cacheName, "dog", "woof");
-        await SetCacheKey(cache2Name, "cow", "moo");
-        await SetCacheKey(cache2Name, "pet-koala", "awww");
-        await SetCacheKey(cache2Name, "dog", "woof");
+            // gets should succeed for specified key and key prefix but fail for other keys
+            await SetCacheKey(cacheName, "cow", "moo");
+            await SetCacheKey(cacheName, "pet-koala", "awww");
+            await SetCacheKey(cacheName, "dog", "woof");
+            await SetCacheKey(cache2Name, "cow", "moo");
+            await SetCacheKey(cache2Name, "pet-koala", "awww");
+            await SetCacheKey(cache2Name, "dog", "woof");
 
-        var getResponse = await client.GetAsync(cacheName, "cow");
-        Assert.True(getResponse is CacheGetResponse.Hit);
-        getResponse = await client.GetAsync(cacheName, "pet-koala");
-        Assert.True(getResponse is CacheGetResponse.Hit);
-        getResponse = await client.GetAsync(cache2Name, "cow");
-        Assert.True(getResponse is CacheGetResponse.Hit);
-        getResponse = await client.GetAsync(cache2Name, "pet-koala");
-        Assert.True(getResponse is CacheGetResponse.Hit);
-        getResponse = await client.GetAsync(cacheName, "dog");
-        AssertPermissionError<CacheGetResponse, CacheGetResponse.Error>(getResponse);
-        getResponse = await client.GetAsync(cache2Name, "dog");
-        AssertPermissionError<CacheGetResponse, CacheGetResponse.Error>(getResponse);
-
-        // delete the second cache
-        Assert.True(await cacheClient.DeleteCacheAsync(cache2Name) is DeleteCacheResponse.Success);
+            var getResponse = await client.GetAsync(cacheName, "cow");
+            Assert.True(getResponse is CacheGetResponse.Hit);
+            getResponse = await client.GetAsync(cacheName, "pet-koala");
+            Assert.True(getResponse is CacheGetResponse.Hit);
+            getResponse = await client.GetAsync(cache2Name, "cow");
+            Assert.True(getResponse is CacheGetResponse.Hit);
+            getResponse = await client.GetAsync(cache2Name, "pet-koala");
+            Assert.True(getResponse is CacheGetResponse.Hit);
+            getResponse = await client.GetAsync(cacheName, "dog");
+            AssertPermissionError<CacheGetResponse, CacheGetResponse.Error>(getResponse);
+            getResponse = await client.GetAsync(cache2Name, "dog");
+            AssertPermissionError<CacheGetResponse, CacheGetResponse.Error>(getResponse);
+        }
+        finally
+        {
+            // delete the second cache
+            Assert.True(await cacheClient.DeleteCacheAsync(cache2Name) is DeleteCacheResponse.Success);
+        }
     }
 
     [Fact]
     public async Task GenerateDisposableMultiPermission_ReadOnlyWriteOnly()
     {
-        // create a second cache
         var cache2Name = cacheName + "-2";
-        Assert.True(await cacheClient.CreateCacheAsync(cache2Name) is CreateCacheResponse.Success);
-
-        var scope = new DisposableTokenScope(Permissions: new List<DisposableTokenPermission>{
-            new DisposableToken.CacheItemPermission(
-                CacheRole.WriteOnly,
-                CacheSelector.ByName(cacheName),
-                CacheItemSelector.ByKey("cow")
-            ),
-            new DisposableToken.CacheItemPermission(
-                CacheRole.ReadOnly,
-                CacheSelector.ByName(cache2Name),
-                CacheItemSelector.ByKeyPrefix("pet")
-            )
-        });
-        var client = await GetClientForTokenScope(scope);
-
-        // we can write to only one key and not read in test cache
-        var setResponse = await client.SetAsync(cacheName, "cow", "moo");
-        Assert.True(setResponse is CacheSetResponse.Success);
-        var getResponse = await client.GetAsync(cacheName, "cow");
-        AssertPermissionError<CacheGetResponse, CacheGetResponse.Error>(getResponse);
-        setResponse = await client.SetAsync(cacheName, "parrot", "somethingaboutcrackers");
-        AssertPermissionError<CacheSetResponse, CacheSetResponse.Error>(setResponse);
-        await VerifyCacheKey(cacheName, "cow", "moo");
-
-        // we can read prefixed keys but no others and cannot write in the second cache
-        await SetCacheKey(cache2Name, "pet-armadillo", "thunk");
-        await SetCacheKey(cache2Name, "snake", "hiss");
-        getResponse = await client.GetAsync(cache2Name, "pet-armadillo");
-        Assert.True(getResponse is CacheGetResponse.Hit);
-        if (getResponse is CacheGetResponse.Hit hit)
+        try
         {
-            Assert.Equal(hit.ValueString, "thunk");
-        }
-        setResponse = await client.SetAsync(cache2Name, "pet-armadillo", "meow");
-        AssertPermissionError<CacheSetResponse, CacheSetResponse.Error>(setResponse);
-        getResponse = await client.GetAsync(cache2Name, "snake");
-        AssertPermissionError<CacheGetResponse, CacheGetResponse.Error>(getResponse);
+            // create a second cache
+            Assert.True(await cacheClient.CreateCacheAsync(cache2Name) is CreateCacheResponse.Success);
 
-        // delete the second cache
-        Assert.True(await cacheClient.DeleteCacheAsync(cache2Name) is DeleteCacheResponse.Success);
+            var scope = new DisposableTokenScope(Permissions: new List<DisposableTokenPermission>{
+                new DisposableToken.CacheItemPermission(
+                    CacheRole.WriteOnly,
+                    CacheSelector.ByName(cacheName),
+                    CacheItemSelector.ByKey("cow")
+                ),
+                new DisposableToken.CacheItemPermission(
+                    CacheRole.ReadOnly,
+                    CacheSelector.ByName(cache2Name),
+                    CacheItemSelector.ByKeyPrefix("pet")
+                )
+            });
+            var client = await GetClientForTokenScope(scope);
+
+            // we can write to only one key and not read in test cache
+            var setResponse = await client.SetAsync(cacheName, "cow", "moo");
+            Assert.True(setResponse is CacheSetResponse.Success);
+            var getResponse = await client.GetAsync(cacheName, "cow");
+            AssertPermissionError<CacheGetResponse, CacheGetResponse.Error>(getResponse);
+            setResponse = await client.SetAsync(cacheName, "parrot", "somethingaboutcrackers");
+            AssertPermissionError<CacheSetResponse, CacheSetResponse.Error>(setResponse);
+            await VerifyCacheKey(cacheName, "cow", "moo");
+
+            // we can read prefixed keys but no others and cannot write in the second cache
+            await SetCacheKey(cache2Name, "pet-armadillo", "thunk");
+            await SetCacheKey(cache2Name, "snake", "hiss");
+            getResponse = await client.GetAsync(cache2Name, "pet-armadillo");
+            Assert.True(getResponse is CacheGetResponse.Hit);
+            if (getResponse is CacheGetResponse.Hit hit)
+            {
+                Assert.Equal(hit.ValueString, "thunk");
+            }
+            setResponse = await client.SetAsync(cache2Name, "pet-armadillo", "meow");
+            AssertPermissionError<CacheSetResponse, CacheSetResponse.Error>(setResponse);
+            getResponse = await client.GetAsync(cache2Name, "snake");
+            AssertPermissionError<CacheGetResponse, CacheGetResponse.Error>(getResponse);
+        }
+        finally
+        {
+            // delete the second cache
+            Assert.True(await cacheClient.DeleteCacheAsync(cache2Name) is DeleteCacheResponse.Success);
+        }
     }
 }
