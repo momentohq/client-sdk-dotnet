@@ -126,3 +126,39 @@ public class AuthClientCollection : ICollectionFixture<AuthClientFixture>
 {
 
 }
+
+public class VectorIndexClientFixture : IDisposable
+{
+    public IPreviewVectorIndexClient Client { get; private set; }
+    public ICredentialProvider AuthProvider { get; private set; }
+
+    public VectorIndexClientFixture()
+    {
+        AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
+        Client = new PreviewVectorIndexClient(VectorIndexConfigurations.InRegion.Default.Latest(LoggerFactory.Create(builder =>
+        {
+            builder.AddSimpleConsole(options =>
+            {
+                options.IncludeScopes = true;
+                options.SingleLine = true;
+                options.TimestampFormat = "hh:mm:ss ";
+            });
+            builder.AddFilter("Grpc.Net.Client", LogLevel.Error);
+            builder.SetMinimumLevel(LogLevel.Information);
+        })), AuthProvider);
+    }
+
+    public void Dispose()
+    {
+        Client.Dispose();
+    }
+}
+
+/// <summary>
+/// Register the fixture in xUnit.
+/// </summary>
+[CollectionDefinition("VectorIndexClient")]
+public class VectorIndexClientCollection : ICollectionFixture<VectorIndexClientFixture>
+{
+
+}
