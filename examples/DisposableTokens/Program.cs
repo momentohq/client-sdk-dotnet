@@ -106,7 +106,14 @@ static class Program
             Console.WriteLine($"Avg time: {avgTime} ms");
             Console.WriteLine($"99th percentile time: {p99Time} ms");
             Console.WriteLine($"Max time: {maxTime} ms");
-        }
+
+            // Print all elapsed times
+            Console.WriteLine("\nAll elapsed times:");
+            foreach (double elapsedTime in elapsedTimes)
+            {
+                Console.WriteLine($"{elapsedTime} ms");
+            }
+    }
 
         private static double Percentile(List<double> sequence, double percentile)
         {
