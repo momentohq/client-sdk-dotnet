@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Momento.Sdk.Requests.Vector;
 using Momento.Sdk.Responses.Vector;
@@ -11,7 +12,7 @@ namespace Momento.Sdk;
 ///
 /// Includes control operations and data operations.
 /// </summary>
-public interface IPreviewVectorIndexClient: IDisposable
+public interface IPreviewVectorIndexClient : IDisposable
 {
     /// <summary>
     /// Creates a vector index if it does not exist.
@@ -103,4 +104,84 @@ public interface IPreviewVectorIndexClient: IDisposable
     /// </code>
     ///</returns>
     public Task<DeleteVectorIndexResponse> DeleteIndexesAsync(string indexName);
+
+    /// <summary>
+    /// Upserts a batch of items into a vector index.
+    /// If an item with the same ID already exists in the index, it will be replaced.
+    /// Otherwise, it will be added to the index.
+    /// </summary>
+    /// <param name="indexName">The name of the vector index to delete.</param>
+    /// <param name="items">The items to upsert into the index.</param>
+    /// <returns>
+    /// Task representing the result of the upsert operation. The
+    /// response object is resolved to a type-safe object of one of
+    /// the following subtypes:
+    /// <list type="bullet">
+    /// <item><description>VectorUpsertItemBatchResponse.Success</description></item>
+    /// <item><description>VectorUpsertItemBatchResponse.Error</description></item>
+    /// </list>
+    /// Pattern matching can be used to operate on the appropriate subtype.
+    /// For example:
+    /// <code>
+    /// if (response is VectorUpsertItemBatchResponse.Error errorResponse)
+    /// {
+    ///     // handle error as appropriate
+    /// }
+    /// </code>
+    ///</returns>
+    public Task<VectorUpsertItemBatchResponse> UpsertItemBatchAsync(string indexName,
+        IEnumerable<VectorIndexItem> items);
+
+    /// <summary>
+    /// Deletes all items with the given IDs from the index.
+    /// </summary>
+    /// <param name="indexName">The name of the vector index to delete.</param>
+    /// <param name="ids">The IDs of the items to delete from the index.</param>
+    /// <returns>
+    /// Task representing the result of the upsert operation. The
+    /// response object is resolved to a type-safe object of one of
+    /// the following subtypes:
+    /// <list type="bullet">
+    /// <item><description>VectorDeleteItemBatchResponse.Success</description></item>
+    /// <item><description>VectorDeleteItemBatchResponse.Error</description></item>
+    /// </list>
+    /// Pattern matching can be used to operate on the appropriate subtype.
+    /// For example:
+    /// <code>
+    /// if (response is VectorDeleteItemBatchResponse.Error errorResponse)
+    /// {
+    ///     // handle error as appropriate
+    /// }
+    /// </code>
+    ///</returns>
+    public Task<VectorDeleteItemBatchResponse> DeleteItemBatchAsync(string indexName, IEnumerable<string> ids);
+
+    /// <summary>
+    /// Searches for the most similar vectors to the query vector in the index.
+    /// Ranks the vectors according to the similarity metric specified when the
+    /// index was created.
+    /// </summary>
+    /// <param name="indexName">The name of the vector index to delete.</param>
+    /// <param name="queryVector">The vector to search for.</param>
+    /// <param name="topK">The number of results to return. Defaults to 10.</param>
+    /// <param name="metadataFields">A list of metadata fields to return with each result.</param>
+    /// <returns>
+    /// Task representing the result of the upsert operation. The
+    /// response object is resolved to a type-safe object of one of
+    /// the following subtypes:
+    /// <list type="bullet">
+    /// <item><description>VectorDeleteItemBatchResponse.Success</description></item>
+    /// <item><description>VectorDeleteItemBatchResponse.Error</description></item>
+    /// </list>
+    /// Pattern matching can be used to operate on the appropriate subtype.
+    /// For example:
+    /// <code>
+    /// if (response is VectorDeleteItemBatchResponse.Error errorResponse)
+    /// {
+    ///     // handle error as appropriate
+    /// }
+    /// </code>
+    ///</returns>
+    public Task<VectorSearchResponse> SearchAsync(string indexName, IEnumerable<float> queryVector, uint topK = 10,
+        MetadataFields? metadataFields = null);
 }

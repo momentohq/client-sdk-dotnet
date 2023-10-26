@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
@@ -16,7 +17,7 @@ namespace Momento.Sdk;
 public class PreviewVectorIndexClient: IPreviewVectorIndexClient
 {
     private readonly VectorIndexControlClient controlClient;
-    
+    private readonly VectorIndexDataClient dataClient;
 
 
     /// <summary>
@@ -29,9 +30,11 @@ public class PreviewVectorIndexClient: IPreviewVectorIndexClient
     public PreviewVectorIndexClient(IVectorIndexConfiguration config, ICredentialProvider authProvider)
     {
         var loggerFactory = config.LoggerFactory;
-        controlClient = new VectorIndexControlClient(loggerFactory, authProvider.AuthToken, authProvider.ControlEndpoint);
+        controlClient =
+            new VectorIndexControlClient(loggerFactory, authProvider.AuthToken, authProvider.ControlEndpoint);
+        dataClient = new VectorIndexDataClient(config, authProvider.AuthToken, authProvider.CacheEndpoint);
     }
-    
+
     /// <inheritdoc />
     public async Task<CreateVectorIndexResponse> CreateIndexAsync(string indexName, long numDimensions,
         SimilarityMetric similarityMetric = SimilarityMetric.CosineSimilarity)
@@ -50,7 +53,27 @@ public class PreviewVectorIndexClient: IPreviewVectorIndexClient
     {
         return await controlClient.DeleteIndexAsync(indexName);
     }
-    
+
+    /// <inheritdoc />
+    public async Task<VectorUpsertItemBatchResponse> UpsertItemBatchAsync(string indexName,
+        IEnumerable<VectorIndexItem> items)
+    {
+        return await dataClient.UpsertItemBatchAsync(indexName, items);
+    }
+
+    /// <inheritdoc />
+    public async Task<VectorDeleteItemBatchResponse> DeleteItemBatchAsync(string indexName, IEnumerable<string> ids)
+    {
+        return await dataClient.DeleteItemBatchAsync(indexName, ids);
+    }
+
+    /// <inheritdoc />
+    public async Task<VectorSearchResponse> SearchAsync(string indexName, IEnumerable<float> queryVector,
+        uint topK = 10, MetadataFields? metadataFields = null)
+    {
+        return await dataClient.SearchAsync(indexName, queryVector, topK, metadataFields);
+    }
+
     /// <inheritdoc />
     public void Dispose()
     {

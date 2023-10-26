@@ -59,7 +59,7 @@ public class VectorIndexControlTest : IClassFixture<VectorIndexClientFixture>
     [Fact]
     public async Task CreateIndexAsync_InvalidIndexName()
     {
-        var createResponse = await vectorIndexClient.CreateIndexAsync(null, 3);
+        var createResponse = await vectorIndexClient.CreateIndexAsync(null!, 3);
         Assert.True(createResponse is CreateVectorIndexResponse.Error, $"Unexpected response: {createResponse}");
         var createErr = (CreateVectorIndexResponse.Error)createResponse;
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, createErr.InnerException.ErrorCode);
