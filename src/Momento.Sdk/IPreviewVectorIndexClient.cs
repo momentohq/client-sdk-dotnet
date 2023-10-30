@@ -27,7 +27,7 @@ public interface IPreviewVectorIndexClient: IDisposable
     /// the following subtypes:
     /// <list type="bullet">
     /// <item><description>CreateVectorIndexResponse.Success</description></item>
-    /// <item><description>CreateVectorIndexResponse.IndexAlreadyExists</description></item>
+    /// <item><description>CreateVectorIndexResponse.AlreadyExists</description></item>
     /// <item><description>CreateVectorIndexResponse.Error</description></item>
     /// </list>
     /// Pattern matching can be used to operate on the appropriate subtype.

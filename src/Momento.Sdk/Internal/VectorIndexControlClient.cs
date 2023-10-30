@@ -55,7 +55,7 @@ internal sealed class VectorIndexControlClient : IDisposable
         {
             if (e is RpcException { StatusCode: StatusCode.AlreadyExists })
             {
-                return _logger.LogTraceVectorIndexRequestSuccess("createVectorIndex", indexName, new CreateVectorIndexResponse.IndexAlreadyExists());
+                return _logger.LogTraceVectorIndexRequestSuccess("createVectorIndex", indexName, new CreateVectorIndexResponse.AlreadyExists());
             }
             return _logger.LogTraceVectorIndexRequestError("createVectorIndex", indexName, new CreateVectorIndexResponse.Error(_exceptionMapper.Convert(e)));
         }

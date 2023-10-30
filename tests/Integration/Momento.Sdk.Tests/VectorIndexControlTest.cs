@@ -40,7 +40,7 @@ public class VectorIndexControlTest : IClassFixture<VectorIndexClientFixture>
         Assert.True(createResponse is CreateVectorIndexResponse.Success, $"Unexpected response: {createResponse}");
         
         var createAgainResponse = await vectorIndexClient.CreateIndexAsync(indexName, numDimensions);
-        Assert.True(createAgainResponse is CreateVectorIndexResponse.IndexAlreadyExists, $"Unexpected response: {createAgainResponse}");
+        Assert.True(createAgainResponse is CreateVectorIndexResponse.AlreadyExists, $"Unexpected response: {createAgainResponse}");
     }
     
     [Fact]

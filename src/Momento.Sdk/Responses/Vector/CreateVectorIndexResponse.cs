@@ -8,7 +8,7 @@ using Exceptions;
 /// the following subtypes:
 /// <list type="bullet">
 /// <item><description>CreateVectorIndexResponse.Success</description></item>
-/// <item><description>CreateVectorIndexResponse.IndexAlreadyExists</description></item>
+/// <item><description>CreateVectorIndexResponse.AlreadyExists</description></item>
 /// <item><description>CreateVectorIndexResponse.Error</description></item>
 /// </list>
 /// Pattern matching can be used to operate on the appropriate subtype.
@@ -18,7 +18,7 @@ using Exceptions;
 /// {
 ///     // handle success if needed
 /// }
-/// else if (response is CreateVectorIndexResponse.IndexAlreadyExists alreadyExistsResponse)
+/// else if (response is CreateVectorIndexResponse.AlreadyExists alreadyExistsResponse)
 /// {
 ///     // handle already exists as appropriate
 /// }
@@ -35,10 +35,10 @@ public abstract class CreateVectorIndexResponse
     public class Success : CreateVectorIndexResponse { }
 
     /// <summary>
-    /// Class <c>IndexAlreadyExists</c> indicates that an index with the requested name
+    /// Class <c>AlreadyExists</c> indicates that an index with the requested name
     /// has already been created in the requesting account.
     /// </summary>
-    public class IndexAlreadyExists : CreateVectorIndexResponse { }
+    public class AlreadyExists : CreateVectorIndexResponse { }
 
     /// <include file="../../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : CreateVectorIndexResponse, IError
