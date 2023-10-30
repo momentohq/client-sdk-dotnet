@@ -182,6 +182,6 @@ public interface IPreviewVectorIndexClient : IDisposable
     /// }
     /// </code>
     ///</returns>
-    public Task<VectorSearchResponse> SearchAsync(string indexName, IEnumerable<float> queryVector, uint topK = 10,
+    public Task<VectorSearchResponse> SearchAsync(string indexName, IEnumerable<float> queryVector, int topK = 10,
         MetadataFields? metadataFields = null);
 }

@@ -67,13 +67,14 @@ internal sealed class VectorIndexDataClient : IDisposable
         }
     }
 
-    public async Task<VectorSearchResponse> SearchAsync(string indexName, IEnumerable<float> queryVector, uint topK,
+    public async Task<VectorSearchResponse> SearchAsync(string indexName, IEnumerable<float> queryVector, int topK,
         MetadataFields? metadataFields)
     {
         try
         {
             _logger.LogTraceVectorIndexRequest("search", indexName);
             CheckValidIndexName(indexName);
+            var validatedTopK = ValidateTopK(topK);
             metadataFields ??= new List<string>();
             var metadataRequest = metadataFields switch
             {
@@ -89,7 +90,7 @@ internal sealed class VectorIndexDataClient : IDisposable
             {
                 IndexName = indexName,
                 QueryVector = new _Vector { Elements = { queryVector } },
-                TopK = topK,
+                TopK = validatedTopK,
                 MetadataFields = metadataRequest
             };
 
@@ -119,28 +120,19 @@ internal sealed class VectorIndexDataClient : IDisposable
         var convertedMetadataList = new List<_Metadata>();
         foreach (var metadataPair in metadata)
         {
-            _Metadata convertedMetadata;
-            switch (metadataPair.Value)
+            var convertedMetadata = metadataPair.Value switch
             {
-                case StringValue stringValue:
-                    convertedMetadata = new _Metadata { Field = metadataPair.Key, StringValue = stringValue.Value };
-                    break;
-                case LongValue longValue:
-                    convertedMetadata = new _Metadata { Field = metadataPair.Key, IntegerValue = longValue.Value };
-                    break;
-                case DoubleValue doubleValue:
-                    convertedMetadata = new _Metadata { Field = metadataPair.Key, DoubleValue = doubleValue.Value };
-                    break;
-                case BoolValue boolValue:
-                    convertedMetadata = new _Metadata { Field = metadataPair.Key, BooleanValue = boolValue.Value };
-                    break;
-                case StringListValue stringListValue:
-                    var listOfStrings = new _Metadata.Types._ListOfStrings { Values = { stringListValue.Value } };
-                    convertedMetadata = new _Metadata { Field = metadataPair.Key, ListOfStringsValue = listOfStrings };
-                    break;
-                default:
-                    throw new InvalidArgumentException($"Unknown metadata type {metadataPair.Value.GetType()}");
-            }
+                StringValue stringValue => new _Metadata { Field = metadataPair.Key, StringValue = stringValue.Value },
+                LongValue longValue => new _Metadata { Field = metadataPair.Key, IntegerValue = longValue.Value },
+                DoubleValue doubleValue => new _Metadata { Field = metadataPair.Key, DoubleValue = doubleValue.Value },
+                BoolValue boolValue => new _Metadata { Field = metadataPair.Key, BooleanValue = boolValue.Value },
+                StringListValue stringListValue => new _Metadata
+                {
+                    Field = metadataPair.Key,
+                    ListOfStringsValue = new _Metadata.Types._ListOfStrings { Values = { stringListValue.Value } }
+                },
+                _ => throw new InvalidArgumentException($"Unknown metadata type {metadataPair.Value.GetType()}")
+            };
 
             convertedMetadataList.Add(convertedMetadata);
         }
@@ -184,6 +176,16 @@ internal sealed class VectorIndexDataClient : IDisposable
         {
             throw new InvalidArgumentException("Index name must be nonempty");
         }
+    }
+
+    private static uint ValidateTopK(long topK)
+    {
+        if (topK <= 0)
+        {
+            throw new InvalidArgumentException("topK must be greater than 0");
+        }
+
+        return (uint)topK;
     }
 
     private DateTime CalculateDeadline()
