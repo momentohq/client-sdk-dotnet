@@ -3,30 +3,32 @@ using Momento.Sdk.Config.Transport;
 
 namespace Momento.Sdk.Config;
 
-/// <inheritdoc cref="IAuthConfiguration" />
-public class AuthConfiguration : IAuthConfiguration
+/// <inheritdoc cref="IVectorIndexConfiguration" />
+public class VectorIndexConfiguration : IVectorIndexConfiguration
 {
     /// <inheritdoc />
     public ILoggerFactory LoggerFactory { get; }
     /// <inheritdoc />
-    public IAuthTransportStrategy TransportStrategy { get; }
+    public IVectorIndexTransportStrategy TransportStrategy { get; }
 
     
     /// <summary>
-    /// Create a new instance of an Auth Configuration object with provided arguments: <see cref="Momento.Sdk.Config.IAuthConfiguration.TransportStrategy"/>, and <see cref="Momento.Sdk.Config.IAuthConfiguration.LoggerFactory"/>
+    /// Create a new instance of a Vector Index Configuration object with provided arguments:
+    /// <see cref="Momento.Sdk.Config.IVectorIndexConfiguration.TransportStrategy"/>,
+    /// and <see cref="Momento.Sdk.Config.IVectorIndexConfiguration.LoggerFactory"/>
     /// </summary>
     /// <param name="transportStrategy">This is responsible for configuring network tunables.</param>
     /// <param name="loggerFactory">This is responsible for configuring logging.</param>
-    public AuthConfiguration(ILoggerFactory loggerFactory, IAuthTransportStrategy transportStrategy)
+    public VectorIndexConfiguration(ILoggerFactory loggerFactory, IVectorIndexTransportStrategy transportStrategy)
     {
         LoggerFactory = loggerFactory;
         TransportStrategy = transportStrategy;
     }
 
     /// <inheritdoc />
-    public IAuthConfiguration WithTransportStrategy(IAuthTransportStrategy transportStrategy)
+    public IVectorIndexConfiguration WithTransportStrategy(IVectorIndexTransportStrategy transportStrategy)
     {
-        return new AuthConfiguration(LoggerFactory, transportStrategy);
+        return new VectorIndexConfiguration(LoggerFactory, transportStrategy);
     }
 
     /// <inheritdoc />
@@ -37,7 +39,7 @@ public class AuthConfiguration : IAuthConfiguration
             return false;
         }
 
-        var other = (AuthConfiguration)obj;
+        var other = (VectorIndexConfiguration)obj;
         return TransportStrategy.Equals(other.TransportStrategy) &&
             LoggerFactory.Equals(other.LoggerFactory);
     }

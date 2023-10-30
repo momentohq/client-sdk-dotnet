@@ -46,7 +46,7 @@ internal sealed class ScsTokenClient : IDisposable
         }
         catch (ArgumentNullException e)
         {
-            return _logger.LogTraceAuthRequestError(RequestTypeAuthGenerateDisposableToken,
+            return _logger.LogTraceGenericRequestError(RequestTypeAuthGenerateDisposableToken,
                 new GenerateDisposableTokenResponse.Error(
                     new InvalidArgumentException("Permissions parameters may not be null", null, e)
                 )
@@ -61,16 +61,16 @@ internal sealed class ScsTokenClient : IDisposable
                 AuthToken = this.authToken,
                 Permissions = permissions
             };
-            _logger.LogTraceExecutingAuthRequest(RequestTypeAuthGenerateDisposableToken);
+            _logger.LogTraceExecutingGenericRequest(RequestTypeAuthGenerateDisposableToken);
             var response = await grpcManager.Client.generateDisposableToken(
                 request, new CallOptions(deadline: CalculateDeadline())
             );
-            return _logger.LogTraceAuthRequestSuccess(RequestTypeAuthGenerateDisposableToken,
+            return _logger.LogTraceGenericRequestSuccess(RequestTypeAuthGenerateDisposableToken,
                 new GenerateDisposableTokenResponse.Success(response));
         }
         catch (Exception e)
         {
-            return _logger.LogTraceAuthRequestError(RequestTypeAuthGenerateDisposableToken,
+            return _logger.LogTraceGenericRequestError(RequestTypeAuthGenerateDisposableToken,
                 new GenerateDisposableTokenResponse.Error(_exceptionMapper.Convert(e)));
         }
     }

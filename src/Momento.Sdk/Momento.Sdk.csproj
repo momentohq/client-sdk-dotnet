@@ -55,7 +55,7 @@
 	<ItemGroup>
 	  <PackageReference Include="Grpc.Net.Client" Version="2.49.0" />
 	  <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
-	  <PackageReference Include="Momento.Protos" Version="0.79.0" />
+	  <PackageReference Include="Momento.Protos" Version="0.85.0" />
 	  <PackageReference Include="JWT" Version="9.0.3" />
 	  <PackageReference Include="System.Threading.Channels" Version="6.0.0" />
 	  <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />

@@ -487,11 +487,11 @@ namespace Momento.Sdk.Internal
 #endif
 
         /// <summary>
-        /// Logs a message at TRACE level that indicates that an auth request is about to be executed.
+        /// Logs a message at TRACE level that indicates that an request is about to be executed.
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="requestType"></param>
-        public static void LogTraceExecutingAuthRequest(this ILogger logger, string requestType)
+        public static void LogTraceExecutingGenericRequest(this ILogger logger, string requestType)
         {
             if (logger.IsEnabled(LogLevel.Trace))
             {
@@ -500,14 +500,14 @@ namespace Momento.Sdk.Internal
         }
 
         /// <summary>
-        /// Logs a message at TRACE level that indicates that a topic request resulted in an error.
+        /// Logs a message at TRACE level that indicates that a request resulted in an error.
         /// </summary>
         /// <typeparam name="TError"></typeparam>
         /// <param name="logger"></param>
         /// <param name="requestType"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public static TError LogTraceAuthRequestError<TError>(this ILogger logger, string requestType, TError error)
+        public static TError LogTraceGenericRequestError<TError>(this ILogger logger, string requestType, TError error)
         {
             if (logger.IsEnabled(LogLevel.Trace))
             {
@@ -517,19 +517,68 @@ namespace Momento.Sdk.Internal
         }
 
         /// <summary>
-        /// /// Logs a message at TRACE level that indicates that a topic request resulted in a success.
+        /// /// Logs a message at TRACE level that indicates that a request resulted in a success.
         /// </summary>
         /// <typeparam name="TSuccess"></typeparam>
         /// <param name="logger"></param>
         /// <param name="requestType"></param>
         /// <param name="success"></param>
         /// <returns></returns>
-        public static TSuccess LogTraceAuthRequestSuccess<TSuccess>(this ILogger logger, string requestType, TSuccess success)
+        public static TSuccess LogTraceGenericRequestSuccess<TSuccess>(this ILogger logger, string requestType, TSuccess success)
         {
 
             if (logger.IsEnabled(LogLevel.Trace))
             {
                 logger.LogTrace("Successfully executed '{}' request: success: {}", requestType, success);
+            }
+            return success;
+        }
+
+        /// <summary>
+        /// Logs a message at TRACE level that indicates that a vector index request is about to be executed.
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="requestType"></param>
+        /// <param name="indexName"></param>
+        /// <returns></returns>
+        public static void LogTraceVectorIndexRequest(this ILogger logger, string requestType, string indexName)
+        {
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.LogTrace("Executing '{}' request: indexName: {}", requestType, indexName);
+            }
+        }
+
+        /// <summary>
+        /// Logs a message at TRACE level that indicates that a vector index request resulted in an error.
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="requestType"></param>
+        /// <param name="indexName"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public static TError LogTraceVectorIndexRequestError<TError>(this ILogger logger, string requestType, string indexName, TError error)
+        {
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.LogTrace("An error occurred while executing a '{}' request: indexName: {}; error: {}", requestType, indexName, error);
+            }
+            return error;
+        }
+        
+        /// <summary>
+        /// Logs a message at TRACE level that indicates that a vector index request resulted in a success.
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="requestType"></param>
+        /// <param name="indexName"></param>
+        /// <param name="success"></param>
+        /// <returns></returns>
+        public static TSuccess LogTraceVectorIndexRequestSuccess<TSuccess>(this ILogger logger, string requestType, string indexName, TSuccess success)
+        {
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.LogTrace("Successfully executed '{}' request: indexName: {}; success: {}", requestType, indexName, success);
             }
             return success;
         }
