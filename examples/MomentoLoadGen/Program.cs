@@ -126,8 +126,8 @@ namespace MomentoLoadGen
                     )
                 );
                 var statsPrinterTask = LaunchStatsPrinterTask(
-                    context, 
-                    _options.showStatsInterval, 
+                    context,
+                    _options.showStatsInterval,
                     cancellationTokenSource.Token
                 );
                 asyncTasks.Append(statsPrinterTask);
@@ -138,7 +138,7 @@ namespace MomentoLoadGen
                 // tasks throws an uncaught exception.
                 var firstResult = await Task.WhenAny(asyncTasks);
                 await firstResult;
-                
+
                 await Task.WhenAll(asyncTasks);
             }
             _logger.LogInformation("Done");
@@ -412,7 +412,7 @@ If you have questions or need help experimenting further, please reach out to us
               ///
               /// Each time this amount of time has passed, statistics about throughput and latency
               /// will be printed.
-              /// 
+              ///
               ///
               showStatsInterval: TimeSpan.FromSeconds(5),
               ///
@@ -427,7 +427,8 @@ If you have questions or need help experimenting further, please reach out to us
               /// but it will also increase CPU consumption.  As CPU usage increases and there
               /// is more contention between the concurrent function calls, client-side latencies
               /// may increase.
-              ///
+              /// Note: You are likely to see degraded performance if you increase this above 50
+              /// and observe elevated client-side latencies.
               numberOfConcurrentRequests: 50,
               ///
               /// Sets an upper bound on how many requests per second will be sent to the server.
@@ -441,10 +442,10 @@ If you have questions or need help experimenting further, please reach out to us
               ///
               howLongToRun: TimeSpan.FromMinutes(1)
             );
-            
+
             using (ILoggerFactory loggerFactory = InitializeLogging(loadGeneratorOptions.logLevel))
             {
-                /// 
+                ///
                 /// This is the configuration that will be used for the Momento client.  Choose from
                 /// our pre-built configurations that are optimized for Laptop vs InRegion environments,
                 /// or build your own.
