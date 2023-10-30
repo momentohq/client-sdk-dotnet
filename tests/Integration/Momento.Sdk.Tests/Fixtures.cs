@@ -135,7 +135,7 @@ public class VectorIndexClientFixture : IDisposable
     public VectorIndexClientFixture()
     {
         AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
-        Client = new PreviewVectorIndexClient(VectorIndexConfigurations.InRegion.Default.Latest(LoggerFactory.Create(builder =>
+        Client = new PreviewVectorIndexClient(VectorIndexConfigurations.Laptop.Latest(LoggerFactory.Create(builder =>
         {
             builder.AddSimpleConsole(options =>
             {

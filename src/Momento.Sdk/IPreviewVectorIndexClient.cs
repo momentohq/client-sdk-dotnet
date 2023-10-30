@@ -33,7 +33,7 @@ public interface IPreviewVectorIndexClient: IDisposable
     /// Pattern matching can be used to operate on the appropriate subtype.
     /// For example:
     /// <code>
-    /// if (response is CreateCacheResponse.Error errorResponse)
+    /// if (response is CreateVectorIndexResponse.Error errorResponse)
     /// {
     ///     // handle error as appropriate
     /// }
@@ -57,7 +57,7 @@ public interface IPreviewVectorIndexClient: IDisposable
     /// </list>
     /// </remarks>
     /// </returns>
-    public Task<CreateVectorIndexResponse> CreateIndexAsync(string indexName, ulong numDimensions, SimilarityMetric similarityMetric = SimilarityMetric.CosineSimilarity);
+    public Task<CreateVectorIndexResponse> CreateIndexAsync(string indexName, long numDimensions, SimilarityMetric similarityMetric = SimilarityMetric.CosineSimilarity);
     
     /// <summary>
     /// Lists all vector indexes.

@@ -7,6 +7,12 @@ using Momento.Sdk.Responses.Vector;
 
 namespace Momento.Sdk;
 
+/// <summary>
+/// PREVIEW Vector Index Client implementation
+/// WARNING: the API for this client is not yet stable and may change without notice.
+///
+/// Includes control operations and data operations.
+/// </summary>
 public class PreviewVectorIndexClient: IPreviewVectorIndexClient
 {
     private readonly VectorIndexControlClient controlClient;
@@ -27,7 +33,7 @@ public class PreviewVectorIndexClient: IPreviewVectorIndexClient
     }
     
     /// <inheritdoc />
-    public async Task<CreateVectorIndexResponse> CreateIndexAsync(string indexName, ulong numDimensions,
+    public async Task<CreateVectorIndexResponse> CreateIndexAsync(string indexName, long numDimensions,
         SimilarityMetric similarityMetric = SimilarityMetric.CosineSimilarity)
     {
         return await controlClient.CreateIndexAsync(indexName, numDimensions, similarityMetric);

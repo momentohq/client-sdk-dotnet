@@ -25,14 +25,14 @@ internal sealed class VectorIndexControlClient : IDisposable
         _exceptionMapper = new CacheExceptionMapper(loggerFactory);
     }
 
-    public async Task<CreateVectorIndexResponse> CreateIndexAsync(string indexName, ulong numDimensions, SimilarityMetric similarityMetric)
+    public async Task<CreateVectorIndexResponse> CreateIndexAsync(string indexName, long numDimensions, SimilarityMetric similarityMetric)
     {
         try
         {
             _logger.LogTraceVectorIndexRequest("createVectorIndex", indexName);
             CheckValidIndexName(indexName);
-            CheckValidNumDimensions(numDimensions);
-            var request = new _CreateIndexRequest { IndexName = indexName, NumDimensions = numDimensions };
+            var validatedNumDimensions = ValidateNumDimensions(numDimensions);
+            var request = new _CreateIndexRequest { IndexName = indexName, NumDimensions = validatedNumDimensions };
             switch (similarityMetric)
             {
                 case SimilarityMetric.CosineSimilarity:
@@ -101,12 +101,14 @@ internal sealed class VectorIndexControlClient : IDisposable
         }
     }
     
-    private static void CheckValidNumDimensions(ulong numDimensions)
+    private static ulong ValidateNumDimensions(long numDimensions)
     {
         if (numDimensions <= 0)
         {
             throw new InvalidArgumentException("numDimensions must be greater than 0");
         }
+
+        return (ulong)numDimensions;
     }
 
     private DateTime CalculateDeadline()

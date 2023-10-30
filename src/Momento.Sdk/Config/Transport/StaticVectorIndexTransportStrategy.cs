@@ -49,7 +49,7 @@ public class StaticVectorIndexTransportStrategy : IVectorIndexTransportStrategy
             return false;
         }
 
-        var other = (StaticTransportStrategy)obj;
+        var other = (StaticVectorIndexTransportStrategy)obj;
         return GrpcConfig.Equals(other.GrpcConfig);
     }
 
