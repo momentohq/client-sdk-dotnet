@@ -110,7 +110,7 @@ public interface IPreviewVectorIndexClient : IDisposable
     /// If an item with the same ID already exists in the index, it will be replaced.
     /// Otherwise, it will be added to the index.
     /// </summary>
-    /// <param name="indexName">The name of the vector index to delete.</param>
+    /// <param name="indexName">The name of the vector index to upsert the items into.</param>
     /// <param name="items">The items to upsert into the index.</param>
     /// <returns>
     /// Task representing the result of the upsert operation. The
@@ -133,9 +133,9 @@ public interface IPreviewVectorIndexClient : IDisposable
         IEnumerable<Item> items);
 
     /// <summary>
-    /// Deletes all items with the given IDs from the index.
+    /// Deletes all items with the given IDs from the index. Returns success if for items that do not exist.
     /// </summary>
-    /// <param name="indexName">The name of the vector index to delete.</param>
+    /// <param name="indexName">The name of the vector index to delete the items from.</param>
     /// <param name="ids">The IDs of the items to delete from the index.</param>
     /// <returns>
     /// Task representing the result of the upsert operation. The
@@ -161,7 +161,7 @@ public interface IPreviewVectorIndexClient : IDisposable
     /// Ranks the vectors according to the similarity metric specified when the
     /// index was created.
     /// </summary>
-    /// <param name="indexName">The name of the vector index to delete.</param>
+    /// <param name="indexName">The name of the vector index to search in.</param>
     /// <param name="queryVector">The vector to search for.</param>
     /// <param name="topK">The number of results to return. Defaults to 10.</param>
     /// <param name="metadataFields">A list of metadata fields to return with each result.</param>
@@ -170,13 +170,13 @@ public interface IPreviewVectorIndexClient : IDisposable
     /// response object is resolved to a type-safe object of one of
     /// the following subtypes:
     /// <list type="bullet">
-    /// <item><description>DeleteItemBatchResponse.Success</description></item>
-    /// <item><description>DeleteItemBatchResponse.Error</description></item>
+    /// <item><description>SearchResponse.Success</description></item>
+    /// <item><description>SearchResponse.Error</description></item>
     /// </list>
     /// Pattern matching can be used to operate on the appropriate subtype.
     /// For example:
     /// <code>
-    /// if (response is DeleteItemBatchResponse.Error errorResponse)
+    /// if (response is SearchResponse.Error errorResponse)
     /// {
     ///     // handle error as appropriate
     /// }
