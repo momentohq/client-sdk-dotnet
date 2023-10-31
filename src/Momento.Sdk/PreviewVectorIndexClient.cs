@@ -36,39 +36,39 @@ public class PreviewVectorIndexClient: IPreviewVectorIndexClient
     }
 
     /// <inheritdoc />
-    public async Task<CreateVectorIndexResponse> CreateIndexAsync(string indexName, long numDimensions,
+    public async Task<CreateIndexResponse> CreateIndexAsync(string indexName, long numDimensions,
         SimilarityMetric similarityMetric = SimilarityMetric.CosineSimilarity)
     {
         return await controlClient.CreateIndexAsync(indexName, numDimensions, similarityMetric);
     }
 
     /// <inheritdoc />
-    public async Task<ListVectorIndexesResponse> ListIndexesAsync()
+    public async Task<ListIndexesResponse> ListIndexesAsync()
     {
         return await controlClient.ListIndexesAsync();
     }
 
     /// <inheritdoc />
-    public async Task<DeleteVectorIndexResponse> DeleteIndexesAsync(string indexName)
+    public async Task<DeleteIndexResponse> DeleteIndexesAsync(string indexName)
     {
         return await controlClient.DeleteIndexAsync(indexName);
     }
 
     /// <inheritdoc />
-    public async Task<VectorUpsertItemBatchResponse> UpsertItemBatchAsync(string indexName,
-        IEnumerable<VectorIndexItem> items)
+    public async Task<UpsertItemBatchResponse> UpsertItemBatchAsync(string indexName,
+        IEnumerable<Item> items)
     {
         return await dataClient.UpsertItemBatchAsync(indexName, items);
     }
 
     /// <inheritdoc />
-    public async Task<VectorDeleteItemBatchResponse> DeleteItemBatchAsync(string indexName, IEnumerable<string> ids)
+    public async Task<DeleteItemBatchResponse> DeleteItemBatchAsync(string indexName, IEnumerable<string> ids)
     {
         return await dataClient.DeleteItemBatchAsync(indexName, ids);
     }
 
     /// <inheritdoc />
-    public async Task<VectorSearchResponse> SearchAsync(string indexName, IEnumerable<float> queryVector,
+    public async Task<SearchResponse> SearchAsync(string indexName, IEnumerable<float> queryVector,
         int topK = 10, MetadataFields? metadataFields = null)
     {
         return await dataClient.SearchAsync(indexName, queryVector, topK, metadataFields);

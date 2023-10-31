@@ -28,8 +28,8 @@ internal sealed class VectorIndexDataClient : IDisposable
         _exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
     }
 
-    public async Task<VectorUpsertItemBatchResponse> UpsertItemBatchAsync(string indexName,
-        IEnumerable<VectorIndexItem> items)
+    public async Task<UpsertItemBatchResponse> UpsertItemBatchAsync(string indexName,
+        IEnumerable<Item> items)
     {
         try
         {
@@ -39,16 +39,16 @@ internal sealed class VectorIndexDataClient : IDisposable
 
             await grpcManager.Client.UpsertItemBatchAsync(request, new CallOptions(deadline: CalculateDeadline()));
             return _logger.LogTraceVectorIndexRequestSuccess("upsertItemBatch", indexName,
-                new VectorUpsertItemBatchResponse.Success());
+                new UpsertItemBatchResponse.Success());
         }
         catch (Exception e)
         {
             return _logger.LogTraceVectorIndexRequestError("upsertItemBatch", indexName,
-                new VectorUpsertItemBatchResponse.Error(_exceptionMapper.Convert(e)));
+                new UpsertItemBatchResponse.Error(_exceptionMapper.Convert(e)));
         }
     }
 
-    public async Task<VectorDeleteItemBatchResponse> DeleteItemBatchAsync(string indexName, IEnumerable<string> ids)
+    public async Task<DeleteItemBatchResponse> DeleteItemBatchAsync(string indexName, IEnumerable<string> ids)
     {
         try
         {
@@ -58,16 +58,16 @@ internal sealed class VectorIndexDataClient : IDisposable
 
             await grpcManager.Client.DeleteItemBatchAsync(request, new CallOptions(deadline: CalculateDeadline()));
             return _logger.LogTraceVectorIndexRequestSuccess("deleteItemBatch", indexName,
-                new VectorDeleteItemBatchResponse.Success());
+                new DeleteItemBatchResponse.Success());
         }
         catch (Exception e)
         {
             return _logger.LogTraceVectorIndexRequestError("deleteItemBatch", indexName,
-                new VectorDeleteItemBatchResponse.Error(_exceptionMapper.Convert(e)));
+                new DeleteItemBatchResponse.Error(_exceptionMapper.Convert(e)));
         }
     }
 
-    public async Task<VectorSearchResponse> SearchAsync(string indexName, IEnumerable<float> queryVector, int topK,
+    public async Task<SearchResponse> SearchAsync(string indexName, IEnumerable<float> queryVector, int topK,
         MetadataFields? metadataFields)
     {
         try
@@ -98,16 +98,16 @@ internal sealed class VectorIndexDataClient : IDisposable
                 await grpcManager.Client.SearchAsync(request, new CallOptions(deadline: CalculateDeadline()));
             var searchHits = response.Hits.Select(Convert).ToList();
             return _logger.LogTraceVectorIndexRequestSuccess("search", indexName,
-                new VectorSearchResponse.Success(searchHits));
+                new SearchResponse.Success(searchHits));
         }
         catch (Exception e)
         {
             return _logger.LogTraceVectorIndexRequestError("search", indexName,
-                new VectorSearchResponse.Error(_exceptionMapper.Convert(e)));
+                new SearchResponse.Error(_exceptionMapper.Convert(e)));
         }
     }
 
-    private static _Item Convert(VectorIndexItem item)
+    private static _Item Convert(Item item)
     {
         return new _Item
         {

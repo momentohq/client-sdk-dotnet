@@ -7,17 +7,17 @@ using Momento.Sdk.Exceptions;
 /// response object is resolved to a type-safe object of one of
 /// the following subtypes:
 /// <list type="bullet">
-/// <item><description>DeleteVectorIndexResponse.Success</description></item>
-/// <item><description>DeleteVectorIndexResponse.Error</description></item>
+/// <item><description>DeleteIndexResponse.Success</description></item>
+/// <item><description>DeleteIndexResponse.Error</description></item>
 /// </list>
 /// Pattern matching can be used to operate on the appropriate subtype.
 /// For example:
 /// <code>
-/// if (response is DeleteVectorIndexResponse.Success successResponse)
+/// if (response is DeleteIndexResponse.Success successResponse)
 /// {
 ///     // handle success if needed
 /// }
-/// else if (response is DeleteVectorIndexResponse.Error errorResponse)
+/// else if (response is DeleteIndexResponse.Error errorResponse)
 /// {
 ///     // handle error as appropriate
 /// }
@@ -27,14 +27,14 @@ using Momento.Sdk.Exceptions;
 /// }
 /// </code>
 /// </summary>
-public abstract class DeleteVectorIndexResponse
+public abstract class DeleteIndexResponse
 {
 
     /// <include file="../../docs.xml" path='docs/class[@name="Success"]/description/*' />
-    public class Success : DeleteVectorIndexResponse { }
+    public class Success : DeleteIndexResponse { }
 
     /// <include file="../../docs.xml" path='docs/class[@name="Error"]/description/*' />
-    public class Error : DeleteVectorIndexResponse, IError
+    public class Error : DeleteIndexResponse, IError
     {
         /// <include file="../../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)

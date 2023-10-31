@@ -4,16 +4,16 @@ using Momento.Sdk.Messages.Vector;
 namespace Momento.Sdk.Requests.Vector;
 
 /// <summary>
-/// A item in a vector index. Contains an ID, the vector, and any associated metadata.
+/// An item in a vector index. Contains an ID, the vector, and any associated metadata.
 /// </summary>
-public class VectorIndexItem
+public class Item
 {
     /// <summary>
-    /// Constructs a VectorIndexItem with no metadata.
+    /// Constructs a Item with no metadata.
     /// </summary>
     /// <param name="id">the ID of the vector.</param>
     /// <param name="vector">the vector.</param>
-    public VectorIndexItem(string id, List<float> vector)
+    public Item(string id, List<float> vector)
     {
         Id = id;
         Vector = vector;
@@ -21,12 +21,12 @@ public class VectorIndexItem
     }
     
     /// <summary>
-    /// Constructs a VectorIndexItem.
+    /// Constructs a Item.
     /// </summary>
     /// <param name="id">the ID of the vector.</param>
     /// <param name="vector">the vector.</param>
     /// <param name="metadata">Metadata associated with the vector.</param>
-    public VectorIndexItem(string id, List<float> vector, Dictionary<string, MetadataValue> metadata)
+    public Item(string id, List<float> vector, Dictionary<string, MetadataValue> metadata)
     {
         Id = id;
         Vector = vector;

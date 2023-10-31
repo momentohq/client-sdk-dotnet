@@ -7,30 +7,30 @@ using Exceptions;
 /// response object is resolved to a type-safe object of one of
 /// the following subtypes:
 /// <list type="bullet">
-/// <item><description>VectorDeleteItemBatchResponse.Success</description></item>
-/// <item><description>VectorDeleteItemBatchResponse.Error</description></item>
+/// <item><description>DeleteItemBatchResponse.Success</description></item>
+/// <item><description>DeleteItemBatchResponse.Error</description></item>
 /// </list>
 /// Pattern matching can be used to operate on the appropriate subtype.
 /// For example:
 /// <code>
-/// if (response is VectorDeleteItemBatchResponse.Success successResponse)
+/// if (response is DeleteItemBatchResponse.Success successResponse)
 /// {
 ///     // handle success if needed
 /// }
-/// else if (response is VectorDeleteItemBatchResponse.Error errorResponse)
+/// else if (response is DeleteItemBatchResponse.Error errorResponse)
 /// {
 ///     // handle error as appropriate
 /// }
 /// </code>
 /// </summary>
-public abstract class VectorDeleteItemBatchResponse
+public abstract class DeleteItemBatchResponse
 {
 
     /// <include file="../../docs.xml" path='docs/class[@name="Success"]/description/*' />
-    public class Success : VectorDeleteItemBatchResponse { }
+    public class Success : DeleteItemBatchResponse { }
 
     /// <include file="../../docs.xml" path='docs/class[@name="Error"]/description/*' />
-    public class Error : VectorDeleteItemBatchResponse, IError
+    public class Error : DeleteItemBatchResponse, IError
     {
         /// <include file="../../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
