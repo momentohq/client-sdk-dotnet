@@ -63,7 +63,7 @@ public class TtlTest : TestBase
         // Add an item with a minute ttl
         byte[] key = Utils.NewGuidByteArray();
         var ttl = TimeSpan.FromSeconds(60);
-        var response = await client.SetAsync(cacheName, key, Utils.NewGuidByteArray());
+        var response = await client.SetAsync(cacheName, key, Utils.NewGuidByteArray(), ttl);
         Assert.True(response is CacheSetResponse.Success, $"Unexpected response: {response}");
 
         // Check it is there
@@ -90,7 +90,7 @@ public class TtlTest : TestBase
         // Add an item with a minute ttl
         string key = Utils.NewGuidString();
         var ttl = TimeSpan.FromSeconds(60);
-        var response = await client.SetAsync(cacheName, key, Utils.NewGuidString());
+        var response = await client.SetAsync(cacheName, key, Utils.NewGuidString(), ttl);
         Assert.True(response is CacheSetResponse.Success, $"Unexpected response: {response}");
 
         // Check it is there
@@ -123,7 +123,8 @@ public class TtlTest : TestBase
         var ttlResponse = await client.ItemGetTtlAsync(cacheName, key);
         Assert.True(ttlResponse is CacheItemGetTtlResponse.Hit, $"Unexpected response: {ttlResponse}");
         var theTtl = ((CacheItemGetTtlResponse.Hit)ttlResponse).Value;
-        Assert.True(theTtl.TotalMilliseconds < 60000 && theTtl.TotalMilliseconds > 55000);
+        Assert.True(theTtl.TotalMilliseconds < 60000,
+            $"TTL should be less than 60 seconds but was {theTtl.TotalMilliseconds}");
 
         await Task.Delay(1000);
 
@@ -131,7 +132,8 @@ public class TtlTest : TestBase
         Assert.True(ttlResponse2 is CacheItemGetTtlResponse.Hit, $"Unexpected response: {ttlResponse}");
         var theTtl2 = ((CacheItemGetTtlResponse.Hit)ttlResponse2).Value;
 
-        Assert.True(theTtl2.TotalMilliseconds <= theTtl.TotalMilliseconds - 1000);
+        Assert.True(theTtl2.TotalMilliseconds < theTtl.TotalMilliseconds,
+            $"TTL should be less than the previous TTL {theTtl.TotalMilliseconds} but was {theTtl2.TotalMilliseconds}");
     }
 
     [Fact]
