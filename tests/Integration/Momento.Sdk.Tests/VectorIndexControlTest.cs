@@ -17,17 +17,22 @@ public class VectorIndexControlTest : IClassFixture<VectorIndexClientFixture>
     {
         var indexName = $"dotnet-integration-{Utils.NewGuidString()}";
         const int numDimensions = 3;
-        
-        var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, numDimensions);
-        Assert.True(createResponse is CreateVectorIndexResponse.Success, $"Unexpected response: {createResponse}");
-        
-        var listResponse = await vectorIndexClient.ListIndexesAsync();
-        Assert.True(listResponse is ListVectorIndexesResponse.Success, $"Unexpected response: {listResponse}");
-        var listOk = (ListVectorIndexesResponse.Success)listResponse;
-        Assert.Contains(listOk.IndexNames, name => name == indexName);
-        
-        var deleteResponse = await vectorIndexClient.DeleteIndexesAsync(indexName);
-        Assert.True(deleteResponse is DeleteVectorIndexResponse.Success, $"Unexpected response: {deleteResponse}");
+
+        try
+        {
+            var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, numDimensions);
+            Assert.True(createResponse is CreateVectorIndexResponse.Success, $"Unexpected response: {createResponse}");
+
+            var listResponse = await vectorIndexClient.ListIndexesAsync();
+            Assert.True(listResponse is ListVectorIndexesResponse.Success, $"Unexpected response: {listResponse}");
+            var listOk = (ListVectorIndexesResponse.Success)listResponse;
+            Assert.Contains(listOk.IndexNames, name => name == indexName);
+        }
+        finally
+        {
+            var deleteResponse = await vectorIndexClient.DeleteIndexesAsync(indexName);
+            Assert.True(deleteResponse is DeleteVectorIndexResponse.Success, $"Unexpected response: {deleteResponse}");
+        }
     }
 
     [Fact]
@@ -35,12 +40,20 @@ public class VectorIndexControlTest : IClassFixture<VectorIndexClientFixture>
     {
         var indexName = $"index-{Utils.NewGuidString()}";
         const int numDimensions = 3;
-        
-        var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, numDimensions);
-        Assert.True(createResponse is CreateVectorIndexResponse.Success, $"Unexpected response: {createResponse}");
-        
-        var createAgainResponse = await vectorIndexClient.CreateIndexAsync(indexName, numDimensions);
-        Assert.True(createAgainResponse is CreateVectorIndexResponse.AlreadyExists, $"Unexpected response: {createAgainResponse}");
+
+        try
+        {
+            var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, numDimensions);
+            Assert.True(createResponse is CreateVectorIndexResponse.Success, $"Unexpected response: {createResponse}");
+
+            var createAgainResponse = await vectorIndexClient.CreateIndexAsync(indexName, numDimensions);
+            Assert.True(createAgainResponse is CreateVectorIndexResponse.AlreadyExists, $"Unexpected response: {createAgainResponse}");
+        }
+        finally
+        {
+            var deleteResponse = await vectorIndexClient.DeleteIndexesAsync(indexName);
+            Assert.True(deleteResponse is DeleteVectorIndexResponse.Success, $"Unexpected response: {deleteResponse}");
+        }
     }
     
     [Fact]
