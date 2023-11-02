@@ -46,7 +46,7 @@ public class CacheDataTest : TestBase
         Assert.True(response is CacheKeyExistsResponse.Success, $"Unexpected response: {response}");
         var goodResponse = (CacheKeyExistsResponse.Success)response;
         bool exists = goodResponse.Exists;
-        Assert.True(exists);
+        Assert.True(exists, $"expected key to exist but it doesn't: {key}");
 
         key = Utils.NewGuidByteArray();
         response = await client.KeyExistsAsync(cacheName, key);
@@ -66,14 +66,14 @@ public class CacheDataTest : TestBase
         Assert.True(response is CacheKeyExistsResponse.Success, $"Unexpected response: {response}");
         var goodResponse = (CacheKeyExistsResponse.Success)response;
         bool exists = goodResponse.Exists;
-        Assert.True(exists);
+        Assert.True(exists, $"expected key to exist but it doesn't: {key}");
 
         key = Utils.NewGuidString();
         response = await client.KeyExistsAsync(cacheName, key);
         Assert.True(response is CacheKeyExistsResponse.Success, $"Unexpected response: {response}");
         goodResponse = (CacheKeyExistsResponse.Success)response;
         exists = goodResponse.Exists;
-        Assert.False(exists);
+        Assert.False(exists, $"expected key to not exist but it does: {key}");
     }
 
     [Fact]

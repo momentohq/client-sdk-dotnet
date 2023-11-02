@@ -68,7 +68,7 @@ public class TtlTest : TestBase
 
         // Check it is there
         var existsResponse = await client.KeyExistsAsync(cacheName, key);
-        Assert.True(existsResponse is CacheKeyExistsResponse.Success, "exists response should be success");
+        Assert.True(existsResponse is CacheKeyExistsResponse.Success, $"Unexpected response: {response}");
         Assert.True(((CacheKeyExistsResponse.Success)existsResponse).Exists, "Key should exist");
 
         // Let's make the TTL really small.
@@ -80,8 +80,8 @@ public class TtlTest : TestBase
 
         // Check it is gone
         existsResponse = await client.KeyExistsAsync(cacheName, key);
-        Assert.True(existsResponse is CacheKeyExistsResponse.Success, "exists response should be success");
-        Assert.False(((CacheKeyExistsResponse.Success)existsResponse).Exists, "Key should not exist");
+        Assert.True(existsResponse is CacheKeyExistsResponse.Success, $"Unexpected response: {response}");
+        Assert.False(((CacheKeyExistsResponse.Success)existsResponse).Exists, $"Key {key} should not exist but it does");
     }
 
     [Fact]
@@ -95,8 +95,8 @@ public class TtlTest : TestBase
 
         // Check it is there
         var existsResponse = await client.KeyExistsAsync(cacheName, key);
-        Assert.True(existsResponse is CacheKeyExistsResponse.Success, "exists response should be success");
-        Assert.True(((CacheKeyExistsResponse.Success)existsResponse).Exists, "Key should exist");
+        Assert.True(existsResponse is CacheKeyExistsResponse.Success, $"Unexpected response: {response}");
+        Assert.True(((CacheKeyExistsResponse.Success)existsResponse).Exists, $"Key {key} should exist but does not");
 
         // Let's make the TTL really small.
         var updateTtlResponse = await client.UpdateTtlAsync(cacheName, key, TimeSpan.FromSeconds(1));
@@ -107,8 +107,8 @@ public class TtlTest : TestBase
 
         // Check it is gone
         existsResponse = await client.KeyExistsAsync(cacheName, key);
-        Assert.True(existsResponse is CacheKeyExistsResponse.Success, "exists response should be success");
-        Assert.False(((CacheKeyExistsResponse.Success)existsResponse).Exists, "Key should not exist");
+        Assert.True(existsResponse is CacheKeyExistsResponse.Success, $"Unexpected response: {response}");
+        Assert.False(((CacheKeyExistsResponse.Success)existsResponse).Exists, $"Key {key} should not exist but it does");
     }
 
     [Fact]

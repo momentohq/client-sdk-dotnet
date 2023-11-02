@@ -179,7 +179,7 @@ public class ListTest : TestBase
         CacheListRetainResponse retainResponse = await client.ListRetainAsync(cacheName, listName, 1, 4);
         Assert.True(retainResponse is CacheListRetainResponse.Success, $"Unexpected response: {retainResponse}");
         var fetchResponse = await client.ListFetchAsync(cacheName, listName);
-        Assert.True(fetchResponse is CacheListFetchResponse.Hit);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value2, value3, value4 }, hitResponse.ValueListString);
         
@@ -187,7 +187,7 @@ public class ListTest : TestBase
         retainResponse = await client.ListRetainAsync(cacheName, listName, 2, -1);
         Assert.True(retainResponse is CacheListRetainResponse.Success, $"Unexpected response: {retainResponse}");
         fetchResponse = await client.ListFetchAsync(cacheName, listName);
-        Assert.True(fetchResponse is CacheListFetchResponse.Hit);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value3, value4, value5 }, hitResponse.ValueListString);
         
@@ -195,7 +195,7 @@ public class ListTest : TestBase
         retainResponse = await client.ListRetainAsync(cacheName, listName, -4, -1);
         Assert.True(retainResponse is CacheListRetainResponse.Success, $"Unexpected response: {retainResponse}");
         fetchResponse = await client.ListFetchAsync(cacheName, listName);
-        Assert.True(fetchResponse is CacheListFetchResponse.Hit);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value3, value4, value5 }, hitResponse.ValueListString);
         
@@ -204,7 +204,7 @@ public class ListTest : TestBase
         retainResponse = await client.ListRetainAsync(cacheName, listName, -3, null);
         Assert.True(retainResponse is CacheListRetainResponse.Success, $"Unexpected response: {retainResponse}");
         fetchResponse = await client.ListFetchAsync(cacheName, listName);
-        Assert.True(fetchResponse is CacheListFetchResponse.Hit);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value4, value5, value6 }, hitResponse.ValueListString);
 
@@ -213,7 +213,7 @@ public class ListTest : TestBase
         retainResponse = await client.ListRetainAsync(cacheName, listName, 2);
         Assert.True(retainResponse is CacheListRetainResponse.Success, $"Unexpected response: {retainResponse}");
         fetchResponse = await client.ListFetchAsync(cacheName, listName);
-        Assert.True(fetchResponse is CacheListFetchResponse.Hit);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value3, value4, value5, value6 }, hitResponse.ValueListString);
         
@@ -222,7 +222,7 @@ public class ListTest : TestBase
         retainResponse = await client.ListRetainAsync(cacheName, listName, null, 1);
         Assert.True(retainResponse is CacheListRetainResponse.Success, $"Unexpected response: {retainResponse}");
         fetchResponse = await client.ListFetchAsync(cacheName, listName);
-        Assert.True(fetchResponse is CacheListFetchResponse.Hit);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value1 }, hitResponse.ValueListString);
 
@@ -231,7 +231,7 @@ public class ListTest : TestBase
         retainResponse = await client.ListRetainAsync(cacheName, listName, endIndex: -3);
         Assert.True(retainResponse is CacheListRetainResponse.Success, $"Unexpected response: {retainResponse}");
         fetchResponse = await client.ListFetchAsync(cacheName, listName);
-        Assert.True(fetchResponse is CacheListFetchResponse.Hit);
+        Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value1, value2, value3 }, hitResponse.ValueListString);
     }
@@ -1255,7 +1255,7 @@ public class ListTest : TestBase
         var response = await client.ListFetchAsync(cacheName, listName);
         Assert.True(response is CacheListFetchResponse.Hit, $"Unexpected response: {response}");
         var cachedList = ((CacheListFetchResponse.Hit)response).ValueListByteArray!;
-        Assert.True(list.ListEquals(cachedList));
+        Assert.True(list.ListEquals(cachedList), $"lists did not match: {list} AND {cachedList}");
     }
 
     [Fact]
@@ -1277,16 +1277,18 @@ public class ListTest : TestBase
         var response = await client.ListFetchAsync(cacheName, listName);
         Assert.True(response is CacheListFetchResponse.Hit, $"Unexpected response: {response}");
         var cachedList = ((CacheListFetchResponse.Hit)response).ValueListByteArray!;
-        Assert.True(list.ListEquals(cachedList));
+        Assert.True(list.ListEquals(cachedList), $"lists did not match: {list} AND {cachedList}");
     }
 
     [Fact]
     public async Task ListRemoveValueAsync_ValueIsByteArray_ListNotThereNoop()
     {
         var listName = Utils.NewGuidString();
-        Assert.True(await client.ListFetchAsync(cacheName, listName) is CacheListFetchResponse.Miss);
+        var response = await client.ListFetchAsync(cacheName, listName);
+        Assert.True(response is CacheListFetchResponse.Miss, $"Unexpected response: {response}");
         await client.ListRemoveValueAsync(cacheName, listName, Utils.NewGuidByteArray());
-        Assert.True(await client.ListFetchAsync(cacheName, listName) is CacheListFetchResponse.Miss);
+        response = await client.ListFetchAsync(cacheName, listName);
+        Assert.True(response is CacheListFetchResponse.Miss, $"Unexpected response: {response}");
     }
 
     [Theory]
@@ -1326,7 +1328,7 @@ public class ListTest : TestBase
         var response = await client.ListFetchAsync(cacheName, listName);
         Assert.True(response is CacheListFetchResponse.Hit, $"Unexpected response: {response}");
         var cachedList = ((CacheListFetchResponse.Hit)response).ValueListString!;
-        Assert.True(list.SequenceEqual(cachedList));
+        Assert.True(list.SequenceEqual(cachedList), $"lists did not match: {list} AND {cachedList}");
     }
 
     [Fact]
@@ -1348,16 +1350,18 @@ public class ListTest : TestBase
         var response = await client.ListFetchAsync(cacheName, listName);
         Assert.True(response is CacheListFetchResponse.Hit, $"Unexpected response: {response}");
         var cachedList = ((CacheListFetchResponse.Hit)response).ValueListString!;
-        Assert.True(list.SequenceEqual(cachedList));
+        Assert.True(list.SequenceEqual(cachedList), $"lists did not match: {list} AND {cachedList}");
     }
 
     [Fact]
     public async Task ListRemoveValueAsync_ValueIsString_ListNotThereNoop()
     {
         var listName = Utils.NewGuidString();
-        Assert.True(await client.ListFetchAsync(cacheName, listName) is CacheListFetchResponse.Miss);
+        var response = await client.ListFetchAsync(cacheName, listName);
+        Assert.True(response is CacheListFetchResponse.Miss, $"Unexpected response: {response}");
         await client.ListRemoveValueAsync(cacheName, listName, Utils.NewGuidString());
-        Assert.True(await client.ListFetchAsync(cacheName, listName) is CacheListFetchResponse.Miss);
+        response = await client.ListFetchAsync(cacheName, listName);
+        Assert.True(response is CacheListFetchResponse.Miss, $"Unexpected response: {response}");
     }
 
     [Fact]
@@ -1416,10 +1420,12 @@ public class ListTest : TestBase
     public async Task ListDeleteAsync_ListDoesNotExist_Noop()
     {
         var listName = Utils.NewGuidString();
-        Assert.True((await client.ListFetchAsync(cacheName, listName)) is CacheListFetchResponse.Miss);
+        var response = await client.ListFetchAsync(cacheName, listName);
+        Assert.True(response is CacheListFetchResponse.Miss, $"Unexpected response: {response}");
         var deleteResponse = await client.DeleteAsync(cacheName, listName);
         Assert.True(deleteResponse is CacheDeleteResponse.Success, $"Unexpected response: {deleteResponse}");
-        Assert.True((await client.ListFetchAsync(cacheName, listName)) is CacheListFetchResponse.Miss);
+        response = await client.ListFetchAsync(cacheName, listName);
+        Assert.True(response is CacheListFetchResponse.Miss, $"Unexpected response: {response}");
     }
 
     [Fact]
@@ -1433,7 +1439,8 @@ public class ListTest : TestBase
         pushResponse = await client.ListPushFrontAsync(cacheName, listName, Utils.NewGuidString());
         Assert.True(pushResponse is CacheListPushFrontResponse.Success, $"Unexpected response: {pushResponse}");
 
-        Assert.True((await client.ListFetchAsync(cacheName, listName)) is CacheListFetchResponse.Hit);
+        var response = await client.ListFetchAsync(cacheName, listName);
+        Assert.True(response is CacheListFetchResponse.Hit, $"Unexpected response: {response}");
         var deleteResponse = await client.DeleteAsync(cacheName, listName);
         Assert.True(deleteResponse is CacheDeleteResponse.Success, $"Unexpected response: {deleteResponse}");
 
