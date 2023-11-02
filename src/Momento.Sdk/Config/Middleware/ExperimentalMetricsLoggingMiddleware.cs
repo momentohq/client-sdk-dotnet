@@ -38,7 +38,7 @@ namespace Momento.Sdk.Config.Middleware
         /// </summary>
         public override Task EmitMetrics(ExperimentalRequestMetrics metrics)
         {
-            var json = "{" +
+            var json = "\"momento\": {" +
                        $"\"numActiveRequestsAtStart\": {metrics.NumActiveRequestsAtStart}, " +
                        $"\"numActiveRequestsAtFinish\": {metrics.NumActiveRequestsAtFinish}, " +
                        $"\"requestType\": \"{metrics.RequestType}\", " +
