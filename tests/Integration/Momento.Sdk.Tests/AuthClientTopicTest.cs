@@ -33,7 +33,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     private async Task<ITopicClient> GetClientForTokenScope(DisposableTokenScope scope)
     {
         var response = await authClient.GenerateDisposableTokenAsync(scope, ExpiresIn.Minutes(2));
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         string authToken = "";
         if (response is GenerateDisposableTokenResponse.Success token)
         {
@@ -48,7 +48,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     {
         client ??= topicClient;
         var response = await client.PublishAsync(cache, topic, value);
-        Assert.True(response is TopicPublishResponse.Success);
+        Assert.True(response is TopicPublishResponse.Success, $"Unexpected response: {response}");
     }
 
     private async Task ExpectTextFromSubscription(
@@ -61,7 +61,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         var gotText = false;
         await foreach (var message in cancellableSubscription)
         {
-            Assert.True(message is TopicMessage.Text);
+            Assert.True(message is TopicMessage.Text, $"Unexpected response: {message}");
             if (message is TopicMessage.Text textMsg) {
                 Assert.Equal(expectedText, textMsg.Value);
                 gotText = true;
@@ -76,7 +76,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
 
     private void AssertPermissionError<TResp, TErrResp>(TResp response)
     {
-        Assert.True(response is TErrResp);
+        Assert.True(response is TErrResp, $"Unexpected response: {response}");
         if (response is IError err)
         {
             Assert.Equal(err.ErrorCode, MomentoErrorCode.PERMISSION_ERROR);
@@ -89,152 +89,152 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         var response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicPublishSubscribe("cache", "topic"), ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicPublishSubscribe(
                 CacheSelector.ByName("cache"), "topic"),
                 ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicPublishSubscribe(
                 "cache", TopicSelector.ByName("topic")),
                 ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicPublishSubscribe(
                 CacheSelector.ByName("cache"), TopicSelector.ByName("topic")),
                 ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
 
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicPublishOnly("cache", "topic"), ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicPublishOnly(
                 CacheSelector.ByName("cache"), "topic"),
                 ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicPublishOnly(
                 "cache", TopicSelector.ByName("topic")),
                 ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicPublishOnly(
                 CacheSelector.ByName("cache"), TopicSelector.ByName("topic")),
                 ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
 
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicSubscribeOnly("cache", "topic"), ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicSubscribeOnly(
                 CacheSelector.ByName("cache"), "topic"),
                 ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicSubscribeOnly(
                 "cache", TopicSelector.ByName("topic")),
                 ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicSubscribeOnly(
                 CacheSelector.ByName("cache"), TopicSelector.ByName("topic")),
                 ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
 
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicNamePrefixPublishSubscribe("cache", "topic-"),
             ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicNamePrefixPublishSubscribe(
                 CacheSelector.ByName("cache"), "topic-"
             ),
             ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicNamePrefixPublishSubscribe(
                 "cache", TopicSelector.ByTopicNamePrefix("topic-")
             ),
             ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicNamePrefixPublishSubscribe(
                 CacheSelector.ByName("cache"), TopicSelector.ByTopicNamePrefix("topic-")
             ),
             ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
 
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicNamePrefixSubscribeOnly("cache", "topic-"),
             ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicNamePrefixSubscribeOnly(
                 CacheSelector.ByName("cache"), "topic-"
             ),
             ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicNamePrefixSubscribeOnly(
                 "cache", TopicSelector.ByTopicNamePrefix("topic-")
             ),
             ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicNamePrefixSubscribeOnly(
                 CacheSelector.ByName("cache"), TopicSelector.ByTopicNamePrefix("topic-")
             ),
             ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
 
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicNamePrefixPublishOnly("cache", "topic-"),
             ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicNamePrefixPublishOnly(
                 CacheSelector.ByName("cache"), "topic-"
             ),
             ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicNamePrefixPublishOnly(
                 "cache", TopicSelector.ByTopicNamePrefix("topic-")
             ),
             ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicNamePrefixPublishOnly(
                 CacheSelector.ByName("cache"), TopicSelector.ByTopicNamePrefix("topic-")
             ),
             ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Success);
+        Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
     }
 
     [Theory]
@@ -246,19 +246,19 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
             DisposableTokenScopes.TopicPublishOnly(cacheName, topicName),
             ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Error);
+        Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicSubscribeOnly(cacheName, topicName),
             ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Error);
+        Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicPublishSubscribe(cacheName, topicName),
             ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Error);
+        Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
     }
 
@@ -271,19 +271,19 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
             DisposableTokenScopes.TopicPublishOnly(cacheName, topicName),
             ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Error);
+        Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicSubscribeOnly(cacheName, topicName),
             ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Error);
+        Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicPublishSubscribe(cacheName, topicName),
             ExpiresIn.Minutes(10)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Error);
+        Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
     }
 
@@ -293,7 +293,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         var response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicPublishSubscribe(cacheName, "foo"), ExpiresIn.Minutes(0)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Error);
+        Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
         if (response is GenerateDisposableTokenResponse.Error err)
         {
             Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, err.ErrorCode);
@@ -301,7 +301,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicPublishSubscribe(cacheName, "foo"), ExpiresIn.Minutes(-50)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Error);
+        Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
         if (response is GenerateDisposableTokenResponse.Error err2)
         {
             Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, err2.ErrorCode);
@@ -309,7 +309,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.TopicPublishSubscribe(cacheName, "foo"), ExpiresIn.Days(365)
         );
-        Assert.True(response is GenerateDisposableTokenResponse.Error);
+        Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
         if (response is GenerateDisposableTokenResponse.Error err3)
         {
             Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, err3.ErrorCode);
@@ -319,9 +319,9 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     private async Task GenerateDisposableTopicAuthToken_ReadWrite_Common(ITopicClient readwriteTopicClient, string messageValue)
     {
         var subscribeResponse = await readwriteTopicClient.SubscribeAsync(cacheName, topicName);
-        Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription);
+        Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription, $"Unexpected response: {subscribeResponse}");
         var publishResponse = await readwriteTopicClient.PublishAsync(cacheName, topicName, messageValue);
-        Assert.True(publishResponse is TopicPublishResponse.Success);
+        Assert.True(publishResponse is TopicPublishResponse.Success, $"Unexpected response: {publishResponse}");
         if (subscribeResponse is TopicSubscribeResponse.Subscription subscription)
         {
             await PublishToTopic(cacheName, topicName, messageValue, readwriteTopicClient);
@@ -352,7 +352,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     private async Task GenerateDisposableTopicAuthToken_ReadOnly_Common(ITopicClient readonlyTopicClient, string messageValue)
     {
         var subscribeResponse = await readonlyTopicClient.SubscribeAsync(cacheName, topicName);
-        Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription);
+        Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription, $"Unexpected response: {subscribeResponse}");
         var publishResponse = await readonlyTopicClient.PublishAsync(cacheName, topicName, messageValue);
         AssertPermissionError<TopicPublishResponse, TopicPublishResponse.Error>(publishResponse);
         await PublishToTopic(cacheName, topicName, messageValue);
@@ -403,16 +403,13 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     )
     {
         var subscribeResponse = await topicClient.SubscribeAsync(cacheName, topicName);
-        Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription);
-
-        // `PublishToTopic` asserts a successful publish response
-        await PublishToTopic(cacheName, topicName, messageValue, writeOnlyTopicClient);
+        Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription, $"Unexpected response: {subscribeResponse}");
 
         if (subscribeResponse is TopicSubscribeResponse.Subscription subscription)
         {
-            var subTask = ExpectTextFromSubscription(subscription, messageValue);
+            // `PublishToTopic` asserts a successful publish response
             await PublishToTopic(cacheName, topicName, messageValue, writeOnlyTopicClient);
-            await subTask;
+            await ExpectTextFromSubscription(subscription, messageValue);
         }
     }
 
@@ -426,17 +423,15 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         await GenerateDisposableTopicAuthToken_WriteOnly_CanPublish_Common(writeOnlyTopicClient, messageValue);
     }
 
-    // TODO: this test is flaky and has been breaking build pipelines. Commenting it out until we have time to
-    //  root cause it. Chris 2023-10-30
-    //[Fact]
-    //public async Task GenerateDisposableTopicAuthToken_WriteOnly_NamePrefix_CanPublish()
-    //{
-    //    const string messageValue = "hello";
-    //    var writeOnlyTopicClient = await GetClientForTokenScope(
-    //        DisposableTokenScopes.TopicPublishOnly(cacheName, TopicSelector.ByTopicNamePrefix(topicNamePrefix))
-    //    );
-    //    await GenerateDisposableTopicAuthToken_WriteOnly_CanPublish_Common(writeOnlyTopicClient, messageValue);
-    //}
+    [Fact]
+    public async Task GenerateDisposableTopicAuthToken_WriteOnly_NamePrefix_CanPublish()
+    {
+       const string messageValue = "hello";
+       var writeOnlyTopicClient = await GetClientForTokenScope(
+           DisposableTokenScopes.TopicPublishOnly(cacheName, TopicSelector.ByTopicNamePrefix(topicNamePrefix))
+       );
+       await GenerateDisposableTopicAuthToken_WriteOnly_CanPublish_Common(writeOnlyTopicClient, messageValue);
+    }
 
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_NoCachePerms_CantPublish()
@@ -516,7 +511,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
 
         // we can publish but not subscribe to topics prefixed with topicNamePrefix
         var publishResponse = await multiPermsClient.PublishAsync(cacheName, topicName, "hi");
-        Assert.True(publishResponse is TopicPublishResponse.Success);
+        Assert.True(publishResponse is TopicPublishResponse.Success, $"Unexpected response: {publishResponse}");
         var subscribeResponse = await multiPermsClient.SubscribeAsync(cacheName, topicName);
         AssertPermissionError<TopicSubscribeResponse, TopicSubscribeResponse.Error>(subscribeResponse);
 
@@ -524,7 +519,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         publishResponse = await multiPermsClient.PublishAsync(cacheName, "fun-topic", "hi");
         AssertPermissionError<TopicPublishResponse, TopicPublishResponse.Error>(publishResponse);
         subscribeResponse = await multiPermsClient.SubscribeAsync(cacheName, "fun-topic");
-        Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription);
+        Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription, $"Unexpected response: {subscribeResponse}");
 
         // we can neither publish nor subscribe to an unspecified topic
         publishResponse = await multiPermsClient.PublishAsync(cacheName, "unknown-topic", "hi");
@@ -536,7 +531,8 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         var cache2Name = cacheName + "-2";
         try
         {
-            Assert.True(await cacheClient.CreateCacheAsync(cache2Name) is CreateCacheResponse.Success);
+            var response = await cacheClient.CreateCacheAsync(cache2Name);
+            Assert.True(response is CreateCacheResponse.Success, $"Unexpected response: {response}");
             publishResponse = await multiPermsClient.PublishAsync(cache2Name, topicName, "hi");
             AssertPermissionError<TopicPublishResponse, TopicPublishResponse.Error>(publishResponse);
             subscribeResponse = await multiPermsClient.SubscribeAsync(cache2Name, topicName);
@@ -544,7 +540,8 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         }
         finally
         {
-            Assert.True(await cacheClient.DeleteCacheAsync(cache2Name) is DeleteCacheResponse.Success);
+            var response = await cacheClient.DeleteCacheAsync(cache2Name);
+            Assert.True(response is DeleteCacheResponse.Success, $"Unexpected response: {response}");
         }
     }
 }

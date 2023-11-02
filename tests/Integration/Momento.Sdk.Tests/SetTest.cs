@@ -342,14 +342,16 @@ public class SetTest : TestBase
         var element = Utils.NewGuidString();
 
         // Pre-condition: set is missing
-        Assert.True(await client.SetFetchAsync(cacheName, setName) is CacheSetFetchResponse.Miss);
+        var fetchResponse = await client.SetFetchAsync(cacheName, setName);
+        Assert.True(fetchResponse is CacheSetFetchResponse.Miss, $"Unexpected response: {fetchResponse}");
 
         // Remove element that is not there -- no-op
         CacheSetRemoveElementResponse removeResponse = await client.SetRemoveElementAsync(cacheName, setName, Utils.NewGuidByteArray());
         Assert.True(removeResponse is CacheSetRemoveElementResponse.Success, $"Unexpected response: {removeResponse}");
 
         // Post-condition: set is still missing
-        Assert.True(await client.SetFetchAsync(cacheName, setName) is CacheSetFetchResponse.Miss);
+        fetchResponse = await client.SetFetchAsync(cacheName, setName);
+        Assert.True(fetchResponse is CacheSetFetchResponse.Miss, $"Unexpected response: {fetchResponse}");
     }
 
     [Theory]
@@ -395,14 +397,16 @@ public class SetTest : TestBase
         var element = Utils.NewGuidString();
 
         // Pre-condition: set is missing
-        Assert.True(await client.SetFetchAsync(cacheName, setName) is CacheSetFetchResponse.Miss);
+        var fetchResponse = await client.SetFetchAsync(cacheName, setName);
+        Assert.True(fetchResponse is CacheSetFetchResponse.Miss, $"Unexpected response: {fetchResponse}");
 
         // Remove element that is not there -- no-op
         CacheSetRemoveElementResponse response = await client.SetRemoveElementAsync(cacheName, setName, Utils.NewGuidString());
         Assert.True(response is CacheSetRemoveElementResponse.Success, $"Unexpected response: {response}");
 
         // Post-condition: set is still missing
-        Assert.True(await client.SetFetchAsync(cacheName, setName) is CacheSetFetchResponse.Miss);
+        fetchResponse = await client.SetFetchAsync(cacheName, setName);
+        Assert.True(fetchResponse is CacheSetFetchResponse.Miss, $"Unexpected response: {fetchResponse}");
     }
 
     [Fact]
@@ -586,10 +590,12 @@ public class SetTest : TestBase
     public async Task SetDeleteAsync_SetDoesNotExist_Noop()
     {
         var setName = Utils.NewGuidString();
-        Assert.True(await client.SetFetchAsync(cacheName, setName) is CacheSetFetchResponse.Miss);
+        var fetchResponse = await client.SetFetchAsync(cacheName, setName);
+        Assert.True(fetchResponse is CacheSetFetchResponse.Miss, $"Unexpected response: {fetchResponse}");
         var response = await client.DeleteAsync(cacheName, setName);
         Assert.True(response is CacheDeleteResponse.Success, $"Unexpected response: {response}");
-        Assert.True(await client.SetFetchAsync(cacheName, setName) is CacheSetFetchResponse.Miss);
+        fetchResponse = await client.SetFetchAsync(cacheName, setName);
+        Assert.True(fetchResponse is CacheSetFetchResponse.Miss, $"Unexpected response: {fetchResponse}");
     }
 
     [Fact]
@@ -603,10 +609,12 @@ public class SetTest : TestBase
         response = await client.SetAddElementAsync(cacheName, setName, Utils.NewGuidString());
         Assert.True(response is CacheSetAddElementResponse.Success, $"Unexpected response: {response}");
 
-        Assert.True(await client.SetFetchAsync(cacheName, setName) is CacheSetFetchResponse.Hit);
+        var fetchResponse = await client.SetFetchAsync(cacheName, setName);
+        Assert.True(fetchResponse is CacheSetFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var deleteResponse = await client.DeleteAsync(cacheName, setName);
         Assert.True(deleteResponse is CacheDeleteResponse.Success, $"Unexpected response: {deleteResponse}");
-        Assert.True(await client.SetFetchAsync(cacheName, setName) is CacheSetFetchResponse.Miss);
+        fetchResponse = await client.SetFetchAsync(cacheName, setName);
+        Assert.True(fetchResponse is CacheSetFetchResponse.Miss, $"Unexpected response: {fetchResponse}");
     }
     
     [Fact]
