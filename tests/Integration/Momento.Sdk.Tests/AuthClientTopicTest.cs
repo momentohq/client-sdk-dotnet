@@ -423,8 +423,6 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         await GenerateDisposableTopicAuthToken_WriteOnly_CanPublish_Common(writeOnlyTopicClient, messageValue);
     }
 
-    // TODO: this test is flaky and has been breaking build pipelines. Commenting it out until we have time to
-    //  root cause it. Chris 2023-10-30
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_WriteOnly_NamePrefix_CanPublish()
     {
