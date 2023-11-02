@@ -405,14 +405,11 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         var subscribeResponse = await topicClient.SubscribeAsync(cacheName, topicName);
         Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription, $"Unexpected response: {subscribeResponse}");
 
-        // `PublishToTopic` asserts a successful publish response
-        await PublishToTopic(cacheName, topicName, messageValue, writeOnlyTopicClient);
-
         if (subscribeResponse is TopicSubscribeResponse.Subscription subscription)
         {
-            var subTask = ExpectTextFromSubscription(subscription, messageValue);
+            // `PublishToTopic` asserts a successful publish response
             await PublishToTopic(cacheName, topicName, messageValue, writeOnlyTopicClient);
-            await subTask;
+            await ExpectTextFromSubscription(subscription, messageValue);
         }
     }
 
