@@ -428,15 +428,15 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
 
     // TODO: this test is flaky and has been breaking build pipelines. Commenting it out until we have time to
     //  root cause it. Chris 2023-10-30
-    // [Fact]
-    // public async Task GenerateDisposableTopicAuthToken_WriteOnly_NamePrefix_CanPublish()
-    // {
-    //    const string messageValue = "hello";
-    //    var writeOnlyTopicClient = await GetClientForTokenScope(
-    //        DisposableTokenScopes.TopicPublishOnly(cacheName, TopicSelector.ByTopicNamePrefix(topicNamePrefix))
-    //    );
-    //    await GenerateDisposableTopicAuthToken_WriteOnly_CanPublish_Common(writeOnlyTopicClient, messageValue);
-    // }
+    [Fact]
+    public async Task GenerateDisposableTopicAuthToken_WriteOnly_NamePrefix_CanPublish()
+    {
+       const string messageValue = "hello";
+       var writeOnlyTopicClient = await GetClientForTokenScope(
+           DisposableTokenScopes.TopicPublishOnly(cacheName, TopicSelector.ByTopicNamePrefix(topicNamePrefix))
+       );
+       await GenerateDisposableTopicAuthToken_WriteOnly_CanPublish_Common(writeOnlyTopicClient, messageValue);
+    }
 
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_NoCachePerms_CantPublish()
