@@ -25,7 +25,7 @@ internal sealed class VectorIndexControlClient : IDisposable
         _exceptionMapper = new CacheExceptionMapper(loggerFactory);
     }
 
-    public async Task<CreateVectorIndexResponse> CreateIndexAsync(string indexName, long numDimensions, SimilarityMetric similarityMetric)
+    public async Task<CreateIndexResponse> CreateIndexAsync(string indexName, long numDimensions, SimilarityMetric similarityMetric)
     {
         try
         {
@@ -49,19 +49,19 @@ internal sealed class VectorIndexControlClient : IDisposable
             }
             
             await grpcManager.Client.CreateIndexAsync(request, new CallOptions(deadline: CalculateDeadline()));
-            return _logger.LogTraceVectorIndexRequestSuccess("createVectorIndex", indexName, new CreateVectorIndexResponse.Success());
+            return _logger.LogTraceVectorIndexRequestSuccess("createVectorIndex", indexName, new CreateIndexResponse.Success());
         }
         catch (Exception e)
         {
             if (e is RpcException { StatusCode: StatusCode.AlreadyExists })
             {
-                return _logger.LogTraceVectorIndexRequestSuccess("createVectorIndex", indexName, new CreateVectorIndexResponse.AlreadyExists());
+                return _logger.LogTraceVectorIndexRequestSuccess("createVectorIndex", indexName, new CreateIndexResponse.AlreadyExists());
             }
-            return _logger.LogTraceVectorIndexRequestError("createVectorIndex", indexName, new CreateVectorIndexResponse.Error(_exceptionMapper.Convert(e)));
+            return _logger.LogTraceVectorIndexRequestError("createVectorIndex", indexName, new CreateIndexResponse.Error(_exceptionMapper.Convert(e)));
         }
     }
 
-    public async Task<ListVectorIndexesResponse> ListIndexesAsync()
+    public async Task<ListIndexesResponse> ListIndexesAsync()
     {
         try
         {
@@ -69,15 +69,15 @@ internal sealed class VectorIndexControlClient : IDisposable
             var request = new _ListIndexesRequest();
             var response = await grpcManager.Client.ListIndexesAsync(request, new CallOptions(deadline: CalculateDeadline()));
             return _logger.LogTraceGenericRequestSuccess("listVectorIndexes",
-                new ListVectorIndexesResponse.Success(new List<string>(response.IndexNames)));
+                new ListIndexesResponse.Success(new List<string>(response.IndexNames)));
         }
         catch (Exception e)
         {
-            return _logger.LogTraceGenericRequestError("listVectorIndexes", new ListVectorIndexesResponse.Error(_exceptionMapper.Convert(e)));
+            return _logger.LogTraceGenericRequestError("listVectorIndexes", new ListIndexesResponse.Error(_exceptionMapper.Convert(e)));
         }
     }
 
-    public async Task<DeleteVectorIndexResponse> DeleteIndexAsync(string indexName)
+    public async Task<DeleteIndexResponse> DeleteIndexAsync(string indexName)
     {
         try
         {
@@ -85,11 +85,11 @@ internal sealed class VectorIndexControlClient : IDisposable
             CheckValidIndexName(indexName);
             var request = new _DeleteIndexRequest() { IndexName = indexName };
             await grpcManager.Client.DeleteIndexAsync(request, new CallOptions(deadline: CalculateDeadline()));
-            return _logger.LogTraceVectorIndexRequestSuccess("createVectorIndex", indexName, new DeleteVectorIndexResponse.Success());
+            return _logger.LogTraceVectorIndexRequestSuccess("createVectorIndex", indexName, new DeleteIndexResponse.Success());
         }
         catch (Exception e)
         {
-            return _logger.LogTraceVectorIndexRequestError("createVectorIndex", indexName, new DeleteVectorIndexResponse.Error(_exceptionMapper.Convert(e)));
+            return _logger.LogTraceVectorIndexRequestError("createVectorIndex", indexName, new DeleteIndexResponse.Error(_exceptionMapper.Convert(e)));
         }
     }
 

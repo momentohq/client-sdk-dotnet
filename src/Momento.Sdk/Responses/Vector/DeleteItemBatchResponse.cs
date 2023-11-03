@@ -3,45 +3,34 @@
 using Exceptions;
 
 /// <summary>
-/// Parent response type for a create vector index request. The
+/// Parent response type for a vector delete item batch request. The
 /// response object is resolved to a type-safe object of one of
 /// the following subtypes:
 /// <list type="bullet">
-/// <item><description>CreateVectorIndexResponse.Success</description></item>
-/// <item><description>CreateVectorIndexResponse.AlreadyExists</description></item>
-/// <item><description>CreateVectorIndexResponse.Error</description></item>
+/// <item><description>DeleteItemBatchResponse.Success</description></item>
+/// <item><description>DeleteItemBatchResponse.Error</description></item>
 /// </list>
 /// Pattern matching can be used to operate on the appropriate subtype.
 /// For example:
 /// <code>
-/// if (response is CreateVectorIndexResponse.Success successResponse)
+/// if (response is DeleteItemBatchResponse.Success successResponse)
 /// {
 ///     // handle success if needed
 /// }
-/// else if (response is CreateVectorIndexResponse.AlreadyExists alreadyExistsResponse)
-/// {
-///     // handle already exists as appropriate
-/// }
-/// else if (response is CreateVectorIndexResponse.Error errorResponse)
+/// else if (response is DeleteItemBatchResponse.Error errorResponse)
 /// {
 ///     // handle error as appropriate
 /// }
 /// </code>
 /// </summary>
-public abstract class CreateVectorIndexResponse
+public abstract class DeleteItemBatchResponse
 {
 
     /// <include file="../../docs.xml" path='docs/class[@name="Success"]/description/*' />
-    public class Success : CreateVectorIndexResponse { }
-
-    /// <summary>
-    /// Class <c>AlreadyExists</c> indicates that an index with the requested name
-    /// has already been created in the requesting account.
-    /// </summary>
-    public class AlreadyExists : CreateVectorIndexResponse { }
+    public class Success : DeleteItemBatchResponse { }
 
     /// <include file="../../docs.xml" path='docs/class[@name="Error"]/description/*' />
-    public class Error : CreateVectorIndexResponse, IError
+    public class Error : DeleteItemBatchResponse, IError
     {
         /// <include file="../../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)

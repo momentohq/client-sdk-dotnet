@@ -1,40 +1,36 @@
 ﻿namespace Momento.Sdk.Responses.Vector;
 
-using Momento.Sdk.Exceptions;
+using Exceptions;
 
 /// <summary>
-/// Parent response type for a delete vector index request. The
+/// Parent response type for a vector upsert item batch request. The
 /// response object is resolved to a type-safe object of one of
 /// the following subtypes:
 /// <list type="bullet">
-/// <item><description>DeleteVectorIndexResponse.Success</description></item>
-/// <item><description>DeleteVectorIndexResponse.Error</description></item>
+/// <item><description>UpsertItemBatchResponse.Success</description></item>
+/// <item><description>UpsertItemBatchResponse.Error</description></item>
 /// </list>
 /// Pattern matching can be used to operate on the appropriate subtype.
 /// For example:
 /// <code>
-/// if (response is DeleteVectorIndexResponse.Success successResponse)
+/// if (response is UpsertItemBatchResponse.Success successResponse)
 /// {
 ///     // handle success if needed
 /// }
-/// else if (response is DeleteVectorIndexResponse.Error errorResponse)
+/// else if (response is UpsertItemBatchResponse.Error errorResponse)
 /// {
 ///     // handle error as appropriate
 /// }
-/// else
-/// {
-///     // handle unexpected response
-/// }
 /// </code>
 /// </summary>
-public abstract class DeleteVectorIndexResponse
+public abstract class UpsertItemBatchResponse
 {
 
     /// <include file="../../docs.xml" path='docs/class[@name="Success"]/description/*' />
-    public class Success : DeleteVectorIndexResponse { }
+    public class Success : UpsertItemBatchResponse { }
 
     /// <include file="../../docs.xml" path='docs/class[@name="Error"]/description/*' />
-    public class Error : DeleteVectorIndexResponse, IError
+    public class Error : UpsertItemBatchResponse, IError
     {
         /// <include file="../../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
@@ -58,4 +54,5 @@ public abstract class DeleteVectorIndexResponse
         }
 
     }
+
 }

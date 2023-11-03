@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Momento.Protos.ControlClient;
+﻿using System.Collections.Generic;
 using Momento.Sdk.Exceptions;
 
 namespace Momento.Sdk.Responses.Vector;
@@ -10,17 +8,17 @@ namespace Momento.Sdk.Responses.Vector;
 /// response object is resolved to a type-safe object of one of
 /// the following subtypes:
 /// <list type="bullet">
-/// <item><description>ListVectorIndexesResponse.Success</description></item>
-/// <item><description>ListVectorIndexesResponse.Error</description></item>
+/// <item><description>ListIndexesResponse.Success</description></item>
+/// <item><description>ListIndexesResponse.Error</description></item>
 /// </list>
 /// Pattern matching can be used to operate on the appropriate subtype.
 /// For example:
 /// <code>
-/// if (response is ListVectorIndexesResponse.Success successResponse)
+/// if (response is ListIndexesResponse.Success successResponse)
 /// {
 ///     return successResponse.IndexNames;
 /// }
-/// else if (response is ListVectorIndexesResponse.Error errorResponse)
+/// else if (response is ListIndexesResponse.Error errorResponse)
 /// {
 ///     // handle error as appropriate
 /// }
@@ -30,10 +28,10 @@ namespace Momento.Sdk.Responses.Vector;
 /// }
 /// </code>
 /// </summary>
-public abstract class ListVectorIndexesResponse
+public abstract class ListIndexesResponse
 {
     /// <include file="../../docs.xml" path='docs/class[@name="Success"]/description/*' />
-    public class Success : ListVectorIndexesResponse
+    public class Success : ListIndexesResponse
     {
         /// <summary>
         /// The list of vector available to the user.
@@ -56,7 +54,7 @@ public abstract class ListVectorIndexesResponse
     }
 
     /// <include file="../../docs.xml" path='docs/class[@name="Error"]/description/*' />
-    public class Error : ListVectorIndexesResponse, IError
+    public class Error : ListIndexesResponse, IError
     {
         /// <include file="../../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)

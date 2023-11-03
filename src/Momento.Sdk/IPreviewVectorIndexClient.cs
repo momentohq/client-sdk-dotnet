@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Momento.Sdk.Requests.Vector;
 using Momento.Sdk.Responses.Vector;
@@ -11,7 +12,7 @@ namespace Momento.Sdk;
 ///
 /// Includes control operations and data operations.
 /// </summary>
-public interface IPreviewVectorIndexClient: IDisposable
+public interface IPreviewVectorIndexClient : IDisposable
 {
     /// <summary>
     /// Creates a vector index if it does not exist.
@@ -26,14 +27,14 @@ public interface IPreviewVectorIndexClient: IDisposable
     /// is resolved to a type-safe object of one of
     /// the following subtypes:
     /// <list type="bullet">
-    /// <item><description>CreateVectorIndexResponse.Success</description></item>
-    /// <item><description>CreateVectorIndexResponse.AlreadyExists</description></item>
-    /// <item><description>CreateVectorIndexResponse.Error</description></item>
+    /// <item><description>CreateIndexResponse.Success</description></item>
+    /// <item><description>CreateIndexResponse.AlreadyExists</description></item>
+    /// <item><description>CreateIndexResponse.Error</description></item>
     /// </list>
     /// Pattern matching can be used to operate on the appropriate subtype.
     /// For example:
     /// <code>
-    /// if (response is CreateVectorIndexResponse.Error errorResponse)
+    /// if (response is CreateIndexResponse.Error errorResponse)
     /// {
     ///     // handle error as appropriate
     /// }
@@ -57,7 +58,7 @@ public interface IPreviewVectorIndexClient: IDisposable
     /// </list>
     /// </remarks>
     /// </returns>
-    public Task<CreateVectorIndexResponse> CreateIndexAsync(string indexName, long numDimensions, SimilarityMetric similarityMetric = SimilarityMetric.CosineSimilarity);
+    public Task<CreateIndexResponse> CreateIndexAsync(string indexName, long numDimensions, SimilarityMetric similarityMetric = SimilarityMetric.CosineSimilarity);
     
     /// <summary>
     /// Lists all vector indexes.
@@ -67,19 +68,19 @@ public interface IPreviewVectorIndexClient: IDisposable
     /// response object is resolved to a type-safe object of one of
     /// the following subtypes:
     /// <list type="bullet">
-    /// <item><description>ListVectorIndexesResponse.Success</description></item>
-    /// <item><description>ListVectorIndexesResponse.Error</description></item>
+    /// <item><description>ListIndexesResponse.Success</description></item>
+    /// <item><description>ListIndexesResponse.Error</description></item>
     /// </list>
     /// Pattern matching can be used to operate on the appropriate subtype.
     /// For example:
     /// <code>
-    /// if (response is ListVectorIndexesResponse.Error errorResponse)
+    /// if (response is ListIndexesResponse.Error errorResponse)
     /// {
     ///     // handle error as appropriate
     /// }
     /// </code>
     /// </returns>
-    public Task<ListVectorIndexesResponse> ListIndexesAsync();
+    public Task<ListIndexesResponse> ListIndexesAsync();
 
     /// <summary>
     /// Deletes a vector index and all the vectors within it.
@@ -90,17 +91,97 @@ public interface IPreviewVectorIndexClient: IDisposable
     /// response object is resolved to a type-safe object of one of
     /// the following subtypes:
     /// <list type="bullet">
-    /// <item><description>DeleteVectorIndexResponse.Success</description></item>
-    /// <item><description>DeleteVectorIndexResponse.Error</description></item>
+    /// <item><description>DeleteIndexResponse.Success</description></item>
+    /// <item><description>DeleteIndexResponse.Error</description></item>
     /// </list>
     /// Pattern matching can be used to operate on the appropriate subtype.
     /// For example:
     /// <code>
-    /// if (response is DeleteVectorIndexResponse.Error errorResponse)
+    /// if (response is DeleteIndexResponse.Error errorResponse)
     /// {
     ///     // handle error as appropriate
     /// }
     /// </code>
     ///</returns>
-    public Task<DeleteVectorIndexResponse> DeleteIndexesAsync(string indexName);
+    public Task<DeleteIndexResponse> DeleteIndexesAsync(string indexName);
+
+    /// <summary>
+    /// Upserts a batch of items into a vector index.
+    /// If an item with the same ID already exists in the index, it will be replaced.
+    /// Otherwise, it will be added to the index.
+    /// </summary>
+    /// <param name="indexName">The name of the vector index to upsert the items into.</param>
+    /// <param name="items">The items to upsert into the index.</param>
+    /// <returns>
+    /// Task representing the result of the upsert operation. The
+    /// response object is resolved to a type-safe object of one of
+    /// the following subtypes:
+    /// <list type="bullet">
+    /// <item><description>UpsertItemBatchResponse.Success</description></item>
+    /// <item><description>UpsertItemBatchResponse.Error</description></item>
+    /// </list>
+    /// Pattern matching can be used to operate on the appropriate subtype.
+    /// For example:
+    /// <code>
+    /// if (response is UpsertItemBatchResponse.Error errorResponse)
+    /// {
+    ///     // handle error as appropriate
+    /// }
+    /// </code>
+    ///</returns>
+    public Task<UpsertItemBatchResponse> UpsertItemBatchAsync(string indexName,
+        IEnumerable<Item> items);
+
+    /// <summary>
+    /// Deletes all items with the given IDs from the index. Returns success if for items that do not exist.
+    /// </summary>
+    /// <param name="indexName">The name of the vector index to delete the items from.</param>
+    /// <param name="ids">The IDs of the items to delete from the index.</param>
+    /// <returns>
+    /// Task representing the result of the upsert operation. The
+    /// response object is resolved to a type-safe object of one of
+    /// the following subtypes:
+    /// <list type="bullet">
+    /// <item><description>DeleteItemBatchResponse.Success</description></item>
+    /// <item><description>DeleteItemBatchResponse.Error</description></item>
+    /// </list>
+    /// Pattern matching can be used to operate on the appropriate subtype.
+    /// For example:
+    /// <code>
+    /// if (response is DeleteItemBatchResponse.Error errorResponse)
+    /// {
+    ///     // handle error as appropriate
+    /// }
+    /// </code>
+    ///</returns>
+    public Task<DeleteItemBatchResponse> DeleteItemBatchAsync(string indexName, IEnumerable<string> ids);
+
+    /// <summary>
+    /// Searches for the most similar vectors to the query vector in the index.
+    /// Ranks the vectors according to the similarity metric specified when the
+    /// index was created.
+    /// </summary>
+    /// <param name="indexName">The name of the vector index to search in.</param>
+    /// <param name="queryVector">The vector to search for.</param>
+    /// <param name="topK">The number of results to return. Defaults to 10.</param>
+    /// <param name="metadataFields">A list of metadata fields to return with each result.</param>
+    /// <returns>
+    /// Task representing the result of the upsert operation. The
+    /// response object is resolved to a type-safe object of one of
+    /// the following subtypes:
+    /// <list type="bullet">
+    /// <item><description>SearchResponse.Success</description></item>
+    /// <item><description>SearchResponse.Error</description></item>
+    /// </list>
+    /// Pattern matching can be used to operate on the appropriate subtype.
+    /// For example:
+    /// <code>
+    /// if (response is SearchResponse.Error errorResponse)
+    /// {
+    ///     // handle error as appropriate
+    /// }
+    /// </code>
+    ///</returns>
+    public Task<SearchResponse> SearchAsync(string indexName, IEnumerable<float> queryVector, int topK = 10,
+        MetadataFields? metadataFields = null);
 }
