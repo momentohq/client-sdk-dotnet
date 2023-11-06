@@ -39,15 +39,17 @@ namespace Momento.Sdk.Config.Middleware
         public override Task EmitMetrics(ExperimentalRequestMetrics metrics)
         {
             var json = "{" +
-                       $"\"numActiveRequestsAtStart\": {metrics.NumActiveRequestsAtStart}, " +
-                       $"\"numActiveRequestsAtFinish\": {metrics.NumActiveRequestsAtFinish}, " +
-                       $"\"requestType\": \"{metrics.RequestType}\", " +
-                       $"\"status\": \"{metrics.Status}\", " +
-                       $"\"startTime\": \"{metrics.StartTime}\", " +
-                       $"\"endTime\": \"{metrics.EndTime}\", " +
-                       $"\"duration\": \"{metrics.Duration}\", " +
-                       $"\"requestSize\": {metrics.RequestSize}, " +
-                       $"\"responseSize\": {metrics.ResponseSize}" +
+                        "\"momento\": {" + 
+                            $"\"numActiveRequestsAtStart\": {metrics.NumActiveRequestsAtStart}, " +
+                            $"\"numActiveRequestsAtFinish\": {metrics.NumActiveRequestsAtFinish}, " +
+                            $"\"requestType\": \"{metrics.RequestType}\", " +
+                            $"\"status\": \"{metrics.Status}\", " +
+                            $"\"startTime\": \"{metrics.StartTime}\", " +
+                            $"\"endTime\": \"{metrics.EndTime}\", " +
+                            $"\"duration\": \"{metrics.Duration}\", " +
+                            $"\"requestSize\": {metrics.RequestSize}, " +
+                            $"\"responseSize\": {metrics.ResponseSize}" +
+                        "}" +
                        "}";
 
             _logger.LogInformation(json);

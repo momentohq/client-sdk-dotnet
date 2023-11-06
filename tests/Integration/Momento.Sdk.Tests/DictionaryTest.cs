@@ -914,12 +914,12 @@ public class DictionaryTest : TestBase
 
         var hitResponse = (CacheDictionaryFetchResponse.Hit)fetchResponse;
         // Exercise byte array dictionary structural equality comparer
-        Assert.True(hitResponse.ValueDictionaryByteArrayByteArray!.ContainsKey(field1));
-        Assert.True(hitResponse.ValueDictionaryByteArrayByteArray!.ContainsKey(field2));
+        Assert.True(hitResponse.ValueDictionaryByteArrayByteArray!.ContainsKey(field1), $"Could not find key {field1} in dictionary byte array: {hitResponse.ValueDictionaryByteArrayByteArray!}");
+        Assert.True(hitResponse.ValueDictionaryByteArrayByteArray!.ContainsKey(field2), $"Could not find key {field2} in dictionary byte array: {hitResponse.ValueDictionaryByteArrayByteArray!}");
         Assert.Equal(2, hitResponse.ValueDictionaryByteArrayByteArray!.Count);
 
         // Exercise DictionaryEquals extension
-        Assert.True(hitResponse.ValueDictionaryByteArrayByteArray!.DictionaryEquals(contentDictionary));
+        Assert.True(hitResponse.ValueDictionaryByteArrayByteArray!.DictionaryEquals(contentDictionary), $"Expected DictionaryEquals to return true for these dictionaries: {hitResponse.ValueDictionaryByteArrayByteArray!} AND {contentDictionary}");
 
         // Test field caching behavior
         Assert.Same(hitResponse.ValueDictionaryByteArrayByteArray, hitResponse.ValueDictionaryByteArrayByteArray);
@@ -929,10 +929,12 @@ public class DictionaryTest : TestBase
     public async Task DictionaryDeleteAsync_DictionaryDoesNotExist_Noop()
     {
         var dictionaryName = Utils.NewGuidString();
-        Assert.True((await client.DictionaryFetchAsync(cacheName, dictionaryName)) is CacheDictionaryFetchResponse.Miss);
+        var response = await client.DictionaryFetchAsync(cacheName, dictionaryName);
+        Assert.True(response is CacheDictionaryFetchResponse.Miss, $"Unexpected response: {response}");
         var deleteResponse = await client.DeleteAsync(cacheName, dictionaryName);
         Assert.True(deleteResponse is CacheDeleteResponse.Success, $"Unexpected response: {deleteResponse}");
-        Assert.True((await client.DictionaryFetchAsync(cacheName, dictionaryName)) is CacheDictionaryFetchResponse.Miss);
+        var fetchResponse = await client.DictionaryFetchAsync(cacheName, dictionaryName);
+        Assert.True(fetchResponse is CacheDictionaryFetchResponse.Miss, $"Unexpected response: {fetchResponse}");
     }
 
     [Fact]
@@ -943,10 +945,12 @@ public class DictionaryTest : TestBase
         await client.DictionarySetFieldAsync(cacheName, dictionaryName, Utils.NewGuidString(), Utils.NewGuidString());
         await client.DictionarySetFieldAsync(cacheName, dictionaryName, Utils.NewGuidString(), Utils.NewGuidString());
 
-        Assert.True((await client.DictionaryFetchAsync(cacheName, dictionaryName)) is CacheDictionaryFetchResponse.Hit);
+        var fetchResponse = await client.DictionaryFetchAsync(cacheName, dictionaryName);
+        Assert.True(fetchResponse is CacheDictionaryFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var deleteResponse = await client.DeleteAsync(cacheName, dictionaryName);
         Assert.True(deleteResponse is CacheDeleteResponse.Success, $"Unexpected response: {deleteResponse}");
-        Assert.True((await client.DictionaryFetchAsync(cacheName, dictionaryName)) is CacheDictionaryFetchResponse.Miss);
+        var response = await client.DictionaryFetchAsync(cacheName, dictionaryName);
+        Assert.True(response is CacheDictionaryFetchResponse.Miss, $"Unexpected response: {fetchResponse}");
     }
 
     [Theory]
@@ -979,17 +983,22 @@ public class DictionaryTest : TestBase
         var field2 = Utils.NewGuidByteArray();
 
         // Add a field then delete it
-        Assert.True((await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field1)) is CacheDictionaryGetFieldResponse.Miss);
+        var response = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field1);
+        Assert.True(response is CacheDictionaryGetFieldResponse.Miss, $"Unexpected response: {response}");
         await client.DictionarySetFieldAsync(cacheName, dictionaryName, field1, value1);
-        Assert.True((await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field1)) is CacheDictionaryGetFieldResponse.Hit);
+        response = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field1);
+        Assert.True(response is CacheDictionaryGetFieldResponse.Hit, $"Unexpected response: {response}");
 
         await client.DictionaryRemoveFieldAsync(cacheName, dictionaryName, field1);
-        Assert.True((await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field1)) is CacheDictionaryGetFieldResponse.Miss);
+        response = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field1);
+        Assert.True(response is CacheDictionaryGetFieldResponse.Miss, $"Unexpected response: {response}");
 
         // Test no-op
-        Assert.True((await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field2)) is CacheDictionaryGetFieldResponse.Miss);
+        response = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field2);
+        Assert.True(response is CacheDictionaryGetFieldResponse.Miss, $"Unexpected response: {response}");
         await client.DictionaryRemoveFieldAsync(cacheName, dictionaryName, field2);
-        Assert.True((await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field2)) is CacheDictionaryGetFieldResponse.Miss);
+        response = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field2);
+        Assert.True(response is CacheDictionaryGetFieldResponse.Miss, $"Unexpected response: {response}");
     }
 
     [Fact]
@@ -1001,17 +1010,22 @@ public class DictionaryTest : TestBase
         var field2 = Utils.NewGuidString();
 
         // Add a field then delete it
-        Assert.True((await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field1)) is CacheDictionaryGetFieldResponse.Miss);
+        var response = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field1);
+        Assert.True(response is CacheDictionaryGetFieldResponse.Miss, $"Unexpected response: {response}");
         await client.DictionarySetFieldAsync(cacheName, dictionaryName, field1, value1);
-        Assert.True((await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field1)) is CacheDictionaryGetFieldResponse.Hit);
+        response = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field1);
+        Assert.True(response is CacheDictionaryGetFieldResponse.Hit, $"Unexpected response: {response}");
 
         await client.DictionaryRemoveFieldAsync(cacheName, dictionaryName, field1);
-        Assert.True((await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field1)) is CacheDictionaryGetFieldResponse.Miss);
+        response = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field1);
+        Assert.True(response is CacheDictionaryGetFieldResponse.Miss, $"Unexpected response: {response}");
 
         // Test no-op
-        Assert.True((await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field2)) is CacheDictionaryGetFieldResponse.Miss);
+        response = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field2);
+        Assert.True(response is CacheDictionaryGetFieldResponse.Miss, $"Unexpected response: {response}");
         await client.DictionaryRemoveFieldAsync(cacheName, dictionaryName, field2);
-        Assert.True((await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field2)) is CacheDictionaryGetFieldResponse.Miss);
+        response = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, field2);
+        Assert.True(response is CacheDictionaryGetFieldResponse.Miss, $"Unexpected response: {response}");
     }
 
     [Fact]
@@ -1062,9 +1076,12 @@ public class DictionaryTest : TestBase
 
         var fieldsList = new List<byte[]>(fields);
         await client.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fieldsList);
-        Assert.True((await client.DictionaryGetFieldAsync(cacheName, dictionaryName, fields[0])) is CacheDictionaryGetFieldResponse.Miss);
-        Assert.True((await client.DictionaryGetFieldAsync(cacheName, dictionaryName, fields[1])) is CacheDictionaryGetFieldResponse.Miss);
-        Assert.True((await client.DictionaryGetFieldAsync(cacheName, dictionaryName, otherField)) is CacheDictionaryGetFieldResponse.Hit);
+        var response = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, fields[0]);
+        Assert.True(response is CacheDictionaryGetFieldResponse.Miss, $"Unexpected response: {response}");
+        response = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, fields[1]);
+        Assert.True(response is CacheDictionaryGetFieldResponse.Miss, $"Unexpected response: {response}");
+        response = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, otherField);
+        Assert.True(response is CacheDictionaryGetFieldResponse.Hit, $"Unexpected response: {response}");
     }
 
     [Fact]
@@ -1114,9 +1131,12 @@ public class DictionaryTest : TestBase
 
         var fieldsList = new List<string>(fields);
         await client.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fieldsList);
-        Assert.True((await client.DictionaryGetFieldAsync(cacheName, dictionaryName, fields[0])) is CacheDictionaryGetFieldResponse.Miss);
-        Assert.True((await client.DictionaryGetFieldAsync(cacheName, dictionaryName, fields[1])) is CacheDictionaryGetFieldResponse.Miss);
-        Assert.True((await client.DictionaryGetFieldAsync(cacheName, dictionaryName, otherField)) is CacheDictionaryGetFieldResponse.Hit);
+        var response = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, fields[0]);
+        Assert.True(response is CacheDictionaryGetFieldResponse.Miss, $"Unexpected response: {response}");
+        response = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, fields[1]);
+        Assert.True(response is CacheDictionaryGetFieldResponse.Miss, $"Unexpected response: {response}");
+        response = await client.DictionaryGetFieldAsync(cacheName, dictionaryName, otherField);
+        Assert.True(response is CacheDictionaryGetFieldResponse.Hit, $"Unexpected response: {response}");
     }
 
     [Fact]

@@ -47,7 +47,7 @@ public class TopicConfiguration : ITopicConfiguration
             return false;
         }
 
-        var other = (Configuration)obj;
+        var other = (TopicConfiguration)obj;
         return TransportStrategy.Equals(other.TransportStrategy) &&
                LoggerFactory.Equals(other.LoggerFactory);
     }
