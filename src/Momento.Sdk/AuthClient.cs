@@ -19,7 +19,7 @@ public class AuthClient : IAuthClient
         scsTokenClient = new ScsTokenClient(config, authProvider.AuthToken, authProvider.TokenEndpoint);
     }
 
-    public async Task<GenerateDisposableTokenResponse> GenerateDisposableTokenAsync(DisposableTokenScope scope, ExpiresIn expiresIn)
+    public async Task<GenerateDisposableTokenResponse> GenerateDisposableTokenAsync(DisposableTokenScope scope, ExpiresIn expiresIn, string? tokenId = null)
     {
         try {
             Utils.CheckValidDisposableTokenExpiry(expiresIn);
@@ -28,7 +28,7 @@ public class AuthClient : IAuthClient
         {
             return new GenerateDisposableTokenResponse.Error(new InvalidArgumentException(e.Message));
         }
-        return await scsTokenClient.GenerateDisposableToken(scope, expiresIn);
+        return await scsTokenClient.GenerateDisposableToken(scope, expiresIn, tokenId);
     }
 
     /// <inheritdoc />

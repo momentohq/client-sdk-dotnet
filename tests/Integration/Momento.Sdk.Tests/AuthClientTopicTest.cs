@@ -32,7 +32,13 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
 
     private async Task<ITopicClient> GetClientForTokenScope(DisposableTokenScope scope)
     {
-        var response = await authClient.GenerateDisposableTokenAsync(scope, ExpiresIn.Minutes(2));
+        return await GetClientForTokenScope(scope, null);
+    }
+    
+    
+    private async Task<ITopicClient> GetClientForTokenScope(DisposableTokenScope scope, string? tokenId)
+    {
+        var response = await authClient.GenerateDisposableTokenAsync(scope, ExpiresIn.Minutes(2), tokenId);
         Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         string authToken = "";
         if (response is GenerateDisposableTokenResponse.Success token)
@@ -43,6 +49,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         var authProvider = new StringMomentoTokenProvider(authToken);
         return new TopicClient(TopicConfigurations.Laptop.latest(), authProvider);
     }
+    
 
     private async Task PublishToTopic(string cache, string topic, string value, ITopicClient? client = null)
     {
@@ -51,8 +58,16 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         Assert.True(response is TopicPublishResponse.Success, $"Unexpected response: {response}");
     }
 
+
     private async Task ExpectTextFromSubscription(
         TopicSubscribeResponse.Subscription subscription, string expectedText
+    )
+    {
+        await ExpectTextFromSubscription(subscription, expectedText, null);
+    }
+
+    private async Task ExpectTextFromSubscription(
+        TopicSubscribeResponse.Subscription subscription, string expectedText, string? tokenId
     )
     {
         var cts = new CancellationTokenSource();
@@ -64,6 +79,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
             Assert.True(message is TopicMessage.Text, $"Unexpected response: {message}");
             if (message is TopicMessage.Text textMsg) {
                 Assert.Equal(expectedText, textMsg.Value);
+                Assert.Equal(tokenId, textMsg.TokenId);
                 gotText = true;
             } 
             cts.Cancel();
@@ -338,6 +354,28 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         );
         await GenerateDisposableTopicAuthToken_ReadWrite_Common(readwriteTopicClient, messageValue);
     }
+    
+    
+    [Fact]
+    public async Task GenerateDisposableTopicAuthToken_ReadWrite_WithTokenId_HappyPath()
+    {
+        const string messageValue = "hello";
+        const string tokenId = "tacoToken";
+        var readwriteTopicClient = await GetClientForTokenScope(
+            DisposableTokenScopes.TopicPublishSubscribe(cacheName, topicName),
+            tokenId
+        );
+        var subscribeResponse = await readwriteTopicClient.SubscribeAsync(cacheName, topicName);
+        Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription, $"Unexpected response: {subscribeResponse}");
+        var publishResponse = await readwriteTopicClient.PublishAsync(cacheName, topicName, messageValue);
+        Assert.True(publishResponse is TopicPublishResponse.Success, $"Unexpected response: {publishResponse}");
+        if (subscribeResponse is TopicSubscribeResponse.Subscription subscription)
+        {
+            await PublishToTopic(cacheName, topicName, messageValue, readwriteTopicClient);
+            await ExpectTextFromSubscription(subscription, messageValue, tokenId);
+        }
+    }
+    
 
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_ReadWrite_NamePrefix_HappyPath()

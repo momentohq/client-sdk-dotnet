@@ -43,15 +43,22 @@ public abstract class TopicMessage
         /// <summary>
         /// A topic message containing a text value.
         /// </summary>
-        public Text(_TopicValue topicValue)
+        public Text(_TopicValue topicValue, string? tokenId = null)
         {
             Value = topicValue.Text;
+            TokenId = tokenId;
         }
 
         /// <summary>
         /// The text value of this message.
         /// </summary>
         public string Value { get; }
+        
+        /// <summary>
+        /// The TokenId that was used to publish the message, or null if the token did not have an id.
+        /// This can be used to securely identify the sender of a message.
+        /// </summary>
+        public string? TokenId { get; }
     }
     
     /// <summary>
@@ -62,15 +69,22 @@ public abstract class TopicMessage
         /// <summary>
         /// A topic message containing a binary value.
         /// </summary>
-        public Binary(_TopicValue topicValue)
+        public Binary(_TopicValue topicValue, string? tokenId = null)
         {
             Value = topicValue.Binary.ToByteArray();
+            TokenId = tokenId;
         }
 
         /// <summary>
         /// The binary value of this message.
         /// </summary>
         public byte[] Value { get; }
+        
+        /// <summary>
+        /// The TokenId that was used to publish the message, or null if the token did not have an id.
+        /// This can be used to securely identify the sender of a message.
+        /// </summary>
+        public string? TokenId { get; }
     }
 
     /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
