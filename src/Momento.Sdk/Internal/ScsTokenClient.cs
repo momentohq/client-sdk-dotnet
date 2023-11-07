@@ -37,7 +37,7 @@ internal sealed class ScsTokenClient : IDisposable
     private const string RequestTypeAuthGenerateDisposableToken = "GENERATE_DISPOSABLE_TOKEN";
 
     public async Task<GenerateDisposableTokenResponse> GenerateDisposableToken(
-        DisposableTokenScope scope, ExpiresIn expiresIn
+        DisposableTokenScope scope, ExpiresIn expiresIn, string? tokenId = null
     ) {
         Permissions permissions;
         try
@@ -59,7 +59,8 @@ internal sealed class ScsTokenClient : IDisposable
             {
                 Expires = new _GenerateDisposableTokenRequest.Types.Expires() { ValidForSeconds = (uint)expiresIn.Seconds() },
                 AuthToken = this.authToken,
-                Permissions = permissions
+                Permissions = permissions,
+                TokenId = tokenId ?? ""
             };
             _logger.LogTraceExecutingGenericRequest(RequestTypeAuthGenerateDisposableToken);
             var response = await grpcManager.Client.generateDisposableToken(

@@ -8,5 +8,5 @@ namespace Momento.Sdk;
 public interface IAuthClient : IDisposable
 {
     public Task<GenerateDisposableTokenResponse> GenerateDisposableTokenAsync(DisposableTokenScope scope,
-        ExpiresIn expiresIn);
+        ExpiresIn expiresIn, string? tokenId = null);
 }
