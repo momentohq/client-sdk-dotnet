@@ -16,7 +16,7 @@ namespace Momento.Sdk.Responses.Vector;
 /// <code>
 /// if (response is ListIndexesResponse.Success successResponse)
 /// {
-///     return successResponse.IndexNames;
+///     return successResponse.Indexes;
 /// }
 /// else if (response is ListIndexesResponse.Error errorResponse)
 /// {
@@ -34,21 +34,21 @@ public abstract class ListIndexesResponse
     public class Success : ListIndexesResponse
     {
         /// <summary>
-        /// The list of vector available to the user.
+        /// The list of information about the vector indexes available to the user.
         /// </summary>
-        public List<string> IndexNames { get; }
+        public List<IndexInfo> Indexes { get; }
 
         /// <include file="../../docs.xml" path='docs/class[@name="Success"]/description/*' />
-        /// <param name="indexNames">the list of index names</param>
-        public Success(List<string> indexNames)
+        /// <param name="indexes">the list of index information</param>
+        public Success(List<IndexInfo> indexes)
         {
-            IndexNames = indexNames;
+            Indexes = indexes;
         }
 
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{base.ToString()}: {string.Join(", ", IndexNames)}";
+            return $"{base.ToString()}: {string.Join(", ", Indexes)}";
         }
 
     }

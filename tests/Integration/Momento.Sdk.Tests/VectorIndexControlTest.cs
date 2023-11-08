@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
     using Momento.Sdk.Responses.Vector;
 
@@ -26,7 +27,7 @@ public class VectorIndexControlTest : IClassFixture<VectorIndexClientFixture>
             var listResponse = await vectorIndexClient.ListIndexesAsync();
             Assert.True(listResponse is ListIndexesResponse.Success, $"Unexpected response: {listResponse}");
             var listOk = (ListIndexesResponse.Success)listResponse;
-            Assert.Contains(listOk.IndexNames, name => name == indexName);
+            Assert.Contains(listOk.Indexes.Select(i => i.Name), name => name == indexName);
         }
         finally
         {
