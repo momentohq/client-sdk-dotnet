@@ -49,7 +49,7 @@ public abstract class SearchResponse
         /// <inheritdoc />
         public override string ToString()
         {
-            var displayedHits = Hits.Take(5).Select(hit => $"{hit.Id} ({hit.Distance})");
+            var displayedHits = Hits.Take(5).Select(hit => $"{hit.Id} ({hit.Score})");
             return $"{base.ToString()}: {string.Join(", ", displayedHits)}...";
         }
 
