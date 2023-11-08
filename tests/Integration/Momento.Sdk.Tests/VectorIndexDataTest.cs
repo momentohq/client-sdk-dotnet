@@ -86,7 +86,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         }
         finally
         {
-            await vectorIndexClient.DeleteIndexesAsync(indexName);
+            await vectorIndexClient.DeleteIndexAsync(indexName);
         }
     }
 
@@ -123,7 +123,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         }
         finally
         {
-            await vectorIndexClient.DeleteIndexesAsync(indexName);
+            await vectorIndexClient.DeleteIndexAsync(indexName);
         }
     }
 
@@ -161,7 +161,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         }
         finally
         {
-            await vectorIndexClient.DeleteIndexesAsync(indexName);
+            await vectorIndexClient.DeleteIndexAsync(indexName);
         }
     }
 
@@ -197,7 +197,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         }
         finally
         {
-            await vectorIndexClient.DeleteIndexesAsync(indexName);
+            await vectorIndexClient.DeleteIndexAsync(indexName);
         }
     }
 
@@ -271,7 +271,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         }
         finally
         {
-            await vectorIndexClient.DeleteIndexesAsync(indexName);
+            await vectorIndexClient.DeleteIndexAsync(indexName);
         }
     }
 
@@ -314,20 +314,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         }
         finally
         {
-            await vectorIndexClient.DeleteIndexesAsync(indexName);
-        }
-    }
-
-    [Fact]
-    public async Task TempDeleteAllIndexes()
-    {
-        var listResponse = await vectorIndexClient.ListIndexesAsync();
-        Assert.True(listResponse is ListIndexesResponse.Success, $"Unexpected response: {listResponse}");
-        var listOk = (ListIndexesResponse.Success)listResponse;
-        foreach (var indexName in listOk.IndexNames)
-        {
-            var deleteResponse = await vectorIndexClient.DeleteIndexesAsync(indexName);
-            Assert.True(deleteResponse is DeleteIndexResponse.Success, $"Unexpected response: {deleteResponse}");
+            await vectorIndexClient.DeleteIndexAsync(indexName);
         }
     }
 }

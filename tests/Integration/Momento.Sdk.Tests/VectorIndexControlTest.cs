@@ -30,7 +30,7 @@ public class VectorIndexControlTest : IClassFixture<VectorIndexClientFixture>
         }
         finally
         {
-            var deleteResponse = await vectorIndexClient.DeleteIndexesAsync(indexName);
+            var deleteResponse = await vectorIndexClient.DeleteIndexAsync(indexName);
             Assert.True(deleteResponse is DeleteIndexResponse.Success, $"Unexpected response: {deleteResponse}");
         }
     }
@@ -75,7 +75,7 @@ public class VectorIndexControlTest : IClassFixture<VectorIndexClientFixture>
     public async Task DeleteIndexAsync_DoesntExistError()
     {
         var indexName = $"index-{Utils.NewGuidString()}";
-        var deleteResponse = await vectorIndexClient.DeleteIndexesAsync(indexName);
+        var deleteResponse = await vectorIndexClient.DeleteIndexAsync(indexName);
         Assert.True(deleteResponse is DeleteIndexResponse.Error, $"Unexpected response: {deleteResponse}");
         var deleteErr = (DeleteIndexResponse.Error)deleteResponse;
         Assert.Equal(MomentoErrorCode.NOT_FOUND_ERROR, deleteErr.InnerException.ErrorCode);
