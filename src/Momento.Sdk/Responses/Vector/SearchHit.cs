@@ -5,7 +5,7 @@ namespace Momento.Sdk.Responses.Vector;
 using System.Collections.Generic;
 
 /// <summary>
-/// A hit from a vector search. Contains the ID of the vector, the distance from the query vector,
+/// A hit from a vector search. Contains the ID of the vector, the search score,
 /// and any requested metadata.
 /// </summary>
 public class SearchHit
@@ -16,9 +16,9 @@ public class SearchHit
     public string Id { get; }
     
     /// <summary>
-    /// The distance from the query vector.
+    /// The similarity to the query vector.
     /// </summary>
-    public double Distance { get; }
+    public double Score { get; }
     
     /// <summary>
     /// Requested metadata associated with the hit.
@@ -29,11 +29,11 @@ public class SearchHit
     /// Constructs a SearchHit with no metadata.
     /// </summary>
     /// <param name="id">The ID of the hit.</param>
-    /// <param name="distance">The distance from the query vector.</param>
-    public SearchHit(string id, double distance)
+    /// <param name="score">The similarity to the query vector.</param>
+    public SearchHit(string id, double score)
     {
         Id = id;
-        Distance = distance;
+        Score = score;
         Metadata = new Dictionary<string, MetadataValue>();
     }
     
@@ -41,12 +41,12 @@ public class SearchHit
     /// Constructs a SearchHit.
     /// </summary>
     /// <param name="id">The ID of the hit.</param>
-    /// <param name="distance">The distance from the query vector.</param>
+    /// <param name="score">The similarity to the query vector.</param>
     /// <param name="metadata">Requested metadata associated with the hit</param>
-    public SearchHit(string id, double distance, Dictionary<string, MetadataValue> metadata)
+    public SearchHit(string id, double score, Dictionary<string, MetadataValue> metadata)
     {
         Id = id;
-        Distance = distance;
+        Score = score;
         Metadata = metadata;
     }
 
@@ -54,12 +54,13 @@ public class SearchHit
     public override bool Equals(object obj)
     {
         if (ReferenceEquals(this, obj)) return true;
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         if (obj is null || GetType() != obj.GetType()) return false;
 
         var other = (SearchHit)obj;
 
         // ReSharper disable once CompareOfFloatsByEqualityOperator
-        if (Id != other.Id || Distance != other.Distance) return false;
+        if (Id != other.Id || Score != other.Score) return false;
         
         // Compare Metadata dictionaries
         if (Metadata.Count != other.Metadata.Count) return false;
@@ -81,7 +82,7 @@ public class SearchHit
             var hash = 17;
 
             hash = hash * 23 + Id.GetHashCode();
-            hash = hash * 23 + Distance.GetHashCode();
+            hash = hash * 23 + Score.GetHashCode();
 
             foreach (var pair in Metadata)
             {
