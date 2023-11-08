@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
@@ -69,7 +70,8 @@ internal sealed class VectorIndexControlClient : IDisposable
             var request = new _ListIndexesRequest();
             var response = await grpcManager.Client.ListIndexesAsync(request, new CallOptions(deadline: CalculateDeadline()));
             return _logger.LogTraceGenericRequestSuccess("listVectorIndexes",
-                new ListIndexesResponse.Success(new List<string>(response.IndexNames)));
+                new ListIndexesResponse.Success(
+                    new List<IndexInfo>(response.IndexNames.Select(n => new IndexInfo(n)))));
         }
         catch (Exception e)
         {
