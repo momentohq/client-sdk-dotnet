@@ -103,7 +103,7 @@ public interface IPreviewVectorIndexClient : IDisposable
     /// }
     /// </code>
     ///</returns>
-    public Task<DeleteIndexResponse> DeleteIndexesAsync(string indexName);
+    public Task<DeleteIndexResponse> DeleteIndexAsync(string indexName);
 
     /// <summary>
     /// Upserts a batch of items into a vector index.

@@ -49,7 +49,7 @@ public class PreviewVectorIndexClient: IPreviewVectorIndexClient
     }
 
     /// <inheritdoc />
-    public async Task<DeleteIndexResponse> DeleteIndexesAsync(string indexName)
+    public async Task<DeleteIndexResponse> DeleteIndexAsync(string indexName)
     {
         return await controlClient.DeleteIndexAsync(indexName);
     }
