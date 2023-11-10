@@ -69,9 +69,9 @@ public class PreviewVectorIndexClient: IPreviewVectorIndexClient
 
     /// <inheritdoc />
     public async Task<SearchResponse> SearchAsync(string indexName, IEnumerable<float> queryVector,
-        int topK = 10, MetadataFields? metadataFields = null)
+        int topK = 10, MetadataFields? metadataFields = null, float? searchThreshold = null)
     {
-        return await dataClient.SearchAsync(indexName, queryVector, topK, metadataFields);
+        return await dataClient.SearchAsync(indexName, queryVector, topK, metadataFields, searchThreshold);
     }
 
     /// <inheritdoc />
