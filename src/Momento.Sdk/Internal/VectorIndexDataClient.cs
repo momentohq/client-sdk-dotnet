@@ -68,7 +68,7 @@ internal sealed class VectorIndexDataClient : IDisposable
     }
 
     public async Task<SearchResponse> SearchAsync(string indexName, IEnumerable<float> queryVector, int topK,
-        MetadataFields? metadataFields)
+        MetadataFields? metadataFields, float? scoreThreshold)
     {
         try
         {
@@ -91,9 +91,18 @@ internal sealed class VectorIndexDataClient : IDisposable
                 IndexName = indexName,
                 QueryVector = new _Vector { Elements = { queryVector } },
                 TopK = validatedTopK,
-                MetadataFields = metadataRequest
+                MetadataFields = metadataRequest,
             };
 
+            if (scoreThreshold != null)
+            {
+                request.ScoreThreshold = scoreThreshold.Value;
+            }
+            else
+            {
+                request.NoScoreThreshold = new _NoScoreThreshold();
+            }
+            
             var response =
                 await grpcManager.Client.SearchAsync(request, new CallOptions(deadline: CalculateDeadline()));
             var searchHits = response.Hits.Select(Convert).ToList();
@@ -167,7 +176,7 @@ internal sealed class VectorIndexDataClient : IDisposable
 
     private static SearchHit Convert(_SearchHit hit)
     {
-        return new SearchHit(hit.Id, hit.Distance, Convert(hit.Metadata));
+        return new SearchHit(hit.Id, hit.Score, Convert(hit.Metadata));
     }
 
     private static void CheckValidIndexName(string indexName)

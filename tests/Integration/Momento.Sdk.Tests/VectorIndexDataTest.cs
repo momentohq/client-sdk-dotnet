@@ -317,4 +317,89 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
             await vectorIndexClient.DeleteIndexAsync(indexName);
         }
     }
+
+    public static IEnumerable<object[]> SearchThresholdTestCases =>
+        new List<object[]>
+        {
+            // similarity metric, scores, thresholds
+            new object[]
+            {
+                SimilarityMetric.CosineSimilarity,
+                new List<float> { 1.0f, 0.0f, -1.0f },
+                new List<float> { 0.5f, -1.01f, 1.0f }
+            },
+            new object[]
+            {
+                SimilarityMetric.InnerProduct,
+                new List<float> { 4.0f, 0.0f, -4.0f },
+                new List<float> { 0.0f, -4.01f, 4.0f }
+            },
+            new object[]
+            {
+                SimilarityMetric.EuclideanSimilarity,
+                new List<float> { 2.0f, 10.0f, 18.0f },
+                new List<float> { 3.0f, 20.0f, -0.01f }
+            }
+        };
+
+    [Theory]
+    [MemberData(nameof(SearchThresholdTestCases))]
+    public async Task Search_PruneBasedOnThreshold(SimilarityMetric similarityMetric, List<float> scores,
+        List<float> thresholds)
+    {
+        var indexName = $"index-{Utils.NewGuidString()}";
+
+        var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, 2, similarityMetric);
+        Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");
+
+        try
+        {
+            var upsertResponse = await vectorIndexClient.UpsertItemBatchAsync(indexName, new List<Item>
+            {
+                new("test_item_1", new List<float> { 1.0f, 1.0f }),
+                new("test_item_2", new List<float> { -1.0f, 1.0f }),
+                new("test_item_3", new List<float> { -1.0f, -1.0f })
+            });
+            Assert.True(upsertResponse is UpsertItemBatchResponse.Success,
+                $"Unexpected response: {upsertResponse}");
+
+            await Task.Delay(2_000);
+
+            var queryVector = new List<float> { 2.0f, 2.0f };
+            var searchHits = new List<SearchHit>
+            {
+                new("test_item_1", scores[0]),
+                new("test_item_2", scores[1]),
+                new("test_item_3", scores[2])
+            };
+
+            // Test threshold to get only the top result
+            var searchResponse =
+                await vectorIndexClient.SearchAsync(indexName, queryVector, 3, scoreThreshold: thresholds[0]);
+            Assert.True(searchResponse is SearchResponse.Success, $"Unexpected response: {searchResponse}");
+            var successResponse = (SearchResponse.Success)searchResponse;
+            Assert.Equal(new List<SearchHit>
+            {
+                searchHits[0]
+            }, successResponse.Hits);
+
+            // Test threshold to get all results
+            searchResponse =
+                await vectorIndexClient.SearchAsync(indexName, queryVector, 3, scoreThreshold: thresholds[1]);
+            Assert.True(searchResponse is SearchResponse.Success, $"Unexpected response: {searchResponse}");
+            successResponse = (SearchResponse.Success)searchResponse;
+            Assert.Equal(searchHits, successResponse.Hits);
+
+            // Test threshold to get no results
+            searchResponse =
+                await vectorIndexClient.SearchAsync(indexName, queryVector, 3, scoreThreshold: thresholds[2]);
+            Assert.True(searchResponse is SearchResponse.Success, $"Unexpected response: {searchResponse}");
+            successResponse = (SearchResponse.Success)searchResponse;
+            Assert.Empty(successResponse.Hits);
+        }
+        finally
+        {
+            await vectorIndexClient.DeleteIndexAsync(indexName);
+        }
+    }
 }
