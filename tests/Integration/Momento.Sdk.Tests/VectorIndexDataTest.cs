@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Momento.Sdk.Messages.Vector;
 using Momento.Sdk.Requests.Vector;
@@ -57,8 +58,56 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, error.InnerException.ErrorCode);
     }
 
-    [Fact]
-    public async Task UpsertAndSearch_InnerProduct()
+    public delegate Task<T> SearchDelegate<T>(IPreviewVectorIndexClient client, string indexName,
+        IEnumerable<float> queryVector, int topK = 10,
+        MetadataFields? metadataFields = null, float? scoreThreshold = null);
+
+    public delegate void AssertOnSearchResponse<in T>(T response, List<SearchHit> expectedHits,
+        List<List<float>> expectedVectors);
+
+    public static IEnumerable<object[]> UpsertAndSearchTestData
+    {
+        get
+        {
+            return new List<object[]>
+            {
+                new object[]
+                {
+                    new SearchDelegate<SearchResponse>(
+                        (client, indexName, queryVector, topK, metadata, scoreThreshold) =>
+                            client.SearchAsync(indexName, queryVector, topK, metadata, scoreThreshold)),
+                    new AssertOnSearchResponse<SearchResponse>((response, expectedHits, _) =>
+                    {
+                        Assert.True(response is SearchResponse.Success, $"Unexpected response: {response}");
+                        var successResponse = (SearchResponse.Success)response;
+                        Assert.Equal(expectedHits, successResponse.Hits);
+                    })
+                },
+                new object[]
+                {
+                    new SearchDelegate<SearchAndFetchVectorsResponse>(
+                        (client, indexName, queryVector, topK, metadata, scoreThreshold) =>
+                            client.SearchAndFetchVectorsAsync(indexName, queryVector, topK, metadata,
+                                scoreThreshold)),
+                    new AssertOnSearchResponse<SearchAndFetchVectorsResponse>(
+                        (response, expectedHits, expectedVectors) =>
+                        {
+                            Assert.True(response is SearchAndFetchVectorsResponse.Success,
+                                $"Unexpected response: {response}");
+                            var successResponse = (SearchAndFetchVectorsResponse.Success)response;
+                            var expectedHitsAndVectors = expectedHits.Zip(expectedVectors,
+                                (h, v) => new SearchAndFetchVectorsHit(h, v));
+                            Assert.Equal(expectedHitsAndVectors, successResponse.Hits);
+                        })
+                }
+            };
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(UpsertAndSearchTestData))]
+    public async Task UpsertAndSearch_InnerProduct<T>(SearchDelegate<T> searchDelegate,
+        AssertOnSearchResponse<T> assertOnSearchResponse)
     {
         var indexName = $"index-{Utils.NewGuidString()}";
 
@@ -67,22 +116,23 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
 
         try
         {
-            var upsertResponse = await vectorIndexClient.UpsertItemBatchAsync(indexName, new List<Item>
+            var items = new List<Item>
             {
                 new("test_item", new List<float> { 1.0f, 2.0f })
-            });
+            };
+
+            var upsertResponse = await vectorIndexClient.UpsertItemBatchAsync(indexName, items);
             Assert.True(upsertResponse is UpsertItemBatchResponse.Success,
                 $"Unexpected response: {upsertResponse}");
 
             await Task.Delay(2_000);
 
-            var searchResponse = await vectorIndexClient.SearchAsync(indexName, new List<float> { 1.0f, 2.0f });
-            Assert.True(searchResponse is SearchResponse.Success, $"Unexpected response: {searchResponse}");
-            var successResponse = (SearchResponse.Success)searchResponse;
-            Assert.Equal(new List<SearchHit>
+            var searchResponse =
+                await searchDelegate.Invoke(vectorIndexClient, indexName, new List<float> { 1.0f, 2.0f });
+            assertOnSearchResponse.Invoke(searchResponse, new List<SearchHit>
             {
                 new("test_item", 5.0f)
-            }, successResponse.Hits);
+            }, items.Select(i => i.Vector).ToList());
         }
         finally
         {
@@ -90,8 +140,10 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         }
     }
 
-    [Fact]
-    public async Task UpsertAndSearch_CosineSimilarity()
+    [Theory]
+    [MemberData(nameof(UpsertAndSearchTestData))]
+    public async Task UpsertAndSearch_CosineSimilarity<T>(SearchDelegate<T> searchDelegate,
+        AssertOnSearchResponse<T> assertOnSearchResponse)
     {
         var indexName = $"index-{Utils.NewGuidString()}";
 
@@ -100,26 +152,26 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
 
         try
         {
-            var upsertResponse = await vectorIndexClient.UpsertItemBatchAsync(indexName, new List<Item>
+            var items = new List<Item>
             {
                 new("test_item_1", new List<float> { 1.0f, 1.0f }),
                 new("test_item_2", new List<float> { -1.0f, 1.0f }),
                 new("test_item_3", new List<float> { -1.0f, -1.0f })
-            });
+            };
+            var upsertResponse = await vectorIndexClient.UpsertItemBatchAsync(indexName, items);
             Assert.True(upsertResponse is UpsertItemBatchResponse.Success,
                 $"Unexpected response: {upsertResponse}");
 
             await Task.Delay(2_000);
 
-            var searchResponse = await vectorIndexClient.SearchAsync(indexName, new List<float> { 2.0f, 2.0f });
-            Assert.True(searchResponse is SearchResponse.Success, $"Unexpected response: {searchResponse}");
-            var successResponse = (SearchResponse.Success)searchResponse;
-            Assert.Equal(new List<SearchHit>
+            var searchResponse =
+                await searchDelegate.Invoke(vectorIndexClient, indexName, new List<float> { 2.0f, 2.0f });
+            assertOnSearchResponse.Invoke(searchResponse, new List<SearchHit>
             {
                 new("test_item_1", 1.0f),
                 new("test_item_2", 0.0f),
                 new("test_item_3", -1.0f)
-            }, successResponse.Hits);
+            }, items.Select(i => i.Vector).ToList());
         }
         finally
         {
@@ -127,8 +179,10 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         }
     }
 
-    [Fact]
-    public async Task UpsertAndSearch_EuclideanSimilarity()
+    [Theory]
+    [MemberData(nameof(UpsertAndSearchTestData))]
+    public async Task UpsertAndSearch_EuclideanSimilarity<T>(SearchDelegate<T> searchDelegate,
+        AssertOnSearchResponse<T> assertOnSearchResponse)
     {
         var indexName = $"index-{Utils.NewGuidString()}";
 
@@ -138,26 +192,26 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
 
         try
         {
-            var upsertResponse = await vectorIndexClient.UpsertItemBatchAsync(indexName, new List<Item>
+            var items = new List<Item>
             {
                 new("test_item_1", new List<float> { 1.0f, 1.0f }),
                 new("test_item_2", new List<float> { -1.0f, 1.0f }),
                 new("test_item_3", new List<float> { -1.0f, -1.0f })
-            });
+            };
+            var upsertResponse = await vectorIndexClient.UpsertItemBatchAsync(indexName, items);
             Assert.True(upsertResponse is UpsertItemBatchResponse.Success,
                 $"Unexpected response: {upsertResponse}");
 
             await Task.Delay(2_000);
 
-            var searchResponse = await vectorIndexClient.SearchAsync(indexName, new List<float> { 1.0f, 1.0f });
-            Assert.True(searchResponse is SearchResponse.Success, $"Unexpected response: {searchResponse}");
-            var successResponse = (SearchResponse.Success)searchResponse;
-            Assert.Equal(new List<SearchHit>
+            var searchResponse =
+                await searchDelegate.Invoke(vectorIndexClient, indexName, new List<float> { 1.0f, 1.0f });
+            assertOnSearchResponse.Invoke(searchResponse, new List<SearchHit>
             {
                 new("test_item_1", 0.0f),
                 new("test_item_2", 4.0f),
                 new("test_item_3", 8.0f)
-            }, successResponse.Hits);
+            }, items.Select(i => i.Vector).ToList());
         }
         finally
         {
@@ -165,8 +219,10 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         }
     }
 
-    [Fact]
-    public async Task UpsertAndSearch_TopKLimit()
+    [Theory]
+    [MemberData(nameof(UpsertAndSearchTestData))]
+    public async Task UpsertAndSearch_TopKLimit<T>(SearchDelegate<T> searchDelegate,
+        AssertOnSearchResponse<T> assertOnSearchResponse)
     {
         var indexName = $"index-{Utils.NewGuidString()}";
 
@@ -175,25 +231,29 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
 
         try
         {
-            var upsertResponse = await vectorIndexClient.UpsertItemBatchAsync(indexName, new List<Item>
+            var items = new List<Item>
             {
                 new("test_item_1", new List<float> { 1.0f, 2.0f }),
                 new("test_item_2", new List<float> { 3.0f, 4.0f }),
                 new("test_item_3", new List<float> { 5.0f, 6.0f })
-            });
+            };
+            var upsertResponse = await vectorIndexClient.UpsertItemBatchAsync(indexName, items);
             Assert.True(upsertResponse is UpsertItemBatchResponse.Success,
                 $"Unexpected response: {upsertResponse}");
 
             await Task.Delay(2_000);
 
-            var searchResponse = await vectorIndexClient.SearchAsync(indexName, new List<float> { 1.0f, 2.0f }, 2);
-            Assert.True(searchResponse is SearchResponse.Success, $"Unexpected response: {searchResponse}");
-            var successResponse = (SearchResponse.Success)searchResponse;
-            Assert.Equal(new List<SearchHit>
+            var searchResponse =
+                await searchDelegate.Invoke(vectorIndexClient, indexName, new List<float> { 1.0f, 2.0f }, topK: 2);
+            assertOnSearchResponse.Invoke(searchResponse, new List<SearchHit>
             {
                 new("test_item_3", 17.0f),
                 new("test_item_2", 11.0f)
-            }, successResponse.Hits);
+            }, new List<List<float>>
+            {
+                new() { 5.0f, 6.0f },
+                new() { 3.0f, 4.0f }
+            });
         }
         finally
         {
@@ -201,8 +261,10 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         }
     }
 
-    [Fact]
-    public async Task UpsertAndSearch_WithMetadata()
+    [Theory]
+    [MemberData(nameof(UpsertAndSearchTestData))]
+    public async Task UpsertAndSearch_WithMetadata<T>(SearchDelegate<T> searchDelegate,
+        AssertOnSearchResponse<T> assertOnSearchResponse)
     {
         var indexName = $"index-{Utils.NewGuidString()}";
 
@@ -211,7 +273,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
 
         try
         {
-            var upsertResponse = await vectorIndexClient.UpsertItemBatchAsync(indexName, new List<Item>
+            var items = new List<Item>
             {
                 new("test_item_1", new List<float> { 1.0f, 2.0f },
                     new Dictionary<string, MetadataValue> { { "key1", "value1" } }),
@@ -220,45 +282,35 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
                 new("test_item_3", new List<float> { 5.0f, 6.0f },
                     new Dictionary<string, MetadataValue>
                         { { "key1", "value3" }, { "key3", "value3" } })
-            });
+            };
+            var upsertResponse = await vectorIndexClient.UpsertItemBatchAsync(indexName, items);
             Assert.True(upsertResponse is UpsertItemBatchResponse.Success,
                 $"Unexpected response: {upsertResponse}");
 
             await Task.Delay(2_000);
 
-            var searchResponse = await vectorIndexClient.SearchAsync(indexName, new List<float> { 1.0f, 2.0f }, 3,
-                new List<string> { "key1" });
-            Assert.True(searchResponse is SearchResponse.Success, $"Unexpected response: {searchResponse}");
-            var successResponse = (SearchResponse.Success)searchResponse;
-            Assert.Equal(new List<SearchHit>
+            var expectedVectors = new List<List<float>>
+            {
+                new() { 5.0f, 6.0f },
+                new() { 3.0f, 4.0f },
+                new() { 1.0f, 2.0f }
+            };
+            var searchResponse =
+                await searchDelegate.Invoke(vectorIndexClient, indexName, new List<float> { 1.0f, 2.0f }, 3,
+                    new List<string> { "key1" });
+            assertOnSearchResponse.Invoke(searchResponse, new List<SearchHit>
             {
                 new("test_item_3", 17.0f,
                     new Dictionary<string, MetadataValue> { { "key1", "value3" } }),
                 new("test_item_2", 11.0f, new Dictionary<string, MetadataValue>()),
                 new("test_item_1", 5.0f,
                     new Dictionary<string, MetadataValue> { { "key1", "value1" } })
-            }, successResponse.Hits);
-
-            searchResponse = await vectorIndexClient.SearchAsync(indexName, new List<float> { 1.0f, 2.0f }, 3,
-                new List<string> { "key1", "key2", "key3", "key4" });
-            Assert.True(searchResponse is SearchResponse.Success, $"Unexpected response: {searchResponse}");
-            successResponse = (SearchResponse.Success)searchResponse;
-            Assert.Equal(new List<SearchHit>
-            {
-                new("test_item_3", 17.0f,
-                    new Dictionary<string, MetadataValue>
-                        { { "key1", "value3" }, { "key3", "value3" } }),
-                new("test_item_2", 11.0f,
-                    new Dictionary<string, MetadataValue> { { "key2", "value2" } }),
-                new("test_item_1", 5.0f,
-                    new Dictionary<string, MetadataValue> { { "key1", "value1" } })
-            }, successResponse.Hits);
+            }, expectedVectors);
 
             searchResponse =
-                await vectorIndexClient.SearchAsync(indexName, new List<float> { 1.0f, 2.0f }, 3, MetadataFields.All);
-            Assert.True(searchResponse is SearchResponse.Success, $"Unexpected response: {searchResponse}");
-            successResponse = (SearchResponse.Success)searchResponse;
-            Assert.Equal(new List<SearchHit>
+                await searchDelegate.Invoke(vectorIndexClient, indexName, new List<float> { 1.0f, 2.0f }, 3,
+                    new List<string> { "key1", "key2", "key3", "key4" });
+            assertOnSearchResponse.Invoke(searchResponse, new List<SearchHit>
             {
                 new("test_item_3", 17.0f,
                     new Dictionary<string, MetadataValue>
@@ -267,7 +319,21 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
                     new Dictionary<string, MetadataValue> { { "key2", "value2" } }),
                 new("test_item_1", 5.0f,
                     new Dictionary<string, MetadataValue> { { "key1", "value1" } })
-            }, successResponse.Hits);
+            }, expectedVectors);
+
+            searchResponse =
+                await searchDelegate.Invoke(vectorIndexClient, indexName, new List<float> { 1.0f, 2.0f }, 3,
+                    MetadataFields.All);
+            assertOnSearchResponse.Invoke(searchResponse, new List<SearchHit>
+            {
+                new("test_item_3", 17.0f,
+                    new Dictionary<string, MetadataValue>
+                        { { "key1", "value3" }, { "key3", "value3" } }),
+                new("test_item_2", 11.0f,
+                    new Dictionary<string, MetadataValue> { { "key2", "value2" } }),
+                new("test_item_1", 5.0f,
+                    new Dictionary<string, MetadataValue> { { "key1", "value1" } })
+            }, expectedVectors);
         }
         finally
         {
@@ -275,8 +341,10 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         }
     }
 
-    [Fact]
-    public async Task UpsertAndSearch_WithDiverseMetadata()
+    [Theory]
+    [MemberData(nameof(UpsertAndSearchTestData))]
+    public async Task UpsertAndSearch_WithDiverseMetadata<T>(SearchDelegate<T> searchDelegate,
+        AssertOnSearchResponse<T> assertOnSearchResponse)
     {
         var indexName = $"index-{Utils.NewGuidString()}";
 
@@ -294,23 +362,24 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
                 { "list_key", new List<string> { "a", "b", "c" } },
                 { "empty_list_key", new List<string>() }
             };
-            var upsertResponse = await vectorIndexClient.UpsertItemBatchAsync(indexName, new List<Item>
+            var items = new List<Item>
             {
                 new("test_item_1", new List<float> { 1.0f, 2.0f }, metadata)
-            });
+            };
+
+            var upsertResponse = await vectorIndexClient.UpsertItemBatchAsync(indexName, items);
             Assert.True(upsertResponse is UpsertItemBatchResponse.Success,
                 $"Unexpected response: {upsertResponse}");
 
             await Task.Delay(2_000);
 
             var searchResponse =
-                await vectorIndexClient.SearchAsync(indexName, new List<float> { 1.0f, 2.0f }, 1, MetadataFields.All);
-            Assert.True(searchResponse is SearchResponse.Success, $"Unexpected response: {searchResponse}");
-            var successResponse = (SearchResponse.Success)searchResponse;
-            Assert.Equal(new List<SearchHit>
+                await searchDelegate.Invoke(vectorIndexClient, indexName, new List<float> { 1.0f, 2.0f }, 1,
+                    MetadataFields.All);
+            assertOnSearchResponse.Invoke(searchResponse, new List<SearchHit>
             {
                 new("test_item_1", 5.0f, metadata)
-            }, successResponse.Hits);
+            }, items.Select(i => i.Vector).ToList());
         }
         finally
         {
@@ -341,11 +410,17 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
                 new List<float> { 3.0f, 20.0f, -0.01f }
             }
         };
+    
+    // Combine the search threshold parameters and the search/search with vectors parameters
+    public static IEnumerable<object[]> UpsertAndSearchThresholdTestCases =>
+        SearchThresholdTestCases.SelectMany(
+            _ => UpsertAndSearchTestData,
+            (firstArray, secondArray) => firstArray.Concat(secondArray).ToArray());
 
     [Theory]
-    [MemberData(nameof(SearchThresholdTestCases))]
-    public async Task Search_PruneBasedOnThreshold(SimilarityMetric similarityMetric, List<float> scores,
-        List<float> thresholds)
+    [MemberData(nameof(UpsertAndSearchThresholdTestCases))]
+    public async Task Search_PruneBasedOnThreshold<T>(SimilarityMetric similarityMetric, List<float> scores,
+        List<float> thresholds, SearchDelegate<T> searchDelegate, AssertOnSearchResponse<T> assertOnSearchResponse)
     {
         var indexName = $"index-{Utils.NewGuidString()}";
 
@@ -354,12 +429,13 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
 
         try
         {
-            var upsertResponse = await vectorIndexClient.UpsertItemBatchAsync(indexName, new List<Item>
+            var items = new List<Item>
             {
                 new("test_item_1", new List<float> { 1.0f, 1.0f }),
                 new("test_item_2", new List<float> { -1.0f, 1.0f }),
                 new("test_item_3", new List<float> { -1.0f, -1.0f })
-            });
+            };
+            var upsertResponse = await vectorIndexClient.UpsertItemBatchAsync(indexName, items);
             Assert.True(upsertResponse is UpsertItemBatchResponse.Success,
                 $"Unexpected response: {upsertResponse}");
 
@@ -375,27 +451,21 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
 
             // Test threshold to get only the top result
             var searchResponse =
-                await vectorIndexClient.SearchAsync(indexName, queryVector, 3, scoreThreshold: thresholds[0]);
-            Assert.True(searchResponse is SearchResponse.Success, $"Unexpected response: {searchResponse}");
-            var successResponse = (SearchResponse.Success)searchResponse;
-            Assert.Equal(new List<SearchHit>
+                await searchDelegate.Invoke(vectorIndexClient, indexName, queryVector, 3, scoreThreshold: thresholds[0]);
+            assertOnSearchResponse.Invoke(searchResponse, new List<SearchHit>
             {
                 searchHits[0]
-            }, successResponse.Hits);
+            }, items.FindAll(i => i.Id == "test_item_1").Select(i => i.Vector).ToList());
 
             // Test threshold to get all results
             searchResponse =
-                await vectorIndexClient.SearchAsync(indexName, queryVector, 3, scoreThreshold: thresholds[1]);
-            Assert.True(searchResponse is SearchResponse.Success, $"Unexpected response: {searchResponse}");
-            successResponse = (SearchResponse.Success)searchResponse;
-            Assert.Equal(searchHits, successResponse.Hits);
+                await searchDelegate.Invoke(vectorIndexClient, indexName, queryVector, 3, scoreThreshold: thresholds[1]);
+            assertOnSearchResponse.Invoke(searchResponse, searchHits, items.Select(i => i.Vector).ToList());
 
             // Test threshold to get no results
             searchResponse =
-                await vectorIndexClient.SearchAsync(indexName, queryVector, 3, scoreThreshold: thresholds[2]);
-            Assert.True(searchResponse is SearchResponse.Success, $"Unexpected response: {searchResponse}");
-            successResponse = (SearchResponse.Success)searchResponse;
-            Assert.Empty(successResponse.Hits);
+                await searchDelegate.Invoke(vectorIndexClient, indexName, queryVector, 3, scoreThreshold: thresholds[2]);
+            assertOnSearchResponse.Invoke(searchResponse, new List<SearchHit>(), new List<List<float>>());
         }
         finally
         {
