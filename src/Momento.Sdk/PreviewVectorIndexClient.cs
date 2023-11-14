@@ -14,7 +14,7 @@ namespace Momento.Sdk;
 ///
 /// Includes control operations and data operations.
 /// </summary>
-public class PreviewVectorIndexClient: IPreviewVectorIndexClient
+public class PreviewVectorIndexClient : IPreviewVectorIndexClient
 {
     private readonly VectorIndexControlClient controlClient;
     private readonly VectorIndexDataClient dataClient;
@@ -72,6 +72,15 @@ public class PreviewVectorIndexClient: IPreviewVectorIndexClient
         int topK = 10, MetadataFields? metadataFields = null, float? searchThreshold = null)
     {
         return await dataClient.SearchAsync(indexName, queryVector, topK, metadataFields, searchThreshold);
+    }
+
+    /// <inheritdoc />
+    public async Task<SearchAndFetchVectorsResponse> SearchAndFetchVectorsAsync(string indexName,
+        IEnumerable<float> queryVector, int topK = 10, MetadataFields? metadataFields = null,
+        float? scoreThreshold = null)
+    {
+        return await dataClient.SearchAndFetchVectorsAsync(indexName, queryVector, topK, metadataFields,
+            scoreThreshold);
     }
 
     /// <inheritdoc />

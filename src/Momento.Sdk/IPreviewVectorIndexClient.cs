@@ -188,4 +188,37 @@ public interface IPreviewVectorIndexClient : IDisposable
     /// </returns>
     public Task<SearchResponse> SearchAsync(string indexName, IEnumerable<float> queryVector, int topK = 10,
         MetadataFields? metadataFields = null, float? scoreThreshold = null);
+    
+    ///  <summary>
+    ///  Searches for the most similar vectors to the query vector in the index.
+    ///  Ranks the vectors according to the similarity metric specified when the
+    ///  index was created. Also returns the vectors associated with each result.
+    ///  </summary>
+    ///  <param name="indexName">The name of the vector index to search in.</param>
+    ///  <param name="queryVector">The vector to search for.</param>
+    ///  <param name="topK">The number of results to return. Defaults to 10.</param>
+    ///  <param name="metadataFields">A list of metadata fields to return with each result.</param>
+    ///  <param name="scoreThreshold">A score threshold to filter results by. For cosine
+    /// similarity and inner product, scores lower than the threshold are excluded. For
+    /// euclidean similarity, scores higher than the threshold are excluded. The threshold
+    /// is exclusive. Defaults to None, ie no threshold.</param>
+    ///  <returns>
+    ///  Task representing the result of the upsert operation. The
+    ///  response object is resolved to a type-safe object of one of
+    ///  the following subtypes:
+    ///  <list type="bullet">
+    ///  <item><description>SearchResponse.Success</description></item>
+    ///  <item><description>SearchResponse.Error</description></item>
+    ///  </list>
+    ///  Pattern matching can be used to operate on the appropriate subtype.
+    ///  For example:
+    ///  <code>
+    ///  if (response is SearchResponse.Error errorResponse)
+    ///  {
+    ///      // handle error as appropriate
+    ///  }
+    ///  </code>
+    /// </returns>
+    public Task<SearchAndFetchVectorsResponse> SearchAndFetchVectorsAsync(string indexName, IEnumerable<float> queryVector, int topK = 10,
+        MetadataFields? metadataFields = null, float? scoreThreshold = null);
 }
