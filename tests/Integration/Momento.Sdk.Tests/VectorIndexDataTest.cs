@@ -109,7 +109,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task UpsertAndSearch_InnerProduct<T>(SearchDelegate<T> searchDelegate,
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = $"index-{Utils.NewGuidString()}";
+        var indexName = Utils.TestVectorIndexName();
 
         var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, 2, SimilarityMetric.InnerProduct);
         Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");
@@ -145,7 +145,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task UpsertAndSearch_CosineSimilarity<T>(SearchDelegate<T> searchDelegate,
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = $"index-{Utils.NewGuidString()}";
+        var indexName = Utils.TestVectorIndexName();
 
         var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, 2);
         Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");
@@ -184,7 +184,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task UpsertAndSearch_EuclideanSimilarity<T>(SearchDelegate<T> searchDelegate,
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = $"index-{Utils.NewGuidString()}";
+        var indexName = Utils.TestVectorIndexName();
 
         var createResponse =
             await vectorIndexClient.CreateIndexAsync(indexName, 2, SimilarityMetric.EuclideanSimilarity);
@@ -224,7 +224,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task UpsertAndSearch_TopKLimit<T>(SearchDelegate<T> searchDelegate,
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = $"index-{Utils.NewGuidString()}";
+        var indexName = Utils.TestVectorIndexName();
 
         var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, 2, SimilarityMetric.InnerProduct);
         Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");
@@ -266,7 +266,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task UpsertAndSearch_WithMetadata<T>(SearchDelegate<T> searchDelegate,
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = $"index-{Utils.NewGuidString()}";
+        var indexName = Utils.TestVectorIndexName();
 
         var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, 2, SimilarityMetric.InnerProduct);
         Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");
@@ -346,7 +346,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task UpsertAndSearch_WithDiverseMetadata<T>(SearchDelegate<T> searchDelegate,
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = $"index-{Utils.NewGuidString()}";
+        var indexName = Utils.TestVectorIndexName();
 
         var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, 2, SimilarityMetric.InnerProduct);
         Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");
@@ -410,7 +410,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
                 new List<float> { 3.0f, 20.0f, -0.01f }
             }
         };
-    
+
     // Combine the search threshold parameters and the search/search with vectors parameters
     public static IEnumerable<object[]> UpsertAndSearchThresholdTestCases =>
         SearchThresholdTestCases.SelectMany(
@@ -422,7 +422,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task Search_PruneBasedOnThreshold<T>(SimilarityMetric similarityMetric, List<float> scores,
         List<float> thresholds, SearchDelegate<T> searchDelegate, AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = $"index-{Utils.NewGuidString()}";
+        var indexName = Utils.TestVectorIndexName();
 
         var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, 2, similarityMetric);
         Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");

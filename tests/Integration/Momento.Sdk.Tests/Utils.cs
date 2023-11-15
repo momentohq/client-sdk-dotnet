@@ -5,9 +5,11 @@ namespace Momento.Sdk.Tests.Integration;
 /// </summary>
 public static class Utils
 {
-    
+
     public static string TestCacheName() => "dotnet-integration-" + NewGuidString();
-    
+
+    public static string TestVectorIndexName() => "dotnet-integration-" + NewGuidString();
+
     public static string NewGuidString() => Guid.NewGuid().ToString();
 
     public static byte[] NewGuidByteArray() => Guid.NewGuid().ToByteArray();
