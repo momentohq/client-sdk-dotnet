@@ -33,22 +33,22 @@ internal sealed class VectorIndexControlClient : IDisposable
             _logger.LogTraceVectorIndexRequest("createVectorIndex", indexName);
             CheckValidIndexName(indexName);
             var validatedNumDimensions = ValidateNumDimensions(numDimensions);
-            var request = new _CreateIndexRequest { IndexName = indexName, NumDimensions = validatedNumDimensions };
+            var request = new _CreateIndexRequest { IndexName = indexName, NumDimensions = validatedNumDimensions, SimilarityMetric = new _SimilarityMetric() };
             switch (similarityMetric)
             {
                 case SimilarityMetric.CosineSimilarity:
-                    request.CosineSimilarity = new _CreateIndexRequest.Types._CosineSimilarity();
+                    request.SimilarityMetric.CosineSimilarity = new _SimilarityMetric.Types._CosineSimilarity();
                     break;
                 case SimilarityMetric.InnerProduct:
-                    request.InnerProduct = new _CreateIndexRequest.Types._InnerProduct();
+                    request.SimilarityMetric.InnerProduct = new _SimilarityMetric.Types._InnerProduct();
                     break;
                 case SimilarityMetric.EuclideanSimilarity:
-                    request.EuclideanSimilarity = new _CreateIndexRequest.Types._EuclideanSimilarity();
+                    request.SimilarityMetric.EuclideanSimilarity = new _SimilarityMetric.Types._EuclideanSimilarity();
                     break;
                 default:
                     throw new InvalidArgumentException($"Unknown similarity metric {similarityMetric}");
             }
-            
+
             await grpcManager.Client.CreateIndexAsync(request, new CallOptions(deadline: CalculateDeadline()));
             return _logger.LogTraceVectorIndexRequestSuccess("createVectorIndex", indexName, new CreateIndexResponse.Success());
         }
@@ -71,12 +71,24 @@ internal sealed class VectorIndexControlClient : IDisposable
             var response = await grpcManager.Client.ListIndexesAsync(request, new CallOptions(deadline: CalculateDeadline()));
             return _logger.LogTraceGenericRequestSuccess("listVectorIndexes",
                 new ListIndexesResponse.Success(
-                    new List<IndexInfo>(response.IndexNames.Select(n => new IndexInfo(n)))));
+                    new List<IndexInfo>(response.Indexes.Select(n => new IndexInfo(n.IndexName, (int)n.NumDimensions, Convert(n.SimilarityMetric))))
+                ));
         }
         catch (Exception e)
         {
             return _logger.LogTraceGenericRequestError("listVectorIndexes", new ListIndexesResponse.Error(_exceptionMapper.Convert(e)));
         }
+    }
+
+    private static SimilarityMetric Convert(_SimilarityMetric similarityMetric)
+    {
+        return similarityMetric.SimilarityMetricCase switch
+        {
+            _SimilarityMetric.SimilarityMetricOneofCase.InnerProduct => SimilarityMetric.InnerProduct,
+            _SimilarityMetric.SimilarityMetricOneofCase.EuclideanSimilarity => SimilarityMetric.EuclideanSimilarity,
+            _SimilarityMetric.SimilarityMetricOneofCase.CosineSimilarity => SimilarityMetric.CosineSimilarity,
+            _ => throw new UnknownException($"Unknown similarity metric {similarityMetric}")
+        };
     }
 
     public async Task<DeleteIndexResponse> DeleteIndexAsync(string indexName)
@@ -102,7 +114,7 @@ internal sealed class VectorIndexControlClient : IDisposable
             throw new InvalidArgumentException("Index name must be nonempty");
         }
     }
-    
+
     private static ulong ValidateNumDimensions(long numDimensions)
     {
         if (numDimensions <= 0)

@@ -102,7 +102,7 @@ internal sealed class VectorIndexDataClient : IDisposable
             {
                 request.NoScoreThreshold = new _NoScoreThreshold();
             }
-            
+
             var response =
                 await grpcManager.Client.SearchAsync(request, new CallOptions(deadline: CalculateDeadline()));
             var searchHits = response.Hits.Select(Convert).ToList();
@@ -113,6 +113,57 @@ internal sealed class VectorIndexDataClient : IDisposable
         {
             return _logger.LogTraceVectorIndexRequestError("search", indexName,
                 new SearchResponse.Error(_exceptionMapper.Convert(e)));
+        }
+    }
+
+    public async Task<SearchAndFetchVectorsResponse> SearchAndFetchVectorsAsync(string indexName,
+        IEnumerable<float> queryVector, int topK, MetadataFields? metadataFields, float? scoreThreshold)
+    {
+        try
+        {
+            _logger.LogTraceVectorIndexRequest("searchAndFetchVectors", indexName);
+            CheckValidIndexName(indexName);
+            var validatedTopK = ValidateTopK(topK);
+            metadataFields ??= new List<string>();
+            var metadataRequest = metadataFields switch
+            {
+                MetadataFields.AllFields => new _MetadataRequest { All = new _MetadataRequest.Types.All() },
+                MetadataFields.List list => new _MetadataRequest
+                {
+                    Some = new _MetadataRequest.Types.Some { Fields = { list.Fields } }
+                },
+                _ => throw new InvalidArgumentException($"Unknown metadata fields type {metadataFields.GetType()}")
+            };
+
+            var request = new _SearchAndFetchVectorsRequest()
+            {
+                IndexName = indexName,
+                QueryVector = new _Vector { Elements = { queryVector } },
+                TopK = validatedTopK,
+                MetadataFields = metadataRequest,
+            };
+
+            if (scoreThreshold != null)
+            {
+                request.ScoreThreshold = scoreThreshold.Value;
+            }
+            else
+            {
+                request.NoScoreThreshold = new _NoScoreThreshold();
+            }
+
+            var response =
+                await grpcManager.Client.SearchAndFetchVectorsAsync(request,
+                    new CallOptions(deadline: CalculateDeadline()));
+            var searchHits = response.Hits.Select(h =>
+                new SearchAndFetchVectorsHit(h.Id, h.Score, h.Vector.Elements.ToList(), Convert(h.Metadata))).ToList();
+            return _logger.LogTraceVectorIndexRequestSuccess("searchAndFetchVectors", indexName,
+                new SearchAndFetchVectorsResponse.Success(searchHits));
+        }
+        catch (Exception e)
+        {
+            return _logger.LogTraceVectorIndexRequestError("searchAndFetchVectors", indexName,
+                new SearchAndFetchVectorsResponse.Error(_exceptionMapper.Convert(e)));
         }
     }
 
@@ -177,6 +228,11 @@ internal sealed class VectorIndexDataClient : IDisposable
     private static SearchHit Convert(_SearchHit hit)
     {
         return new SearchHit(hit.Id, hit.Score, Convert(hit.Metadata));
+    }
+
+    private static SearchAndFetchVectorsHit Convert(_SearchAndFetchVectorsHit hit)
+    {
+        return new SearchAndFetchVectorsHit(hit.Id, hit.Score, hit.Vector.Elements.ToList(), Convert(hit.Metadata));
     }
 
     private static void CheckValidIndexName(string indexName)
