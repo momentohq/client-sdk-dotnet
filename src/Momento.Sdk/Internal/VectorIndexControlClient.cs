@@ -33,22 +33,22 @@ internal sealed class VectorIndexControlClient : IDisposable
             _logger.LogTraceVectorIndexRequest("createVectorIndex", indexName);
             CheckValidIndexName(indexName);
             var validatedNumDimensions = ValidateNumDimensions(numDimensions);
-            var request = new _CreateIndexRequest { IndexName = indexName, NumDimensions = validatedNumDimensions };
+            var request = new _CreateIndexRequest { IndexName = indexName, NumDimensions = validatedNumDimensions, SimilarityMetric = new _SimilarityMetric() };
             switch (similarityMetric)
             {
                 case SimilarityMetric.CosineSimilarity:
-                    request.CosineSimilarity = new _CreateIndexRequest.Types._CosineSimilarity();
+                    request.SimilarityMetric.CosineSimilarity = new _SimilarityMetric.Types._CosineSimilarity();
                     break;
                 case SimilarityMetric.InnerProduct:
-                    request.InnerProduct = new _CreateIndexRequest.Types._InnerProduct();
+                    request.SimilarityMetric.InnerProduct = new _SimilarityMetric.Types._InnerProduct();
                     break;
                 case SimilarityMetric.EuclideanSimilarity:
-                    request.EuclideanSimilarity = new _CreateIndexRequest.Types._EuclideanSimilarity();
+                    request.SimilarityMetric.EuclideanSimilarity = new _SimilarityMetric.Types._EuclideanSimilarity();
                     break;
                 default:
                     throw new InvalidArgumentException($"Unknown similarity metric {similarityMetric}");
             }
-            
+
             await grpcManager.Client.CreateIndexAsync(request, new CallOptions(deadline: CalculateDeadline()));
             return _logger.LogTraceVectorIndexRequestSuccess("createVectorIndex", indexName, new CreateIndexResponse.Success());
         }
@@ -71,7 +71,7 @@ internal sealed class VectorIndexControlClient : IDisposable
             var response = await grpcManager.Client.ListIndexesAsync(request, new CallOptions(deadline: CalculateDeadline()));
             return _logger.LogTraceGenericRequestSuccess("listVectorIndexes",
                 new ListIndexesResponse.Success(
-                    new List<IndexInfo>(response.IndexNames.Select(n => new IndexInfo(n)))));
+                    new List<IndexInfo>(response.Indexes.Select(n => new IndexInfo(n.IndexName)))));
         }
         catch (Exception e)
         {
