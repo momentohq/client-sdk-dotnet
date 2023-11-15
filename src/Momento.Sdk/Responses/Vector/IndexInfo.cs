@@ -48,6 +48,7 @@ public class IndexInfo
         // Overflow is standard here since the alternative is modulo arithmetic, which just wraps around the same.
         unchecked
         {
+            // see https://github.com/dotnet/coreclr/blob/master/src/System.Private.CoreLib/shared/System/HashCode.cs#L58
             var hash = 17;
             hash = hash * 23 + Name.GetHashCode();
             hash = hash * 23 + NumDimensions.GetHashCode();
