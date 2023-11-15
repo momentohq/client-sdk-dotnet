@@ -52,7 +52,7 @@ public class VectorIndexControlTest : IClassFixture<VectorIndexClientFixture>
     [Fact]
     public async Task CreateIndexAsync_AlreadyExistsError()
     {
-        var indexName = $"index-{Utils.NewGuidString()}";
+        var indexName = Utils.TestVectorIndexName();
         const int numDimensions = 3;
 
         var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, numDimensions);
@@ -88,7 +88,7 @@ public class VectorIndexControlTest : IClassFixture<VectorIndexClientFixture>
     [Fact]
     public async Task DeleteIndexAsync_DoesntExistError()
     {
-        var indexName = $"index-{Utils.NewGuidString()}";
+        var indexName = Utils.TestVectorIndexName();
         var deleteResponse = await vectorIndexClient.DeleteIndexAsync(indexName);
         Assert.True(deleteResponse is DeleteIndexResponse.Error, $"Unexpected response: {deleteResponse}");
         var deleteErr = (DeleteIndexResponse.Error)deleteResponse;
