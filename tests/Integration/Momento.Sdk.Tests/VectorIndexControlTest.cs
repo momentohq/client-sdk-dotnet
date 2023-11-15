@@ -34,17 +34,17 @@ public class VectorIndexControlTest : IClassFixture<VectorIndexClientFixture>
     {
         try
         {
-            var createResponse = await vectorIndexClient.CreateIndexAsync(indexInfo.Name, indexInfo.NumDimensions);
+            var createResponse = await vectorIndexClient.CreateIndexAsync(indexInfo.Name, indexInfo.NumDimensions, indexInfo.SimilarityMetric);
             Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");
 
             var listResponse = await vectorIndexClient.ListIndexesAsync();
             Assert.True(listResponse is ListIndexesResponse.Success, $"Unexpected response: {listResponse}");
             var listOk = (ListIndexesResponse.Success)listResponse;
-            Assert.Contains(listOk.Indexes.ToList(), i => i.Equals(indexInfo));
+            Assert.Contains(indexInfo, listOk.Indexes);
         }
         finally
         {
-            var deleteResponse = await vectorIndexClient.DeleteIndexAsync(indexName);
+            var deleteResponse = await vectorIndexClient.DeleteIndexAsync(indexInfo.Name);
             Assert.True(deleteResponse is DeleteIndexResponse.Success, $"Unexpected response: {deleteResponse}");
         }
     }
