@@ -45,6 +45,7 @@ public class IndexInfo
     /// <inheritdoc />
     public override int GetHashCode()
     {
+        // Overflow is standard here since the alternative is modulo arithmetic, which just wraps around the same.
         unchecked
         {
             var hash = 17;
