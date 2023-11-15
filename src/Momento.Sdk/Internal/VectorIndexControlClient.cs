@@ -71,12 +71,24 @@ internal sealed class VectorIndexControlClient : IDisposable
             var response = await grpcManager.Client.ListIndexesAsync(request, new CallOptions(deadline: CalculateDeadline()));
             return _logger.LogTraceGenericRequestSuccess("listVectorIndexes",
                 new ListIndexesResponse.Success(
-                    new List<IndexInfo>(response.Indexes.Select(n => new IndexInfo(n.IndexName)))));
+                    new List<IndexInfo>(response.Indexes.Select(n => new IndexInfo(n.IndexName, (int)n.NumDimensions, Convert(n.SimilarityMetric))))
+                ));
         }
         catch (Exception e)
         {
             return _logger.LogTraceGenericRequestError("listVectorIndexes", new ListIndexesResponse.Error(_exceptionMapper.Convert(e)));
         }
+    }
+
+    private static SimilarityMetric Convert(_SimilarityMetric similarityMetric)
+    {
+        return similarityMetric.SimilarityMetricCase switch
+        {
+            _SimilarityMetric.SimilarityMetricOneofCase.InnerProduct => SimilarityMetric.InnerProduct,
+            _SimilarityMetric.SimilarityMetricOneofCase.EuclideanSimilarity => SimilarityMetric.EuclideanSimilarity,
+            _SimilarityMetric.SimilarityMetricOneofCase.CosineSimilarity => SimilarityMetric.CosineSimilarity,
+            _ => throw new UnknownException($"Unknown similarity metric {similarityMetric}")
+        };
     }
 
     public async Task<DeleteIndexResponse> DeleteIndexAsync(string indexName)
@@ -102,7 +114,7 @@ internal sealed class VectorIndexControlClient : IDisposable
             throw new InvalidArgumentException("Index name must be nonempty");
         }
     }
-    
+
     private static ulong ValidateNumDimensions(long numDimensions)
     {
         if (numDimensions <= 0)
