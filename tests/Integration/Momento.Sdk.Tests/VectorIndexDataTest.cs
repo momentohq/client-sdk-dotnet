@@ -136,7 +136,8 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         }
         finally
         {
-            await vectorIndexClient.DeleteIndexAsync(indexName);
+            var deleteResponse = await vectorIndexClient.DeleteIndexAsync(indexName);
+            Assert.True(deleteResponse is DeleteIndexResponse.Success, $"Unexpected response: {deleteResponse}");
         }
     }
 
@@ -175,7 +176,8 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         }
         finally
         {
-            await vectorIndexClient.DeleteIndexAsync(indexName);
+            var deleteResponse = await vectorIndexClient.DeleteIndexAsync(indexName);
+            Assert.True(deleteResponse is DeleteIndexResponse.Success, $"Unexpected response: {deleteResponse}");
         }
     }
 
@@ -215,7 +217,8 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         }
         finally
         {
-            await vectorIndexClient.DeleteIndexAsync(indexName);
+            var deleteResponse = await vectorIndexClient.DeleteIndexAsync(indexName);
+            Assert.True(deleteResponse is DeleteIndexResponse.Success, $"Unexpected response: {deleteResponse}");
         }
     }
 
@@ -257,7 +260,8 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         }
         finally
         {
-            await vectorIndexClient.DeleteIndexAsync(indexName);
+            var deleteResponse = await vectorIndexClient.DeleteIndexAsync(indexName);
+            Assert.True(deleteResponse is DeleteIndexResponse.Success, $"Unexpected response: {deleteResponse}");
         }
     }
 
@@ -337,7 +341,8 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         }
         finally
         {
-            await vectorIndexClient.DeleteIndexAsync(indexName);
+            var deleteResponse = await vectorIndexClient.DeleteIndexAsync(indexName);
+            Assert.True(deleteResponse is DeleteIndexResponse.Success, $"Unexpected response: {deleteResponse}");
         }
     }
 
@@ -383,7 +388,8 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         }
         finally
         {
-            await vectorIndexClient.DeleteIndexAsync(indexName);
+            var deleteResponse = await vectorIndexClient.DeleteIndexAsync(indexName);
+            Assert.True(deleteResponse is DeleteIndexResponse.Success, $"Unexpected response: {deleteResponse}");
         }
     }
 
@@ -469,7 +475,8 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         }
         finally
         {
-            await vectorIndexClient.DeleteIndexAsync(indexName);
+            var deleteResponse = await vectorIndexClient.DeleteIndexAsync(indexName);
+            Assert.True(deleteResponse is DeleteIndexResponse.Success, $"Unexpected response: {deleteResponse}");
         }
     }
 }

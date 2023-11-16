@@ -54,12 +54,19 @@ public class VectorIndexControlTest : IClassFixture<VectorIndexClientFixture>
     {
         var indexName = Utils.TestVectorIndexName();
         const int numDimensions = 3;
+        try
+        {
+            var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, numDimensions);
+            Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");
 
-        var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, numDimensions);
-        Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");
-
-        var createAgainResponse = await vectorIndexClient.CreateIndexAsync(indexName, numDimensions);
-        Assert.True(createAgainResponse is CreateIndexResponse.AlreadyExists, $"Unexpected response: {createAgainResponse}");
+            var createAgainResponse = await vectorIndexClient.CreateIndexAsync(indexName, numDimensions);
+            Assert.True(createAgainResponse is CreateIndexResponse.AlreadyExists, $"Unexpected response: {createAgainResponse}");
+        }
+        finally
+        {
+            var deleteResponse = await vectorIndexClient.DeleteIndexAsync(indexName);
+            Assert.True(deleteResponse is DeleteIndexResponse.Success, $"Unexpected response: {deleteResponse}");
+        }
     }
 
     [Fact]
