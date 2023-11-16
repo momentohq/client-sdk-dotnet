@@ -55,7 +55,8 @@ public static class Utils
             VectorIndexClient = vectorIndexClient;
             IndexInfo = indexInfo;
 
-            // This isn't kosher in a constructor, but it's the only way to get the using() syntax to work.
+            // This usually isn't kosher in a constructor; because we want this class to encapsulate
+            // index creation and deletion in a using block, the class has to do RAII.
             var createResponse = vectorIndexClient.CreateIndexAsync(indexInfo.Name, indexInfo.NumDimensions, indexInfo.SimilarityMetric).Result;
             if (createResponse is not (CreateIndexResponse.Success or CreateIndexResponse.AlreadyExists))
             {
