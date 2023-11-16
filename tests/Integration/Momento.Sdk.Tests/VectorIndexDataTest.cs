@@ -110,11 +110,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
         var indexName = Utils.TestVectorIndexName();
-
-        var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, 2, SimilarityMetric.InnerProduct);
-        Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");
-
-        try
+        using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
         {
             var items = new List<Item>
             {
@@ -134,10 +130,6 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
                 new("test_item", 5.0f)
             }, items.Select(i => i.Vector).ToList());
         }
-        finally
-        {
-            await vectorIndexClient.DeleteIndexAsync(indexName);
-        }
     }
 
     [Theory]
@@ -146,11 +138,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
         var indexName = Utils.TestVectorIndexName();
-
-        var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, 2);
-        Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");
-
-        try
+        using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2))
         {
             var items = new List<Item>
             {
@@ -173,10 +161,6 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
                 new("test_item_3", -1.0f)
             }, items.Select(i => i.Vector).ToList());
         }
-        finally
-        {
-            await vectorIndexClient.DeleteIndexAsync(indexName);
-        }
     }
 
     [Theory]
@@ -185,12 +169,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
         var indexName = Utils.TestVectorIndexName();
-
-        var createResponse =
-            await vectorIndexClient.CreateIndexAsync(indexName, 2, SimilarityMetric.EuclideanSimilarity);
-        Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");
-
-        try
+        using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.EuclideanSimilarity))
         {
             var items = new List<Item>
             {
@@ -213,10 +192,6 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
                 new("test_item_3", 8.0f)
             }, items.Select(i => i.Vector).ToList());
         }
-        finally
-        {
-            await vectorIndexClient.DeleteIndexAsync(indexName);
-        }
     }
 
     [Theory]
@@ -225,11 +200,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
         var indexName = Utils.TestVectorIndexName();
-
-        var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, 2, SimilarityMetric.InnerProduct);
-        Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");
-
-        try
+        using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
         {
             var items = new List<Item>
             {
@@ -255,10 +226,6 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
                 new() { 3.0f, 4.0f }
             });
         }
-        finally
-        {
-            await vectorIndexClient.DeleteIndexAsync(indexName);
-        }
     }
 
     [Theory]
@@ -267,11 +234,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
         var indexName = Utils.TestVectorIndexName();
-
-        var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, 2, SimilarityMetric.InnerProduct);
-        Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");
-
-        try
+        using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
         {
             var items = new List<Item>
             {
@@ -335,10 +298,6 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
                     new Dictionary<string, MetadataValue> { { "key1", "value1" } })
             }, expectedVectors);
         }
-        finally
-        {
-            await vectorIndexClient.DeleteIndexAsync(indexName);
-        }
     }
 
     [Theory]
@@ -347,11 +306,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
         var indexName = Utils.TestVectorIndexName();
-
-        var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, 2, SimilarityMetric.InnerProduct);
-        Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");
-
-        try
+        using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
         {
             var metadata = new Dictionary<string, MetadataValue>
             {
@@ -380,10 +335,6 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
             {
                 new("test_item_1", 5.0f, metadata)
             }, items.Select(i => i.Vector).ToList());
-        }
-        finally
-        {
-            await vectorIndexClient.DeleteIndexAsync(indexName);
         }
     }
 
@@ -423,11 +374,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
         List<float> thresholds, SearchDelegate<T> searchDelegate, AssertOnSearchResponse<T> assertOnSearchResponse)
     {
         var indexName = Utils.TestVectorIndexName();
-
-        var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, 2, similarityMetric);
-        Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");
-
-        try
+        using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, similarityMetric))
         {
             var items = new List<Item>
             {
@@ -466,10 +413,6 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
             searchResponse =
                 await searchDelegate.Invoke(vectorIndexClient, indexName, queryVector, 3, scoreThreshold: thresholds[2]);
             assertOnSearchResponse.Invoke(searchResponse, new List<SearchHit>(), new List<List<float>>());
-        }
-        finally
-        {
-            await vectorIndexClient.DeleteIndexAsync(indexName);
         }
     }
 }
