@@ -32,20 +32,12 @@ public class VectorIndexControlTest : IClassFixture<VectorIndexClientFixture>
     [MemberData(nameof(CreateAndListIndexTestData))]
     public async Task CreateListDelete_HappyPath(IndexInfo indexInfo)
     {
-        try
+        using (Utils.WithVectorIndex(vectorIndexClient, indexInfo))
         {
-            var createResponse = await vectorIndexClient.CreateIndexAsync(indexInfo.Name, indexInfo.NumDimensions, indexInfo.SimilarityMetric);
-            Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");
-
             var listResponse = await vectorIndexClient.ListIndexesAsync();
             Assert.True(listResponse is ListIndexesResponse.Success, $"Unexpected response: {listResponse}");
             var listOk = (ListIndexesResponse.Success)listResponse;
             Assert.Contains(indexInfo, listOk.Indexes);
-        }
-        finally
-        {
-            var deleteResponse = await vectorIndexClient.DeleteIndexAsync(indexInfo.Name);
-            Assert.True(deleteResponse is DeleteIndexResponse.Success, $"Unexpected response: {deleteResponse}");
         }
     }
 
@@ -54,18 +46,10 @@ public class VectorIndexControlTest : IClassFixture<VectorIndexClientFixture>
     {
         var indexName = Utils.TestVectorIndexName();
         const int numDimensions = 3;
-        try
+        using (Utils.WithVectorIndex(vectorIndexClient, indexName, numDimensions))
         {
-            var createResponse = await vectorIndexClient.CreateIndexAsync(indexName, numDimensions);
-            Assert.True(createResponse is CreateIndexResponse.Success, $"Unexpected response: {createResponse}");
-
             var createAgainResponse = await vectorIndexClient.CreateIndexAsync(indexName, numDimensions);
             Assert.True(createAgainResponse is CreateIndexResponse.AlreadyExists, $"Unexpected response: {createAgainResponse}");
-        }
-        finally
-        {
-            var deleteResponse = await vectorIndexClient.DeleteIndexAsync(indexName);
-            Assert.True(deleteResponse is DeleteIndexResponse.Success, $"Unexpected response: {deleteResponse}");
         }
     }
 
