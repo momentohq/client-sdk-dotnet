@@ -1,5 +1,6 @@
 using System.Linq;
 using Momento.Sdk.Messages.Vector;
+using Momento.Sdk.Internal.ExtensionMethods;
 
 namespace Momento.Sdk.Responses.Vector;
 
@@ -64,15 +65,7 @@ public class SearchHit
         if (Id != other.Id || Score != other.Score) return false;
 
         // Compare Metadata dictionaries
-        if (Metadata.Count != other.Metadata.Count) return false;
-
-        foreach (var pair in Metadata)
-        {
-            if (!other.Metadata.TryGetValue(pair.Key, out var value)) return false;
-            if (!value.Equals(pair.Value)) return false;
-        }
-
-        return true;
+        return Metadata.MetadataEquals(other.Metadata);
     }
 
     /// <inheritdoc />
@@ -84,12 +77,7 @@ public class SearchHit
 
             hash = hash * 23 + Id.GetHashCode();
             hash = hash * 23 + Score.GetHashCode();
-
-            foreach (var pair in Metadata)
-            {
-                hash = hash * 23 + pair.Key.GetHashCode();
-                hash = hash * 23 + (pair.Value?.GetHashCode() ?? 0);
-            }
+            hash = hash * 23 + Metadata.MetadataHashCode();
 
             return hash;
         }
@@ -141,7 +129,7 @@ public class SearchAndFetchVectorsHit : SearchHit
     {
         Vector = vector;
     }
-    
+
     /// <inheritdoc />
     public override bool Equals(object obj)
     {

@@ -28,51 +28,135 @@ internal sealed class VectorIndexDataClient : IDisposable
         _exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
     }
 
+    const string REQUEST_UPSERT_ITEM_BATCH = "UPSERT_ITEM_BATCH";
     public async Task<UpsertItemBatchResponse> UpsertItemBatchAsync(string indexName,
         IEnumerable<Item> items)
     {
         try
         {
-            _logger.LogTraceVectorIndexRequest("upsertItemBatch", indexName);
+            _logger.LogTraceVectorIndexRequest(REQUEST_UPSERT_ITEM_BATCH, indexName);
             CheckValidIndexName(indexName);
             var request = new _UpsertItemBatchRequest() { IndexName = indexName, Items = { items.Select(Convert) } };
 
             await grpcManager.Client.UpsertItemBatchAsync(request, new CallOptions(deadline: CalculateDeadline()));
-            return _logger.LogTraceVectorIndexRequestSuccess("upsertItemBatch", indexName,
+            return _logger.LogTraceVectorIndexRequestSuccess(REQUEST_UPSERT_ITEM_BATCH, indexName,
                 new UpsertItemBatchResponse.Success());
         }
         catch (Exception e)
         {
-            return _logger.LogTraceVectorIndexRequestError("upsertItemBatch", indexName,
+            return _logger.LogTraceVectorIndexRequestError(REQUEST_UPSERT_ITEM_BATCH, indexName,
                 new UpsertItemBatchResponse.Error(_exceptionMapper.Convert(e)));
         }
     }
 
+    const string REQUEST_GET_ITEM_BATCH = "GET_ITEM_BATCH";
+    public async Task<GetItemBatchResponse> GetItemBatchAsync(string indexName, IEnumerable<string> ids)
+    {
+        try
+        {
+            _logger.LogTraceVectorIndexRequest(REQUEST_GET_ITEM_BATCH, indexName);
+            CheckValidIndexName(indexName);
+            var request = new _GetItemBatchRequest()
+            {
+                IndexName = indexName,
+                Ids = { ids },
+                MetadataFields = new _MetadataRequest { All = new _MetadataRequest.Types.All() }
+            };
+
+            var response =
+                await grpcManager.Client.GetItemBatchAsync(request, new CallOptions(deadline: CalculateDeadline()));
+            var items = new Dictionary<string, Item>();
+            foreach (var item in response.ItemResponse)
+            {
+                switch (item.ResponseCase)
+                {
+                    case _ItemResponse.ResponseOneofCase.Hit:
+                        items[item.Hit.Id] = new(item.Hit.Id, item.Hit.Vector.Elements.ToList(), Convert(item.Hit.Metadata));
+                        break;
+                    case _ItemResponse.ResponseOneofCase.Miss:
+                        break;
+                    default:
+                        throw new UnknownException($"Unknown item response type {item.ResponseCase}");
+                }
+            }
+            return _logger.LogTraceVectorIndexRequestSuccess(REQUEST_GET_ITEM_BATCH, indexName,
+                new GetItemBatchResponse.Success(items));
+        }
+        catch (Exception e)
+        {
+            return _logger.LogTraceVectorIndexRequestError(REQUEST_GET_ITEM_BATCH, indexName,
+                new GetItemBatchResponse.Error(_exceptionMapper.Convert(e)));
+        }
+    }
+
+    const string REQUEST_GET_ITEM_METADATA_BATCH = "GET_ITEM_METADATA_BATCH";
+    public async Task<GetItemMetadataBatchResponse> GetItemMetadataBatchAsync(string indexName, IEnumerable<string> ids)
+    {
+        try
+        {
+            _logger.LogTraceVectorIndexRequest(REQUEST_GET_ITEM_METADATA_BATCH, indexName);
+            CheckValidIndexName(indexName);
+            var request = new _GetItemMetadataBatchRequest()
+            {
+                IndexName = indexName,
+                Ids = { ids },
+                MetadataFields = new _MetadataRequest { All = new _MetadataRequest.Types.All() }
+            };
+
+            var response =
+                await grpcManager.Client.GetItemMetadataBatchAsync(request,
+                    new CallOptions(deadline: CalculateDeadline()));
+            var items = new Dictionary<string, Dictionary<string, MetadataValue>>();
+            foreach (var item in response.ItemMetadataResponse)
+            {
+                switch (item.ResponseCase)
+                {
+                    case _ItemMetadataResponse.ResponseOneofCase.Hit:
+                        items[item.Hit.Id] = Convert(item.Hit.Metadata);
+                        break;
+                    case _ItemMetadataResponse.ResponseOneofCase.Miss:
+                        break;
+                    default:
+                        throw new UnknownException($"Unknown item response type {item.ResponseCase}");
+                }
+            }
+            return _logger.LogTraceVectorIndexRequestSuccess(REQUEST_GET_ITEM_METADATA_BATCH, indexName,
+                new GetItemMetadataBatchResponse.Success(items));
+        }
+        catch (Exception e)
+        {
+            return _logger.LogTraceVectorIndexRequestError(REQUEST_GET_ITEM_METADATA_BATCH, indexName,
+                new GetItemMetadataBatchResponse.Error(_exceptionMapper.Convert(e)));
+        }
+    }
+
+    const string REQUEST_DELETE_ITEM_BATCH = "DELETE_ITEM_BATCH";
     public async Task<DeleteItemBatchResponse> DeleteItemBatchAsync(string indexName, IEnumerable<string> ids)
     {
         try
         {
-            _logger.LogTraceVectorIndexRequest("deleteItemBatch", indexName);
+            _logger.LogTraceVectorIndexRequest(REQUEST_DELETE_ITEM_BATCH, indexName);
             CheckValidIndexName(indexName);
             var request = new _DeleteItemBatchRequest() { IndexName = indexName, Ids = { ids } };
 
             await grpcManager.Client.DeleteItemBatchAsync(request, new CallOptions(deadline: CalculateDeadline()));
-            return _logger.LogTraceVectorIndexRequestSuccess("deleteItemBatch", indexName,
+            return _logger.LogTraceVectorIndexRequestSuccess(REQUEST_DELETE_ITEM_BATCH, indexName,
                 new DeleteItemBatchResponse.Success());
         }
         catch (Exception e)
         {
-            return _logger.LogTraceVectorIndexRequestError("deleteItemBatch", indexName,
+            return _logger.LogTraceVectorIndexRequestError(REQUEST_DELETE_ITEM_BATCH, indexName,
                 new DeleteItemBatchResponse.Error(_exceptionMapper.Convert(e)));
         }
     }
 
+    const string REQUEST_SEARCH = "SEARCH";
     public async Task<SearchResponse> SearchAsync(string indexName, IEnumerable<float> queryVector, int topK,
         MetadataFields? metadataFields, float? scoreThreshold)
     {
         try
         {
-            _logger.LogTraceVectorIndexRequest("search", indexName);
+            _logger.LogTraceVectorIndexRequest(REQUEST_SEARCH, indexName);
             CheckValidIndexName(indexName);
             var validatedTopK = ValidateTopK(topK);
             metadataFields ??= new List<string>();
@@ -106,22 +190,23 @@ internal sealed class VectorIndexDataClient : IDisposable
             var response =
                 await grpcManager.Client.SearchAsync(request, new CallOptions(deadline: CalculateDeadline()));
             var searchHits = response.Hits.Select(Convert).ToList();
-            return _logger.LogTraceVectorIndexRequestSuccess("search", indexName,
+            return _logger.LogTraceVectorIndexRequestSuccess(REQUEST_SEARCH, indexName,
                 new SearchResponse.Success(searchHits));
         }
         catch (Exception e)
         {
-            return _logger.LogTraceVectorIndexRequestError("search", indexName,
+            return _logger.LogTraceVectorIndexRequestError(REQUEST_SEARCH, indexName,
                 new SearchResponse.Error(_exceptionMapper.Convert(e)));
         }
     }
 
+    const string REQUEST_SEARCH_AND_FETCH_VECTORS = "SEARCH_AND_FETCH_VECTORS";
     public async Task<SearchAndFetchVectorsResponse> SearchAndFetchVectorsAsync(string indexName,
         IEnumerable<float> queryVector, int topK, MetadataFields? metadataFields, float? scoreThreshold)
     {
         try
         {
-            _logger.LogTraceVectorIndexRequest("searchAndFetchVectors", indexName);
+            _logger.LogTraceVectorIndexRequest(REQUEST_SEARCH_AND_FETCH_VECTORS, indexName);
             CheckValidIndexName(indexName);
             var validatedTopK = ValidateTopK(topK);
             metadataFields ??= new List<string>();
@@ -157,12 +242,12 @@ internal sealed class VectorIndexDataClient : IDisposable
                     new CallOptions(deadline: CalculateDeadline()));
             var searchHits = response.Hits.Select(h =>
                 new SearchAndFetchVectorsHit(h.Id, h.Score, h.Vector.Elements.ToList(), Convert(h.Metadata))).ToList();
-            return _logger.LogTraceVectorIndexRequestSuccess("searchAndFetchVectors", indexName,
+            return _logger.LogTraceVectorIndexRequestSuccess(REQUEST_SEARCH_AND_FETCH_VECTORS, indexName,
                 new SearchAndFetchVectorsResponse.Success(searchHits));
         }
         catch (Exception e)
         {
-            return _logger.LogTraceVectorIndexRequestError("searchAndFetchVectors", indexName,
+            return _logger.LogTraceVectorIndexRequestError(REQUEST_SEARCH_AND_FETCH_VECTORS, indexName,
                 new SearchAndFetchVectorsResponse.Error(_exceptionMapper.Convert(e)));
         }
     }
@@ -171,7 +256,9 @@ internal sealed class VectorIndexDataClient : IDisposable
     {
         return new _Item
         {
-            Id = item.Id, Vector = new _Vector { Elements = { item.Vector } }, Metadata = { Convert(item.Metadata) }
+            Id = item.Id,
+            Vector = new _Vector { Elements = { item.Vector } },
+            Metadata = { Convert(item.Metadata) }
         };
     }
 
