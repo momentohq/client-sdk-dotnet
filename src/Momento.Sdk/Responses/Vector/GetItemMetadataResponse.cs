@@ -7,7 +7,7 @@ using Momento.Sdk.Internal.ExtensionMethods;
 namespace Momento.Sdk.Responses.Vector;
 
 /// <summary>
-/// Parent response type for a get item batch request. The
+/// Parent response type for a get item metadata batch request. The
 /// response object is resolved to a type-safe object of one of
 /// the following subtypes:
 /// <list type="bullet">

@@ -161,7 +161,7 @@ public interface IPreviewVectorIndexClient : IDisposable
     /// <summary>
     /// Gets metadata for a batch of items from a vector index by ID.
     /// </summary>
-    /// <param name="indexName">The name of the vector index to get the items from.</param>
+    /// <param name="indexName">The name of the vector index to get the item metadata from.</param>
     /// <param name="ids">The IDs of the item metadata to get from the index.</param>
     /// <returns>
     /// Task representing the result of the get item metadata batch operation. The
