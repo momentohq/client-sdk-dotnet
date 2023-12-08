@@ -22,6 +22,8 @@ public interface IVectorIndexDataClient
     public Task<_UpsertItemBatchResponse> UpsertItemBatchAsync(_UpsertItemBatchRequest request, CallOptions callOptions);
     public Task<_SearchResponse> SearchAsync(_SearchRequest request, CallOptions callOptions);
     public Task<_SearchAndFetchVectorsResponse> SearchAndFetchVectorsAsync(_SearchAndFetchVectorsRequest request, CallOptions callOptions);
+    public Task<_GetItemBatchResponse> GetItemBatchAsync(_GetItemBatchRequest request, CallOptions callOptions);
+    public Task<_GetItemMetadataBatchResponse> GetItemMetadataBatchAsync(_GetItemMetadataBatchRequest request, CallOptions callOptions);
     public Task<_DeleteItemBatchResponse> DeleteItemBatchAsync(_DeleteItemBatchRequest request, CallOptions callOptions);
 }
 
@@ -56,10 +58,22 @@ public class VectorIndexDataClientWithMiddleware : IVectorIndexDataClient
         var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.SearchAsync(r, o));
         return await wrapped.ResponseAsync;
     }
-    
+
     public async Task<_SearchAndFetchVectorsResponse> SearchAndFetchVectorsAsync(_SearchAndFetchVectorsRequest request, CallOptions callOptions)
     {
         var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.SearchAndFetchVectorsAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_GetItemBatchResponse> GetItemBatchAsync(_GetItemBatchRequest request, CallOptions callOptions)
+    {
+        var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.GetItemBatchAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_GetItemMetadataBatchResponse> GetItemMetadataBatchAsync(_GetItemMetadataBatchRequest request, CallOptions callOptions)
+    {
+        var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.GetItemMetadataBatchAsync(r, o));
         return await wrapped.ResponseAsync;
     }
 
