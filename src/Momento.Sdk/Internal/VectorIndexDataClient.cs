@@ -56,7 +56,12 @@ internal sealed class VectorIndexDataClient : IDisposable
         {
             _logger.LogTraceVectorIndexRequest(REQUEST_GET_ITEM_BATCH, indexName);
             CheckValidIndexName(indexName);
-            var request = new _GetItemBatchRequest() { IndexName = indexName, Ids = { ids } };
+            var request = new _GetItemBatchRequest()
+            {
+                IndexName = indexName,
+                Ids = { ids },
+                MetadataFields = new _MetadataRequest { All = new _MetadataRequest.Types.All() }
+            };
 
             var response =
                 await grpcManager.Client.GetItemBatchAsync(request, new CallOptions(deadline: CalculateDeadline()));
@@ -91,7 +96,12 @@ internal sealed class VectorIndexDataClient : IDisposable
         {
             _logger.LogTraceVectorIndexRequest(REQUEST_GET_ITEM_METADATA_BATCH, indexName);
             CheckValidIndexName(indexName);
-            var request = new _GetItemMetadataBatchRequest() { IndexName = indexName, Ids = { ids } };
+            var request = new _GetItemMetadataBatchRequest()
+            {
+                IndexName = indexName,
+                Ids = { ids },
+                MetadataFields = new _MetadataRequest { All = new _MetadataRequest.Types.All() }
+            };
 
             var response =
                 await grpcManager.Client.GetItemMetadataBatchAsync(request,

@@ -2,6 +2,7 @@
 using System.Linq;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Requests.Vector;
+using Momento.Sdk.Internal.ExtensionMethods;
 
 namespace Momento.Sdk.Responses.Vector;
 
@@ -52,6 +53,60 @@ public abstract class GetItemBatchResponse
         {
             var displayedHits = Values.Take(5).Select(value => $"{value.Value.ToString()}");
             return $"{base.ToString()}: {string.Join(", ", displayedHits)}...";
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+            if (obj is null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+            var other = (Success)obj;
+
+            if (Values == null && other.Values == null)
+            {
+                return true;
+            }
+            else if (Values == null || other.Values == null)
+            {
+                return false;
+            }
+            else if (Values.Count != other.Values.Count)
+            {
+                return false;
+            }
+            else
+            {
+                foreach (var item in Values)
+                {
+                    if (!other.Values.ContainsKey(item.Key))
+                    {
+                        return false;
+                    }
+                    else if (!item.Value.Equals(other.Values[item.Key]))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            int hash = 17;
+            foreach (var kv in Values)
+            {
+                hash = hash * 23 + kv.Key.GetHashCode();
+                hash = hash * 23 + kv.Value.GetHashCode();
+            }
+            return hash;
         }
 
     }

@@ -415,4 +415,109 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
             assertOnSearchResponse.Invoke(searchResponse, new List<SearchHit>(), new List<List<float>>());
         }
     }
+
+    public delegate Task<T> GetItemDelegate<T>(IPreviewVectorIndexClient client, string indexName, IEnumerable<string> ids);
+    public static GetItemDelegate<GetItemBatchResponse> GetItemBatchDelegate = new(
+        (client, indexName, ids) => client.GetItemBatchAsync(indexName, ids));
+    public static GetItemDelegate<GetItemMetadataBatchResponse> GetItemMetadataBatchDelegate = new(
+        (client, indexName, ids) => client.GetItemMetadataBatchAsync(indexName, ids));
+    public delegate void AssertOnGetItemResponse<T>(T response, Object expected);
+    public static AssertOnGetItemResponse<GetItemBatchResponse> AssertOnGetItemBatchResponse = new(
+        (response, expected) =>
+        {
+            Assert.True(response is GetItemBatchResponse.Success, $"Unexpected response: {response}");
+            var successResponse = (GetItemBatchResponse.Success)response;
+            Assert.Equal(expected, successResponse.Values);
+        });
+    public static AssertOnGetItemResponse<GetItemMetadataBatchResponse> AssertOnGetItemMetadataBatchResponse = new(
+        (response, expected) =>
+        {
+            Assert.True(response is GetItemMetadataBatchResponse.Success, $"Unexpected response: {response}");
+            var successResponse = (GetItemMetadataBatchResponse.Success)response;
+            Assert.Equal(expected, successResponse.Values);
+        });
+    public static IEnumerable<object[]> GetItemAndGetItemMetadataTestData
+    {
+        get
+        {
+            return new List<object[]>
+            {
+                new object[]
+                {
+                    GetItemBatchDelegate,
+                    AssertOnGetItemBatchResponse,
+                    new List<string> {  },
+                    new Dictionary<string, Item>()
+                },
+                new object[]
+                {
+                    GetItemMetadataBatchDelegate,
+                    AssertOnGetItemMetadataBatchResponse,
+                    new List<string> {  },
+                    new Dictionary<string, Dictionary<string, MetadataValue>>()
+                },
+                new object[]
+                {
+                    GetItemBatchDelegate,
+                    AssertOnGetItemBatchResponse,
+                    new List<string> { "missing_id" },
+                    new Dictionary<string, Item>()
+                },
+                new object[]
+                {
+                    GetItemMetadataBatchDelegate,
+                    AssertOnGetItemMetadataBatchResponse,
+                    new List<string> { "missing_id" },
+                    new Dictionary<string, Dictionary<string, MetadataValue>>()
+                },
+                new object[]
+                {
+                    GetItemBatchDelegate,
+                    AssertOnGetItemBatchResponse,
+                    new List<string> { "test_item_1", "missing_id", "test_item_2" },
+                    new Dictionary<string, Item>
+                    {
+                        { "test_item_1", new Item("test_item_1", new List<float> { 1.0f, 2.0f }, new Dictionary<string, MetadataValue> { { "key1", "value1" } }) },
+                        { "test_item_2", new Item("test_item_2", new List<float> { 3.0f, 4.0f }) }
+                    }
+                },
+                new object[]
+                {
+                    GetItemMetadataBatchDelegate,
+                    AssertOnGetItemMetadataBatchResponse,
+                    new List<string> { "test_item_1", "missing_id", "test_item_2" },
+                    new Dictionary<string, Dictionary<string, MetadataValue>>
+                    {
+                        { "test_item_1", new Dictionary<string, MetadataValue> { { "key1", "value1" } } },
+                        { "test_item_2", new Dictionary<string, MetadataValue>() }
+                    }
+                }
+            };
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(GetItemAndGetItemMetadataTestData))]
+    public async Task GetItemAndGetItemMetadata_HappyPath<T>(GetItemDelegate<T> getItemDelegate, AssertOnGetItemResponse<T> assertOnGetItemResponse, IEnumerable<string> ids, Object expected)
+    {
+        var indexName = Utils.TestVectorIndexName();
+        using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
+        {
+            var items = new List<Item>
+            {
+                new("test_item_1", new List<float> { 1.0f, 2.0f }, new Dictionary<string, MetadataValue> { { "key1", "value1" } }),
+                new("test_item_2", new List<float> { 3.0f, 4.0f }),
+                new("test_item_3", new List<float> { 5.0f, 6.0f }),
+            };
+
+            var upsertResponse = await vectorIndexClient.UpsertItemBatchAsync(indexName, items);
+            Assert.True(upsertResponse is UpsertItemBatchResponse.Success,
+                $"Unexpected response: {upsertResponse}");
+
+            await Task.Delay(2_000);
+
+            var getResponse = await getItemDelegate.Invoke(vectorIndexClient, indexName, ids);
+            assertOnGetItemResponse.Invoke(getResponse, expected);
+        }
+    }
 }
