@@ -57,7 +57,6 @@ public class AuthGrpcManager : IDisposable
     // Some System.Environment.Version remarks to be aware of
     // https://learn.microsoft.com/en-us/dotnet/api/system.environment.version?view=netstandard-2.0#remarks
     private readonly string runtimeVersion = $"{moniker}:{System.Environment.Version}";
-    private readonly ILogger _logger;
 
     public AuthGrpcManager(IAuthConfiguration config, string authToken, string endpoint)
     {
