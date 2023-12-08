@@ -34,8 +34,8 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     {
         return await GetClientForTokenScope(scope, null);
     }
-    
-    
+
+
     private async Task<ITopicClient> GetClientForTokenScope(DisposableTokenScope scope, string? tokenId)
     {
         var response = await authClient.GenerateDisposableTokenAsync(scope, ExpiresIn.Minutes(2), tokenId);
@@ -49,7 +49,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         var authProvider = new StringMomentoTokenProvider(authToken);
         return new TopicClient(TopicConfigurations.Laptop.latest(), authProvider);
     }
-    
+
 
     private async Task PublishToTopic(string cache, string topic, string value, ITopicClient? client = null)
     {
@@ -77,16 +77,18 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         await foreach (var message in cancellableSubscription)
         {
             Assert.True(message is TopicMessage.Text, $"Unexpected response: {message}");
-            if (message is TopicMessage.Text textMsg) {
+            if (message is TopicMessage.Text textMsg)
+            {
                 Assert.Equal(expectedText, textMsg.Value);
                 Assert.Equal(tokenId, textMsg.TokenId);
                 gotText = true;
-            } 
+            }
             cts.Cancel();
             break;
         }
-        if (!gotText) {
-            Assert.True(false, "didn't recieve expected text: " +  expectedText);
+        if (!gotText)
+        {
+            Assert.True(false, "didn't recieve expected text: " + expectedText);
         }
     }
 
@@ -95,7 +97,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         Assert.True(response is TErrResp, $"Unexpected response: {response}");
         if (response is IError err)
         {
-            Assert.Equal(err.ErrorCode, MomentoErrorCode.PERMISSION_ERROR);
+            Assert.Equal(MomentoErrorCode.PERMISSION_ERROR, err.ErrorCode);
         }
     }
 
@@ -354,8 +356,8 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         );
         await GenerateDisposableTopicAuthToken_ReadWrite_Common(readwriteTopicClient, messageValue);
     }
-    
-    
+
+
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_ReadWrite_WithTokenId_HappyPath()
     {
@@ -375,7 +377,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
             await ExpectTextFromSubscription(subscription, messageValue, tokenId);
         }
     }
-    
+
 
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_ReadWrite_NamePrefix_HappyPath()
@@ -464,11 +466,11 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_WriteOnly_NamePrefix_CanPublish()
     {
-       const string messageValue = "hello";
-       var writeOnlyTopicClient = await GetClientForTokenScope(
-           DisposableTokenScopes.TopicPublishOnly(cacheName, TopicSelector.ByTopicNamePrefix(topicNamePrefix))
-       );
-       await GenerateDisposableTopicAuthToken_WriteOnly_CanPublish_Common(writeOnlyTopicClient, messageValue);
+        const string messageValue = "hello";
+        var writeOnlyTopicClient = await GetClientForTokenScope(
+            DisposableTokenScopes.TopicPublishOnly(cacheName, TopicSelector.ByTopicNamePrefix(topicNamePrefix))
+        );
+        await GenerateDisposableTopicAuthToken_WriteOnly_CanPublish_Common(writeOnlyTopicClient, messageValue);
     }
 
     [Fact]
