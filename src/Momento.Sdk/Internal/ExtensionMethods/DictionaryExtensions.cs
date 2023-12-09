@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Momento.Sdk.Messages.Vector;
 
 namespace Momento.Sdk.Internal.ExtensionMethods;
 
@@ -80,6 +81,56 @@ public static class DictionaryExtensions
         foreach (var item in items)
         {
             dictionary.Add(item);
+        }
+    }
+}
+
+
+/// <summary>
+/// Defines extension methods to operate on dictionaries with
+/// string keys and <see cref="MetadataValue"/> values.
+/// </summary>
+public static class MetadataDictionaryExtensions
+{
+    /// <summary>
+    /// Test whether two metadata dictionaries contain the same content.
+    /// </summary>
+    /// <param name="dictionary">The LHS dictionary.</param>
+    /// <param name="other">The RHS dictionary.</param>
+    /// <returns></returns>
+    public static bool MetadataEquals(this IDictionary<string, MetadataValue> dictionary, IDictionary<string, MetadataValue> other)
+    {
+        if (dictionary == null && other == null)
+        {
+            return true;
+        }
+        else if (dictionary == null || other == null)
+        {
+            return false;
+        }
+        else if (dictionary.Count != other.Count)
+        {
+            return false;
+        }
+
+        var keySet = new HashSet<string>(dictionary.Keys);
+        return other.All(kv => keySet.Contains(kv.Key) && dictionary[kv.Key].Equals(kv.Value));
+    }
+
+    /// <inheritdoc />
+    public static int MetadataHashCode(this IDictionary<string, MetadataValue> dictionary)
+    {
+        unchecked // Overflow is fine, just wrap
+        {
+            var hash = 17;
+
+            foreach (var pair in dictionary)
+            {
+                hash = hash * 23 + pair.Key.GetHashCode();
+                hash = hash * 23 + (pair.Value?.GetHashCode() ?? 0);
+            }
+
+            return hash;
         }
     }
 }

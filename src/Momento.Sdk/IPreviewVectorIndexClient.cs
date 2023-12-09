@@ -59,7 +59,7 @@ public interface IPreviewVectorIndexClient : IDisposable
     /// </remarks>
     /// </returns>
     public Task<CreateIndexResponse> CreateIndexAsync(string indexName, long numDimensions, SimilarityMetric similarityMetric = SimilarityMetric.CosineSimilarity);
-    
+
     /// <summary>
     /// Lists all vector indexes.
     /// </summary>
@@ -132,6 +132,57 @@ public interface IPreviewVectorIndexClient : IDisposable
     public Task<UpsertItemBatchResponse> UpsertItemBatchAsync(string indexName,
         IEnumerable<Item> items);
 
+
+    /// <summary>
+    /// Gets a batch of items from a vector index by ID.
+    /// </summary>
+    /// <param name="indexName">The name of the vector index to get the items from.</param>
+    /// <param name="ids">The IDs of the items to get from the index.</param>
+    /// <returns>
+    /// Task representing the result of the get item batch operation. The
+    /// response object is resolved to a type-safe object of one of
+    /// the following subtypes:
+    /// <list type="bullet">
+    /// <item><description>GetItemBatchResponse.Success</description></item>
+    /// <item><description>GetItemBatchResponse.Error</description></item>
+    /// </list>
+    /// Pattern matching can be used to operate on the appropriate subtype.
+    /// For example:
+    /// <code>
+    /// if (response is GetItemBatchResponse.Error errorResponse)
+    /// {
+    ///    // handle error as appropriate
+    ///    return;
+    /// }
+    /// </code>
+    /// </returns>
+    public Task<GetItemBatchResponse> GetItemBatchAsync(string indexName, IEnumerable<string> ids);
+
+    /// <summary>
+    /// Gets metadata for a batch of items from a vector index by ID.
+    /// </summary>
+    /// <param name="indexName">The name of the vector index to get the item metadata from.</param>
+    /// <param name="ids">The IDs of the item metadata to get from the index.</param>
+    /// <returns>
+    /// Task representing the result of the get item metadata batch operation. The
+    /// response object is resolved to a type-safe object of one of
+    /// the following subtypes:
+    /// <list type="bullet">
+    /// <item><description>GetItemMetadataBatchResponse.Success</description></item>
+    /// <item><description>GetItemMetadataBatchResponse.Error</description></item>
+    /// </list>
+    /// Pattern matching can be used to operate on the appropriate subtype.
+    /// For example:
+    /// <code>
+    /// if (response is GetItemMetadataBatchResponse.Error errorResponse)
+    /// {
+    ///   // handle error as appropriate
+    ///   return;
+    /// }
+    /// </code>
+    /// </returns>
+    public Task<GetItemMetadataBatchResponse> GetItemMetadataBatchAsync(string indexName, IEnumerable<string> ids);
+
     /// <summary>
     /// Deletes all items with the given IDs from the index. Returns success if for items that do not exist.
     /// </summary>
@@ -188,7 +239,7 @@ public interface IPreviewVectorIndexClient : IDisposable
     /// </returns>
     public Task<SearchResponse> SearchAsync(string indexName, IEnumerable<float> queryVector, int topK = 10,
         MetadataFields? metadataFields = null, float? scoreThreshold = null);
-    
+
     ///  <summary>
     ///  Searches for the most similar vectors to the query vector in the index.
     ///  Ranks the vectors according to the similarity metric specified when the

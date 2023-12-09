@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using Momento.Sdk.Messages.Vector;
+using Momento.Sdk.Internal.ExtensionMethods;
 
 namespace Momento.Sdk.Requests.Vector;
 
@@ -19,7 +21,7 @@ public class Item
         Vector = vector;
         Metadata = new Dictionary<string, MetadataValue>();
     }
-    
+
     /// <summary>
     /// Constructs a Item.
     /// </summary>
@@ -37,14 +39,41 @@ public class Item
     /// The ID of the vector.
     /// </summary>
     public string Id { get; }
-    
+
     /// <summary>
     /// The vector.
     /// </summary>
     public List<float> Vector { get; }
-    
+
     /// <summary>
     /// Metadata associated with the vector.
     /// </summary>
     public Dictionary<string, MetadataValue> Metadata { get; }
+
+    /// <inheritdoc />
+    public override bool Equals(object obj)
+    {
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
+        if (obj is null || GetType() != obj.GetType())
+        {
+            return false;
+        }
+
+        var other = (Item)obj;
+        return Id == other.Id && Vector.SequenceEqual(other.Vector) && Metadata.MetadataEquals(other.Metadata);
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        int hash = 17;
+        hash = hash * 23 + Id.GetHashCode();
+        hash = hash * 23 + Vector.GetHashCode();
+        hash = hash * 23 + Metadata.MetadataHashCode();
+        return hash;
+    }
 }
