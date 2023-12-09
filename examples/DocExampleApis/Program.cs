@@ -14,11 +14,11 @@ public class Program
             new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN"),
             TimeSpan.FromSeconds(10));
         IAuthClient authClient = new AuthClient(
-            AuthConfigurations.Default.Latest(), 
+            AuthConfigurations.Default.Latest(),
             new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN")
         );
         ITopicClient topicClient = new TopicClient(
-            TopicConfigurations.Laptop.latest(), 
+            TopicConfigurations.Laptop.latest(),
             new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN")
         );
 
@@ -196,7 +196,7 @@ public class Program
             DisposableTokenScopes.TopicPublishOnly(CacheSelector.AllCaches, "acorn"),
             ExpiresIn.Minutes(30)
         );
-        
+
         if (oneTopicAllCachesToken is GenerateDisposableTokenResponse.Success token4)
         {
             // logging only a substring of the tokens, because logging security credentials is not advisable :)
@@ -210,17 +210,20 @@ public class Program
 
     }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     public static async Task Example_API_InstantiateTopicClient()
     {
         new TopicClient(
-            TopicConfigurations.Laptop.latest(), 
+            TopicConfigurations.Laptop.latest(),
             new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN")
         );
     }
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+
     public static async Task Example_API_TopicPublish(ITopicClient topicClient)
     {
-       var publishResponse =
-            await topicClient.PublishAsync("test-cache", "test-topic", "test-topic-value");
+        var publishResponse =
+             await topicClient.PublishAsync("test-cache", "test-topic", "test-topic-value");
         switch (publishResponse)
         {
             case TopicPublishResponse.Success:

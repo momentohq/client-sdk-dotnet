@@ -54,7 +54,7 @@ public class CacheClient : ICacheClient
         this.dataClients = new List<ScsDataClient>();
         int minNumGrpcChannels = this.config.TransportStrategy.GrpcConfig.MinNumGrpcChannels;
         int currentMaxConcurrentRequests = this.config.TransportStrategy.MaxConcurrentRequests;
-        /**
+        /*
         * Client Configuration Logic:
         * 
         * At the time of writing, customers have two client configurations affecting the number of gRPC connections spawned:
@@ -803,7 +803,7 @@ public class CacheClient : ICacheClient
         return await this.DataClient.DictionaryRemoveFieldsAsync(cacheName, dictionaryName, fields);
     }
 
-     /// <inheritdoc />
+    /// <inheritdoc />
     public async Task<CacheDictionaryLengthResponse> DictionaryLengthAsync(string cacheName, string dictionaryName)
     {
         try
@@ -976,7 +976,7 @@ public class CacheClient : ICacheClient
 
         return await this.DataClient.SetFetchAsync(cacheName, setName);
     }
-    
+
     /// <inheritdoc />
     public async Task<CacheSetLengthResponse> SetLengthAsync(string cacheName, string setName)
     {

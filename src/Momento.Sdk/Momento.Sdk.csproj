@@ -5,6 +5,8 @@
 		<TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
+		<!-- Microsoft.Bcl.AsyncInterfaces on net461 isn't supported; suppress warning -->
+		<SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
 		<!-- Include documentation in build -->
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<!-- Include source and debug symbols-->
