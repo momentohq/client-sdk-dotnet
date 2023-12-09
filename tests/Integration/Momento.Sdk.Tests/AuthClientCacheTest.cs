@@ -59,7 +59,7 @@ public class AuthClientCacheTest : IClassFixture<CacheClientFixture>, IClassFixt
         Assert.True(response is TErrResp, $"Unexpected response: {response}");
         if (response is IError err)
         {
-            Assert.Equal(err.ErrorCode, MomentoErrorCode.PERMISSION_ERROR);
+            Assert.Equal(MomentoErrorCode.PERMISSION_ERROR, err.ErrorCode);
         }
     }
 
@@ -103,21 +103,21 @@ public class AuthClientCacheTest : IClassFixture<CacheClientFixture>, IClassFixt
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, 
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR,
             ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.CacheReadOnly(cacheName),
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, 
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR,
             ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.CacheWriteOnly(cacheName),
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, 
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR,
             ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
     }
 
@@ -129,21 +129,21 @@ public class AuthClientCacheTest : IClassFixture<CacheClientFixture>, IClassFixt
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, 
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR,
             ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.CacheReadOnly(""),
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, 
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR,
             ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.CacheWriteOnly(""),
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, 
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR,
             ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
     }
 
@@ -247,21 +247,21 @@ public class AuthClientCacheTest : IClassFixture<CacheClientFixture>, IClassFixt
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, 
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR,
             ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.CacheKeyReadOnly(cacheName, cacheKey),
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, 
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR,
             ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.CacheKeyWriteOnly(cacheName, cacheKey),
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, 
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR,
             ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
     }
 
@@ -275,21 +275,21 @@ public class AuthClientCacheTest : IClassFixture<CacheClientFixture>, IClassFixt
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, 
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR,
             ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.CacheKeyReadOnly(cacheName, cacheKey),
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, 
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR,
             ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.CacheKeyWriteOnly(cacheName, cacheKey),
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, 
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR,
             ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
     }
 
@@ -381,7 +381,7 @@ public class AuthClientCacheTest : IClassFixture<CacheClientFixture>, IClassFixt
         );
         Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
-            DisposableTokenScopes.CacheKeyPrefixReadWrite(CacheSelector.ByName("cache"), "cacheKey"), 
+            DisposableTokenScopes.CacheKeyPrefixReadWrite(CacheSelector.ByName("cache"), "cacheKey"),
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
@@ -391,7 +391,7 @@ public class AuthClientCacheTest : IClassFixture<CacheClientFixture>, IClassFixt
         );
         Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
-            DisposableTokenScopes.CacheKeyPrefixReadOnly(CacheSelector.ByName("cache"), "cacheKey"), 
+            DisposableTokenScopes.CacheKeyPrefixReadOnly(CacheSelector.ByName("cache"), "cacheKey"),
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
@@ -401,7 +401,7 @@ public class AuthClientCacheTest : IClassFixture<CacheClientFixture>, IClassFixt
         );
         Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
         response = await authClient.GenerateDisposableTokenAsync(
-            DisposableTokenScopes.CacheKeyPrefixWriteOnly(CacheSelector.ByName("cache"), "cacheKey"), 
+            DisposableTokenScopes.CacheKeyPrefixWriteOnly(CacheSelector.ByName("cache"), "cacheKey"),
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Success, $"Unexpected response: {response}");
@@ -417,21 +417,21 @@ public class AuthClientCacheTest : IClassFixture<CacheClientFixture>, IClassFixt
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, 
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR,
             ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.CacheKeyPrefixReadOnly(cacheName, cacheKeyPrefix),
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, 
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR,
             ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.CacheKeyPrefixWriteOnly(cacheName, cacheKeyPrefix),
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, 
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR,
             ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
     }
 
@@ -445,21 +445,21 @@ public class AuthClientCacheTest : IClassFixture<CacheClientFixture>, IClassFixt
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, 
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR,
             ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.CacheKeyPrefixReadOnly(cacheName, cacheKeyPrefix),
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, 
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR,
             ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
         response = await authClient.GenerateDisposableTokenAsync(
             DisposableTokenScopes.CacheKeyPrefixWriteOnly(cacheName, cacheKeyPrefix),
             ExpiresIn.Minutes(10)
         );
         Assert.True(response is GenerateDisposableTokenResponse.Error, $"Unexpected response: {response}");
-        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, 
+        Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR,
             ((GenerateDisposableTokenResponse.Error)response).ErrorCode);
     }
 
@@ -577,7 +577,7 @@ public class AuthClientCacheTest : IClassFixture<CacheClientFixture>, IClassFixt
         Assert.True(getResponse is CacheGetResponse.Hit, $"Unexpected response: {getResponse}");
         if (getResponse is CacheGetResponse.Hit hit)
         {
-            Assert.Equal(hit.ValueString, "moo");
+            Assert.Equal("moo", hit.ValueString);
         }
 
         setResponse = await client.SetAsync(cacheName, "pet-cat", "meow");
@@ -586,7 +586,7 @@ public class AuthClientCacheTest : IClassFixture<CacheClientFixture>, IClassFixt
         Assert.True(getResponse is CacheGetResponse.Hit, $"Unexpected response: {getResponse}");
         if (getResponse is CacheGetResponse.Hit hit2)
         {
-            Assert.Equal(hit2.ValueString, "meow");
+            Assert.Equal("meow", hit2.ValueString);
         }
 
         setResponse = await client.SetAsync(cacheName, "giraffe", "noidea");
@@ -719,7 +719,7 @@ public class AuthClientCacheTest : IClassFixture<CacheClientFixture>, IClassFixt
             Assert.True(getResponse is CacheGetResponse.Hit, $"Unexpected response: {getResponse}");
             if (getResponse is CacheGetResponse.Hit hit)
             {
-                Assert.Equal(hit.ValueString, "thunk");
+                Assert.Equal("thunk", hit.ValueString);
             }
             setResponse = await client.SetAsync(cache2Name, "pet-armadillo", "meow");
             AssertPermissionError<CacheSetResponse, CacheSetResponse.Error>(setResponse);

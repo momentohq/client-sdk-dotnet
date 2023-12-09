@@ -1,3 +1,5 @@
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
 using System;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -38,7 +40,8 @@ internal sealed class ScsTokenClient : IDisposable
 
     public async Task<GenerateDisposableTokenResponse> GenerateDisposableToken(
         DisposableTokenScope scope, ExpiresIn expiresIn, string? tokenId = null
-    ) {
+    )
+    {
         Permissions permissions;
         try
         {
@@ -57,7 +60,7 @@ internal sealed class ScsTokenClient : IDisposable
         {
             _GenerateDisposableTokenRequest request = new _GenerateDisposableTokenRequest
             {
-                Expires = new _GenerateDisposableTokenRequest.Types.Expires() { ValidForSeconds = (uint)expiresIn.Seconds() },
+                Expires = new _GenerateDisposableTokenRequest.Types.Expires() { ValidForSeconds = (uint)expiresIn.Seconds()! },
                 AuthToken = this.authToken,
                 Permissions = permissions,
                 TokenId = tokenId ?? ""
@@ -76,10 +79,12 @@ internal sealed class ScsTokenClient : IDisposable
         }
     }
 
-    private Permissions PermissionsFromDisposableTokenScope(DisposableTokenScope scope) {
+    private Permissions PermissionsFromDisposableTokenScope(DisposableTokenScope scope)
+    {
         Permissions result = new();
         ExplicitPermissions explicitPermissions = new();
-        foreach (DisposableTokenPermission perm in scope.Permissions) {
+        foreach (DisposableTokenPermission perm in scope.Permissions)
+        {
             var grpcPerm = DisposableTokenPermissionToGrpcPermission(perm);
             explicitPermissions.Permissions.Add(grpcPerm);
         }
@@ -92,10 +97,12 @@ internal sealed class ScsTokenClient : IDisposable
         var result = new PermissionsType();
         // This covers CachePermission as well as CacheItemPermission, as the latter is a subclass
         // of the former and `DisposableCachePermissionToGrpcPermission` handles both.
-        if (permission is DisposableToken.CachePermission cachePermission) {
+        if (permission is DisposableToken.CachePermission cachePermission)
+        {
             result.CachePermissions = DisposableCachePermissionToGrpcPermission(cachePermission);
         }
-        else if (permission is DisposableToken.TopicPermission topicPermission) {
+        else if (permission is DisposableToken.TopicPermission topicPermission)
+        {
             result.TopicPermissions = TopicPermissionToGrpcPermission(topicPermission);
         }
         return result;
@@ -154,7 +161,7 @@ internal sealed class ScsTokenClient : IDisposable
         DisposableToken.CachePermission permission, PermissionsType.Types.CachePermissions grpcPermission
     )
     {
-        switch(permission.Role)
+        switch (permission.Role)
         {
             case Auth.AccessControl.CacheRole.ReadWrite:
                 grpcPermission.Role = Protos.PermissionMessages.CacheRole.CacheReadWrite;
@@ -178,7 +185,8 @@ internal sealed class ScsTokenClient : IDisposable
     )
     {
         var grpcPermission = new PermissionsType.Types.TopicPermissions();
-        switch (permission.Role) {
+        switch (permission.Role)
+        {
             case Auth.AccessControl.TopicRole.PublishSubscribe:
                 grpcPermission.Role = Protos.PermissionMessages.TopicRole.TopicReadWrite;
                 break;
@@ -245,7 +253,8 @@ internal sealed class ScsTokenClient : IDisposable
         var grpcPermission = new PermissionsType.Types.CachePermissions();
         grpcPermission = AssignCacheRole(permission, grpcPermission);
         grpcPermission = AssignCacheSelector(permission, grpcPermission);
-        if (permission is DisposableToken.CacheItemPermission itemPerm) {
+        if (permission is DisposableToken.CacheItemPermission itemPerm)
+        {
             grpcPermission = AssignCacheItemSelector(itemPerm, grpcPermission);
         }
         return grpcPermission;
