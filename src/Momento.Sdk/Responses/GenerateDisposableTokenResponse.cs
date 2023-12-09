@@ -34,9 +34,19 @@ namespace Momento.Sdk.Responses;
 public abstract class GenerateDisposableTokenResponse
 {
     /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
-    public class Success : GenerateDisposableTokenResponse {
+    public class Success : GenerateDisposableTokenResponse
+    {
+        /// <summary>
+        /// The generated auth token.
+        /// </summary>
         public readonly string AuthToken;
+        /// <summary>
+        /// The endpoint to use for subsequent requests.
+        /// </summary>
         public readonly string Endpoint;
+        /// <summary>
+        /// The expiry time of the token.
+        /// </summary>
         public readonly ExpiresAt ExpiresAt;
 
         /// <summary>
@@ -50,13 +60,14 @@ public abstract class GenerateDisposableTokenResponse
         /// <param name="response"></param>
         public Success(_GenerateDisposableTokenResponse response)
         {
-            var jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(new {endpoint=response.Endpoint, api_key=response.ApiKey});
+            var jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(new { endpoint = response.Endpoint, api_key = response.ApiKey });
             var jsonBytes = System.Text.Encoding.UTF8.GetBytes(jsonString);
             AuthToken = System.Convert.ToBase64String(jsonBytes);
             Endpoint = response.Endpoint;
             ExpiresAt = ExpiresAt.FromEpoch((int)response.ValidUntil);
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"{AuthToken.Substring(0, 10)}...{AuthToken.Substring((AuthToken.Length - 10), 10)}";

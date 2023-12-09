@@ -9,19 +9,27 @@ using Momento.Sdk.Responses;
 
 namespace Momento.Sdk;
 
+/// <inheritdoc />
 public class AuthClient : IAuthClient
 {
 
     private readonly ScsTokenClient scsTokenClient;
 
+    /// <summary>
+    /// Create a new <see cref="AuthClient"/> object.
+    /// </summary>
+    /// <param name="config">The config.</param>
+    /// <param name="authProvider">The auth provider.</param>
     public AuthClient(IAuthConfiguration config, ICredentialProvider authProvider)
     {
         scsTokenClient = new ScsTokenClient(config, authProvider.AuthToken, authProvider.TokenEndpoint);
     }
 
+    /// <inheritdoc />
     public async Task<GenerateDisposableTokenResponse> GenerateDisposableTokenAsync(DisposableTokenScope scope, ExpiresIn expiresIn, string? tokenId = null)
     {
-        try {
+        try
+        {
             Utils.CheckValidDisposableTokenExpiry(expiresIn);
         }
         catch (Exception e)

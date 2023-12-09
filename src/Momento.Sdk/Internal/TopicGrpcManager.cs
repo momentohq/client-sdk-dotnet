@@ -1,3 +1,5 @@
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
 #if NETSTANDARD2_0_OR_GREATER
 
 using System;
@@ -55,7 +57,7 @@ public class PubsubClientWithMiddleware : IPubsubClient
         {
             callOptions = callOptions.WithHeaders(new Metadata());
         }
-        
+
         foreach (var header in _headers)
         {
             callHeaders.Add(header.Item1, header.Item2);
