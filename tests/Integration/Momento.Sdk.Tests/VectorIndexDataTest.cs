@@ -109,7 +109,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task UpsertAndSearch_InnerProduct<T>(SearchDelegate<T> searchDelegate,
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = Utils.TestVectorIndexName();
+        var indexName = Utils.TestVectorIndexName("data-upsert-and-search-inner-product");
         using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
         {
             var items = new List<Item>
@@ -137,7 +137,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task UpsertAndSearch_CosineSimilarity<T>(SearchDelegate<T> searchDelegate,
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = Utils.TestVectorIndexName();
+        var indexName = Utils.TestVectorIndexName("data-upsert-and-search-cosine-similarity");
         using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2))
         {
             var items = new List<Item>
@@ -168,7 +168,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task UpsertAndSearch_EuclideanSimilarity<T>(SearchDelegate<T> searchDelegate,
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = Utils.TestVectorIndexName();
+        var indexName = Utils.TestVectorIndexName("data-upsert-and-search-euclidean-similarity");
         using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.EuclideanSimilarity))
         {
             var items = new List<Item>
@@ -199,7 +199,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task UpsertAndSearch_TopKLimit<T>(SearchDelegate<T> searchDelegate,
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = Utils.TestVectorIndexName();
+        var indexName = Utils.TestVectorIndexName("data-upsert-and-search-top-k-limit");
         using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
         {
             var items = new List<Item>
@@ -233,7 +233,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task UpsertAndSearch_WithMetadata<T>(SearchDelegate<T> searchDelegate,
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = Utils.TestVectorIndexName();
+        var indexName = Utils.TestVectorIndexName("data-upsert-and-search-with-metadata");
         using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
         {
             var items = new List<Item>
@@ -305,7 +305,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task UpsertAndSearch_WithDiverseMetadata<T>(SearchDelegate<T> searchDelegate,
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = Utils.TestVectorIndexName();
+        var indexName = Utils.TestVectorIndexName("data-upsert-and-search-with-diverse-metadata");
         using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
         {
             var metadata = new Dictionary<string, MetadataValue>
@@ -373,7 +373,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task Search_PruneBasedOnThreshold<T>(SimilarityMetric similarityMetric, List<float> scores,
         List<float> thresholds, SearchDelegate<T> searchDelegate, AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = Utils.TestVectorIndexName();
+        var indexName = Utils.TestVectorIndexName("data-search-prune-based-on-threshold");
         using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, similarityMetric))
         {
             var items = new List<Item>
@@ -500,7 +500,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     [MemberData(nameof(GetItemAndGetItemMetadataTestData))]
     public async Task GetItemAndGetItemMetadata_HappyPath<T>(GetItemDelegate<T> getItemDelegate, AssertOnGetItemResponse<T> assertOnGetItemResponse, IEnumerable<string> ids, Object expected)
     {
-        var indexName = Utils.TestVectorIndexName();
+        var indexName = Utils.TestVectorIndexName("data-get-item-and-get-item-metadata-happy-path");
         using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
         {
             var items = new List<Item>

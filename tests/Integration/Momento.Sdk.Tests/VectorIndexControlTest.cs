@@ -21,9 +21,9 @@ public class VectorIndexControlTest : IClassFixture<VectorIndexClientFixture>
         {
             return new List<object[]>
             {
-                new object[] { new IndexInfo(Utils.TestVectorIndexName(), 3, SimilarityMetric.CosineSimilarity) },
-                new object[] { new IndexInfo(Utils.TestVectorIndexName(), 3, SimilarityMetric.InnerProduct) },
-                new object[] { new IndexInfo(Utils.TestVectorIndexName(), 3, SimilarityMetric.EuclideanSimilarity) }
+                new object[] { new IndexInfo(Utils.TestVectorIndexName("control-create-and-list-1"), 3, SimilarityMetric.CosineSimilarity) },
+                new object[] { new IndexInfo(Utils.TestVectorIndexName("control-create-and-list-2"), 3, SimilarityMetric.InnerProduct) },
+                new object[] { new IndexInfo(Utils.TestVectorIndexName("control-create-and-list-3"), 3, SimilarityMetric.EuclideanSimilarity) }
             };
         }
     }
@@ -44,7 +44,7 @@ public class VectorIndexControlTest : IClassFixture<VectorIndexClientFixture>
     [Fact]
     public async Task CreateIndexAsync_AlreadyExistsError()
     {
-        var indexName = Utils.TestVectorIndexName();
+        var indexName = Utils.TestVectorIndexName("control-create-index-already-exists");
         const int numDimensions = 3;
         using (Utils.WithVectorIndex(vectorIndexClient, indexName, numDimensions))
         {
@@ -79,7 +79,7 @@ public class VectorIndexControlTest : IClassFixture<VectorIndexClientFixture>
     [Fact]
     public async Task DeleteIndexAsync_DoesntExistError()
     {
-        var indexName = Utils.TestVectorIndexName();
+        var indexName = Utils.TestVectorIndexName("control-delete-index-doesnt-exist");
         var deleteResponse = await vectorIndexClient.DeleteIndexAsync(indexName);
         Assert.True(deleteResponse is DeleteIndexResponse.Error, $"Unexpected response: {deleteResponse}");
         var deleteErr = (DeleteIndexResponse.Error)deleteResponse;
