@@ -11,7 +11,18 @@ public static class Utils
 
     public static string TestCacheName() => "dotnet-integration-" + NewGuidString();
 
-    public static string TestVectorIndexName() => "dotnet-integration-" + NewGuidString();
+    /// <summary>
+    /// Returns a test vector index name that is unique to this test run.
+    /// </summary>
+    /// <remarks>
+    /// This is useful for debugging leaking test vector indexes.
+    /// </remarks>
+    /// <param name="meaningfulIdentifier">A string that uniquely identifies the test, e.g. "test1".</param>
+    /// <returns>A test vector index name that is unique to this test run.</returns>
+    public static string TestVectorIndexName(string meaningfulIdentifier)
+    {
+        return $"dotnet-integration-{NewGuidString()}-{meaningfulIdentifier}";
+    }
 
     public static string NewGuidString() => Guid.NewGuid().ToString();
 
