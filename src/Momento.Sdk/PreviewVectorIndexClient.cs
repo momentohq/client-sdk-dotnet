@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Momento.Sdk.Auth;
@@ -52,6 +53,12 @@ public class PreviewVectorIndexClient : IPreviewVectorIndexClient
     public async Task<DeleteIndexResponse> DeleteIndexAsync(string indexName)
     {
         return await controlClient.DeleteIndexAsync(indexName);
+    }
+
+    /// <inheritdoc />
+    public async Task<CountItemsResponse> CountItemsAsync(string indexName)
+    {
+        return await dataClient.CountItemsAsync(indexName);
     }
 
     /// <inheritdoc />
