@@ -106,6 +106,17 @@ public interface IPreviewVectorIndexClient : IDisposable
     public Task<DeleteIndexResponse> DeleteIndexAsync(string indexName);
 
     /// <summary>
+    /// Gets the number of items in a vector index.
+    /// </summary>
+    /// <remarks>
+    /// In the event the index does not exist, the response will be an error.
+    /// A count of zero is reserved for an index that exists but has no items.
+    /// </remarks>
+    /// <param name="indexName">The name of the vector index to get the item count from.</param>
+    /// <returns>Task representing the result of the count items operation.</returns>
+    public Task<CountItemsResponse> CountItemsAsync(string indexName);
+
+    /// <summary>
     /// Upserts a batch of items into a vector index.
     /// If an item with the same ID already exists in the index, it will be replaced.
     /// Otherwise, it will be added to the index.

@@ -520,4 +520,67 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
             assertOnGetItemResponse.Invoke(getResponse, expected);
         }
     }
+
+    [Fact]
+    public async Task CountItemsAsync_OnMissingIndex_ReturnsError()
+    {
+        var indexName = Utils.NewGuidString();
+        var response = await vectorIndexClient.CountItemsAsync(indexName);
+        Assert.True(response is CountItemsResponse.Error, $"Unexpected response: {response}");
+        var error = (CountItemsResponse.Error)response;
+        Assert.Equal(MomentoErrorCode.NOT_FOUND_ERROR, error.InnerException.ErrorCode);
+    }
+
+    [Fact]
+    public async Task CountItemsAsync_OnEmptyIndex_ReturnsZero()
+    {
+        var indexName = Utils.TestVectorIndexName("data-count-items-on-empty-index");
+        using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
+        {
+            var response = await vectorIndexClient.CountItemsAsync(indexName);
+            Assert.True(response is CountItemsResponse.Success, $"Unexpected response: {response}");
+            var successResponse = (CountItemsResponse.Success)response;
+            Assert.Equal(0, successResponse.ItemCount);
+        }
+    }
+
+    [Fact]
+    public async Task CountItemsAsync_HasItems_CountsCorrectly()
+    {
+        var indexName = Utils.TestVectorIndexName("data-count-items-has-items-counts-correctly");
+        using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
+        {
+            var items = new List<Item>
+            {
+                new("test_item_1", new List<float> { 1.0f, 2.0f }),
+                new("test_item_2", new List<float> { 3.0f, 4.0f }),
+                new("test_item_3", new List<float> { 5.0f, 6.0f }),
+                new("test_item_4", new List<float> { 7.0f, 8.0f }),
+                new("test_item_5", new List<float> { 9.0f, 10.0f }),
+            };
+
+            var upsertResponse = await vectorIndexClient.UpsertItemBatchAsync(indexName, items);
+            Assert.True(upsertResponse is UpsertItemBatchResponse.Success,
+                $"Unexpected response: {upsertResponse}");
+
+            await Task.Delay(2_000);
+
+            var response = await vectorIndexClient.CountItemsAsync(indexName);
+            Assert.True(response is CountItemsResponse.Success, $"Unexpected response: {response}");
+            var successResponse = (CountItemsResponse.Success)response;
+            Assert.Equal(5, successResponse.ItemCount);
+
+            // Delete two items
+            var deleteResponse = await vectorIndexClient.DeleteItemBatchAsync(indexName,
+                new List<string> { "test_item_1", "test_item_2" });
+            Assert.True(deleteResponse is DeleteItemBatchResponse.Success, $"Unexpected response: {deleteResponse}");
+
+            await Task.Delay(2_000);
+
+            response = await vectorIndexClient.CountItemsAsync(indexName);
+            Assert.True(response is CountItemsResponse.Success, $"Unexpected response: {response}");
+            successResponse = (CountItemsResponse.Success)response;
+            Assert.Equal(3, successResponse.ItemCount);
+        }
+    }
 }
