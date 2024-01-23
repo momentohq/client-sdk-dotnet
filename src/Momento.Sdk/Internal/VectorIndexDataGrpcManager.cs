@@ -19,6 +19,7 @@ namespace Momento.Sdk.Internal;
 
 public interface IVectorIndexDataClient
 {
+    public Task<_CountItemsResponse> CountItemsAsync(_CountItemsRequest request, CallOptions callOptions);
     public Task<_UpsertItemBatchResponse> UpsertItemBatchAsync(_UpsertItemBatchRequest request, CallOptions callOptions);
     public Task<_SearchResponse> SearchAsync(_SearchRequest request, CallOptions callOptions);
     public Task<_SearchAndFetchVectorsResponse> SearchAndFetchVectorsAsync(_SearchAndFetchVectorsRequest request, CallOptions callOptions);
@@ -45,6 +46,12 @@ public class VectorIndexDataClientWithMiddleware : IVectorIndexDataClient
     {
         _generatedClient = generatedClient;
         _middlewares = middlewares;
+    }
+
+    public async Task<_CountItemsResponse> CountItemsAsync(_CountItemsRequest request, CallOptions callOptions)
+    {
+        var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.CountItemsAsync(r, o));
+        return await wrapped.ResponseAsync;
     }
 
     public async Task<_UpsertItemBatchResponse> UpsertItemBatchAsync(_UpsertItemBatchRequest request, CallOptions callOptions)

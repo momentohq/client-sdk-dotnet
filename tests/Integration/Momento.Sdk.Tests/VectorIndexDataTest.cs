@@ -109,7 +109,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task UpsertAndSearch_InnerProduct<T>(SearchDelegate<T> searchDelegate,
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = Utils.TestVectorIndexName();
+        var indexName = Utils.TestVectorIndexName("data-upsert-and-search-inner-product");
         using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
         {
             var items = new List<Item>
@@ -137,7 +137,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task UpsertAndSearch_CosineSimilarity<T>(SearchDelegate<T> searchDelegate,
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = Utils.TestVectorIndexName();
+        var indexName = Utils.TestVectorIndexName("data-upsert-and-search-cosine-similarity");
         using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2))
         {
             var items = new List<Item>
@@ -168,7 +168,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task UpsertAndSearch_EuclideanSimilarity<T>(SearchDelegate<T> searchDelegate,
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = Utils.TestVectorIndexName();
+        var indexName = Utils.TestVectorIndexName("data-upsert-and-search-euclidean-similarity");
         using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.EuclideanSimilarity))
         {
             var items = new List<Item>
@@ -199,7 +199,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task UpsertAndSearch_TopKLimit<T>(SearchDelegate<T> searchDelegate,
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = Utils.TestVectorIndexName();
+        var indexName = Utils.TestVectorIndexName("data-upsert-and-search-top-k-limit");
         using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
         {
             var items = new List<Item>
@@ -233,7 +233,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task UpsertAndSearch_WithMetadata<T>(SearchDelegate<T> searchDelegate,
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = Utils.TestVectorIndexName();
+        var indexName = Utils.TestVectorIndexName("data-upsert-and-search-with-metadata");
         using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
         {
             var items = new List<Item>
@@ -305,7 +305,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task UpsertAndSearch_WithDiverseMetadata<T>(SearchDelegate<T> searchDelegate,
         AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = Utils.TestVectorIndexName();
+        var indexName = Utils.TestVectorIndexName("data-upsert-and-search-with-diverse-metadata");
         using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
         {
             var metadata = new Dictionary<string, MetadataValue>
@@ -373,7 +373,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     public async Task Search_PruneBasedOnThreshold<T>(SimilarityMetric similarityMetric, List<float> scores,
         List<float> thresholds, SearchDelegate<T> searchDelegate, AssertOnSearchResponse<T> assertOnSearchResponse)
     {
-        var indexName = Utils.TestVectorIndexName();
+        var indexName = Utils.TestVectorIndexName("data-search-prune-based-on-threshold");
         using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, similarityMetric))
         {
             var items = new List<Item>
@@ -500,7 +500,7 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
     [MemberData(nameof(GetItemAndGetItemMetadataTestData))]
     public async Task GetItemAndGetItemMetadata_HappyPath<T>(GetItemDelegate<T> getItemDelegate, AssertOnGetItemResponse<T> assertOnGetItemResponse, IEnumerable<string> ids, Object expected)
     {
-        var indexName = Utils.TestVectorIndexName();
+        var indexName = Utils.TestVectorIndexName("data-get-item-and-get-item-metadata-happy-path");
         using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
         {
             var items = new List<Item>
@@ -518,6 +518,69 @@ public class VectorIndexDataTest : IClassFixture<VectorIndexClientFixture>
 
             var getResponse = await getItemDelegate.Invoke(vectorIndexClient, indexName, ids);
             assertOnGetItemResponse.Invoke(getResponse, expected);
+        }
+    }
+
+    [Fact]
+    public async Task CountItemsAsync_OnMissingIndex_ReturnsError()
+    {
+        var indexName = Utils.NewGuidString();
+        var response = await vectorIndexClient.CountItemsAsync(indexName);
+        Assert.True(response is CountItemsResponse.Error, $"Unexpected response: {response}");
+        var error = (CountItemsResponse.Error)response;
+        Assert.Equal(MomentoErrorCode.NOT_FOUND_ERROR, error.InnerException.ErrorCode);
+    }
+
+    [Fact]
+    public async Task CountItemsAsync_OnEmptyIndex_ReturnsZero()
+    {
+        var indexName = Utils.TestVectorIndexName("data-count-items-on-empty-index");
+        using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
+        {
+            var response = await vectorIndexClient.CountItemsAsync(indexName);
+            Assert.True(response is CountItemsResponse.Success, $"Unexpected response: {response}");
+            var successResponse = (CountItemsResponse.Success)response;
+            Assert.Equal(0, successResponse.ItemCount);
+        }
+    }
+
+    [Fact]
+    public async Task CountItemsAsync_HasItems_CountsCorrectly()
+    {
+        var indexName = Utils.TestVectorIndexName("data-count-items-has-items-counts-correctly");
+        using (Utils.WithVectorIndex(vectorIndexClient, indexName, 2, SimilarityMetric.InnerProduct))
+        {
+            var items = new List<Item>
+            {
+                new("test_item_1", new List<float> { 1.0f, 2.0f }),
+                new("test_item_2", new List<float> { 3.0f, 4.0f }),
+                new("test_item_3", new List<float> { 5.0f, 6.0f }),
+                new("test_item_4", new List<float> { 7.0f, 8.0f }),
+                new("test_item_5", new List<float> { 9.0f, 10.0f }),
+            };
+
+            var upsertResponse = await vectorIndexClient.UpsertItemBatchAsync(indexName, items);
+            Assert.True(upsertResponse is UpsertItemBatchResponse.Success,
+                $"Unexpected response: {upsertResponse}");
+
+            await Task.Delay(2_000);
+
+            var response = await vectorIndexClient.CountItemsAsync(indexName);
+            Assert.True(response is CountItemsResponse.Success, $"Unexpected response: {response}");
+            var successResponse = (CountItemsResponse.Success)response;
+            Assert.Equal(5, successResponse.ItemCount);
+
+            // Delete two items
+            var deleteResponse = await vectorIndexClient.DeleteItemBatchAsync(indexName,
+                new List<string> { "test_item_1", "test_item_2" });
+            Assert.True(deleteResponse is DeleteItemBatchResponse.Success, $"Unexpected response: {deleteResponse}");
+
+            await Task.Delay(2_000);
+
+            response = await vectorIndexClient.CountItemsAsync(indexName);
+            Assert.True(response is CountItemsResponse.Success, $"Unexpected response: {response}");
+            successResponse = (CountItemsResponse.Success)response;
+            Assert.Equal(3, successResponse.ItemCount);
         }
     }
 }

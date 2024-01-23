@@ -28,6 +28,30 @@ internal sealed class VectorIndexDataClient : IDisposable
         _exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
     }
 
+    const string REQUEST_COUNT_ITEMS = "COUNT_ITEMS";
+    public async Task<CountItemsResponse> CountItemsAsync(string indexName)
+    {
+        try
+        {
+            _logger.LogTraceVectorIndexRequest(REQUEST_COUNT_ITEMS, indexName);
+            CheckValidIndexName(indexName);
+            var request = new _CountItemsRequest() { IndexName = indexName, All = new _CountItemsRequest.Types.All() };
+
+            var response =
+                await grpcManager.Client.CountItemsAsync(request, new CallOptions(deadline: CalculateDeadline()));
+            // To maintain CLS compliance we use a long here instead of a ulong.
+            // The max value of a long is still over 9 quintillion so we should be good for a while.
+            var itemCount = checked((long)response.ItemCount);
+            return _logger.LogTraceVectorIndexRequestSuccess(REQUEST_COUNT_ITEMS, indexName,
+                new CountItemsResponse.Success(itemCount));
+        }
+        catch (Exception e)
+        {
+            return _logger.LogTraceVectorIndexRequestError(REQUEST_COUNT_ITEMS, indexName,
+                new CountItemsResponse.Error(_exceptionMapper.Convert(e)));
+        }
+    }
+
     const string REQUEST_UPSERT_ITEM_BATCH = "UPSERT_ITEM_BATCH";
     public async Task<UpsertItemBatchResponse> UpsertItemBatchAsync(string indexName,
         IEnumerable<Item> items)
