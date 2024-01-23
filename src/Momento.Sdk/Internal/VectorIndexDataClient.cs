@@ -35,7 +35,7 @@ internal sealed class VectorIndexDataClient : IDisposable
         {
             _logger.LogTraceVectorIndexRequest(REQUEST_COUNT_ITEMS, indexName);
             CheckValidIndexName(indexName);
-            var request = new _CountItemsRequest() { IndexName = indexName };
+            var request = new _CountItemsRequest() { IndexName = indexName, All = new _CountItemsRequest.Types.All() };
 
             var response =
                 await grpcManager.Client.CountItemsAsync(request, new CallOptions(deadline: CalculateDeadline()));
