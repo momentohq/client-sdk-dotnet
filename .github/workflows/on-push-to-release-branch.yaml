@@ -68,7 +68,7 @@ jobs:
             dotnet publish --configuration Release -f netstandard2.0 -p:DefineConstants=USE_GRPC_WEB -p:VersionPrefix=${VERSION}
             mkdir ./bin/Release/netstandard2.0/MomentoSdkUnity
             pushd ./bin/Release/netstandard2.0/publish/
-              cp Google.Protobuf.dll Grpc.Core.Api.dll Grpc.Net.Client.dll Grpc.Net.Client.Web.dll Grpc.Net.Common.dll JWT.dll Microsoft.Bcl.AsyncInterfaces.dll Microsoft.Extensions.Logging.Abstractions.dll Momento.Protos.dll Momento.Sdk.Unity.1.21.4.dll System.Diagnostics.DiagnosticSource.dll System.Runtime.CompilerServices.Unsafe.dll System.Text.Encodings.Web.dll System.Text.Json.dll System.Threading.Channels.dll ../MomentoSdkUnity/
+              cp Google.Protobuf.dll Grpc.Core.Api.dll Grpc.Net.Client.dll Grpc.Net.Client.Web.dll Grpc.Net.Common.dll JWT.dll Microsoft.Bcl.AsyncInterfaces.dll Microsoft.Extensions.Logging.Abstractions.dll Momento.Protos.dll Momento.Sdk.dll System.Diagnostics.DiagnosticSource.dll System.Runtime.CompilerServices.Unsafe.dll System.Threading.Channels.dll ../MomentoSdkUnity/
             popd
             zip -jr MomentoSdkUnity.zip bin/Release/netstandard2.0/MomentoSdkUnity/
             ZIP_FILE=./MomentoSdkUnity.zip
