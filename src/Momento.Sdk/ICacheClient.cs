@@ -432,7 +432,7 @@ public interface ICacheClient : IDisposable
     /// </summary>
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
     /// <param name="dictionaryName">The dictionary to fetch.</param>
-    /// <returns>Task representing with the status of the fetch operation and the associated dictionary.</returns>
+    /// <returns>Task representing the status of the fetch operation and the associated dictionary.</returns>
     public Task<CacheDictionaryFetchResponse> DictionaryFetchAsync(string cacheName, string dictionaryName);
 
     /// <summary>
@@ -540,9 +540,18 @@ public interface ICacheClient : IDisposable
     /// </summary>
     /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
     /// <param name="setName">The set to fetch.</param>
-    /// <returns>Task representing with the status of the fetch operation and the associated set.</returns>
+    /// <returns>Task representing the status of the fetch operation and the associated set.</returns>
     public Task<CacheSetFetchResponse> SetFetchAsync(string cacheName, string setName);
-
+    
+    /// <summary>
+    /// Fetch a random sample of elements from the set. Returns a different random sample for each call.
+    /// </summary>
+    /// <param name="cacheName">Name of the cache to perform the lookup in.</param>
+    /// <param name="setName">The set to fetch.</param>
+    /// <param name="limit">The maximum number of elements to return. If the set contains fewer than 'limit' elements, the entire set will be returned.</param>
+    /// <returns>Task representing the status of the sample operation and the associated set.</returns>
+    public Task<CacheSetSampleResponse> SetSampleAsync(string cacheName, string setName, int limit);
+    
     /// <summary>
     /// Calculate the length of a set in the cache.
     ///
@@ -634,7 +643,7 @@ public interface ICacheClient : IDisposable
     /// <param name="listName">The list to fetch.</param>
     /// <param name="startIndex">Start inclusive index for fetch operation. Must be smaller than the endIndex.</param>
     /// <param name="endIndex">End exclusive index for fetch operation. Must be larger than the startIndex.</param>
-    /// <returns>Task representing with the status of the fetch operation and the associated list.</returns>
+    /// <returns>Task representing the status of the fetch operation and the associated list.</returns>
     public Task<CacheListFetchResponse> ListFetchAsync(string cacheName, string listName, int? startIndex = null, int? endIndex = null);
 
     /// <summary>
