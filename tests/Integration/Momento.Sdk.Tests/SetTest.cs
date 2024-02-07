@@ -578,8 +578,7 @@ public class SetTest : TestBase
         Assert.Same(set1, set2);
     }
     
-    
-    [Theory]
+    [Theory(Skip = "SetSample is a new API, we can't enable these tests until the server changes are deployed")]
     [InlineData(null, "my-set", 100)]
     [InlineData("cache", null, 100)]
     [InlineData("cache", "my-set", -1)]
@@ -589,8 +588,8 @@ public class SetTest : TestBase
         Assert.True(response is CacheSetSampleResponse.Error, $"Unexpected response: {response}");
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheSetSampleResponse.Error)response).ErrorCode);
     }
-
-    [Fact]
+    
+    [Fact(Skip = "SetSample is a new API, we can't enable these tests until the server changes are deployed")]
     public async Task SetSampleAsync_Missing_HappyPath()
     {
         var setName = Utils.NewGuidString();
@@ -598,7 +597,7 @@ public class SetTest : TestBase
         Assert.True(response is CacheSetSampleResponse.Miss, $"Unexpected response: {response}");
     }
 
-    [Fact]
+    [Fact(Skip = "SetSample is a new API, we can't enable these tests until the server changes are deployed")]
     public async Task SetSampleAsync_UsesCachedStringSet_HappyPath()
     {
         var setName = Utils.NewGuidString();
