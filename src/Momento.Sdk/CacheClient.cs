@@ -984,9 +984,13 @@ public class CacheClient : ICacheClient
         {
             Utils.ArgumentNotNull(cacheName, nameof(cacheName));
             Utils.ArgumentNotNull(setName, nameof(setName));
-            Utils.ArgumentNotNull(limit, nameof(limit));
+            Utils.ArgumentNonNegative(limit, nameof(limit));
         }
         catch (ArgumentNullException e)
+        {
+            return new CacheSetSampleResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        catch (ArgumentOutOfRangeException e)
         {
             return new CacheSetSampleResponse.Error(new InvalidArgumentException(e.Message));
         }

@@ -580,11 +580,12 @@ public class SetTest : TestBase
     
     
     [Theory]
-    [InlineData(null, "my-set")]
-    [InlineData("cache", null)]
-    public async Task SetSampleAsync_NullChecks_IsError(string cacheName, string setName)
+    [InlineData(null, "my-set", 100)]
+    [InlineData("cache", null, 100)]
+    [InlineData("cache", "my-set", -1)]
+    public async Task SetSampleAsync_NullChecks_IsError(string cacheName, string setName, int limit)
     {
-        CacheSetSampleResponse response = await client.SetSampleAsync(cacheName, setName, 100);
+        CacheSetSampleResponse response = await client.SetSampleAsync(cacheName, setName, limit);
         Assert.True(response is CacheSetSampleResponse.Error, $"Unexpected response: {response}");
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheSetSampleResponse.Error)response).ErrorCode);
     }
