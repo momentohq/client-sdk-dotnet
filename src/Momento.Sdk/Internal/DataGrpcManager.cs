@@ -40,6 +40,7 @@ public interface IDataClient
     public Task<_SetUnionResponse> SetUnionAsync(_SetUnionRequest request, CallOptions callOptions);
     public Task<_SetDifferenceResponse> SetDifferenceAsync(_SetDifferenceRequest request, CallOptions callOptions);
     public Task<_SetFetchResponse> SetFetchAsync(_SetFetchRequest request, CallOptions callOptions);
+    public Task<_SetSampleResponse> SetSampleAsync(_SetSampleRequest request, CallOptions callOptions);
     public Task<_SetLengthResponse> SetLengthAsync(_SetLengthRequest request, CallOptions callOptions);
     public Task<_ListPushFrontResponse> ListPushFrontAsync(_ListPushFrontRequest request, CallOptions callOptions);
     public Task<_ListPushBackResponse> ListPushBackAsync(_ListPushBackRequest request, CallOptions callOptions);
@@ -172,6 +173,12 @@ public class DataClientWithMiddleware : IDataClient
     public async Task<_SetFetchResponse> SetFetchAsync(_SetFetchRequest request, CallOptions callOptions)
     {
         var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.SetFetchAsync(r, o));
+        return await wrapped.ResponseAsync;
+    }
+
+    public async Task<_SetSampleResponse> SetSampleAsync(_SetSampleRequest request, CallOptions callOptions)
+    {
+        var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.SetSampleAsync(r, o));
         return await wrapped.ResponseAsync;
     }
     

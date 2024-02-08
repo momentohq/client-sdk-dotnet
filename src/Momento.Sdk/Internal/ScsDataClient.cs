@@ -318,6 +318,11 @@ internal sealed class ScsDataClient : ScsDataClientBase
         return await SendSetFetchAsync(cacheName, setName);
     }
 
+    public async Task<CacheSetSampleResponse> SetSampleAsync(string cacheName, string setName, ulong limit)
+    {
+        return await SendSetSampleAsync(cacheName, setName, limit);
+    }
+
     public async Task<CacheSetLengthResponse> SetLengthAsync(string cacheName, string setName)
     {
         return await SendSetLengthAsync(cacheName, setName);
@@ -980,7 +985,32 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
         return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_SET_FETCH, cacheName, setName, new CacheSetFetchResponse.Miss());
     }
+    
+    
+    const string REQUEST_TYPE_SET_SAMPLE = "SET_SAMPLE";
+    private async Task<CacheSetSampleResponse> SendSetSampleAsync(string cacheName, string setName, ulong limit)
+    {
+        _SetSampleRequest request = new() { SetName = setName.ToByteString(), Limit = limit };
+        _SetSampleResponse response;
+        var metadata = MetadataWithCache(cacheName);
 
+        try
+        {
+            this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_SET_SAMPLE, cacheName, setName);
+            response = await this.grpcManager.Client.SetSampleAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+        }
+        catch (Exception e)
+        {
+            return this._logger.LogTraceCollectionRequestError(REQUEST_TYPE_SET_SAMPLE, cacheName, setName, new CacheSetSampleResponse.Error(_exceptionMapper.Convert(e, metadata)));
+        }
+        if (response.SetCase == _SetSampleResponse.SetOneofCase.Found)
+        {
+            return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_SET_SAMPLE, cacheName, setName, new CacheSetSampleResponse.Hit(response));
+        }
+
+        return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_SET_SAMPLE, cacheName, setName, new CacheSetSampleResponse.Miss());
+    }
+    
     const string REQUEST_TYPE_SET_LENGTH = "SET_LENGTH";
     private async Task<CacheSetLengthResponse> SendSetLengthAsync(string cacheName, string setName)
     {

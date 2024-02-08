@@ -11,25 +11,25 @@ using Momento.Sdk.Internal.ExtensionMethods;
 namespace Momento.Sdk.Responses;
 
 /// <summary>
-/// Parent response type for a cache set fetch request. The
+/// Parent response type for a cache set sample request. The
 /// response object is resolved to a type-safe object of one of
 /// the following subtypes:
 /// <list type="bullet">
-/// <item><description>CacheSetFetchResponse.Success</description></item>
-/// <item><description>CacheSetFetchResponse.Error</description></item>
+/// <item><description>CacheSetSampleResponse.Success</description></item>
+/// <item><description>CacheSetSampleResponse.Error</description></item>
 /// </list>
 /// Pattern matching can be used to operate on the appropriate subtype.
 /// For example:
 /// <code>
-/// if (response is CacheSetFetchResponse.Hit hitResponse)
+/// if (response is CacheSetSampleResponse.Hit hitResponse)
 /// {
 ///     return hitResponse.ValueSetString;
 /// }
-/// else if (response is CacheSetFetchResponse.Miss missResponse)
+/// else if (response is CacheSetSampleResponse.Miss missResponse)
 /// {
 ///     // handle miss as appropriate
 /// }
-/// else if (response is CacheSetFetchResponse.Error errorResponse)
+/// else if (response is CacheSetSampleResponse.Error errorResponse)
 /// {
 ///     // handle error as appropriate
 /// }
@@ -39,10 +39,10 @@ namespace Momento.Sdk.Responses;
 /// }
 /// </code>
 /// </summary>
-public abstract class CacheSetFetchResponse
+public abstract class CacheSetSampleResponse
 {
     /// <include file="../docs.xml" path='docs/class[@name="Hit"]/description/*' />
-    public class Hit : CacheSetFetchResponse
+    public class Hit : CacheSetSampleResponse
     {
 #pragma warning disable 1591
         protected readonly RepeatedField<ByteString> elements;
@@ -53,13 +53,12 @@ public abstract class CacheSetFetchResponse
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="response">Cache set fetch response.</param>
-        public Hit(_SetFetchResponse response)
+        /// <param name="response">Cache set sample response.</param>
+        public Hit(_SetSampleResponse response)
         {
             elements = response.Found.Elements;
             _byteArraySet = new(() =>
             {
-
                 return new HashSet<byte[]>(
                     elements.Select(element => element.ToByteArray()),
                     Utils.ByteArrayComparer);
@@ -73,12 +72,12 @@ public abstract class CacheSetFetchResponse
         }
 
         /// <summary>
-        /// The cached set as a <see cref="ISet{T}" /> of <see cref="byte" /> arrays.
+        /// Randomly sample elements from the Set as a <see cref="ISet{T}" /> of <see cref="byte" /> arrays.
         /// </summary>
         public ISet<byte[]> ValueSetByteArray { get => _byteArraySet.Value; }
 
         /// <summary>
-        /// The cached set as a <see cref="ISet{T}" /> of <see cref="string" />s.
+        /// Randomly sample elements from the Set as a <see cref="ISet{T}" /> of <see cref="string" />s.
         /// </summary>
         public ISet<string> ValueSetString { get => _stringSet.Value; }
 
@@ -92,13 +91,13 @@ public abstract class CacheSetFetchResponse
     }
 
     /// <include file="../docs.xml" path='docs/class[@name="Miss"]/description/*' />
-    public class Miss : CacheSetFetchResponse
+    public class Miss : CacheSetSampleResponse
     {
 
     }
 
     /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
-    public class Error : CacheSetFetchResponse, IError
+    public class Error : CacheSetSampleResponse, IError
     {
         private readonly SdkException _error;
 
