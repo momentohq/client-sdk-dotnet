@@ -316,6 +316,11 @@ public class TestCacheClient : ICacheClient
     {
         return ((ICacheClient)client).SetFetchAsync(cacheName, setName);
     }
+    
+    public Task<CacheSetSampleResponse> SetSampleAsync(string cacheName, string setName, int limit)
+    {
+        return ((ICacheClient)client).SetSampleAsync(cacheName, setName, limit);
+    }
 
     public Task<CacheSetIfNotExistsResponse> SetIfNotExistsAsync(string cacheName, string key, string value, TimeSpan? ttl = null)
     {

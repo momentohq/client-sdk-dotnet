@@ -976,6 +976,27 @@ public class CacheClient : ICacheClient
 
         return await this.DataClient.SetFetchAsync(cacheName, setName);
     }
+    
+    /// <inheritdoc />
+    public async Task<CacheSetSampleResponse> SetSampleAsync(string cacheName, string setName, int limit)
+    {
+        try
+        {
+            Utils.ArgumentNotNull(cacheName, nameof(cacheName));
+            Utils.ArgumentNotNull(setName, nameof(setName));
+            Utils.ArgumentNonNegative(limit, nameof(limit));
+        }
+        catch (ArgumentNullException e)
+        {
+            return new CacheSetSampleResponse.Error(new InvalidArgumentException(e.Message));
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return new CacheSetSampleResponse.Error(new InvalidArgumentException(e.Message));
+        }
+
+        return await this.DataClient.SetSampleAsync(cacheName, setName, Convert.ToUInt64(limit));
+    }
 
     /// <inheritdoc />
     public async Task<CacheSetLengthResponse> SetLengthAsync(string cacheName, string setName)

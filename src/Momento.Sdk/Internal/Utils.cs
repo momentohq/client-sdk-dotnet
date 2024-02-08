@@ -99,7 +99,27 @@ public static class Utils
 
         if (argument <= 0)
         {
-            throw new ArgumentOutOfRangeException(paramName, "TimeSpan must be strictly positive.");
+            throw new ArgumentOutOfRangeException(paramName, "int must be strictly positive.");
+        }
+    }
+    
+    
+    /// <summary>
+    /// Throw an exception if the value is negative.
+    /// </summary>
+    /// <param name="argument">The value to test.</param>
+    /// <param name="paramName">Name of the value to propagate to the exception.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="argument"/> is negative.</exception>
+    public static void ArgumentNonNegative(int? argument, string paramName)
+    {
+        if (argument is null)
+        {
+            return;
+        }
+
+        if (argument < 0)
+        {
+            throw new ArgumentOutOfRangeException(paramName, "int must be strictly positive.");
         }
     }
 
