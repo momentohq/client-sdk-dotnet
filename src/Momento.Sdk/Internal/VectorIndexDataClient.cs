@@ -131,7 +131,7 @@ internal sealed class VectorIndexDataClient : IDisposable
     }
 
     /// <summary>
-    /// Convert a list of ids to a filter expression requiring the item id to be in the set.
+    /// Convert a list of ids to an id-in-set filter expression.
     /// </summary>
     /// <param name="ids"></param>
     /// <returns></returns>
