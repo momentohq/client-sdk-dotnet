@@ -118,20 +118,8 @@ internal sealed class VectorIndexDataClient : IDisposable
             var response =
                 await grpcManager.Client.GetItemMetadataBatchAsync(request,
                     new CallOptions(deadline: CalculateDeadline()));
-            var items = new Dictionary<string, Dictionary<string, MetadataValue>>();
-            foreach (var item in response.ItemMetadataResponse)
-            {
-                switch (item.ResponseCase)
-                {
-                    case _ItemMetadataResponse.ResponseOneofCase.Hit:
-                        items[item.Hit.Id] = Convert(item.Hit.Metadata);
-                        break;
-                    case _ItemMetadataResponse.ResponseOneofCase.Miss:
-                        break;
-                    default:
-                        throw new UnknownException($"Unknown item response type {item.ResponseCase}");
-                }
-            }
+            var items = response.ItemMetadataResponse.ToDictionary(
+                item => item.Id, item => Convert(item.Metadata));
             return _logger.LogTraceVectorIndexRequestSuccess(REQUEST_GET_ITEM_METADATA_BATCH, indexName,
                 new GetItemMetadataBatchResponse.Success(items));
         }
