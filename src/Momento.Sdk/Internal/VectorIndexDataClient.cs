@@ -123,7 +123,7 @@ internal sealed class VectorIndexDataClient : IDisposable
             var request = new _GetItemMetadataBatchRequest()
             {
                 IndexName = indexName,
-                Ids = { ids },
+                Filter = idsToFilterExpression(ids),
                 MetadataFields = new _MetadataRequest { All = new _MetadataRequest.Types.All() }
             };
 
