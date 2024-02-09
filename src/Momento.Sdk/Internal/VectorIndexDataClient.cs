@@ -154,6 +154,22 @@ internal sealed class VectorIndexDataClient : IDisposable
         }
     }
 
+    /// <summary>
+    /// Convert a list of ids to a filter expression requiring the item id to be in the set.
+    /// </summary>
+    /// <param name="ids"></param>
+    /// <returns></returns>
+    private static _FilterExpression idsToFilterExpression(IEnumerable<string> ids)
+    {
+        return new _FilterExpression
+        {
+            IdInSetExpression = new _IdInSetExpression()
+            {
+                Ids = { ids }
+            }
+        };
+    }
+
     const string REQUEST_DELETE_ITEM_BATCH = "DELETE_ITEM_BATCH";
     public async Task<DeleteItemBatchResponse> DeleteItemBatchAsync(string indexName, IEnumerable<string> ids)
     {
@@ -161,7 +177,7 @@ internal sealed class VectorIndexDataClient : IDisposable
         {
             _logger.LogTraceVectorIndexRequest(REQUEST_DELETE_ITEM_BATCH, indexName);
             CheckValidIndexName(indexName);
-            var request = new _DeleteItemBatchRequest() { IndexName = indexName, Ids = { ids } };
+            var request = new _DeleteItemBatchRequest() { IndexName = indexName, Filter = idsToFilterExpression(ids) };
 
             await grpcManager.Client.DeleteItemBatchAsync(request, new CallOptions(deadline: CalculateDeadline()));
             return _logger.LogTraceVectorIndexRequestSuccess(REQUEST_DELETE_ITEM_BATCH, indexName,
