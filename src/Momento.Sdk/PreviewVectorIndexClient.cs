@@ -69,21 +69,21 @@ public class PreviewVectorIndexClient : IPreviewVectorIndexClient
     }
 
     /// <inheritdoc />
-    public async Task<GetItemBatchResponse> GetItemBatchAsync(string indexName, IEnumerable<string> ids)
+    public async Task<GetItemBatchResponse> GetItemBatchAsync(string indexName, IEnumerable<string> filter)
     {
-        return await dataClient.GetItemBatchAsync(indexName, ids);
+        return await dataClient.GetItemBatchAsync(indexName, filter);
     }
 
     /// <inheritdoc />
-    public async Task<GetItemMetadataBatchResponse> GetItemMetadataBatchAsync(string indexName, IEnumerable<string> ids)
+    public async Task<GetItemMetadataBatchResponse> GetItemMetadataBatchAsync(string indexName, IEnumerable<string> filter)
     {
-        return await dataClient.GetItemMetadataBatchAsync(indexName, ids);
+        return await dataClient.GetItemMetadataBatchAsync(indexName, filter);
     }
 
     /// <inheritdoc />
-    public async Task<DeleteItemBatchResponse> DeleteItemBatchAsync(string indexName, IEnumerable<string> ids)
+    public async Task<DeleteItemBatchResponse> DeleteItemBatchAsync(string indexName, IEnumerable<string> filter)
     {
-        return await dataClient.DeleteItemBatchAsync(indexName, ids);
+        return await dataClient.DeleteItemBatchAsync(indexName, filter);
     }
 
     /// <inheritdoc />

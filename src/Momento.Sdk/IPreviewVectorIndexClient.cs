@@ -148,7 +148,7 @@ public interface IPreviewVectorIndexClient : IDisposable
     /// Gets a batch of items from a vector index by ID.
     /// </summary>
     /// <param name="indexName">The name of the vector index to get the items from.</param>
-    /// <param name="ids">The IDs of the items to get from the index.</param>
+    /// <param name="filter">The IDs of the items to get from the index.</param>
     /// <returns>
     /// Task representing the result of the get item batch operation. The
     /// response object is resolved to a type-safe object of one of
@@ -167,13 +167,13 @@ public interface IPreviewVectorIndexClient : IDisposable
     /// }
     /// </code>
     /// </returns>
-    public Task<GetItemBatchResponse> GetItemBatchAsync(string indexName, IEnumerable<string> ids);
+    public Task<GetItemBatchResponse> GetItemBatchAsync(string indexName, IEnumerable<string> filter);
 
     /// <summary>
     /// Gets metadata for a batch of items from a vector index by ID.
     /// </summary>
     /// <param name="indexName">The name of the vector index to get the item metadata from.</param>
-    /// <param name="ids">The IDs of the item metadata to get from the index.</param>
+    /// <param name="filter">The IDs of the item metadata to get from the index.</param>
     /// <returns>
     /// Task representing the result of the get item metadata batch operation. The
     /// response object is resolved to a type-safe object of one of
@@ -192,13 +192,13 @@ public interface IPreviewVectorIndexClient : IDisposable
     /// }
     /// </code>
     /// </returns>
-    public Task<GetItemMetadataBatchResponse> GetItemMetadataBatchAsync(string indexName, IEnumerable<string> ids);
+    public Task<GetItemMetadataBatchResponse> GetItemMetadataBatchAsync(string indexName, IEnumerable<string> filter);
 
     /// <summary>
     /// Deletes all items with the given IDs from the index. Returns success if for items that do not exist.
     /// </summary>
     /// <param name="indexName">The name of the vector index to delete the items from.</param>
-    /// <param name="ids">The IDs of the items to delete from the index.</param>
+    /// <param name="filter">The IDs of the items to delete from the index.</param>
     /// <returns>
     /// Task representing the result of the upsert operation. The
     /// response object is resolved to a type-safe object of one of
@@ -216,7 +216,7 @@ public interface IPreviewVectorIndexClient : IDisposable
     /// }
     /// </code>
     ///</returns>
-    public Task<DeleteItemBatchResponse> DeleteItemBatchAsync(string indexName, IEnumerable<string> ids);
+    public Task<DeleteItemBatchResponse> DeleteItemBatchAsync(string indexName, IEnumerable<string> filter);
 
     ///  <summary>
     ///  Searches for the most similar vectors to the query vector in the index.

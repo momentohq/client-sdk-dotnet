@@ -74,7 +74,7 @@ internal sealed class VectorIndexDataClient : IDisposable
     }
 
     const string REQUEST_GET_ITEM_BATCH = "GET_ITEM_BATCH";
-    public async Task<GetItemBatchResponse> GetItemBatchAsync(string indexName, IEnumerable<string> ids)
+    public async Task<GetItemBatchResponse> GetItemBatchAsync(string indexName, IEnumerable<string> filter)
     {
         try
         {
@@ -83,7 +83,7 @@ internal sealed class VectorIndexDataClient : IDisposable
             var request = new _GetItemBatchRequest()
             {
                 IndexName = indexName,
-                Filter = idsToFilterExpression(ids),
+                Filter = idsToFilterExpression(filter),
                 MetadataFields = new _MetadataRequest { All = new _MetadataRequest.Types.All() }
             };
 
@@ -102,7 +102,7 @@ internal sealed class VectorIndexDataClient : IDisposable
     }
 
     const string REQUEST_GET_ITEM_METADATA_BATCH = "GET_ITEM_METADATA_BATCH";
-    public async Task<GetItemMetadataBatchResponse> GetItemMetadataBatchAsync(string indexName, IEnumerable<string> ids)
+    public async Task<GetItemMetadataBatchResponse> GetItemMetadataBatchAsync(string indexName, IEnumerable<string> filter)
     {
         try
         {
@@ -111,7 +111,7 @@ internal sealed class VectorIndexDataClient : IDisposable
             var request = new _GetItemMetadataBatchRequest()
             {
                 IndexName = indexName,
-                Filter = idsToFilterExpression(ids),
+                Filter = idsToFilterExpression(filter),
                 MetadataFields = new _MetadataRequest { All = new _MetadataRequest.Types.All() }
             };
 
@@ -147,13 +147,13 @@ internal sealed class VectorIndexDataClient : IDisposable
     }
 
     const string REQUEST_DELETE_ITEM_BATCH = "DELETE_ITEM_BATCH";
-    public async Task<DeleteItemBatchResponse> DeleteItemBatchAsync(string indexName, IEnumerable<string> ids)
+    public async Task<DeleteItemBatchResponse> DeleteItemBatchAsync(string indexName, IEnumerable<string> filter)
     {
         try
         {
             _logger.LogTraceVectorIndexRequest(REQUEST_DELETE_ITEM_BATCH, indexName);
             CheckValidIndexName(indexName);
-            var request = new _DeleteItemBatchRequest() { IndexName = indexName, Filter = idsToFilterExpression(ids) };
+            var request = new _DeleteItemBatchRequest() { IndexName = indexName, Filter = idsToFilterExpression(filter) };
 
             await grpcManager.Client.DeleteItemBatchAsync(request, new CallOptions(deadline: CalculateDeadline()));
             return _logger.LogTraceVectorIndexRequestSuccess(REQUEST_DELETE_ITEM_BATCH, indexName,
