@@ -32,6 +32,8 @@ public class Program
         await Example_API_Get(client);
         await Example_API_Delete(client);
 
+        await Example_API_SetSample(client);
+
         await Example_API_GenerateDisposableToken(authClient);
 
         await Example_API_InstantiateTopicClient();
@@ -135,6 +137,29 @@ public class Program
         else if (result is CacheDeleteResponse.Error error)
         {
             throw new Exception($"An error occurred while attempting to delete key 'test-key' from cache 'test-cache': {error.ErrorCode}: {error}");
+        }
+    }
+
+    public static async Task Example_API_SetSample(CacheClient cacheClient)
+    {
+        var setAddResult = await cacheClient.SetAddElementsAsync("test-cache", "test-set", new string[] {"foo", "bar", "baz"});
+        if (setAddResult is CacheSetAddElementsResponse.Success)
+        {
+            Console.WriteLine("Added elements to 'test-set' successfully");
+        }
+        else if (setAddResult is CacheSetAddElementsResponse.Error error)
+        {
+            throw new Exception($"An error occurred while attempting to delete key 'test-key' from cache 'test-cache': {error.ErrorCode}: {error}");
+        }
+
+        var setSampleResult = await cacheClient.SetSampleAsync("test-cache", "test-set", 2);
+        if (setSampleResult is CacheSetSampleResponse.Hit setSampleHit)
+        {
+            Console.WriteLine($"Sampled random elements from 'test-set': {String.Join(", ", setSampleHit.ValueSetString)}");
+        }
+        else if (setSampleResult is CacheSetSampleResponse.Error error)
+        {
+            throw new Exception($"An error occurred while attempting to sample from 'test-set' from cache 'test-cache': {error.ErrorCode}: {error}");
         }
     }
 
