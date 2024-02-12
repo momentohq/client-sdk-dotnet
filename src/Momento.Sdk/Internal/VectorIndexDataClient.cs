@@ -83,26 +83,14 @@ internal sealed class VectorIndexDataClient : IDisposable
             var request = new _GetItemBatchRequest()
             {
                 IndexName = indexName,
-                Ids = { ids },
+                Filter = idsToFilterExpression(ids),
                 MetadataFields = new _MetadataRequest { All = new _MetadataRequest.Types.All() }
             };
 
             var response =
                 await grpcManager.Client.GetItemBatchAsync(request, new CallOptions(deadline: CalculateDeadline()));
-            var items = new Dictionary<string, Item>();
-            foreach (var item in response.ItemResponse)
-            {
-                switch (item.ResponseCase)
-                {
-                    case _ItemResponse.ResponseOneofCase.Hit:
-                        items[item.Hit.Id] = new(item.Hit.Id, item.Hit.Vector.Elements.ToList(), Convert(item.Hit.Metadata));
-                        break;
-                    case _ItemResponse.ResponseOneofCase.Miss:
-                        break;
-                    default:
-                        throw new UnknownException($"Unknown item response type {item.ResponseCase}");
-                }
-            }
+            var items = response.ItemResponse.ToDictionary(
+                item => item.Id, item => new Item(item.Id, item.Vector.Elements.ToList(), Convert(item.Metadata)));
             return _logger.LogTraceVectorIndexRequestSuccess(REQUEST_GET_ITEM_BATCH, indexName,
                 new GetItemBatchResponse.Success(items));
         }
@@ -123,27 +111,15 @@ internal sealed class VectorIndexDataClient : IDisposable
             var request = new _GetItemMetadataBatchRequest()
             {
                 IndexName = indexName,
-                Ids = { ids },
+                Filter = idsToFilterExpression(ids),
                 MetadataFields = new _MetadataRequest { All = new _MetadataRequest.Types.All() }
             };
 
             var response =
                 await grpcManager.Client.GetItemMetadataBatchAsync(request,
                     new CallOptions(deadline: CalculateDeadline()));
-            var items = new Dictionary<string, Dictionary<string, MetadataValue>>();
-            foreach (var item in response.ItemMetadataResponse)
-            {
-                switch (item.ResponseCase)
-                {
-                    case _ItemMetadataResponse.ResponseOneofCase.Hit:
-                        items[item.Hit.Id] = Convert(item.Hit.Metadata);
-                        break;
-                    case _ItemMetadataResponse.ResponseOneofCase.Miss:
-                        break;
-                    default:
-                        throw new UnknownException($"Unknown item response type {item.ResponseCase}");
-                }
-            }
+            var items = response.ItemMetadataResponse.ToDictionary(
+                item => item.Id, item => Convert(item.Metadata));
             return _logger.LogTraceVectorIndexRequestSuccess(REQUEST_GET_ITEM_METADATA_BATCH, indexName,
                 new GetItemMetadataBatchResponse.Success(items));
         }
@@ -154,6 +130,22 @@ internal sealed class VectorIndexDataClient : IDisposable
         }
     }
 
+    /// <summary>
+    /// Convert a list of ids to an id-in-set filter expression.
+    /// </summary>
+    /// <param name="ids"></param>
+    /// <returns></returns>
+    private static _FilterExpression idsToFilterExpression(IEnumerable<string> ids)
+    {
+        return new _FilterExpression
+        {
+            IdInSetExpression = new _IdInSetExpression()
+            {
+                Ids = { ids }
+            }
+        };
+    }
+
     const string REQUEST_DELETE_ITEM_BATCH = "DELETE_ITEM_BATCH";
     public async Task<DeleteItemBatchResponse> DeleteItemBatchAsync(string indexName, IEnumerable<string> ids)
     {
@@ -161,7 +153,7 @@ internal sealed class VectorIndexDataClient : IDisposable
         {
             _logger.LogTraceVectorIndexRequest(REQUEST_DELETE_ITEM_BATCH, indexName);
             CheckValidIndexName(indexName);
-            var request = new _DeleteItemBatchRequest() { IndexName = indexName, Ids = { ids } };
+            var request = new _DeleteItemBatchRequest() { IndexName = indexName, Filter = idsToFilterExpression(ids) };
 
             await grpcManager.Client.DeleteItemBatchAsync(request, new CallOptions(deadline: CalculateDeadline()));
             return _logger.LogTraceVectorIndexRequestSuccess(REQUEST_DELETE_ITEM_BATCH, indexName,
