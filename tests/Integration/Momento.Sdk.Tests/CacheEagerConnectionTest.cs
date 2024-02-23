@@ -30,15 +30,6 @@ public class CacheEagerConnectionTest
     }
 
     [Fact]
-    public void CacheClientConstructor_EagerConnection_Success()
-    {
-        var config = Configurations.Laptop.Latest(loggerFactory);
-        config = config.WithTransportStrategy(config.TransportStrategy.WithEagerConnectionTimeout(TimeSpan.FromSeconds(5)));
-        // just validating that we can construct the client when the eager connection is successful
-        var client = new CacheClient(config, authProvider, defaultTtl);
-    }
-
-    [Fact]
     public void CacheClientConstructor_WithChannelsAndMaxConn_Success()
     {
         var config = Configurations.Laptop.Latest(loggerFactory);
@@ -56,13 +47,12 @@ public class CacheEagerConnectionTest
     }
 
     [Fact]
-    public void CacheClientConstructor_EagerConnection_BadEndpoint()
+    public async void CacheClientCreate_EagerConnection_BadEndpoint()
     {
         var config = Configurations.Laptop.Latest(loggerFactory);
-        config = config.WithTransportStrategy(config.TransportStrategy.WithEagerConnectionTimeout(TimeSpan.FromSeconds(2)));
         var authProviderWithBadCacheEndpoint = authProvider.WithCacheEndpoint("cache.cell-external-beta-1.prod.a.momentohq.com:65000");
         Console.WriteLine($"Hello developer!  We are about to run a test that verifies that the cache client is still operational even if our eager connection (ping) fails.  So you will see the test log a warning message about that.  It's expected, don't worry!");
-        // validating that the constructor doesn't fail when the eager connection fails
-        var client = new CacheClient(config, authProviderWithBadCacheEndpoint, defaultTtl);
+        
+        await Assert.ThrowsAsync<ConnectionException>(async () => await CacheClient.CreateAsync(config, authProviderWithBadCacheEndpoint, defaultTtl, TimeSpan.FromSeconds(2)));
     }
 }

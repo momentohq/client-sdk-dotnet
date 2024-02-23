@@ -15,6 +15,7 @@ using Momento.Protos.CachePing;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
+using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal.Middleware;
 using static System.Reflection.Assembly;
 
@@ -299,24 +300,25 @@ public class DataGrpcManager : IDisposable
         ).ToList();
 
         var client = new Scs.ScsClient(invoker);
-
-        if (config.TransportStrategy.EagerConnectionTimeout != null)
-        {
-            TimeSpan eagerConnectionTimeout = config.TransportStrategy.EagerConnectionTimeout.Value;
-            _logger.LogDebug("TransportStrategy EagerConnection is enabled; attempting to connect to server");
-            var pingClient = new Ping.PingClient(this.channel);
-            try
-            {
-                pingClient.Ping(new _PingRequest(),
-                    new CallOptions(deadline: DateTime.UtcNow.Add(eagerConnectionTimeout)));
-            }
-            catch (RpcException ex)
-            {
-                _logger.LogWarning($"Failed to eagerly connect to the server; continuing with execution in case failure is recoverable later: {ex}");
-            }
-        }
-
         Client = new DataClientWithMiddleware(client, middlewares);
+    }
+    
+    internal async Task EagerConnectAsync(TimeSpan eagerConnectionTimeout)
+    {
+        _logger.LogDebug("Attempting eager connection to server");
+        var pingClient = new Ping.PingClient(this.channel);
+        try
+        {
+            await pingClient.PingAsync(new _PingRequest(),
+                new CallOptions(deadline: DateTime.UtcNow.Add(eagerConnectionTimeout)));
+        }
+        catch (RpcException ex)
+        {
+            MomentoErrorTransportDetails transportDetails = new MomentoErrorTransportDetails(
+                new MomentoGrpcErrorDetails(ex.StatusCode, ex.Message, null)
+            );
+            throw new ConnectionException("Eager connection to server failed", transportDetails, ex);
+        }
     }
 
     public void Dispose()

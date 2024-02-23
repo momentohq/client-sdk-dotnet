@@ -35,6 +35,25 @@ public class CacheClient : ICacheClient
     protected readonly IConfiguration config;
     /// <inheritdoc cref="Microsoft.Extensions.Logging.ILogger" />
     protected readonly ILogger _logger;
+    
+    /// <summary>
+    /// Async factory function to construct a Momento CacheClient with an eager connection to the
+    /// Momento server. Calling the CacheClient constructor directly will not establish a connection
+    /// immediately, but instead establish it lazily when the first request is issued. This factory
+    /// function will ensure that the connection is established before the first request.
+    /// </summary>
+    /// <param name="config">Configuration to use for the transport, retries, middlewares. See <see cref="Configurations"/> for out-of-the-box configuration choices, eg <see cref="Configurations.Laptop.Latest"/></param>
+    /// <param name="authProvider">Momento auth provider.</param>
+    /// <param name="defaultTtl">Default time to live for the item in cache.</param>
+    /// <param name="eagerConnectionTimeout">Maximum time to wait for eager connection.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="defaultTtl"/> is zero or negative.</exception>
+    /// <exception cref="ConnectionException">The eager connection could not be established within the specified <paramref name="eagerConnectionTimeout"/></exception>
+    public static async Task<ICacheClient> CreateAsync(IConfiguration config, ICredentialProvider authProvider, TimeSpan defaultTtl, TimeSpan eagerConnectionTimeout)
+    {
+        CacheClient cacheClient = new CacheClient(config, authProvider, defaultTtl);
+        await cacheClient.DataClient.EagerConnectAsync(eagerConnectionTimeout);
+        return cacheClient;
+    }
 
 
     /// <summary>
