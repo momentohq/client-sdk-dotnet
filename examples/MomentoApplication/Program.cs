@@ -7,7 +7,7 @@ using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Responses;
 
-ICredentialProvider authProvider = new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN");
+ICredentialProvider authProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY");
 
 TimeSpan DEFAULT_TTL = TimeSpan.FromSeconds(60);
 
@@ -128,7 +128,7 @@ public class AdvancedExamples {
     /// </summary>
     public static void EagerConnectionExample()
     {
-        ICredentialProvider authProvider = new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN");
+        ICredentialProvider authProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY");
         TimeSpan defaultTtl = TimeSpan.FromSeconds(60);
         var config = Configurations.Laptop.V1();
         var eagerConnectionConfig = config.WithTransportStrategy(config.TransportStrategy.WithEagerConnectionTimeout(TimeSpan.FromSeconds(10)));
