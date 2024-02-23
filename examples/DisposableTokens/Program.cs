@@ -14,7 +14,7 @@ static class Program
  
     static Program()
     {
-        authProvider = new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN");
+        authProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY");
         client = new AuthClient(AuthConfigurations.Default.Latest(), authProvider);
     }
 

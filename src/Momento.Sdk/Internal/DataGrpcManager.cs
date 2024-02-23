@@ -310,9 +310,9 @@ public class DataGrpcManager : IDisposable
                 pingClient.Ping(new _PingRequest(),
                     new CallOptions(deadline: DateTime.UtcNow.Add(eagerConnectionTimeout)));
             }
-            catch (RpcException)
+            catch (RpcException ex)
             {
-                _logger.LogWarning("Failed to eagerly connect to the server; continuing with execution in case failure is recoverable later.");
+                _logger.LogWarning($"Failed to eagerly connect to the server; continuing with execution in case failure is recoverable later: {ex}");
             }
         }
 

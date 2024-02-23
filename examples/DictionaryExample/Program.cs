@@ -8,7 +8,7 @@ using Momento.Sdk.Responses;
 
 public class Driver
 {
-    private static readonly string AUTH_TOKEN_ENV_VAR = "MOMENTO_AUTH_TOKEN";
+    private static readonly string AUTH_TOKEN_ENV_VAR = "MOMENTO_API_KEY";
     private static readonly string CACHE_NAME_ENV_VAR = "MOMENTO_CACHE_NAME";
     private static readonly ILogger _logger;
     private static readonly ILoggerFactory _loggerFactory;

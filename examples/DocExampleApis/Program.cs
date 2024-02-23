@@ -11,15 +11,15 @@ public class Program
     {
         var config = Configurations.Laptop.V1();
         var client = new CacheClient(config,
-            new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN"),
+            new EnvMomentoTokenProvider("MOMENTO_API_KEY"),
             TimeSpan.FromSeconds(10));
         IAuthClient authClient = new AuthClient(
             AuthConfigurations.Default.Latest(),
-            new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN")
+            new EnvMomentoTokenProvider("MOMENTO_API_KEY")
         );
         ITopicClient topicClient = new TopicClient(
             TopicConfigurations.Laptop.latest(),
-            new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN")
+            new EnvMomentoTokenProvider("MOMENTO_API_KEY")
         );
 
         await Example_API_CreateCache(client);
@@ -240,7 +240,7 @@ public class Program
     {
         new TopicClient(
             TopicConfigurations.Laptop.latest(),
-            new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN")
+            new EnvMomentoTokenProvider("MOMENTO_API_KEY")
         );
     }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
