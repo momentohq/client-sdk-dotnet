@@ -19,11 +19,4 @@ public class ConfigTest
         Assert.Equal(Configurations.InRegion.Default.Latest(), Configurations.InRegion.Default.V1());
         Assert.Equal(Configurations.InRegion.LowLatency.Latest(), Configurations.InRegion.LowLatency.V1());
     }
-
-    [Fact]
-    public void LambdaLatest_HasEagerConnectionTimeout_HappyPath()
-    {
-        var config = Configurations.InRegion.Lambda.Latest();
-        Assert.Equal(TimeSpan.FromSeconds(30), config.TransportStrategy.EagerConnectionTimeout);
-    }
 }

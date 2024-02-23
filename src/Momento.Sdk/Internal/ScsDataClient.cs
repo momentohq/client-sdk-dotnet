@@ -33,6 +33,11 @@ public class ScsDataClientBase : IDisposable
         this._logger = config.LoggerFactory.CreateLogger<ScsDataClient>();
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
     }
+    
+    internal Task EagerConnectAsync(TimeSpan eagerConnectionTimeout)
+    {
+        return this.grpcManager.EagerConnectAsync(eagerConnectionTimeout);
+    }
 
     protected Metadata MetadataWithCache(string cacheName)
     {
