@@ -184,11 +184,7 @@ public class Configurations
             /// <returns></returns>
             public static IConfiguration Latest(ILoggerFactory? loggerFactory = null)
             {
-                var config = Default.V1(loggerFactory);
-                var transportStrategy = config.TransportStrategy.WithEagerConnectionTimeout(
-                    TimeSpan.FromSeconds(30)
-                );
-                return config.WithTransportStrategy(transportStrategy);
+                return Default.V1(loggerFactory);
             }
         }
     }

@@ -66,6 +66,10 @@ public enum MomentoErrorCode
     /// </summary>
     FAILED_PRECONDITION_ERROR,
     /// <summary>
+    /// Unable to connect to the server
+    /// </summary>
+    CONNECTION_ERROR,
+    /// <summary>
     /// Unknown error has occurred
     /// </summary>
     UNKNOWN_ERROR
