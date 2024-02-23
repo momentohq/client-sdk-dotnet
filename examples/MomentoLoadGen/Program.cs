@@ -90,7 +90,7 @@ namespace MomentoLoadGen
 
         public async Task Run()
         {
-            var authProvider = new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN");
+            var authProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY");
 
             using (ICacheClient momento = new CacheClient(
                 _momentoClientConfig,

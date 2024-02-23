@@ -16,13 +16,13 @@ the client's full capabilities, take a look at the more advanced  [MomentoApplic
 Run the following from within the `examples` directory:
 
 ```bash
-MOMENTO_AUTH_TOKEN=<YOUR AUTH TOKEN> dotnet run --project MomentoUsage
+MOMENTO_API_KEY=<YOUR AUTH TOKEN> dotnet run --project MomentoUsage
 ```
 
 Within the `MomentoUsage` directory you can run:
 
 ```bash
-MOMENTO_AUTH_TOKEN=<YOUR AUTH TOKEN> dotnet run
+MOMENTO_API_KEY=<YOUR AUTH TOKEN> dotnet run
 ```
 
 ## Error Handling

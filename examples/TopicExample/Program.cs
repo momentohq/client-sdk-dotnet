@@ -9,7 +9,7 @@ namespace TopicExample;
 
 public class Driver
 {
-    private const string AuthTokenEnvVar = "MOMENTO_AUTH_TOKEN";
+    private const string AuthTokenEnvVar = "MOMENTO_API_KEY";
     private const string CacheNameEnvVar = "MOMENTO_CACHE_NAME";
     private const string TopicName = "example-topic";
     private static readonly ILogger Logger;

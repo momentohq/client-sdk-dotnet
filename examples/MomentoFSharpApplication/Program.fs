@@ -6,7 +6,7 @@ open System
 
 let CACHE_NAME = "cache"
 let DEFAULT_TTL = TimeSpan.FromSeconds(60.0)
-let authProvider = new EnvMomentoTokenProvider("MOMENTO_AUTH_TOKEN")
+let authProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY")
 
 let exerciseCache() = (
     printfn "Howdy"

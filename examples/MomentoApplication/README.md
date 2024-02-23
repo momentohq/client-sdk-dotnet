@@ -20,13 +20,13 @@ functionality, including:
 Run the following from within the `examples` directory:
 
 ```bash
-MOMENTO_AUTH_TOKEN=<YOUR AUTH TOKEN> dotnet run --project MomentoApplication
+MOMENTO_API_KEY=<YOUR AUTH TOKEN> dotnet run --project MomentoApplication
 ```
 
 Within the `MomentoAppication` directory you can run:
 
 ```bash
-MOMENTO_AUTH_TOKEN=<YOUR AUTH TOKEN> dotnet run
+MOMENTO_API_KEY=<YOUR AUTH TOKEN> dotnet run
 ```
 
 ## Error Handling
