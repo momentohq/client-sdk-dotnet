@@ -14,6 +14,11 @@ namespace Momento.Sdk.Internal;
 public static class Utils
 {
     /// <summary>
+    /// The default value for max_send_message_length is 4mb.  We need to increase this to 5mb in order to support cases where users have requested a limit increase up to our maximum item size of 5mb.
+    /// </summary>
+    public const int DEFAULT_MAX_MESSAGE_SIZE = 5_243_000;
+
+    /// <summary>
     /// Convert a UTF-8 encoded string to a byte array.
     /// </summary>
     /// <param name="s">The string to convert.</param>

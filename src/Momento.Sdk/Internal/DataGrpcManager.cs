@@ -280,6 +280,9 @@ public class DataGrpcManager : IDisposable
             channelOptions.LoggerFactory = config.LoggerFactory;
         }
         channelOptions.Credentials = ChannelCredentials.SecureSsl;
+        channelOptions.MaxReceiveMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE;
+        channelOptions.MaxSendMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE;
+        
 #if USE_GRPC_WEB
         channelOptions.HttpHandler = new GrpcWebHandler(new HttpClientHandler());
 #endif
