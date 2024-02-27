@@ -96,8 +96,10 @@ internal sealed class ControlGrpcManager : IDisposable
         this.channel = GrpcChannel.ForAddress(uri, new GrpcChannelOptions()
         {
             Credentials = ChannelCredentials.SecureSsl,
+            MaxReceiveMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE,
+            MaxSendMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE,
 #if USE_GRPC_WEB
-            HttpHandler = new GrpcWebHandler(new HttpClientHandler())
+            HttpHandler = new GrpcWebHandler(new HttpClientHandler()),
 #endif
         });
         List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version), new Header(name: Header.RuntimeVersionKey, value: runtimeVersion) };

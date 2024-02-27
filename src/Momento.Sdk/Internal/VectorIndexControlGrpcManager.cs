@@ -91,7 +91,9 @@ public class VectorIndexControlGrpcManager : IDisposable
         var channelOptions = new GrpcChannelOptions
         {
             LoggerFactory = loggerFactory,
-            Credentials = ChannelCredentials.SecureSsl
+            Credentials = ChannelCredentials.SecureSsl,
+            MaxReceiveMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE,
+            MaxSendMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE,
         };
 #if USE_GRPC_WEB
         channelOptions.HttpHandler = new GrpcWebHandler(new HttpClientHandler());
