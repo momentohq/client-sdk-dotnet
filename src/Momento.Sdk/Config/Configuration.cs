@@ -61,12 +61,6 @@ public class Configuration : IConfiguration
         return new Configuration(LoggerFactory, RetryStrategy, Middlewares, transportStrategy);
     }
 
-    /// <inheritdoc />
-    public IConfiguration WithSocketsHttpHandlerOptions(SocketsHttpHandlerOptions options)
-    {
-        return new Configuration(LoggerFactory, RetryStrategy, Middlewares, TransportStrategy.WithSocketsHttpHandlerOptions(options));
-    }
-
     /// <summary>
     /// Add the specified middlewares to an existing instance of Configuration object in addition to already specified middlewares.
     /// </summary>
