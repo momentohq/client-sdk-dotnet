@@ -36,8 +36,10 @@ public static class Utils
         var channelOptions = grpcConfig?.GrpcChannelOptions ?? new GrpcChannelOptions();
         channelOptions.Credentials = ChannelCredentials.SecureSsl;
         channelOptions.LoggerFactory ??= loggerFactory;
-        channelOptions.MaxReceiveMessageSize ??= DEFAULT_MAX_MESSAGE_SIZE;
-        channelOptions.MaxSendMessageSize ??= DEFAULT_MAX_MESSAGE_SIZE;
+        // TODO: how to know if user set the value or if max receive size is just set to the default 4mb or null, respectively?
+        // Currently just overwriting to 5mb
+        channelOptions.MaxReceiveMessageSize = DEFAULT_MAX_MESSAGE_SIZE;
+        channelOptions.MaxSendMessageSize = DEFAULT_MAX_MESSAGE_SIZE;
 #if NET5_0_OR_GREATER
         channelOptions.HttpHandler = new System.Net.Http.SocketsHttpHandler
         {
