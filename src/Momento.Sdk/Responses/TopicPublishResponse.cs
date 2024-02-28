@@ -1,5 +1,3 @@
-#if NETSTANDARD2_0_OR_GREATER
-
 using Momento.Sdk.Exceptions;
 
 namespace Momento.Sdk.Responses;
@@ -32,7 +30,7 @@ namespace Momento.Sdk.Responses;
 public abstract class TopicPublishResponse
 {
     /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
-    public class Success : TopicPublishResponse {}
+    public class Success : TopicPublishResponse { }
 
     /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : TopicPublishResponse, IError
@@ -62,4 +60,3 @@ public abstract class TopicPublishResponse
 
     }
 }
-#endif

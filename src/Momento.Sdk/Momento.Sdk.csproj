@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<!-- Build Configuration -->
-		<TargetFrameworks>netstandard2.0;net6.0;net461</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;net6.0;net462</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<!-- Microsoft.Bcl.AsyncInterfaces on net461 isn't supported; suppress warning -->
