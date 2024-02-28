@@ -1,5 +1,3 @@
-#if NET6_0_OR_GREATER
-
 using System.Threading.Tasks;
 using System.Threading;
 using Momento.Sdk.Auth;
@@ -585,4 +583,3 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         }
     }
 }
-#endif

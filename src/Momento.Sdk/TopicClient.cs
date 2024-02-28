@@ -1,5 +1,3 @@
-#if NETSTANDARD2_0_OR_GREATER
-
 using System;
 using System.Threading.Tasks;
 using Momento.Sdk.Auth;
@@ -16,8 +14,8 @@ namespace Momento.Sdk;
 public class TopicClient : ITopicClient
 {
     private readonly ScsTopicClient scsTopicClient;
-    
-    
+
+
     /// <summary>
     /// Client to perform operations against Momento topics.
     /// </summary>
@@ -74,11 +72,10 @@ public class TopicClient : ITopicClient
         }
         return await scsTopicClient.Subscribe(cacheName, topicName, resumeAtSequenceNumber);
     }
-    
+
     /// <inheritdoc />
     public void Dispose()
     {
         scsTopicClient.Dispose();
     }
 }
-#endif

@@ -46,7 +46,7 @@ test-net6:
 .PHONY: test-net-framework
 ## Run unit and integration tests on the .NET Framework runtime
 test-net-framework:
-	@dotnet test -f net461
+	@dotnet test -f net462
 
 
 .PHONY: run-examples

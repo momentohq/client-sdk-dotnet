@@ -52,13 +52,12 @@ public class CacheClientCollection : ICollectionFixture<CacheClientFixture>
 
 }
 
-#if NET6_0_OR_GREATER
 public class TopicClientFixture : IDisposable
 {
     public ITopicClient Client { get; private set; }
     public ICredentialProvider AuthProvider { get; private set; }
 
-    
+
     public TopicClientFixture()
     {
         AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
@@ -89,7 +88,6 @@ public class TopicClientCollection : ICollectionFixture<TopicClientFixture>
 {
 
 }
-#endif
 
 public class AuthClientFixture : IDisposable
 {

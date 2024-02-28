@@ -2,11 +2,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<!-- Build Configuration -->
-		<TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;net6.0;net462</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<!-- Microsoft.Bcl.AsyncInterfaces on net461 isn't supported; suppress warning -->
-		<SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
 		<!-- Include documentation in build -->
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<!-- Include source and debug symbols-->
@@ -33,9 +31,9 @@
 	</PropertyGroup>
 
 	<!-- Because .NET Framework doesn't support HTTP/2, we use gRPC-Web over HTTP/1.1.
-		 Dependency resolution: .NET Framework binaries or libraries >= v4.61 that link
-		 to Momento.Sdk will link to the .NET Framework 4.61 build. -->
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net461' ">
+		 Dependency resolution: .NET Framework binaries or libraries >= v4.62 that link
+		 to Momento.Sdk will link to the .NET Framework 4.62 build. -->
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net462' ">
     	<DefineConstants>USE_GRPC_WEB</DefineConstants>
   	</PropertyGroup>
 
