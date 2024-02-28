@@ -1,5 +1,3 @@
-#if NETSTANDARD2_0_OR_GREATER
-
 using Momento.Protos.CacheClient.Pubsub;
 using Momento.Sdk.Exceptions;
 
@@ -53,14 +51,14 @@ public abstract class TopicMessage
         /// The text value of this message.
         /// </summary>
         public string Value { get; }
-        
+
         /// <summary>
         /// The TokenId that was used to publish the message, or null if the token did not have an id.
         /// This can be used to securely identify the sender of a message.
         /// </summary>
         public string? TokenId { get; }
     }
-    
+
     /// <summary>
     /// A topic message containing a binary value.
     /// </summary>
@@ -79,7 +77,7 @@ public abstract class TopicMessage
         /// The binary value of this message.
         /// </summary>
         public byte[] Value { get; }
-        
+
         /// <summary>
         /// The TokenId that was used to publish the message, or null if the token did not have an id.
         /// This can be used to securely identify the sender of a message.
@@ -115,4 +113,3 @@ public abstract class TopicMessage
 
     }
 }
-#endif

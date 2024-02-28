@@ -379,8 +379,6 @@ namespace Momento.Sdk.Internal
             }
             return success;
         }
-        
-#if NETSTANDARD2_0_OR_GREATER
 
         /// <summary>
         /// Logs a message at TRACE level that indicates that a topic request is about to be executed.
@@ -396,7 +394,7 @@ namespace Momento.Sdk.Internal
                 logger.LogTrace("Executing '{}' request: cacheName: {}; topicName: {}", requestType, cacheName, topicName);
             }
         }
-        
+
         /// <summary>
         /// Logs a message at TRACE level that indicates that a topic request resulted in an error.
         /// </summary>
@@ -435,7 +433,7 @@ namespace Momento.Sdk.Internal
             }
             return success;
         }
-        
+
         /// <summary>
         /// Logs a message at TRACE level that indicates that a topic message was received.
         /// </summary>
@@ -450,7 +448,7 @@ namespace Momento.Sdk.Internal
                 logger.LogTrace("Received '{}' message on: cacheName: {}; topicName: {}", messageType, cacheName, topicName);
             }
         }
-        
+
         /// <summary>
         /// Logs a message at TRACE level that indicates that a discontinuity was received.
         /// </summary>
@@ -466,7 +464,7 @@ namespace Momento.Sdk.Internal
                 logger.LogTrace("Received discontinuity: cacheName: {}; topicName: {}, lastSequenceNumber: {}, newSequenceNumber: {}", cacheName, topicName, lastSequenceNumber, newSequenceNumber);
             }
         }
-        
+
         /// <summary>
         /// Logs a message at TRACE level that indicates that a topic subscription received an error.
         /// </summary>
@@ -484,7 +482,6 @@ namespace Momento.Sdk.Internal
             }
             return error;
         }
-#endif
 
         /// <summary>
         /// Logs a message at TRACE level that indicates that an request is about to be executed.
@@ -565,7 +562,7 @@ namespace Momento.Sdk.Internal
             }
             return error;
         }
-        
+
         /// <summary>
         /// Logs a message at TRACE level that indicates that a vector index request resulted in a success.
         /// </summary>

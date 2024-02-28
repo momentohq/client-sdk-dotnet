@@ -1,7 +1,5 @@
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
-#if NETSTANDARD2_0_OR_GREATER
-
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -287,4 +285,3 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         }
     }
 }
-#endif

@@ -5,8 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Net.Client;
-#if USE_GRPC_WEB
 using System.Net.Http;
+#if USE_GRPC_WEB
 using Grpc.Net.Client.Web;
 #endif
 using Microsoft.Extensions.Logging;
@@ -182,7 +182,7 @@ public class DataClientWithMiddleware : IDataClient
         var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.SetSampleAsync(r, o));
         return await wrapped.ResponseAsync;
     }
-    
+
     public async Task<_SetLengthResponse> SetLengthAsync(_SetLengthRequest request, CallOptions callOptions)
     {
         var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.SetLengthAsync(r, o));
@@ -269,6 +269,7 @@ public class DataGrpcManager : IDisposable
 
     internal DataGrpcManager(IConfiguration config, string authToken, string endpoint)
     {
+        this._logger = config.LoggerFactory.CreateLogger<DataGrpcManager>();
 #if USE_GRPC_WEB
         // Note: all web SDK requests are routed to a `web.` subdomain to allow us flexibility on the server
         endpoint = $"web.{endpoint}";
@@ -282,15 +283,19 @@ public class DataGrpcManager : IDisposable
         channelOptions.Credentials = ChannelCredentials.SecureSsl;
         channelOptions.MaxReceiveMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE;
         channelOptions.MaxSendMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE;
-        
-#if USE_GRPC_WEB
+
+#if NET5_0_OR_GREATER
+        channelOptions.HttpHandler = new SocketsHttpHandler
+        {
+            EnableMultipleHttp2Connections = config.TransportStrategy.GrpcConfig.SocketsHttpHandlerOptions.EnableMultipleHttp2Connections,
+            PooledConnectionIdleTimeout = config.TransportStrategy.GrpcConfig.SocketsHttpHandlerOptions.PooledConnectionIdleTimeout
+        };
+#elif USE_GRPC_WEB
         channelOptions.HttpHandler = new GrpcWebHandler(new HttpClientHandler());
 #endif
 
         this.channel = GrpcChannel.ForAddress(uri, channelOptions);
         List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version), new Header(name: Header.RuntimeVersionKey, value: runtimeVersion) };
-
-        this._logger = config.LoggerFactory.CreateLogger<DataGrpcManager>();
 
         CallInvoker invoker = this.channel.CreateCallInvoker();
 
@@ -305,7 +310,7 @@ public class DataGrpcManager : IDisposable
         var client = new Scs.ScsClient(invoker);
         Client = new DataClientWithMiddleware(client, middlewares);
     }
-    
+
     internal async Task EagerConnectAsync(TimeSpan eagerConnectionTimeout)
     {
         _logger.LogDebug("Attempting eager connection to server");

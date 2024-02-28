@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Net.Client;
-#if USE_GRPC_WEB
 using System.Net.Http;
+#if USE_GRPC_WEB
 using Grpc.Net.Client.Web;
 #endif
 using Microsoft.Extensions.Logging;
 using Momento.Protos.ControlClient;
+using Momento.Sdk.Config;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Internal.Middleware;
 using static System.Reflection.Assembly;
@@ -86,8 +87,9 @@ internal sealed class ControlGrpcManager : IDisposable
     private readonly string runtimeVersion = $"{moniker}:{System.Environment.Version}";
     private readonly ILogger _logger;
 
-    public ControlGrpcManager(ILoggerFactory loggerFactory, string authToken, string endpoint)
+    public ControlGrpcManager(IConfiguration config, string authToken, string endpoint)
     {
+        this._logger = config.LoggerFactory.CreateLogger<ControlGrpcManager>();
 #if USE_GRPC_WEB
         // Note: all web SDK requests are routed to a `web.` subdomain to allow us flexibility on the server
         endpoint = $"web.{endpoint}";
@@ -98,20 +100,24 @@ internal sealed class ControlGrpcManager : IDisposable
             Credentials = ChannelCredentials.SecureSsl,
             MaxReceiveMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE,
             MaxSendMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE,
-#if USE_GRPC_WEB
-            HttpHandler = new GrpcWebHandler(new HttpClientHandler()),
+#if NET5_0_OR_GREATER
+            HttpHandler = new System.Net.Http.SocketsHttpHandler
+            {
+                EnableMultipleHttp2Connections = config.TransportStrategy.GrpcConfig.SocketsHttpHandlerOptions.EnableMultipleHttp2Connections,
+                PooledConnectionIdleTimeout = config.TransportStrategy.GrpcConfig.SocketsHttpHandlerOptions.PooledConnectionIdleTimeout
+            }
+#elif USE_GRPC_WEB
+            HttpHandler = new GrpcWebHandler(new HttpClientHandler())
 #endif
         });
         List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version), new Header(name: Header.RuntimeVersionKey, value: runtimeVersion) };
         CallInvoker invoker = this.channel.CreateCallInvoker();
 
         var middlewares = new List<IMiddleware> {
-            new HeaderMiddleware(loggerFactory, headers)
+            new HeaderMiddleware(config.LoggerFactory, headers)
         };
 
         Client = new ControlClientWithMiddleware(new ScsControl.ScsControlClient(invoker), middlewares);
-
-        this._logger = loggerFactory.CreateLogger<ControlGrpcManager>();
     }
 
     public void Dispose()

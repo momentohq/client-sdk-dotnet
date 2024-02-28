@@ -17,6 +17,8 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
     public int MinNumGrpcChannels { get; }
     /// <inheritdoc/>
     public GrpcChannelOptions GrpcChannelOptions { get; }
+    /// <inheritdoc/>
+    public SocketsHttpHandlerOptions SocketsHttpHandlerOptions { get; }
 
     /// <summary>
     /// 
@@ -24,30 +26,38 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
     /// <param name="deadline">Maximum amount of time before a request will timeout</param>
     /// <param name="grpcChannelOptions">Customizations to low-level gRPC channel configuration</param>
     /// <param name="minNumGrpcChannels">minimum number of gRPC channels to open</param>
-    public StaticGrpcConfiguration(TimeSpan deadline, GrpcChannelOptions? grpcChannelOptions = null, int minNumGrpcChannels = 1)
+    /// <param name="socketsHttpHandlerOptions">Customizations to the SocketsHttpHandler</param>
+    public StaticGrpcConfiguration(TimeSpan deadline, GrpcChannelOptions? grpcChannelOptions = null, int minNumGrpcChannels = 1, SocketsHttpHandlerOptions? socketsHttpHandlerOptions = null)
     {
         Utils.ArgumentStrictlyPositive(deadline, nameof(deadline));
         this.Deadline = deadline;
         this.MinNumGrpcChannels = minNumGrpcChannels;
         this.GrpcChannelOptions = grpcChannelOptions ?? new GrpcChannelOptions();
+        this.SocketsHttpHandlerOptions = socketsHttpHandlerOptions ?? new SocketsHttpHandlerOptions();
     }
 
     /// <inheritdoc/>
     public IGrpcConfiguration WithDeadline(TimeSpan deadline)
     {
-        return new StaticGrpcConfiguration(deadline, this.GrpcChannelOptions, this.MinNumGrpcChannels);
+        return new StaticGrpcConfiguration(deadline, GrpcChannelOptions, MinNumGrpcChannels, SocketsHttpHandlerOptions);
     }
 
     /// <inheritdoc/>
     public IGrpcConfiguration WithMinNumGrpcChannels(int minNumGrpcChannels)
     {
-        return new StaticGrpcConfiguration(this.Deadline, this.GrpcChannelOptions, minNumGrpcChannels);
+        return new StaticGrpcConfiguration(Deadline, GrpcChannelOptions, minNumGrpcChannels, SocketsHttpHandlerOptions);
     }
 
     /// <inheritdoc/>
     public IGrpcConfiguration WithGrpcChannelOptions(GrpcChannelOptions grpcChannelOptions)
     {
-        return new StaticGrpcConfiguration(this.Deadline, grpcChannelOptions, this.MinNumGrpcChannels);
+        return new StaticGrpcConfiguration(Deadline, grpcChannelOptions, MinNumGrpcChannels);
+    }
+
+    /// <inheritdoc/>
+    public IGrpcConfiguration WithSocketsHttpHandlerOptions(SocketsHttpHandlerOptions options)
+    {
+        return new StaticGrpcConfiguration(Deadline, GrpcChannelOptions, MinNumGrpcChannels, options);
     }
 
     /// <inheritdoc />
@@ -61,7 +71,8 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
         var other = (StaticGrpcConfiguration)obj;
 
         return Deadline.Equals(other.Deadline) &&
-                MinNumGrpcChannels == other.MinNumGrpcChannels;
+                MinNumGrpcChannels == other.MinNumGrpcChannels &&
+                SocketsHttpHandlerOptions.Equals(other.SocketsHttpHandlerOptions);
         // TODO: gRPC doesn't implement a to equals for this
         //GrpcChannelOptions.Equals(other.GrpcChannelOptions);
     }
@@ -119,6 +130,12 @@ public class StaticTransportStrategy : ITransportStrategy
     public ITransportStrategy WithGrpcConfig(IGrpcConfiguration grpcConfig)
     {
         return new StaticTransportStrategy(_loggerFactory, MaxConcurrentRequests, grpcConfig);
+    }
+
+    /// <inheritdoc />
+    public ITransportStrategy WithSocketsHttpHandlerOptions(SocketsHttpHandlerOptions options)
+    {
+        return new StaticTransportStrategy(_loggerFactory, MaxConcurrentRequests, GrpcConfig.WithSocketsHttpHandlerOptions(options));
     }
 
     /// <inheritdoc/>

@@ -1,6 +1,4 @@
 using System;
-#if NETSTANDARD2_0_OR_GREATER
-
 
 using System.Threading.Tasks;
 using Momento.Sdk.Responses;
@@ -36,7 +34,7 @@ public interface ITopicClient : IDisposable
     /// </code>
     /// </returns>
     public Task<TopicPublishResponse> PublishAsync(string cacheName, string topicName, byte[] value);
-    
+
     /// <inheritdoc cref="PublishAsync(string, string, byte[])"/>
     public Task<TopicPublishResponse> PublishAsync(string cacheName, string topicName, string value);
 
@@ -66,4 +64,3 @@ public interface ITopicClient : IDisposable
     /// </returns>
     public Task<TopicSubscribeResponse> SubscribeAsync(string cacheName, string topicName, ulong? resumeAtSequenceNumber = null);
 }
-#endif
