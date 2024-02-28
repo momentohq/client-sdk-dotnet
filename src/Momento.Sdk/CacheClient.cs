@@ -35,7 +35,7 @@ public class CacheClient : ICacheClient
     protected readonly IConfiguration config;
     /// <inheritdoc cref="Microsoft.Extensions.Logging.ILogger" />
     protected readonly ILogger _logger;
-    
+
     /// <summary>
     /// Async factory function to construct a Momento CacheClient with an eager connection to the
     /// Momento server. Calling the CacheClient constructor directly will not establish a connection
@@ -66,10 +66,9 @@ public class CacheClient : ICacheClient
     public CacheClient(IConfiguration config, ICredentialProvider authProvider, TimeSpan defaultTtl)
     {
         this.config = config;
-        var _loggerFactory = config.LoggerFactory;
-        this._logger = _loggerFactory.CreateLogger<CacheClient>();
+        this._logger = config.LoggerFactory.CreateLogger<CacheClient>();
         Utils.ArgumentStrictlyPositive(defaultTtl, "defaultTtl");
-        this.controlClient = new(_loggerFactory, authProvider.AuthToken, authProvider.ControlEndpoint);
+        this.controlClient = new(config, authProvider.AuthToken, authProvider.ControlEndpoint);
         this.dataClients = new List<ScsDataClient>();
         int minNumGrpcChannels = this.config.TransportStrategy.GrpcConfig.MinNumGrpcChannels;
         int currentMaxConcurrentRequests = this.config.TransportStrategy.MaxConcurrentRequests;
@@ -995,7 +994,7 @@ public class CacheClient : ICacheClient
 
         return await this.DataClient.SetFetchAsync(cacheName, setName);
     }
-    
+
     /// <inheritdoc />
     public async Task<CacheSetSampleResponse> SetSampleAsync(string cacheName, string setName, int limit)
     {

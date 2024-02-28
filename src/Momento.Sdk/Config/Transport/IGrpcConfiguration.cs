@@ -34,6 +34,15 @@ public interface IGrpcConfiguration
     public GrpcChannelOptions GrpcChannelOptions { get; }
 
     /// <summary>
+    /// Override the SocketsHttpHandler's options.
+    /// This is irrelevant if the client is using the web client or the HttpClient (older .NET runtimes).
+    /// </summary>
+    /// <remarks>
+    /// This is not part of the gRPC config because it is not part of <see cref="GrpcChannelOptions"/>.
+    /// </remarks>
+    public SocketsHttpHandlerOptions SocketsHttpHandlerOptions { get; }
+
+    /// <summary>
     /// Copy constructor to override the Deadline
     /// </summary>
     /// <param name="deadline"></param>
@@ -54,4 +63,11 @@ public interface IGrpcConfiguration
     /// <param name="grpcChannelOptions"></param>
     /// <returns>A new IGrpcConfiguration with the specified channel options</returns>
     public IGrpcConfiguration WithGrpcChannelOptions(GrpcChannelOptions grpcChannelOptions);
+
+    /// <summary>
+    /// Copy constructor to override the SocketsHttpHandler's options.
+    /// </summary>
+    /// <param name="idleTimeout"></param>
+    /// <returns></returns>
+    public IGrpcConfiguration WithSocketsHttpHandlerOptions(SocketsHttpHandlerOptions idleTimeout);
 }

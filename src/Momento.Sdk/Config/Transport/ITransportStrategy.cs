@@ -37,6 +37,13 @@ public interface ITransportStrategy
     public ITransportStrategy WithGrpcConfig(IGrpcConfiguration grpcConfig);
 
     /// <summary>
+    /// Copy constructor to update the SocketsHttpHandler's options
+    /// </summary>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    public ITransportStrategy WithSocketsHttpHandlerOptions(SocketsHttpHandlerOptions options);
+
+    /// <summary>
     /// Copy constructor to update the client timeout
     /// </summary>
     /// <param name="clientTimeout"></param>

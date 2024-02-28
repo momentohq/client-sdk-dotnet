@@ -184,7 +184,8 @@ public class Configurations
             /// <returns></returns>
             public static IConfiguration Latest(ILoggerFactory? loggerFactory = null)
             {
-                return Default.V1(loggerFactory);
+                return Default.V1(loggerFactory).WithSocketsHttpHandlerOptions(
+                    SocketsHttpHandlerOptions.Of(pooledConnectionIdleTimeout: TimeSpan.FromMinutes(6)));
             }
         }
     }

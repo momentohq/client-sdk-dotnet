@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.ControlClient;
+using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Responses;
 
@@ -17,12 +18,12 @@ internal sealed class ScsControlClient : IDisposable
     private readonly ILogger _logger;
     private readonly CacheExceptionMapper _exceptionMapper;
 
-    public ScsControlClient(ILoggerFactory loggerFactory, string authToken, string endpoint)
+    public ScsControlClient(IConfiguration config, string authToken, string endpoint)
     {
-        this.grpcManager = new ControlGrpcManager(loggerFactory, authToken, endpoint);
+        this.grpcManager = new ControlGrpcManager(config, authToken, endpoint);
         this.authToken = authToken;
-        this._logger = loggerFactory.CreateLogger<ScsControlClient>();
-        this._exceptionMapper = new CacheExceptionMapper(loggerFactory);
+        this._logger = config.LoggerFactory.CreateLogger<ScsControlClient>();
+        this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
     }
 
     public async Task<CreateCacheResponse> CreateCacheAsync(string cacheName)
