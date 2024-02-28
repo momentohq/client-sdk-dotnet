@@ -88,17 +88,7 @@ public class VectorIndexControlGrpcManager : IDisposable
         endpoint = $"web.{endpoint}";
 #endif
         var uri = $"https://{endpoint}";
-        var channelOptions = new GrpcChannelOptions
-        {
-            LoggerFactory = loggerFactory,
-            Credentials = ChannelCredentials.SecureSsl,
-            MaxReceiveMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE,
-            MaxSendMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE,
-        };
-#if USE_GRPC_WEB
-        channelOptions.HttpHandler = new GrpcWebHandler(new HttpClientHandler());
-#endif
-
+        var channelOptions = Utils.GrpcChannelOptionsFromGrpcConfig(null, loggerFactory);
         channel = GrpcChannel.ForAddress(uri, channelOptions);
         var headers = new List<Header> { new(name: Header.AuthorizationKey, value: authToken), new(name: Header.AgentKey, value: version), new(name: Header.RuntimeVersionKey, value: runtimeVersion) };
 

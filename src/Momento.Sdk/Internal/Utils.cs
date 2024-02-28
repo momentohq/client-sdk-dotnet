@@ -3,7 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
+using Grpc.Core;
+using Grpc.Net.Client;
+#if USE_GRPC_WEB
+using System.Net.Http;
+using Grpc.Net.Client.Web;
+#endif
 
+using Momento.Sdk.Config.Transport;
 using Momento.Sdk.Exceptions;
 
 namespace Momento.Sdk.Internal;
@@ -17,6 +25,30 @@ public static class Utils
     /// The default value for max_send_message_length is 4mb.  We need to increase this to 5mb in order to support cases where users have requested a limit increase up to our maximum item size of 5mb.
     /// </summary>
     public const int DEFAULT_MAX_MESSAGE_SIZE = 5_243_000;
+
+    /// <summary>
+    /// Create a GrpcChannelOptions object from an IGrpcConfiguration object.
+    /// </summary>
+    /// <param name="grpcConfig">The IGrpcConfiguration object specifying underlying grpc options</param>
+    /// <param name="loggerFactory"></param>
+    /// <returns></returns>
+    public static GrpcChannelOptions GrpcChannelOptionsFromGrpcConfig(IGrpcConfiguration? grpcConfig, ILoggerFactory loggerFactory) {
+        var channelOptions = grpcConfig?.GrpcChannelOptions ?? new GrpcChannelOptions();
+        channelOptions.Credentials = ChannelCredentials.SecureSsl;
+        channelOptions.LoggerFactory ??= loggerFactory;
+        channelOptions.MaxReceiveMessageSize ??= DEFAULT_MAX_MESSAGE_SIZE;
+        channelOptions.MaxSendMessageSize ??= DEFAULT_MAX_MESSAGE_SIZE;
+#if NET5_0_OR_GREATER
+        channelOptions.HttpHandler = new System.Net.Http.SocketsHttpHandler
+        {
+            EnableMultipleHttp2Connections = grpcConfig.SocketsHttpHandlerOptions.EnableMultipleHttp2Connections,
+            PooledConnectionIdleTimeout = grpcConfig.SocketsHttpHandlerOptions.PooledConnectionIdleTimeout
+        }
+#elif USE_GRPC_WEB
+        channelOptions.HttpHandler = new GrpcWebHandler(new HttpClientHandler());
+#endif
+        return channelOptions;
+    }
 
     /// <summary>
     /// Convert a UTF-8 encoded string to a byte array.

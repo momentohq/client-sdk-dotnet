@@ -275,25 +275,7 @@ public class DataGrpcManager : IDisposable
         endpoint = $"web.{endpoint}";
 #endif
         var uri = $"https://{endpoint}";
-        var channelOptions = config.TransportStrategy.GrpcConfig.GrpcChannelOptions;
-        if (channelOptions.LoggerFactory == null)
-        {
-            channelOptions.LoggerFactory = config.LoggerFactory;
-        }
-        channelOptions.Credentials = ChannelCredentials.SecureSsl;
-        channelOptions.MaxReceiveMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE;
-        channelOptions.MaxSendMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE;
-
-#if NET5_0_OR_GREATER
-        channelOptions.HttpHandler = new SocketsHttpHandler
-        {
-            EnableMultipleHttp2Connections = config.TransportStrategy.GrpcConfig.SocketsHttpHandlerOptions.EnableMultipleHttp2Connections,
-            PooledConnectionIdleTimeout = config.TransportStrategy.GrpcConfig.SocketsHttpHandlerOptions.PooledConnectionIdleTimeout
-        };
-#elif USE_GRPC_WEB
-        channelOptions.HttpHandler = new GrpcWebHandler(new HttpClientHandler());
-#endif
-
+        var channelOptions = Utils.GrpcChannelOptionsFromGrpcConfig(config.TransportStrategy.GrpcConfig, config.LoggerFactory);
         this.channel = GrpcChannel.ForAddress(uri, channelOptions);
         List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version), new Header(name: Header.RuntimeVersionKey, value: runtimeVersion) };
 
