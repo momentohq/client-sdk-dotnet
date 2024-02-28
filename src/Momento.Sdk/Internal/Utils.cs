@@ -43,7 +43,7 @@ public static class Utils
         {
             EnableMultipleHttp2Connections = grpcConfig.SocketsHttpHandlerOptions.EnableMultipleHttp2Connections,
             PooledConnectionIdleTimeout = grpcConfig.SocketsHttpHandlerOptions.PooledConnectionIdleTimeout
-        }
+        };
 #elif USE_GRPC_WEB
         channelOptions.HttpHandler = new GrpcWebHandler(new HttpClientHandler());
 #endif

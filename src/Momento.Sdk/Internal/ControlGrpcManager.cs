@@ -95,7 +95,7 @@ internal sealed class ControlGrpcManager : IDisposable
         endpoint = $"web.{endpoint}";
 #endif
         var uri = $"https://{endpoint}";
-        var channelOptions = Utils.GrpcChannelOptionsFromGrpcConfig(null, loggerFactory);
+        var channelOptions = Utils.GrpcChannelOptionsFromGrpcConfig(config.TransportStrategy.GrpcConfig, config.LoggerFactory);
         channel = GrpcChannel.ForAddress(uri, channelOptions);
         List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version), new Header(name: Header.RuntimeVersionKey, value: runtimeVersion) };
         CallInvoker invoker = this.channel.CreateCallInvoker();
