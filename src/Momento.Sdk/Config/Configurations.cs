@@ -182,10 +182,20 @@ public class Configurations
             /// </summary>
             /// <param name="loggerFactory"></param>
             /// <returns></returns>
-            public static IConfiguration Latest(ILoggerFactory? loggerFactory = null)
+            public static IConfiguration V1(ILoggerFactory? loggerFactory = null)
             {
                 return Default.V1(loggerFactory).WithSocketsHttpHandlerOptions(
                     SocketsHttpHandlerOptions.Of(pooledConnectionIdleTimeout: TimeSpan.FromMinutes(6)));
+            }
+
+            /// <summary>
+            /// Provides the latest recommended configuration for a lambda environment.
+            /// </summary>
+            /// <param name="loggerFactory"></param>
+            /// <returns></returns>
+            public static IConfiguration Latest(ILoggerFactory? loggerFactory = null)
+            {
+                return V1(loggerFactory);
             }
         }
     }
