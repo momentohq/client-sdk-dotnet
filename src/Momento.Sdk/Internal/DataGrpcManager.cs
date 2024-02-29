@@ -285,7 +285,7 @@ public class DataGrpcManager : IDisposable
         channelOptions.MaxSendMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE;
 
 #if NET5_0_OR_GREATER
-        if (SocketsHttpHandler.IsSupported)
+        if (SocketsHttpHandler.IsSupported)  // see: https://github.com/grpc/grpc-dotnet/blob/098dca892a3949ade411c3f2f66003f7b330dfd2/src/Shared/HttpHandlerFactory.cs#L28-L30
         {
             channelOptions.HttpHandler = new SocketsHttpHandler
             {
