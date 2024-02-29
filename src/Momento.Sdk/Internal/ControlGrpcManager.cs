@@ -96,7 +96,7 @@ internal sealed class ControlGrpcManager : IDisposable
 #endif
         var uri = $"https://{endpoint}";
 
-        var channelOptions = new GrpcChannelOptions()
+        var channelOptions = new GrpcChannelOptions
         {
             Credentials = ChannelCredentials.SecureSsl,
             MaxReceiveMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE,
