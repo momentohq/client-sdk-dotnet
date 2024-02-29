@@ -6,7 +6,6 @@ using Momento.Protos.ControlClient;
 using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Responses;
-using Momento.Sdk.Config;
 
 namespace Momento.Sdk.Internal;
 
