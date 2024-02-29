@@ -55,7 +55,10 @@ public class Configurations
             ITransportStrategy transportStrategy = new StaticTransportStrategy(
                 loggerFactory: finalLoggerFactory,
                 maxConcurrentRequests: 200, // max of 2 connections https://github.com/momentohq/client-sdk-dotnet/issues/460
-                grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(15000))
+                grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(15000)),
+                keepAlivePermitWithoutCalls: true,
+                keepAlivePingDelay: TimeSpan.FromMilliseconds(5000),
+                keepAlivePingTimeout: TimeSpan.FromMilliseconds(1000)
             );
             return new Laptop(finalLoggerFactory, retryStrategy, transportStrategy);
         }
@@ -108,7 +111,11 @@ public class Configurations
                 ITransportStrategy transportStrategy = new StaticTransportStrategy(
                     loggerFactory: finalLoggerFactory,
                     maxConcurrentRequests: 400, // max of 4 connections https://github.com/momentohq/client-sdk-dotnet/issues/460
-                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(1100)));
+                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(1100)),
+                    keepAlivePermitWithoutCalls: true,
+                    keepAlivePingDelay: TimeSpan.FromMilliseconds(5000),
+                    keepAlivePingTimeout: TimeSpan.FromMilliseconds(1000)
+                );
                 return new Default(finalLoggerFactory, retryStrategy, transportStrategy);
             }
         }
@@ -158,7 +165,10 @@ public class Configurations
                 ITransportStrategy transportStrategy = new StaticTransportStrategy(
                     loggerFactory: finalLoggerFactory,
                     maxConcurrentRequests: 20,
-                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(500))
+                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(500)),
+                    keepAlivePermitWithoutCalls: true,
+                    keepAlivePingDelay: TimeSpan.FromMilliseconds(5000),
+                    keepAlivePingTimeout: TimeSpan.FromMilliseconds(1000)
                 );
                 return new LowLatency(finalLoggerFactory, retryStrategy, transportStrategy);
             }
@@ -168,6 +178,11 @@ public class Configurations
         /// This config optimizes for lambda environments. In addition to the in region settings of
         /// <see cref="Default"/>, this configures the clients to eagerly connect to the Momento service
         /// to avoid the cold start penalty of establishing a connection on the first request.
+        /// NOTE: keep-alives are very important for long-lived server environments where there may be periods of time
+        /// when the connection is idle. However, they are very problematic for lambda environments where the lambda
+        /// runtime is continuously frozen and unfrozen, because the lambda may be frozen before the "ACK" is received
+        /// from the server. This can cause the keep-alive to timeout even though the connection is completely healthy.
+        /// Therefore, keep-alives should be disabled in lambda and similar environments.
         /// </summary>
         public class Lambda : Configuration
         {

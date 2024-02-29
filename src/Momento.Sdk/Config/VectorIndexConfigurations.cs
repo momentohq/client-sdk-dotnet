@@ -50,7 +50,10 @@ public class VectorIndexConfigurations
             var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
             IVectorIndexTransportStrategy transportStrategy = new StaticVectorIndexTransportStrategy(
                 loggerFactory: finalLoggerFactory,
-                grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(15000))
+                grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(15000)),
+                keepAlivePermitWithoutCalls: true,
+                keepAlivePingDelay: TimeSpan.FromMilliseconds(5000),
+                keepAlivePingTimeout: TimeSpan.FromMilliseconds(1000)
             );
             return new Laptop(finalLoggerFactory, transportStrategy);
         }

@@ -35,7 +35,10 @@ public class TopicConfigurations
             var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
             ITopicTransportStrategy transportStrategy = new StaticTopicTransportStrategy(
                 loggerFactory: finalLoggerFactory,
-                grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(15000))
+                grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(15000)),
+                keepAlivePermitWithoutCalls: true,
+                keepAlivePingDelay: TimeSpan.FromMilliseconds(5000),
+                keepAlivePingTimeout: TimeSpan.FromMilliseconds(1000)
             );
             return new Laptop(finalLoggerFactory, transportStrategy);
         }
@@ -65,7 +68,10 @@ public class TopicConfigurations
             var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
             ITopicTransportStrategy transportStrategy = new StaticTopicTransportStrategy(
                 loggerFactory: finalLoggerFactory,
-                grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(15000))
+                grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(15000)),
+                keepAlivePermitWithoutCalls: true,
+                keepAlivePingDelay: TimeSpan.FromMilliseconds(5000),
+                keepAlivePingTimeout: TimeSpan.FromMilliseconds(1000)
             );
             return new Mobile(finalLoggerFactory, transportStrategy);
         }
@@ -102,7 +108,11 @@ public class TopicConfigurations
                 var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
                 ITopicTransportStrategy transportStrategy = new StaticTopicTransportStrategy(
                     loggerFactory: finalLoggerFactory,
-                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(1100)));
+                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(1100)),
+                    keepAlivePermitWithoutCalls: true,
+                    keepAlivePingDelay: TimeSpan.FromMilliseconds(5000),
+                    keepAlivePingTimeout: TimeSpan.FromMilliseconds(1000)
+                );
                 return new Default(finalLoggerFactory, transportStrategy);
             }
         }
@@ -135,7 +145,10 @@ public class TopicConfigurations
                 var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
                 ITopicTransportStrategy transportStrategy = new StaticTopicTransportStrategy(
                     loggerFactory: finalLoggerFactory,
-                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(500))
+                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(500)),
+                    keepAlivePermitWithoutCalls: true,
+                    keepAlivePingDelay: TimeSpan.FromMilliseconds(5000),
+                    keepAlivePingTimeout: TimeSpan.FromMilliseconds(1000)
                 );
                 return new LowLatency(finalLoggerFactory, transportStrategy);
             }
