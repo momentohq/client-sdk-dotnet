@@ -11,6 +11,7 @@ using Grpc.Net.Client.Web;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CachePing;
 using Momento.Protos.ControlClient;
+using Momento.Sdk.Config;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
 using Momento.Sdk.Internal.Middleware;
@@ -81,23 +82,23 @@ public class VectorIndexControlGrpcManager : IDisposable
     private readonly string runtimeVersion = $"{Moniker}:{Environment.Version}";
     private readonly ILogger _logger;
 
-    internal VectorIndexControlGrpcManager(ILoggerFactory loggerFactory, string authToken, string endpoint)
+    internal VectorIndexControlGrpcManager(IVectorIndexConfiguration config, string authToken, string endpoint)
     {
 #if USE_GRPC_WEB
         // Note: all web SDK requests are routed to a `web.` subdomain to allow us flexibility on the server
         endpoint = $"web.{endpoint}";
 #endif
         var uri = $"https://{endpoint}";
-        var channelOptions = Utils.GrpcChannelOptionsFromGrpcConfig(null, loggerFactory);
+        var channelOptions = Utils.GrpcChannelOptionsFromGrpcConfig(config.TransportStrategy.GrpcConfig, config.LoggerFactory);
         channel = GrpcChannel.ForAddress(uri, channelOptions);
         var headers = new List<Header> { new(name: Header.AuthorizationKey, value: authToken), new(name: Header.AgentKey, value: version), new(name: Header.RuntimeVersionKey, value: runtimeVersion) };
 
-        _logger = loggerFactory.CreateLogger<VectorIndexControlGrpcManager>();
+        _logger = config.LoggerFactory.CreateLogger<VectorIndexControlGrpcManager>();
 
         var invoker = channel.CreateCallInvoker();
 
         var middlewares = new List<IMiddleware> {
-            new HeaderMiddleware(loggerFactory, headers)
+            new HeaderMiddleware(config.LoggerFactory, headers)
         };
 
         var client = new ScsControl.ScsControlClient(invoker);

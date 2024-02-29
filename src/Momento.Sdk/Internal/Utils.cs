@@ -32,22 +32,25 @@ public static class Utils
     /// <param name="grpcConfig">The IGrpcConfiguration object specifying underlying grpc options</param>
     /// <param name="loggerFactory"></param>
     /// <returns></returns>
-    public static GrpcChannelOptions GrpcChannelOptionsFromGrpcConfig(IGrpcConfiguration? grpcConfig, ILoggerFactory loggerFactory) {
-        var channelOptions = grpcConfig?.GrpcChannelOptions ?? new GrpcChannelOptions();
+    public static GrpcChannelOptions GrpcChannelOptionsFromGrpcConfig(IGrpcConfiguration grpcConfig, ILoggerFactory loggerFactory) {
+        var channelOptions = grpcConfig.GrpcChannelOptions ?? new GrpcChannelOptions();
         channelOptions.Credentials = ChannelCredentials.SecureSsl;
         channelOptions.LoggerFactory ??= loggerFactory;
-        // TODO: how to know if user set the value or if max receive size is just set to the default 4mb or null, respectively?
-        // Currently just overwriting to 5mb
-        channelOptions.MaxReceiveMessageSize = DEFAULT_MAX_MESSAGE_SIZE;
-        channelOptions.MaxSendMessageSize = DEFAULT_MAX_MESSAGE_SIZE;
+        channelOptions.MaxReceiveMessageSize = grpcConfig?.GrpcChannelOptions?.MaxReceiveMessageSize ?? DEFAULT_MAX_MESSAGE_SIZE;
+        channelOptions.MaxSendMessageSize = grpcConfig?.GrpcChannelOptions?.MaxSendMessageSize ?? DEFAULT_MAX_MESSAGE_SIZE;
 #if NET5_0_OR_GREATER
+        var keepAliveWithoutCalls = System.Net.Http.HttpKeepAlivePingPolicy.WithActiveRequests;
+        if (grpcConfig.KeepAlivePermitWithoutCalls == true)
+        {
+            keepAliveWithoutCalls = System.Net.Http.HttpKeepAlivePingPolicy.Always;
+        }
         channelOptions.HttpHandler = new SocketsHttpHandler
         {
             EnableMultipleHttp2Connections = grpcConfig.SocketsHttpHandlerOptions.EnableMultipleHttp2Connections,
             PooledConnectionIdleTimeout = grpcConfig.SocketsHttpHandlerOptions.PooledConnectionIdleTimeout,
-            KeepAlivePingDelay = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingDelay,
-            KeepAlivePingPolicy = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingPolicy,
-            KeepAlivePingTimeout = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingTimeout,
+            KeepAlivePingTimeout = grpcConfig.KeepAlivePingTimeout,
+            KeepAlivePingDelay = grpcConfig.KeepAlivePingDelay,
+            KeepAlivePingPolicy = keepAliveWithoutCalls
         };
 #elif USE_GRPC_WEB
         channelOptions.HttpHandler = new GrpcWebHandler(new HttpClientHandler());
