@@ -6,8 +6,8 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Grpc.Core;
 using Grpc.Net.Client;
-#if USE_GRPC_WEB
 using System.Net.Http;
+#if USE_GRPC_WEB
 using Grpc.Net.Client.Web;
 #endif
 
@@ -41,10 +41,13 @@ public static class Utils
         channelOptions.MaxReceiveMessageSize = DEFAULT_MAX_MESSAGE_SIZE;
         channelOptions.MaxSendMessageSize = DEFAULT_MAX_MESSAGE_SIZE;
 #if NET5_0_OR_GREATER
-        channelOptions.HttpHandler = new System.Net.Http.SocketsHttpHandler
+        channelOptions.HttpHandler = new SocketsHttpHandler
         {
             EnableMultipleHttp2Connections = grpcConfig.SocketsHttpHandlerOptions.EnableMultipleHttp2Connections,
-            PooledConnectionIdleTimeout = grpcConfig.SocketsHttpHandlerOptions.PooledConnectionIdleTimeout
+            PooledConnectionIdleTimeout = grpcConfig.SocketsHttpHandlerOptions.PooledConnectionIdleTimeout,
+            KeepAlivePingDelay = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingDelay,
+            KeepAlivePingPolicy = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingPolicy,
+            KeepAlivePingTimeout = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingTimeout,
         };
 #elif USE_GRPC_WEB
         channelOptions.HttpHandler = new GrpcWebHandler(new HttpClientHandler());
