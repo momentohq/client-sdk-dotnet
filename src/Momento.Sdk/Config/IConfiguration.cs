@@ -44,13 +44,6 @@ public interface IConfiguration
     public IConfiguration WithTransportStrategy(ITransportStrategy transportStrategy);
 
     /// <summary>
-    /// Creates a new instance of the Configuration object, updated to use the specified SocketHttpHandler options.
-    /// </summary>
-    /// <param name="options">Customizations to the SocketsHttpHandler</param>
-    /// <returns></returns>
-    public IConfiguration WithSocketsHttpHandlerOptions(SocketsHttpHandlerOptions options);
-
-    /// <summary>
     /// Creates a new instance of the Configuration object, updated to use the specified client timeout.
     /// </summary>
     /// <param name="clientTimeout">The amount of time to wait before cancelling the request.</param>

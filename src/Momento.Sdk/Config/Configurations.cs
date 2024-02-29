@@ -184,8 +184,10 @@ public class Configurations
             /// <returns></returns>
             public static IConfiguration V1(ILoggerFactory? loggerFactory = null)
             {
-                return Default.V1(loggerFactory).WithSocketsHttpHandlerOptions(
+                var config = Default.V1(loggerFactory);
+                var transportStrategy = config.TransportStrategy.WithSocketsHttpHandlerOptions(
                     SocketsHttpHandlerOptions.Of(pooledConnectionIdleTimeout: TimeSpan.FromMinutes(6)));
+                return config.WithTransportStrategy(transportStrategy);
             }
 
             /// <summary>
