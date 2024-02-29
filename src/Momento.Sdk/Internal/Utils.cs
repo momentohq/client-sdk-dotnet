@@ -36,8 +36,8 @@ public static class Utils
         var channelOptions = grpcConfig.GrpcChannelOptions ?? new GrpcChannelOptions();
         channelOptions.Credentials = ChannelCredentials.SecureSsl;
         channelOptions.LoggerFactory ??= loggerFactory;
-        channelOptions.MaxReceiveMessageSize = grpcConfig?.GrpcChannelOptions?.MaxReceiveMessageSize ?? DEFAULT_MAX_MESSAGE_SIZE;
-        channelOptions.MaxSendMessageSize = grpcConfig?.GrpcChannelOptions?.MaxSendMessageSize ?? DEFAULT_MAX_MESSAGE_SIZE;
+        channelOptions.MaxReceiveMessageSize = grpcConfig.GrpcChannelOptions?.MaxReceiveMessageSize ?? DEFAULT_MAX_MESSAGE_SIZE;
+        channelOptions.MaxSendMessageSize = grpcConfig.GrpcChannelOptions?.MaxSendMessageSize ?? DEFAULT_MAX_MESSAGE_SIZE;
 #if NET5_0_OR_GREATER
         var keepAliveWithoutCalls = System.Net.Http.HttpKeepAlivePingPolicy.WithActiveRequests;
         if (grpcConfig.KeepAlivePermitWithoutCalls == true)
