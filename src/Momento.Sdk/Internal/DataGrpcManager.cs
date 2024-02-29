@@ -285,11 +285,14 @@ public class DataGrpcManager : IDisposable
         channelOptions.MaxSendMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE;
 
 #if NET5_0_OR_GREATER
-        channelOptions.HttpHandler = new SocketsHttpHandler
+        if (SocketsHttpHandler.IsSupported)  // see: https://github.com/grpc/grpc-dotnet/blob/098dca892a3949ade411c3f2f66003f7b330dfd2/src/Shared/HttpHandlerFactory.cs#L28-L30
         {
-            EnableMultipleHttp2Connections = config.TransportStrategy.GrpcConfig.SocketsHttpHandlerOptions.EnableMultipleHttp2Connections,
-            PooledConnectionIdleTimeout = config.TransportStrategy.GrpcConfig.SocketsHttpHandlerOptions.PooledConnectionIdleTimeout
-        };
+            channelOptions.HttpHandler = new SocketsHttpHandler
+            {
+                EnableMultipleHttp2Connections = config.TransportStrategy.GrpcConfig.SocketsHttpHandlerOptions.EnableMultipleHttp2Connections,
+                PooledConnectionIdleTimeout = config.TransportStrategy.GrpcConfig.SocketsHttpHandlerOptions.PooledConnectionIdleTimeout
+            };
+        }
 #elif USE_GRPC_WEB
         channelOptions.HttpHandler = new GrpcWebHandler(new HttpClientHandler());
 #endif
