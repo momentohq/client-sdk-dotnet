@@ -91,52 +91,17 @@ public class VectorIndexDataClientWithMiddleware : IVectorIndexDataClient
     }
 }
 
-public class VectorIndexDataGrpcManager : IDisposable
+public class VectorIndexDataGrpcManager : GrpcManager
 {
-    private readonly GrpcChannel channel;
-
     public readonly IVectorIndexDataClient Client;
 
-#if USE_GRPC_WEB
-    private const string Moniker = "dotnet-web";
-#else
-    private const string Moniker = "dotnet";
-#endif
-    private readonly string version = $"{Moniker}:{GetAssembly(typeof(Responses.CacheGetResponse)).GetName().Version}";
-    // Some System.Environment.Version remarks to be aware of
-    // https://learn.microsoft.com/en-us/dotnet/api/system.environment.version?view=netstandard-2.0#remarks
-    private readonly string runtimeVersion = $"{Moniker}:{Environment.Version}";
-    private readonly ILogger _logger;
-
-    internal VectorIndexDataGrpcManager(IVectorIndexConfiguration config, string authToken, string endpoint)
+    internal VectorIndexDataGrpcManager(IVectorIndexConfiguration config, string authToken, string endpoint): base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authToken, endpoint, "VectorIndexDataGrpcManager")
     {
-#if USE_GRPC_WEB
-        // Note: all web SDK requests are routed to a `web.` subdomain to allow us flexibility on the server
-        endpoint = $"web.{endpoint}";
-#endif
-        var uri = $"https://{endpoint}";
-        var channelOptions = Utils.GrpcChannelOptionsFromGrpcConfig(config.TransportStrategy.GrpcConfig, config.LoggerFactory);
-        channel = GrpcChannel.ForAddress(uri, channelOptions);
-        var headers = new List<Header> { new(name: Header.AuthorizationKey, value: authToken), new(name: Header.AgentKey, value: version), new(name: Header.RuntimeVersionKey, value: runtimeVersion) };
-
-        _logger = config.LoggerFactory.CreateLogger<DataGrpcManager>();
-
-        var invoker = channel.CreateCallInvoker();
-
         var middlewares = new List<IMiddleware> {
-            new HeaderMiddleware(config.LoggerFactory, headers)
+            new HeaderMiddleware(config.LoggerFactory, this.headers)
         };
 
-        var client = new VectorIndex.VectorIndexClient(invoker);
-
-
-
+        var client = new VectorIndex.VectorIndexClient(this.invoker);
         Client = new VectorIndexDataClientWithMiddleware(client, middlewares);
-    }
-
-    public void Dispose()
-    {
-        channel.Dispose();
-        GC.SuppressFinalize(this);
     }
 }

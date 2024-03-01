@@ -45,52 +45,17 @@ internal class AuthClientWithMiddleware : IAuthClient
 
 }
 
-public class AuthGrpcManager : IDisposable
+public class AuthGrpcManager : GrpcManager
 {
-    private readonly GrpcChannel channel;
     public IAuthClient Client { get; }
 
-#if USE_GRPC_WEB
-    private readonly static string moniker = "dotnet-web";
-#else
-    private readonly static string moniker = "dotnet";
-#endif
-    private readonly string version = $"{moniker}:{GetAssembly(typeof(Momento.Sdk.Responses.CacheGetResponse)).GetName().Version.ToString()}";
-    // Some System.Environment.Version remarks to be aware of
-    // https://learn.microsoft.com/en-us/dotnet/api/system.environment.version?view=netstandard-2.0#remarks
-    private readonly string runtimeVersion = $"{moniker}:{System.Environment.Version}";
-
-    public AuthGrpcManager(IAuthConfiguration config, string authToken, string endpoint)
+    public AuthGrpcManager(IAuthConfiguration config, string authToken, string endpoint): base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authToken, endpoint, "AuthGrpcManager")
     {
-#if USE_GRPC_WEB
-        // Note: all web SDK requests are routed to a `web.` subdomain to allow us flexibility on the server
-        endpoint = $"web.{endpoint}";
-#endif
-        var uri = $"https://{endpoint}";
-        var channelOptions = Utils.GrpcChannelOptionsFromGrpcConfig(config.TransportStrategy.GrpcConfig, config.LoggerFactory);
-        channel = GrpcChannel.ForAddress(uri, channelOptions);
-
-        var headerTuples = new List<Tuple<string, string>>
-        {
-            new(Header.AuthorizationKey, authToken),
-            new(Header.AgentKey, version),
-            new(Header.RuntimeVersionKey, runtimeVersion)
-        };
-        var headers = headerTuples.Select(tuple => new Header(name: tuple.Item1, value: tuple.Item2)).ToList();
-
-        CallInvoker invoker = this.channel.CreateCallInvoker();
-
         var middlewares = new List<IMiddleware> {
-            new HeaderMiddleware(config.LoggerFactory, headers)
+            new HeaderMiddleware(config.LoggerFactory, this.headers)
         };
 
-        var client = new Token.TokenClient(invoker);
-        Client = new AuthClientWithMiddleware(client, middlewares, headerTuples);
-    }
-
-    public void Dispose()
-    {
-        this.channel.Dispose();
-        GC.SuppressFinalize(this);
+        var client = new Token.TokenClient(this.invoker);
+        Client = new AuthClientWithMiddleware(client, middlewares, this.headerTuples);
     }
 }

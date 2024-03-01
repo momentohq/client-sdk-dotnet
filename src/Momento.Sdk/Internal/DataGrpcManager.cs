@@ -250,46 +250,21 @@ public class DataClientWithMiddleware : IDataClient
     }
 }
 
-public class DataGrpcManager : IDisposable
+public class DataGrpcManager : GrpcManager
 {
-    private readonly GrpcChannel channel;
-
     public readonly IDataClient Client;
 
-#if USE_GRPC_WEB
-    private readonly static string moniker = "dotnet-web";
-#else
-    private readonly static string moniker = "dotnet";
-#endif
-    private readonly string version = $"{moniker}:{GetAssembly(typeof(Responses.CacheGetResponse)).GetName().Version.ToString()}";
-    // Some System.Environment.Version remarks to be aware of
-    // https://learn.microsoft.com/en-us/dotnet/api/system.environment.version?view=netstandard-2.0#remarks
-    private readonly string runtimeVersion = $"{moniker}:{Environment.Version}";
-    private readonly ILogger _logger;
-
-    internal DataGrpcManager(IConfiguration config, string authToken, string endpoint)
+    internal DataGrpcManager(IConfiguration config, string authToken, string endpoint): base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authToken, endpoint, "DataGrpcManager")
     {
-        this._logger = config.LoggerFactory.CreateLogger<DataGrpcManager>();
-#if USE_GRPC_WEB
-        // Note: all web SDK requests are routed to a `web.` subdomain to allow us flexibility on the server
-        endpoint = $"web.{endpoint}";
-#endif
-        var uri = $"https://{endpoint}";
-        var channelOptions = Utils.GrpcChannelOptionsFromGrpcConfig(config.TransportStrategy.GrpcConfig, config.LoggerFactory);
-        this.channel = GrpcChannel.ForAddress(uri, channelOptions);
-        List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version), new Header(name: Header.RuntimeVersionKey, value: runtimeVersion) };
-
-        CallInvoker invoker = this.channel.CreateCallInvoker();
-
         var middlewares = config.Middlewares.Concat(
             new List<IMiddleware> {
                 new RetryMiddleware(config.LoggerFactory, config.RetryStrategy),
-                new HeaderMiddleware(config.LoggerFactory, headers),
+                new HeaderMiddleware(config.LoggerFactory, this.headers),
                 new MaxConcurrentRequestsMiddleware(config.LoggerFactory, config.TransportStrategy.MaxConcurrentRequests)
             }
         ).ToList();
 
-        var client = new Scs.ScsClient(invoker);
+        var client = new Scs.ScsClient(this.invoker);
         Client = new DataClientWithMiddleware(client, middlewares);
     }
 
@@ -309,11 +284,5 @@ public class DataGrpcManager : IDisposable
             );
             throw new ConnectionException("Eager connection to server failed", transportDetails, ex);
         }
-    }
-
-    public void Dispose()
-    {
-        this.channel.Dispose();
-        GC.SuppressFinalize(this);
     }
 }

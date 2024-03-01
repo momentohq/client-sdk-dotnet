@@ -65,58 +65,18 @@ public class PubsubClientWithMiddleware : IPubsubClient
     }
 }
 
-public class TopicGrpcManager : IDisposable
+public class TopicGrpcManager : GrpcManager
 {
-    private readonly GrpcChannel channel;
-
     public readonly IPubsubClient Client;
 
-#if USE_GRPC_WEB
-    private static readonly string Moniker = "dotnet-web";
-#else
-    private static readonly string Moniker = "dotnet";
-#endif
-    private readonly string version =
-        $"{Moniker}:{GetAssembly(typeof(Responses.CacheGetResponse)).GetName().Version.ToString()}";
-
-    // Some System.Environment.Version remarks to be aware of
-    // https://learn.microsoft.com/en-us/dotnet/api/system.environment.version?view=netstandard-2.0#remarks
-    private readonly string runtimeVersion = $"{Moniker}:{Environment.Version}";
-    private readonly ILogger _logger;
-
-    internal TopicGrpcManager(ITopicConfiguration config, string authToken, string endpoint)
+    internal TopicGrpcManager(ITopicConfiguration config, string authToken, string endpoint): base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authToken, endpoint, "TopicGrpcManager")
     {
-#if USE_GRPC_WEB
-        // Note: all web SDK requests are routed to a `web.` subdomain to allow us flexibility on the server
-        endpoint = $"web.{endpoint}";
-#endif
-        var uri = $"https://{endpoint}";
-        var channelOptions = Utils.GrpcChannelOptionsFromGrpcConfig(config.TransportStrategy.GrpcConfig, config.LoggerFactory);
-        channel = GrpcChannel.ForAddress(uri, channelOptions);
-        var headerTuples = new List<Tuple<string, string>>
-        {
-            new(Header.AuthorizationKey, authToken), new(Header.AgentKey, version),
-            new(Header.RuntimeVersionKey, runtimeVersion)
-        };
-        var headers = headerTuples.Select(tuple => new Header(name: tuple.Item1, value: tuple.Item2)).ToList();
-
-        _logger = config.LoggerFactory.CreateLogger<TopicGrpcManager>();
-
-        var invoker = channel.CreateCallInvoker();
-
         var middlewares = new List<IMiddleware>
         {
-            new HeaderMiddleware(config.LoggerFactory, headers),
+            new HeaderMiddleware(config.LoggerFactory, this.headers),
         };
 
-        var client = new Pubsub.PubsubClient(invoker);
-
-        Client = new PubsubClientWithMiddleware(client, middlewares, headerTuples);
-    }
-
-    public void Dispose()
-    {
-        channel.Dispose();
-        GC.SuppressFinalize(this);
+        var client = new Pubsub.PubsubClient(this.invoker);
+        Client = new PubsubClientWithMiddleware(client, middlewares, this.headerTuples);
     }
 }
