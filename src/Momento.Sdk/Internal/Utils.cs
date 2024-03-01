@@ -21,47 +21,6 @@ namespace Momento.Sdk.Internal;
 /// </summary>
 public static class Utils
 {
-//     /// <summary>
-//     /// The default value for max_send_message_length is 4mb.  We need to increase this to 5mb in order to support cases where users have requested a limit increase up to our maximum item size of 5mb.
-//     /// </summary>
-//     public const int DEFAULT_MAX_MESSAGE_SIZE = 5_243_000;
-
-//     /// <summary>
-//     /// Create a GrpcChannelOptions object from an IGrpcConfiguration object.
-//     /// </summary>
-//     /// <param name="grpcConfig">The IGrpcConfiguration object specifying underlying grpc options</param>
-//     /// <param name="loggerFactory"></param>
-//     /// <returns></returns>
-//     public static GrpcChannelOptions GrpcChannelOptionsFromGrpcConfig(IGrpcConfiguration grpcConfig, ILoggerFactory loggerFactory) {
-//         var channelOptions = grpcConfig.GrpcChannelOptions ?? new GrpcChannelOptions();
-//         channelOptions.Credentials = ChannelCredentials.SecureSsl;
-//         channelOptions.LoggerFactory ??= loggerFactory;
-//         channelOptions.MaxReceiveMessageSize = grpcConfig.GrpcChannelOptions?.MaxReceiveMessageSize ?? DEFAULT_MAX_MESSAGE_SIZE;
-//         channelOptions.MaxSendMessageSize = grpcConfig.GrpcChannelOptions?.MaxSendMessageSize ?? DEFAULT_MAX_MESSAGE_SIZE;
-// #if NET5_0_OR_GREATER
-//         var keepAliveWithoutCalls = System.Net.Http.HttpKeepAlivePingPolicy.WithActiveRequests;
-//         if (grpcConfig.KeepAlivePermitWithoutCalls == true)
-//         {
-//             keepAliveWithoutCalls = System.Net.Http.HttpKeepAlivePingPolicy.Always;
-//         }
-
-//         if (SocketsHttpHandler.IsSupported) // see: https://github.com/grpc/grpc-dotnet/blob/098dca892a3949ade411c3f2f66003f7b330dfd2/src/Shared/HttpHandlerFactory.cs#L28-L30
-//         {
-//             channelOptions.HttpHandler = new SocketsHttpHandler
-//             {
-//                 EnableMultipleHttp2Connections = grpcConfig.SocketsHttpHandlerOptions.EnableMultipleHttp2Connections,
-//                 PooledConnectionIdleTimeout = grpcConfig.SocketsHttpHandlerOptions.PooledConnectionIdleTimeout,
-//                 KeepAlivePingTimeout = grpcConfig.KeepAlivePingTimeout,
-//                 KeepAlivePingDelay = grpcConfig.KeepAlivePingDelay,
-//                 KeepAlivePingPolicy = keepAliveWithoutCalls
-//             };
-//         }
-// #elif USE_GRPC_WEB
-//         channelOptions.HttpHandler = new GrpcWebHandler(new HttpClientHandler());
-// #endif
-//         return channelOptions;
-//     }
-
     /// <summary>
     /// Convert a UTF-8 encoded string to a byte array.
     /// </summary>
