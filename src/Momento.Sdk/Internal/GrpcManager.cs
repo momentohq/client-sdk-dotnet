@@ -1,3 +1,5 @@
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -19,51 +21,26 @@ namespace Momento.Sdk.Internal;
 /// </summary>
 public class GrpcManager : IDisposable
 {
-    /// <summary>
-    /// The underlying GrpcChannel object.
-    /// </summary>
     protected GrpcChannel channel;
 
-    /// <summary>
-    /// The logger.
-    /// </summary>
     protected ILogger _logger;
 
-    /// <summary>
-    /// The string indicating which SDK is being used.
-    /// </summary>
 #if USE_GRPC_WEB
     protected readonly static string moniker = "dotnet-web";
 #else
     protected readonly static string moniker = "dotnet";
 #endif
-    /// <summary>
-    /// The string indicating which version of this SDK is being used.
-    /// </summary>
     protected readonly string version = $"{moniker}:{GetAssembly(typeof(Momento.Sdk.Responses.CacheGetResponse)).GetName().Version.ToString()}";
     // Some System.Environment.Version remarks to be aware of
     // https://learn.microsoft.com/en-us/dotnet/api/system.environment.version?view=netstandard-2.0#remarks
-    
-    /// <summary>
-    /// The full string indicating the SDK runtime version
-    /// </summary>
+
     protected readonly string runtimeVersion = $"{moniker}:{System.Environment.Version}";
 
-    /// <summary>
-    /// The headers to be included in each request.
-    /// </summary>
     internal List<Header> headers;
 
-    /// <summary>
-    /// The headers to be included in each request as a list of tuples.
-    /// </summary>
     internal List<Tuple<string, string>> headerTuples;
 
-    /// <summary>
-    /// The CallInvoker object to be used for making requests.
-    /// </summary>
     protected CallInvoker invoker;
-
 
     /// <summary>
     /// The default value for max_send_message_length is 4mb.  We need to increase this to 5mb in order to support cases where users have requested a limit increase up to our maximum item size of 5mb.
@@ -89,12 +66,6 @@ public class GrpcManager : IDisposable
         this.channel = GrpcChannel.ForAddress(uri, channelOptions);
         this.invoker = this.channel.CreateCallInvoker();
         this._logger = loggerFactory.CreateLogger(loggerName);
-
-        // this.headers = new List<Header> { 
-        //     new Header(name: Header.AuthorizationKey, value: authToken), 
-        //     new Header(name: Header.AgentKey, value: version), 
-        //     new Header(name: Header.RuntimeVersionKey, value: runtimeVersion) 
-        // };
 
         this.headerTuples = new List<Tuple<string, string>>
         {
