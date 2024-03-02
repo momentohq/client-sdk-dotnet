@@ -89,21 +89,15 @@ public class GrpcManager : IDisposable
         channelOptions.MaxReceiveMessageSize = grpcConfig.GrpcChannelOptions?.MaxReceiveMessageSize ?? DEFAULT_MAX_MESSAGE_SIZE;
         channelOptions.MaxSendMessageSize = grpcConfig.GrpcChannelOptions?.MaxSendMessageSize ?? DEFAULT_MAX_MESSAGE_SIZE;
 #if NET5_0_OR_GREATER
-        var keepAliveWithoutCalls = System.Net.Http.HttpKeepAlivePingPolicy.WithActiveRequests;
-        if (grpcConfig.KeepAlivePermitWithoutCalls == true)
-        {
-            keepAliveWithoutCalls = System.Net.Http.HttpKeepAlivePingPolicy.Always;
-        }
-
         if (SocketsHttpHandler.IsSupported) // see: https://github.com/grpc/grpc-dotnet/blob/098dca892a3949ade411c3f2f66003f7b330dfd2/src/Shared/HttpHandlerFactory.cs#L28-L30
         {
             channelOptions.HttpHandler = new SocketsHttpHandler
             {
                 EnableMultipleHttp2Connections = grpcConfig.SocketsHttpHandlerOptions.EnableMultipleHttp2Connections,
                 PooledConnectionIdleTimeout = grpcConfig.SocketsHttpHandlerOptions.PooledConnectionIdleTimeout,
-                KeepAlivePingTimeout = grpcConfig.KeepAlivePingTimeout,
-                KeepAlivePingDelay = grpcConfig.KeepAlivePingDelay,
-                KeepAlivePingPolicy = keepAliveWithoutCalls
+                KeepAlivePingTimeout = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingTimeout,
+                KeepAlivePingDelay = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingDelay,
+                KeepAlivePingPolicy = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePermitWithoutCalls == true ? System.Net.Http.HttpKeepAlivePingPolicy.Always : System.Net.Http.HttpKeepAlivePingPolicy.WithActiveRequests,
             };
         }
 #elif USE_GRPC_WEB

@@ -34,17 +34,11 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
     /// <param name="grpcChannelOptions">Customizations to low-level gRPC channel configuration</param>
     /// <param name="minNumGrpcChannels">minimum number of gRPC channels to open</param>
     /// <param name="socketsHttpHandlerOptions">Customizations to the SocketsHttpHandler</param>
-    /// <param name="keepAlivePingTimeout">Override the time to wait for a response from a keepalive ping</param>
-    /// <param name="keepAlivePingDelay">Override how often the client sends keepalive pings the server</param>
-    /// <param name="keepAlivePermitWithoutCalls">Sets option to send keepalive pings from the client without any outstanding RPCs</param>
     public StaticGrpcConfiguration(
         TimeSpan deadline, 
         GrpcChannelOptions? grpcChannelOptions = null, 
         int minNumGrpcChannels = 1, 
-        SocketsHttpHandlerOptions? socketsHttpHandlerOptions = null,
-        TimeSpan? keepAlivePingTimeout = null, 
-        TimeSpan? keepAlivePingDelay = null, 
-        bool? keepAlivePermitWithoutCalls = null
+        SocketsHttpHandlerOptions? socketsHttpHandlerOptions = null
     )
     {
         Utils.ArgumentStrictlyPositive(deadline, nameof(deadline));
@@ -52,9 +46,6 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
         this.MinNumGrpcChannels = minNumGrpcChannels;
         this.GrpcChannelOptions = grpcChannelOptions;
         this.SocketsHttpHandlerOptions = socketsHttpHandlerOptions ?? new SocketsHttpHandlerOptions();
-        this.KeepAlivePingTimeout = keepAlivePingTimeout ?? System.Threading.Timeout.InfiniteTimeSpan;
-        this.KeepAlivePingDelay = keepAlivePingDelay ?? System.Threading.Timeout.InfiniteTimeSpan;
-        this.KeepAlivePermitWithoutCalls = keepAlivePermitWithoutCalls ?? false;
     }
 
     /// <inheritdoc/>

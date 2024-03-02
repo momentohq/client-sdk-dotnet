@@ -25,9 +25,9 @@ public class ConfigTest
     {
         var config = Configurations.InRegion.Lambda.Latest();
         var grpcConfig = config.TransportStrategy.GrpcConfig;
-        Assert.Equal(System.Threading.Timeout.InfiniteTimeSpan, grpcConfig.KeepAlivePingTimeout);
-        Assert.Equal(System.Threading.Timeout.InfiniteTimeSpan, grpcConfig.KeepAlivePingDelay);
-        Assert.False(grpcConfig.KeepAlivePermitWithoutCalls);
+        Assert.Equal(System.Threading.Timeout.InfiniteTimeSpan, grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingTimeout);
+        Assert.Equal(System.Threading.Timeout.InfiniteTimeSpan, grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingDelay);
+        Assert.False(grpcConfig.SocketsHttpHandlerOptions.KeepAlivePermitWithoutCalls);
     }
 
     [Fact]
@@ -35,8 +35,8 @@ public class ConfigTest
     {
         var config = Configurations.Laptop.Latest();
         var grpcConfig = config.TransportStrategy.GrpcConfig;
-        Assert.Equal(TimeSpan.FromMilliseconds(1000), grpcConfig.KeepAlivePingTimeout);
-        Assert.Equal(TimeSpan.FromMilliseconds(5000), grpcConfig.KeepAlivePingDelay);
-        Assert.True(grpcConfig.KeepAlivePermitWithoutCalls);
+        Assert.Equal(TimeSpan.FromMilliseconds(1000), grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingTimeout);
+        Assert.Equal(TimeSpan.FromMilliseconds(5000), grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingDelay);
+        Assert.True(grpcConfig.SocketsHttpHandlerOptions.KeepAlivePermitWithoutCalls);
     }
 }

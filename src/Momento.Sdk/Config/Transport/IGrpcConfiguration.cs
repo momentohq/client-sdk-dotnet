@@ -44,36 +44,6 @@ public interface IGrpcConfiguration
     public SocketsHttpHandlerOptions SocketsHttpHandlerOptions { get; }
 
     /// <summary>
-    /// Override the time to wait for a response from a keepalive or ping.
-    /// NOTE: keep-alives are very important for long-lived server environments where there may be periods of time
-    /// when the connection is idle. However, they are very problematic for lambda environments where the lambda
-    /// runtime is continuously frozen and unfrozen, because the lambda may be frozen before the "ACK" is received
-    /// from the server. This can cause the keep-alive to timeout even though the connection is completely healthy.
-    /// Therefore, keep-alives should be disabled in lambda and similar environments.
-    /// </summary>
-    public TimeSpan KeepAlivePingTimeout { get; }
-
-    /// <summary>
-    /// After a duration of this time the client/server pings its peer to see if the transport is still alive.
-    /// NOTE: keep-alives are very important for long-lived server environments where there may be periods of time
-    /// when the connection is idle. However, they are very problematic for lambda environments where the lambda
-    /// runtime is continuously frozen and unfrozen, because the lambda may be frozen before the "ACK" is received
-    /// from the server. This can cause the keep-alive to timeout even though the connection is completely healthy.
-    /// Therefore, keep-alives should be disabled in lambda and similar environments.
-    /// </summary>
-    public TimeSpan KeepAlivePingDelay { get; }
-
-    /// <summary>
-    /// Indicates if it permissible to send keepalive pings from the client without any outstanding streams.
-    /// NOTE: keep-alives are very important for long-lived server environments where there may be periods of time
-    /// when the connection is idle. However, they are very problematic for lambda environments where the lambda
-    /// runtime is continuously frozen and unfrozen, because the lambda may be frozen before the "ACK" is received
-    /// from the server. This can cause the keep-alive to timeout even though the connection is completely healthy.
-    /// Therefore, keep-alives should be disabled in lambda and similar environments.
-    /// </summary>
-    public bool KeepAlivePermitWithoutCalls { get; }
-
-    /// <summary>
     /// Copy constructor to override the Deadline
     /// </summary>
     /// <param name="deadline"></param>

@@ -34,12 +34,7 @@ public class AuthConfigurations
             var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
             IAuthTransportStrategy transportStrategy = new StaticAuthTransportStrategy(
                 loggerFactory: finalLoggerFactory,
-                grpcConfig: new StaticGrpcConfiguration(
-                    deadline: TimeSpan.FromMilliseconds(15000),
-                    keepAlivePermitWithoutCalls: true,
-                    keepAlivePingDelay: TimeSpan.FromMilliseconds(5000),
-                    keepAlivePingTimeout: TimeSpan.FromMilliseconds(1000)
-                )
+                grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(15000))
             );
             return new Default(finalLoggerFactory, transportStrategy);
         }

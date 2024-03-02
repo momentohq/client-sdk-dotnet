@@ -55,12 +55,7 @@ public class Configurations
             ITransportStrategy transportStrategy = new StaticTransportStrategy(
                 loggerFactory: finalLoggerFactory,
                 maxConcurrentRequests: 200, // max of 2 connections https://github.com/momentohq/client-sdk-dotnet/issues/460
-                grpcConfig: new StaticGrpcConfiguration(
-                    deadline: TimeSpan.FromMilliseconds(15000),
-                    keepAlivePermitWithoutCalls: true,
-                    keepAlivePingDelay: TimeSpan.FromMilliseconds(5000),
-                    keepAlivePingTimeout: TimeSpan.FromMilliseconds(1000)
-                )
+                grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(15000))
             );
             return new Laptop(finalLoggerFactory, retryStrategy, transportStrategy);
         }
@@ -113,12 +108,7 @@ public class Configurations
                 ITransportStrategy transportStrategy = new StaticTransportStrategy(
                     loggerFactory: finalLoggerFactory,
                     maxConcurrentRequests: 400, // max of 4 connections https://github.com/momentohq/client-sdk-dotnet/issues/460
-                    grpcConfig: new StaticGrpcConfiguration(
-                        deadline: TimeSpan.FromMilliseconds(1100),
-                        keepAlivePermitWithoutCalls: true,
-                        keepAlivePingDelay: TimeSpan.FromMilliseconds(5000),
-                        keepAlivePingTimeout: TimeSpan.FromMilliseconds(1000)
-                    )
+                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(1100))
                 );
                 return new Default(finalLoggerFactory, retryStrategy, transportStrategy);
             }
@@ -169,12 +159,7 @@ public class Configurations
                 ITransportStrategy transportStrategy = new StaticTransportStrategy(
                     loggerFactory: finalLoggerFactory,
                     maxConcurrentRequests: 20,
-                    grpcConfig: new StaticGrpcConfiguration(
-                        deadline: TimeSpan.FromMilliseconds(500),
-                        keepAlivePermitWithoutCalls: true,
-                        keepAlivePingDelay: TimeSpan.FromMilliseconds(5000),
-                        keepAlivePingTimeout: TimeSpan.FromMilliseconds(1000)
-                    )
+                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(500))
                 );
                 return new LowLatency(finalLoggerFactory, retryStrategy, transportStrategy);
             }
@@ -207,7 +192,14 @@ public class Configurations
             {
                 var config = Default.V1(loggerFactory);
                 var transportStrategy = config.TransportStrategy.WithSocketsHttpHandlerOptions(
-                    SocketsHttpHandlerOptions.Of(pooledConnectionIdleTimeout: TimeSpan.FromMinutes(6)));
+                    SocketsHttpHandlerOptions.Of(
+                        pooledConnectionIdleTimeout: TimeSpan.FromMinutes(6),
+                        enableMultipleHttp2Connections: true,
+                        keepAlivePingTimeout: System.Threading.Timeout.InfiniteTimeSpan,
+                        keepAlivePingDelay: System.Threading.Timeout.InfiniteTimeSpan,
+                        keepAlivePermitWithoutCalls: false
+                    )
+                );
                 return config.WithTransportStrategy(transportStrategy);
             }
 
