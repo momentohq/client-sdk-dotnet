@@ -108,8 +108,7 @@ public class Configurations
                 ITransportStrategy transportStrategy = new StaticTransportStrategy(
                     loggerFactory: finalLoggerFactory,
                     maxConcurrentRequests: 400, // max of 4 connections https://github.com/momentohq/client-sdk-dotnet/issues/460
-                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(1100))
-                );
+                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(1100)));
                 return new Default(finalLoggerFactory, retryStrategy, transportStrategy);
             }
         }
