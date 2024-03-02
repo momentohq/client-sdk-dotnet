@@ -32,7 +32,7 @@ public interface IGrpcConfiguration
     /// interface for the channel options, which allows modifying specific values but does
     /// not allow the caller to use arbitrary strings to set the channel options.)
     /// </summary>
-    public GrpcChannelOptions? GrpcChannelOptions { get; }
+    public GrpcChannelOptions GrpcChannelOptions { get; }
 
     /// <summary>
     /// Override the SocketsHttpHandler's options.
