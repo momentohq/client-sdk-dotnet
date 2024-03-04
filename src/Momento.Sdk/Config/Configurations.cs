@@ -168,6 +168,11 @@ public class Configurations
         /// This config optimizes for lambda environments. In addition to the in region settings of
         /// <see cref="Default"/>, this configures the clients to eagerly connect to the Momento service
         /// to avoid the cold start penalty of establishing a connection on the first request.
+        /// NOTE: keep-alives are very important for long-lived server environments where there may be periods of time
+        /// when the connection is idle. However, they are very problematic for lambda environments where the lambda
+        /// runtime is continuously frozen and unfrozen, because the lambda may be frozen before the "ACK" is received
+        /// from the server. This can cause the keep-alive to timeout even though the connection is completely healthy.
+        /// Therefore, keep-alives should be disabled in lambda and similar environments.
         /// </summary>
         public class Lambda : Configuration
         {
@@ -186,7 +191,14 @@ public class Configurations
             {
                 var config = Default.V1(loggerFactory);
                 var transportStrategy = config.TransportStrategy.WithSocketsHttpHandlerOptions(
-                    SocketsHttpHandlerOptions.Of(pooledConnectionIdleTimeout: TimeSpan.FromMinutes(6)));
+                    SocketsHttpHandlerOptions.Of(
+                        pooledConnectionIdleTimeout: TimeSpan.FromMinutes(6),
+                        enableMultipleHttp2Connections: true,
+                        keepAlivePingTimeout: System.Threading.Timeout.InfiniteTimeSpan,
+                        keepAlivePingDelay: System.Threading.Timeout.InfiniteTimeSpan,
+                        keepAlivePermitWithoutCalls: false
+                    )
+                );
                 return config.WithTransportStrategy(transportStrategy);
             }
 

@@ -8,6 +8,7 @@ using Momento.Protos.ControlClient;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Requests.Vector;
 using Momento.Sdk.Responses.Vector;
+using Momento.Sdk.Config;
 
 namespace Momento.Sdk.Internal;
 
@@ -19,11 +20,11 @@ internal sealed class VectorIndexControlClient : IDisposable
     private readonly ILogger _logger;
     private readonly CacheExceptionMapper _exceptionMapper;
 
-    public VectorIndexControlClient(ILoggerFactory loggerFactory, string authToken, string endpoint)
+    public VectorIndexControlClient(IVectorIndexConfiguration config, string authToken, string endpoint)
     {
-        grpcManager = new VectorIndexControlGrpcManager(loggerFactory, authToken, endpoint);
-        _logger = loggerFactory.CreateLogger<VectorIndexControlClient>();
-        _exceptionMapper = new CacheExceptionMapper(loggerFactory);
+        grpcManager = new VectorIndexControlGrpcManager(config, authToken, endpoint);
+        _logger = config.LoggerFactory.CreateLogger<VectorIndexControlClient>();
+        _exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
     }
 
     public async Task<CreateIndexResponse> CreateIndexAsync(string indexName, long numDimensions, SimilarityMetric similarityMetric)

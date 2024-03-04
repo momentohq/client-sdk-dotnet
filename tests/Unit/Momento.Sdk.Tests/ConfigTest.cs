@@ -19,4 +19,24 @@ public class ConfigTest
         Assert.Equal(Configurations.InRegion.Default.Latest(), Configurations.InRegion.Default.V1());
         Assert.Equal(Configurations.InRegion.LowLatency.Latest(), Configurations.InRegion.LowLatency.V1());
     }
+
+    [Fact]
+    public void LambdaConfigDisablesKeepAlive()
+    {
+        var config = Configurations.InRegion.Lambda.Latest();
+        var grpcConfig = config.TransportStrategy.GrpcConfig;
+        Assert.Equal(System.Threading.Timeout.InfiniteTimeSpan, grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingTimeout);
+        Assert.Equal(System.Threading.Timeout.InfiniteTimeSpan, grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingDelay);
+        Assert.False(grpcConfig.SocketsHttpHandlerOptions.KeepAlivePermitWithoutCalls);
+    }
+
+    [Fact]
+    public void LaptopConfigEnablesKeepAlive()
+    {
+        var config = Configurations.Laptop.Latest();
+        var grpcConfig = config.TransportStrategy.GrpcConfig;
+        Assert.Equal(TimeSpan.FromMilliseconds(1000), grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingTimeout);
+        Assert.Equal(TimeSpan.FromMilliseconds(5000), grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingDelay);
+        Assert.True(grpcConfig.SocketsHttpHandlerOptions.KeepAlivePermitWithoutCalls);
+    }
 }

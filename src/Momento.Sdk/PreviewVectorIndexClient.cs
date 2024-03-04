@@ -32,7 +32,7 @@ public class PreviewVectorIndexClient : IPreviewVectorIndexClient
     {
         var loggerFactory = config.LoggerFactory;
         controlClient =
-            new VectorIndexControlClient(loggerFactory, authProvider.AuthToken, authProvider.ControlEndpoint);
+            new VectorIndexControlClient(config, authProvider.AuthToken, authProvider.ControlEndpoint);
         dataClient = new VectorIndexDataClient(config, authProvider.AuthToken, authProvider.CacheEndpoint);
     }
 
