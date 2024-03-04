@@ -17,7 +17,7 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
     /// <inheritdoc/>
     public int MinNumGrpcChannels { get; }
     /// <inheritdoc/>
-    public GrpcChannelOptions? GrpcChannelOptions { get; }
+    public GrpcChannelOptions GrpcChannelOptions { get; }
     /// <inheritdoc/>
     public SocketsHttpHandlerOptions SocketsHttpHandlerOptions { get; }
     /// <inheritdoc/>
