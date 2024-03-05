@@ -75,7 +75,7 @@ public class GrpcManager : IDisposable
                 PooledConnectionIdleTimeout = grpcConfig.SocketsHttpHandlerOptions.PooledConnectionIdleTimeout,
                 KeepAlivePingTimeout = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingTimeout,
                 KeepAlivePingDelay = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingDelay,
-                KeepAlivePingPolicy = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePermitWithoutCalls == true ? System.Net.Http.HttpKeepAlivePingPolicy.Always : System.Net.Http.HttpKeepAlivePingPolicy.WithActiveRequests,
+                KeepAlivePingPolicy = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePermitWithoutCalls ? System.Net.Http.HttpKeepAlivePingPolicy.Always : System.Net.Http.HttpKeepAlivePingPolicy.WithActiveRequests,
             };
         }
 #elif USE_GRPC_WEB
