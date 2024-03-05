@@ -69,24 +69,13 @@ public class GrpcManager : IDisposable
 #if NET5_0_OR_GREATER
         if (SocketsHttpHandler.IsSupported) // see: https://github.com/grpc/grpc-dotnet/blob/098dca892a3949ade411c3f2f66003f7b330dfd2/src/Shared/HttpHandlerFactory.cs#L28-L30
         {
-            var keepAliveWithoutCallsPolicy = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePermitWithoutCalls == true ? System.Net.Http.HttpKeepAlivePingPolicy.Always : System.Net.Http.HttpKeepAlivePingPolicy.WithActiveRequests;
-            var keepAliveTimeout = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingTimeout;
-            var keepAlivePingDelay = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingDelay;
-
-            // Disable keepalives for control clients and convert KeepAlivePermitWithoutCalls from bool to HttpKeepAlivePingPolicy
-            if (loggerName.Contains("Control")) {
-                keepAliveWithoutCallsPolicy = System.Net.Http.HttpKeepAlivePingPolicy.WithActiveRequests;
-                keepAliveTimeout = System.Threading.Timeout.InfiniteTimeSpan;
-                keepAlivePingDelay = System.Threading.Timeout.InfiniteTimeSpan;
-            }
-
             channelOptions.HttpHandler = new SocketsHttpHandler
             {
                 EnableMultipleHttp2Connections = grpcConfig.SocketsHttpHandlerOptions.EnableMultipleHttp2Connections,
                 PooledConnectionIdleTimeout = grpcConfig.SocketsHttpHandlerOptions.PooledConnectionIdleTimeout,
-                KeepAlivePingTimeout = keepAliveTimeout,
-                KeepAlivePingDelay = keepAlivePingDelay,
-                KeepAlivePingPolicy = keepAliveWithoutCallsPolicy,
+                KeepAlivePingTimeout = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingTimeout,
+                KeepAlivePingDelay = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePingDelay,
+                KeepAlivePingPolicy = grpcConfig.SocketsHttpHandlerOptions.KeepAlivePermitWithoutCalls == true ? System.Net.Http.HttpKeepAlivePingPolicy.Always : System.Net.Http.HttpKeepAlivePingPolicy.WithActiveRequests,
             };
         }
 #elif USE_GRPC_WEB
