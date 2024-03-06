@@ -5,7 +5,7 @@
 ## Prerequisites
 
 * [`dotnet`](https://dotnet.microsoft.com/en-us/download) 6.0 or higher is required
-* A Momento auth token is required.  You can generate one using the [Momento CLI](https://github.com/momentohq/momento-cli).
+* A Momento API key is required.  You can generate one using the [Momento Console](https://console.gomomento.com/api-keys).
 
 ## Running the advanced example
 
@@ -13,7 +13,7 @@ To run the advanced example code defined in [`MomentoApplication/Program.cs`](./
 run the following from within the `examples` directory:
 
 ```bash
-MOMENTO_AUTH_TOKEN=<YOUR AUTH TOKEN> dotnet run --project MomentoApplication
+MOMENTO_API_KEY=<YOUR API KEY> dotnet run --project MomentoApplication
 ```
 
 ## Error Handling
@@ -82,5 +82,5 @@ To run the load generator (from the `examples` directory):
 
 ```bash
 # Run example load generator
-MOMENTO_AUTH_TOKEN=<YOUR AUTH TOKEN> dotnet run --project MomentoLoadGen
+MOMENTO_API_KEY=<YOUR AUTH TOKEN> dotnet run --project MomentoLoadGen
 ```

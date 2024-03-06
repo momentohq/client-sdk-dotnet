@@ -23,7 +23,7 @@ If you have questions or need help experimenting further, please reach out to us
 ## Prerequisites
 
 * [`dotnet`](https://dotnet.microsoft.com/en-us/download) 6.0 or higher is required
-* A Momento auth token is required.  You can generate one using the [Momento CLI](https://github.com/momentohq/momento-cli).
+* A Momento API key is required.  You can generate one using the [Momento Console](https://console.gomomento.com/api-keys).
 
 ## Running the load generator
 
@@ -31,14 +31,14 @@ To run the load generator (from the `examples` directory):
 
 ```bash
 # Run example load generator
-MOMENTO_API_KEY=<YOUR AUTH TOKEN> dotnet run --project MomentoLoadGen
+MOMENTO_API_KEY=<YOUR API KEY> dotnet run --project MomentoLoadGen
 ```
 
 Within the `MomentoLoadGen` directory you can run:
 
 ```bash
 # Run example load generator
-MOMENTO_API_KEY=<YOUR AUTH TOKEN> dotnet run
+MOMENTO_API_KEY=<YOUR API KEY> dotnet run
 ```
 
 If you make modifications to the code, remember to do a clean otherwise
@@ -46,5 +46,5 @@ the program might not run.
 
 ```bash
 dotnet clean
-MOMENTO_API_KEY=<YOUR AUTH TOKEN> dotnet run
+MOMENTO_API_KEY=<YOUR API KEY> dotnet run
 ```
