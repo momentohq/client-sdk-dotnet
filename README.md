@@ -73,8 +73,8 @@ using (ICacheClient client = new CacheClient(Configurations.Laptop.V1(), authPro
 
 ```
 
-Note that the above code requires an environment variable named MOMENTO_AUTH_TOKEN which must
-be set to a valid [Momento authentication token](https://docs.momentohq.com/docs/getting-started#obtain-an-auth-token).
+Note that the above code requires an environment variable named MOMENTO_API_KEY which must
+be set to a valid [Momento authentication token](https://docs.momentohq.com/cache/develop/authentication/api-keys).
 
 ## Getting Started and Documentation
 

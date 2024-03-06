@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Internal;
@@ -19,6 +20,12 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
     public GrpcChannelOptions GrpcChannelOptions { get; }
     /// <inheritdoc/>
     public SocketsHttpHandlerOptions SocketsHttpHandlerOptions { get; }
+    /// <inheritdoc/>
+    public TimeSpan KeepAlivePingTimeout { get; }
+    /// <inheritdoc/>
+    public TimeSpan KeepAlivePingDelay { get; }
+    /// <inheritdoc/>
+    public bool KeepAlivePermitWithoutCalls { get; }
 
     /// <summary>
     /// 
@@ -27,13 +34,31 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
     /// <param name="grpcChannelOptions">Customizations to low-level gRPC channel configuration</param>
     /// <param name="minNumGrpcChannels">minimum number of gRPC channels to open</param>
     /// <param name="socketsHttpHandlerOptions">Customizations to the SocketsHttpHandler</param>
-    public StaticGrpcConfiguration(TimeSpan deadline, GrpcChannelOptions? grpcChannelOptions = null, int minNumGrpcChannels = 1, SocketsHttpHandlerOptions? socketsHttpHandlerOptions = null)
+    public StaticGrpcConfiguration(
+        TimeSpan deadline, 
+        GrpcChannelOptions? grpcChannelOptions = null, 
+        int minNumGrpcChannels = 1, 
+        SocketsHttpHandlerOptions? socketsHttpHandlerOptions = null
+    )
     {
         Utils.ArgumentStrictlyPositive(deadline, nameof(deadline));
         this.Deadline = deadline;
         this.MinNumGrpcChannels = minNumGrpcChannels;
-        this.GrpcChannelOptions = grpcChannelOptions ?? new GrpcChannelOptions();
+        this.GrpcChannelOptions = grpcChannelOptions ?? DefaultGrpcChannelOptions();
         this.SocketsHttpHandlerOptions = socketsHttpHandlerOptions ?? new SocketsHttpHandlerOptions();
+    }
+
+    /// <summary>
+    /// The grpc default value for max_send_message_length is 4mb. This function returns default grpc options that increase max message size to 5mb in order to support cases where users have requested a limit increase up to our maximum item size of 5mb.
+    /// </summary>
+    /// <returns>GrpcChannelOptions</returns>
+    public static GrpcChannelOptions DefaultGrpcChannelOptions() {
+        const int DEFAULT_MAX_MESSAGE_SIZE = 5_243_000;
+        return new GrpcChannelOptions
+        {
+            MaxReceiveMessageSize = DEFAULT_MAX_MESSAGE_SIZE,
+            MaxSendMessageSize = DEFAULT_MAX_MESSAGE_SIZE
+        };
     }
 
     /// <inheritdoc/>

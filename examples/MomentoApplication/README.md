@@ -13,20 +13,20 @@ functionality, including:
 ## Prerequisites
 
 * [`dotnet`](https://dotnet.microsoft.com/en-us/download) 6.0 or higher is required
-* A Momento auth token is required.  You can generate one using the [Momento CLI](https://github.com/momentohq/momento-cli).
+* A Momento API key is required.  You can generate one using the [Momento Console](https://console.gomomento.com/api-keys).
 
 ## Running the application example
 
 Run the following from within the `examples` directory:
 
 ```bash
-MOMENTO_API_KEY=<YOUR AUTH TOKEN> dotnet run --project MomentoApplication
+MOMENTO_API_KEY=<YOUR API KEY> dotnet run --project MomentoApplication
 ```
 
 Within the `MomentoAppication` directory you can run:
 
 ```bash
-MOMENTO_API_KEY=<YOUR AUTH TOKEN> dotnet run
+MOMENTO_API_KEY=<YOUR API KEY> dotnet run
 ```
 
 ## Error Handling

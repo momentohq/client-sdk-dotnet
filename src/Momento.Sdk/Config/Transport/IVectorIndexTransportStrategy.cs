@@ -26,4 +26,11 @@ public interface IVectorIndexTransportStrategy
     /// <param name="clientTimeout"></param>
     /// <returns>A new IVectorIndexTransportStrategy with the specified client timeout</returns>
     public IVectorIndexTransportStrategy WithClientTimeout(TimeSpan clientTimeout);
+
+    /// <summary>
+    /// Copy constructor to update the SocketsHttpHandler's options
+    /// </summary>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    public IVectorIndexTransportStrategy WithSocketsHttpHandlerOptions(SocketsHttpHandlerOptions options);
 }

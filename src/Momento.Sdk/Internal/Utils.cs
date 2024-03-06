@@ -3,7 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
+using Grpc.Core;
+using Grpc.Net.Client;
+using System.Net.Http;
+#if USE_GRPC_WEB
+using Grpc.Net.Client.Web;
+#endif
 
+using Momento.Sdk.Config.Transport;
 using Momento.Sdk.Exceptions;
 
 namespace Momento.Sdk.Internal;
@@ -13,11 +21,6 @@ namespace Momento.Sdk.Internal;
 /// </summary>
 public static class Utils
 {
-    /// <summary>
-    /// The default value for max_send_message_length is 4mb.  We need to increase this to 5mb in order to support cases where users have requested a limit increase up to our maximum item size of 5mb.
-    /// </summary>
-    public const int DEFAULT_MAX_MESSAGE_SIZE = 5_243_000;
-
     /// <summary>
     /// Convert a UTF-8 encoded string to a byte array.
     /// </summary>

@@ -4,6 +4,7 @@ using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.ControlClient;
 using Momento.Sdk.Config;
+using Momento.Sdk.Config.Transport;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Responses;
 
@@ -20,7 +21,17 @@ internal sealed class ScsControlClient : IDisposable
 
     public ScsControlClient(IConfiguration config, string authToken, string endpoint)
     {
-        this.grpcManager = new ControlGrpcManager(config, authToken, endpoint);
+        // Override the sockets http handler options to disable keepalive
+        var overrideKeepalive = SocketsHttpHandlerOptions.Of(
+            pooledConnectionIdleTimeout: config.TransportStrategy.GrpcConfig.SocketsHttpHandlerOptions.PooledConnectionIdleTimeout,
+            enableMultipleHttp2Connections: config.TransportStrategy.GrpcConfig.SocketsHttpHandlerOptions.EnableMultipleHttp2Connections,
+            keepAlivePingTimeout: System.Threading.Timeout.InfiniteTimeSpan,
+            keepAlivePingDelay: System.Threading.Timeout.InfiniteTimeSpan,
+            keepAlivePermitWithoutCalls: false
+        );
+        var controlConfig = config.WithTransportStrategy(config.TransportStrategy.WithSocketsHttpHandlerOptions(overrideKeepalive));
+        
+        this.grpcManager = new ControlGrpcManager(controlConfig, authToken, endpoint);
         this.authToken = authToken;
         this._logger = config.LoggerFactory.CreateLogger<ScsControlClient>();
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);

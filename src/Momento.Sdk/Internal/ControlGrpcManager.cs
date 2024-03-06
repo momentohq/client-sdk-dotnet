@@ -71,58 +71,18 @@ internal class ControlClientWithMiddleware : IControlClient
     }
 }
 
-internal sealed class ControlGrpcManager : IDisposable
+internal sealed class ControlGrpcManager : GrpcManager
 {
-    private readonly GrpcChannel channel;
     public IControlClient Client { get; }
 
-#if USE_GRPC_WEB
-    private readonly static string moniker = "dotnet-web";
-#else
-    private readonly static string moniker = "dotnet";
-#endif
-    private readonly string version = $"{moniker}:{GetAssembly(typeof(Momento.Sdk.Responses.CacheGetResponse)).GetName().Version.ToString()}";
-    // Some System.Environment.Version remarks to be aware of
-    // https://learn.microsoft.com/en-us/dotnet/api/system.environment.version?view=netstandard-2.0#remarks
-    private readonly string runtimeVersion = $"{moniker}:{System.Environment.Version}";
-    private readonly ILogger _logger;
-
-    public ControlGrpcManager(IConfiguration config, string authToken, string endpoint)
+    public ControlGrpcManager(IConfiguration config, string authToken, string endpoint): base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authToken, endpoint, "ControlGrpcManager")
     {
-        this._logger = config.LoggerFactory.CreateLogger<ControlGrpcManager>();
-#if USE_GRPC_WEB
-        // Note: all web SDK requests are routed to a `web.` subdomain to allow us flexibility on the server
-        endpoint = $"web.{endpoint}";
-#endif
-        var uri = $"https://{endpoint}";
-        this.channel = GrpcChannel.ForAddress(uri, new GrpcChannelOptions()
+        var middlewares = new List<IMiddleware> 
         {
-            Credentials = ChannelCredentials.SecureSsl,
-            MaxReceiveMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE,
-            MaxSendMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE,
-#if NET5_0_OR_GREATER
-            HttpHandler = new System.Net.Http.SocketsHttpHandler
-            {
-                EnableMultipleHttp2Connections = config.TransportStrategy.GrpcConfig.SocketsHttpHandlerOptions.EnableMultipleHttp2Connections,
-                PooledConnectionIdleTimeout = config.TransportStrategy.GrpcConfig.SocketsHttpHandlerOptions.PooledConnectionIdleTimeout
-            }
-#elif USE_GRPC_WEB
-            HttpHandler = new GrpcWebHandler(new HttpClientHandler())
-#endif
-        });
-        List<Header> headers = new List<Header> { new Header(name: Header.AuthorizationKey, value: authToken), new Header(name: Header.AgentKey, value: version), new Header(name: Header.RuntimeVersionKey, value: runtimeVersion) };
-        CallInvoker invoker = this.channel.CreateCallInvoker();
-
-        var middlewares = new List<IMiddleware> {
-            new HeaderMiddleware(config.LoggerFactory, headers)
+            new HeaderMiddleware(config.LoggerFactory, this.headers)
         };
 
-        Client = new ControlClientWithMiddleware(new ScsControl.ScsControlClient(invoker), middlewares);
-    }
-
-    public void Dispose()
-    {
-        this.channel.Dispose();
-        GC.SuppressFinalize(this);
+        var client = new ScsControl.ScsControlClient(this.invoker);
+        Client = new ControlClientWithMiddleware(client, middlewares);
     }
 }

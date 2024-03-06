@@ -8,13 +8,16 @@ jobs:
   build_csharp:
     strategy:
       matrix:
+        os: [ubuntu-latest, windows-latest]
+        target-framework: [net6.0]
+        grpc-web: [false, true]
         include:
-          - os: ubuntu-latest
-            target-framework: net6.0
-          - os: windows-latest
-            target-framework: net6.0
           - os: windows-latest
             target-framework: net462
+            grpc-web: false
+          - os: windows-latest
+            target-framework: net462
+            grpc-web: true
     runs-on: ${{ matrix.os }}
     env:
       TEST_AUTH_TOKEN: ${{ secrets.ALPHA_TEST_AUTH_TOKEN }}
@@ -47,7 +50,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
-        run: dotnet build
+        run: dotnet build ${{ matrix.grpc-web && '-p:DefineConstants=USE_GRPC_WEB' || '' }}
 
       - name: Unit Test
         run: dotnet test --logger "console;verbosity=detailed" -f ${{ matrix.target-framework }} tests/Unit/Momento.Sdk.Tests

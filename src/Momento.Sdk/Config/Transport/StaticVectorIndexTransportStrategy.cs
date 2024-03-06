@@ -37,6 +37,11 @@ public class StaticVectorIndexTransportStrategy : IVectorIndexTransportStrategy
         return new StaticVectorIndexTransportStrategy(_loggerFactory, GrpcConfig.WithDeadline(clientTimeout));
     }
 
+    public IVectorIndexTransportStrategy WithSocketsHttpHandlerOptions(SocketsHttpHandlerOptions options)
+    {
+        return new StaticVectorIndexTransportStrategy(_loggerFactory, GrpcConfig.WithSocketsHttpHandlerOptions(options));
+    }
+
     /// <summary>
     /// Test equality by value.
     /// </summary>

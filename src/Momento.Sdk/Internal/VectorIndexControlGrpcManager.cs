@@ -11,6 +11,7 @@ using Grpc.Net.Client.Web;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CachePing;
 using Momento.Protos.ControlClient;
+using Momento.Sdk.Config;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
 using Momento.Sdk.Internal.Middleware;
@@ -64,59 +65,17 @@ public class VectorIndexControlClientWithMiddleware : IVectorIndexControlClient
     }
 }
 
-public class VectorIndexControlGrpcManager : IDisposable
+public class VectorIndexControlGrpcManager : GrpcManager
 {
-    private readonly GrpcChannel channel;
-
     public readonly IVectorIndexControlClient Client;
 
-#if USE_GRPC_WEB
-    private const string Moniker = "dotnet-web";
-#else
-    private const string Moniker = "dotnet";
-#endif
-    private readonly string version = $"{Moniker}:{GetAssembly(typeof(Responses.CacheGetResponse)).GetName().Version.ToString()}";
-    // Some System.Environment.Version remarks to be aware of
-    // https://learn.microsoft.com/en-us/dotnet/api/system.environment.version?view=netstandard-2.0#remarks
-    private readonly string runtimeVersion = $"{Moniker}:{Environment.Version}";
-    private readonly ILogger _logger;
-
-    internal VectorIndexControlGrpcManager(ILoggerFactory loggerFactory, string authToken, string endpoint)
+    internal VectorIndexControlGrpcManager(IVectorIndexConfiguration config, string authToken, string endpoint): base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authToken, endpoint, "VectorIndexControlGrpcManager")
     {
-#if USE_GRPC_WEB
-        // Note: all web SDK requests are routed to a `web.` subdomain to allow us flexibility on the server
-        endpoint = $"web.{endpoint}";
-#endif
-        var uri = $"https://{endpoint}";
-        var channelOptions = new GrpcChannelOptions
-        {
-            LoggerFactory = loggerFactory,
-            Credentials = ChannelCredentials.SecureSsl,
-            MaxReceiveMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE,
-            MaxSendMessageSize = Internal.Utils.DEFAULT_MAX_MESSAGE_SIZE,
-        };
-#if USE_GRPC_WEB
-        channelOptions.HttpHandler = new GrpcWebHandler(new HttpClientHandler());
-#endif
-
-        channel = GrpcChannel.ForAddress(uri, channelOptions);
-        var headers = new List<Header> { new(name: Header.AuthorizationKey, value: authToken), new(name: Header.AgentKey, value: version), new(name: Header.RuntimeVersionKey, value: runtimeVersion) };
-
-        _logger = loggerFactory.CreateLogger<VectorIndexControlGrpcManager>();
-
-        var invoker = channel.CreateCallInvoker();
-
         var middlewares = new List<IMiddleware> {
-            new HeaderMiddleware(loggerFactory, headers)
+            new HeaderMiddleware(config.LoggerFactory, this.headers)
         };
 
-        var client = new ScsControl.ScsControlClient(invoker);
+        var client = new ScsControl.ScsControlClient(this.invoker);
         Client = new VectorIndexControlClientWithMiddleware(client, middlewares);
-    }
-
-    public void Dispose()
-    {
-        channel.Dispose();
-        GC.SuppressFinalize(this);
     }
 }

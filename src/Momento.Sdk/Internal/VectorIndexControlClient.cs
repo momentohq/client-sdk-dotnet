@@ -8,6 +8,8 @@ using Momento.Protos.ControlClient;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Requests.Vector;
 using Momento.Sdk.Responses.Vector;
+using Momento.Sdk.Config;
+using Momento.Sdk.Config.Transport;
 
 namespace Momento.Sdk.Internal;
 
@@ -19,11 +21,21 @@ internal sealed class VectorIndexControlClient : IDisposable
     private readonly ILogger _logger;
     private readonly CacheExceptionMapper _exceptionMapper;
 
-    public VectorIndexControlClient(ILoggerFactory loggerFactory, string authToken, string endpoint)
+    public VectorIndexControlClient(IVectorIndexConfiguration config, string authToken, string endpoint)
     {
-        grpcManager = new VectorIndexControlGrpcManager(loggerFactory, authToken, endpoint);
-        _logger = loggerFactory.CreateLogger<VectorIndexControlClient>();
-        _exceptionMapper = new CacheExceptionMapper(loggerFactory);
+        // Override the sockets http handler options to disable keepalive
+        var overrideKeepalive = SocketsHttpHandlerOptions.Of(
+            pooledConnectionIdleTimeout: config.TransportStrategy.GrpcConfig.SocketsHttpHandlerOptions.PooledConnectionIdleTimeout,
+            enableMultipleHttp2Connections: config.TransportStrategy.GrpcConfig.SocketsHttpHandlerOptions.EnableMultipleHttp2Connections,
+            keepAlivePingTimeout: System.Threading.Timeout.InfiniteTimeSpan,
+            keepAlivePingDelay: System.Threading.Timeout.InfiniteTimeSpan,
+            keepAlivePermitWithoutCalls: false
+        );
+        var controlConfig = config.WithTransportStrategy(config.TransportStrategy.WithSocketsHttpHandlerOptions(overrideKeepalive));
+
+        grpcManager = new VectorIndexControlGrpcManager(controlConfig, authToken, endpoint);
+        _logger = config.LoggerFactory.CreateLogger<VectorIndexControlClient>();
+        _exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
     }
 
     public async Task<CreateIndexResponse> CreateIndexAsync(string indexName, long numDimensions, SimilarityMetric similarityMetric)

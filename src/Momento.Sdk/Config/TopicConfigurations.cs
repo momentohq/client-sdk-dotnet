@@ -102,7 +102,8 @@ public class TopicConfigurations
                 var finalLoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
                 ITopicTransportStrategy transportStrategy = new StaticTopicTransportStrategy(
                     loggerFactory: finalLoggerFactory,
-                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(1100)));
+                    grpcConfig: new StaticGrpcConfiguration(deadline: TimeSpan.FromMilliseconds(1100))
+                );
                 return new Default(finalLoggerFactory, transportStrategy);
             }
         }
