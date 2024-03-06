@@ -14,6 +14,7 @@ jobs:
         include:
           - os: windows-latest
             target-framework: net462
+            grpc-web: [false, true]
     runs-on: ${{ matrix.os }}
     env:
       TEST_AUTH_TOKEN: ${{ secrets.ALPHA_TEST_AUTH_TOKEN }}
