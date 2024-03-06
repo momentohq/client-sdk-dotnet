@@ -11,7 +11,7 @@
 Momento Cache is a fast, simple, pay-as-you-go caching solution without any of the operational overhead
 required by traditional caching solutions.  This repo contains the source code for the Momento .NET client library.
 
-To get started with Momento you will need a Momento API key. You can get one from the [Momento Console](https://console.gomomento.com/api-keys).
+To get started with Momento you will need a Momento Auth Token. You can get one from the [Momento Console](https://console.gomomento.com).
 
 * Website: [https://www.gomomento.com/](https://www.gomomento.com/)
 * Momento Documentation: [https://docs.momentohq.com/](https://docs.momentohq.com/)
@@ -73,8 +73,8 @@ using (ICacheClient client = new CacheClient(Configurations.Laptop.V1(), authPro
 
 ```
 
-Note that the above code requires an environment variable named MOMENTO_API_KEY which must
-be set to a valid [Momento authentication token](https://docs.momentohq.com/cache/develop/authentication/api-keys).
+Note that the above code requires an environment variable named MOMENTO_AUTH_TOKEN which must
+be set to a valid [Momento authentication token](https://docs.momentohq.com/docs/getting-started#obtain-an-auth-token).
 
 ## Getting Started and Documentation
 
