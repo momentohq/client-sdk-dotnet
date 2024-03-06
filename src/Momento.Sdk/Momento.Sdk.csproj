@@ -30,13 +30,6 @@
 		<RepositoryUrl>https://github.com/momentohq/client-sdk-dotnet</RepositoryUrl>
 	</PropertyGroup>
 
-	<!-- Because .NET Framework doesn't support HTTP/2, we use gRPC-Web over HTTP/1.1.
-		 Dependency resolution: .NET Framework binaries or libraries >= v4.62 that link
-		 to Momento.Sdk will link to the .NET Framework 4.62 build. -->
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net462' ">
-    	<DefineConstants>USE_GRPC_WEB</DefineConstants>
-  	</PropertyGroup>
-
 	<ItemGroup>
 	  <None Remove="System.Threading.Channels" />
 	  <None Remove="Internal\Middleware\" />
@@ -66,7 +59,7 @@
 	  <PackageReference Include="System.Threading" Version="4.3.0" />
 	</ItemGroup>
 	<ItemGroup Condition=" $(DefineConstants.Contains('USE_GRPC_WEB')) ">
-	  <!-- Because .NET Framework does not support HTTP/2, we fall back to gRPC-Web over HTTP/1.1 -->
+	  <!-- Currently the Unity build needs gRPC-Web -->
 	  <PackageReference Include="Grpc.Net.Client.Web" Version="2.52.0" />
 	</ItemGroup>
 	<ProjectExtensions>
