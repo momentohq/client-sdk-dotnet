@@ -48,7 +48,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
-        run: dotnet build ${{ matrix.grpc-web == 'true' && '-p:DefineConstants=USE_GRPC_WEB' || '' }}
+        run: dotnet build ${{ matrix.grpc-web && '-p:DefineConstants=USE_GRPC_WEB' || '' }}
 
       - name: Unit Test
         run: dotnet test --logger "console;verbosity=detailed" -f ${{ matrix.target-framework }} tests/Unit/Momento.Sdk.Tests

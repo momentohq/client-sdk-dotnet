@@ -35,7 +35,7 @@ jobs:
           dotnet-version: "6.0.x"
 
       - name: Build
-        run: dotnet build ${{ matrix.grpc-web == 'true' && '-p:DefineConstants=USE_GRPC_WEB' || '' }}
+        run: dotnet build ${{ matrix.grpc-web && '-p:DefineConstants=USE_GRPC_WEB' || '' }}
 
       - name: Unit Test
         run: dotnet test -f ${{ matrix.target-framework }} tests/Unit/Momento.Sdk.Tests
