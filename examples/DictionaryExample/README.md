@@ -4,12 +4,12 @@ This example program demonstrates usage of the dictionary data type.
 
 # Usage
 
-The program assumes the auth token and cache names are available in environment variables. The auth token is assumed to be in the variable `TEST_AUTH_TOKEN` and the cache name in `TEST_CACHE_NAME`. If either of these is missing, you will be prompted to enter the values on the terminal.
+The program assumes the auth token and cache names are available in environment variables. The auth token is assumed to be in the variable `MOMENTO_API_KEY` and the cache name in `MOMENTO_CACHE_NAME`. If either of these is missing, you will be prompted to enter the values on the terminal.
 
 To run the program, run either:
 
 ```bash
-TEST_AUTH_TOKEN=<YOUR_TOKEN_HERE> TEST_CACHE_NAME=<YOUR_CACHE_NAME_HERE> dotnet run
+MOMENTO_API_KEY=<YOUR_API_KEY_HERE> MOMENTO_CACHE_NAME=<YOUR_CACHE_NAME_HERE> dotnet run
 ```
 
 or

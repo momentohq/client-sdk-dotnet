@@ -9,20 +9,20 @@ the client's full capabilities, take a look at the more advanced  [MomentoApplic
 ## Prerequisites
 
 * [`dotnet`](https://dotnet.microsoft.com/en-us/download) 6.0 or higher is required
-* A Momento auth token is required.  You can generate one using the [Momento CLI](https://github.com/momentohq/momento-cli).
+* A Momento API key is required.  You can generate one using the [Momento Console](https://console.gomomento.com/api-keys).
 
 ## Running the application example
 
 Run the following from within the `examples` directory:
 
 ```bash
-MOMENTO_API_KEY=<YOUR AUTH TOKEN> dotnet run --project MomentoUsage
+MOMENTO_API_KEY=<YOUR API KEY> dotnet run --project MomentoUsage
 ```
 
 Within the `MomentoUsage` directory you can run:
 
 ```bash
-MOMENTO_API_KEY=<YOUR AUTH TOKEN> dotnet run
+MOMENTO_API_KEY=<YOUR API KEY> dotnet run
 ```
 
 ## Error Handling

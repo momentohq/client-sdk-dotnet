@@ -9,7 +9,7 @@ This example program demonstrates how to generate disposable Momento auth tokens
 The program assumes that your Momento auth token is available in the `MOMENTO_API_KEY` environment variable:
 
 ```bash
-MOMENTO_API_KEY=<YOUR_AUTH_TOKEN> dotnet run
+MOMENTO_API_KEY=<YOUR_API_KEY> dotnet run
 ```
 
 The example generates a disposable expiring auth token using the enumerated permissions and expiry defined in the program and prints its attributes to the console.
