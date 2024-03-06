@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        target-framework: net6.0
+        target-framework: [net6.0]
         grpc-web: [false, true]
         include:
           - os: windows-latest
