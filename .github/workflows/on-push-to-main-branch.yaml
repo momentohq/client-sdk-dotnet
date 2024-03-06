@@ -8,12 +8,10 @@ jobs:
   build_csharp:
     strategy:
       matrix:
+        os: [ubuntu-latest, windows-latest]
+        target-framework: net6.0
         grpc-web: [false, true]
         include:
-          - os: ubuntu-latest
-            target-framework: net6.0
-          - os: windows-latest
-            target-framework: net6.0
           - os: windows-latest
             target-framework: net462
     runs-on: ${{ matrix.os }}
