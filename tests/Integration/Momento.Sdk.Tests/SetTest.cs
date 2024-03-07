@@ -616,8 +616,9 @@ public class SetTest : TestBase
         Assert.True(allValues.SetEquals(limitGreaterThanSetSizeHitValues), $"Expected sample with with limit greater than set size to return the entire set; expected ({String.Join(", ", allValues)}), got ({String.Join(", ", limitGreaterThanSetSizeHitValues)})");
         
         CacheSetSampleResponse limitZeroResponse = await client.SetSampleAsync(cacheName, setName, 0);
+        var emptySet = new HashSet<String>();
         var limitZeroHitValues = ((CacheSetSampleResponse.Hit)limitZeroResponse).ValueSetString;
-        Assert.True(allValues.SetEquals(limitZeroHitValues), $"Expected sample with with limit zero to return the entire set; expected ({allValues}), got ({limitZeroHitValues})");
+        Assert.True(emptySet.SetEquals(limitZeroHitValues), $"Expected sample with with limit zero to return empty set; got ({limitZeroHitValues})");
         
         for (int i = 0; i < 10; i++)
         {
