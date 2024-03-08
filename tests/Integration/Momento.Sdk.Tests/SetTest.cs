@@ -578,7 +578,7 @@ public class SetTest : TestBase
         Assert.Same(set1, set2);
     }
     
-    [Theory(Skip = "SetSample is a new API, we can't enable these tests until the server changes are deployed")]
+    [Theory]
     [InlineData(null, "my-set", 100)]
     [InlineData("cache", null, 100)]
     [InlineData("cache", "my-set", -1)]
@@ -589,7 +589,7 @@ public class SetTest : TestBase
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheSetSampleResponse.Error)response).ErrorCode);
     }
     
-    [Fact(Skip = "SetSample is a new API, we can't enable these tests until the server changes are deployed")]
+    [Fact]
     public async Task SetSampleAsync_Missing_HappyPath()
     {
         var setName = Utils.NewGuidString();
@@ -597,7 +597,7 @@ public class SetTest : TestBase
         Assert.True(response is CacheSetSampleResponse.Miss, $"Unexpected response: {response}");
     }
 
-    [Fact(Skip = "SetSample is a new API, we can't enable these tests until the server changes are deployed")]
+    [Fact]
     public async Task SetSampleAsync_UsesCachedStringSet_HappyPath()
     {
         var setName = Utils.NewGuidString();
@@ -616,12 +616,9 @@ public class SetTest : TestBase
         Assert.True(allValues.SetEquals(limitGreaterThanSetSizeHitValues), $"Expected sample with with limit greater than set size to return the entire set; expected ({String.Join(", ", allValues)}), got ({String.Join(", ", limitGreaterThanSetSizeHitValues)})");
         
         CacheSetSampleResponse limitZeroResponse = await client.SetSampleAsync(cacheName, setName, 0);
-        // TODO: for now the server is returning a MISS for this. We will are updating that behavior and will need to fix this
-        // test accordingly, but this is an edge case that we don't need to block the SDK release on so we can fix the test
-        // once the server behavior changes.
-        Assert.True(limitZeroResponse is CacheSetSampleResponse.Miss, $"Unexpected response: {limitZeroResponse}");
-        // var limitZeroHitValues = ((CacheSetSampleResponse.Hit)limitZeroResponse).ValueSetString;
-        // Assert.True(allValues.SetEquals(limitZeroHitValues), $"Expected sample with with limit zero to return the entire set; expected ({allValues}), got ({limitZeroHitValues})");
+        var emptySet = new HashSet<String>();
+        var limitZeroHitValues = ((CacheSetSampleResponse.Hit)limitZeroResponse).ValueSetString;
+        Assert.True(emptySet.SetEquals(limitZeroHitValues), $"Expected sample with with limit zero to return empty set; got ({limitZeroHitValues})");
         
         for (int i = 0; i < 10; i++)
         {
