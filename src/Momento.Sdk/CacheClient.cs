@@ -58,7 +58,7 @@ public class CacheClient : ICacheClient
         catch (Exception e)
         {
             cacheClient.Dispose();
-            throw e;
+            throw;
         }
         return cacheClient;
     }
