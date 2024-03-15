@@ -51,7 +51,15 @@ public class CacheClient : ICacheClient
     public static async Task<ICacheClient> CreateAsync(IConfiguration config, ICredentialProvider authProvider, TimeSpan defaultTtl, TimeSpan eagerConnectionTimeout)
     {
         CacheClient cacheClient = new CacheClient(config, authProvider, defaultTtl);
-        await cacheClient.DataClient.EagerConnectAsync(eagerConnectionTimeout);
+        try
+        {
+            await cacheClient.DataClient.EagerConnectAsync(eagerConnectionTimeout);
+        }
+        catch (Exception e)
+        {
+            cacheClient.Dispose();
+            throw e;
+        }
         return cacheClient;
     }
 
