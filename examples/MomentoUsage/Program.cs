@@ -4,14 +4,15 @@ using Momento.Sdk;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Responses;
-
+using Microsoft.Diagnostics.NETCore.Client;
 
 public class Program
 {
     public static async Task Main(string[] args)
     {
         MeasureMemoryUsage("Start of program");
-        ICredentialProvider authProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY");
+        WriteMemoryDump("./heapdump");
+        ICredentialProvider authProvider = new StringMomentoTokenProvider("eyJlbmRwb2ludCI6ImNlbGwtNC11cy13ZXN0LTItMS5wcm9kLmEubW9tZW50b2hxLmNvbSIsImFwaV9rZXkiOiJleUpoYkdjaU9pSklVekkxTmlKOS5leUp6ZFdJaU9pSnRhV05vWVdWc1FHMXZiV1Z1ZEc5b2NTNWpiMjBpTENKMlpYSWlPakVzSW5BaU9pSkRRVUU5SWl3aVpYaHdJam94TnpFeU5qazBORFEyZlEuTzdUNXVWaXhjUlZuQmc1aS1FOWZyRlVsc1dtVWJZcTZqaVhhNTRuamh0dyJ9");
         MeasureMemoryUsage("After auth provider");
         const string CACHE_NAME = "cache";
         const string KEY = "MyKey";
@@ -51,6 +52,8 @@ public class Program
             {
                 Console.WriteLine($"Error getting value: {getError.Message}");
             }
+            Console.ReadLine();
+            WriteMemoryDump("./heapdump");
         }
     }
 
@@ -58,5 +61,21 @@ public class Program
     {
         var process = Process.GetCurrentProcess();
         Console.WriteLine($"[{message}] Memory Usage: {process.WorkingSet64 / 1024} KB");
+        Console.ReadLine();
+    }
+
+    public static void WriteMemoryDump(string prefixPath)
+    {
+        try
+        {
+            var processId = Process.GetCurrentProcess().Id;
+            var client = new DiagnosticsClient(processId);
+            string dumpPath = $"{prefixPath}-{DateTime.Now:yyyMMdd_HHmmss}.dmp";
+            client.WriteDump(DumpType.Full, dumpPath, logDumpGeneration: true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error creating heap dump: {ex.Message}");
+        }
     }
 }

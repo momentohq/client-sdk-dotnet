@@ -5,6 +5,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +13,7 @@
     <None Remove="Microsoft.SourceLink.GitHub" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Diagnostics.NETCore.Client" Version="0.2.510501" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
