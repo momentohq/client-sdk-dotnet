@@ -44,6 +44,7 @@
 	<ItemGroup>
 		<Folder Include="Internal\Middleware\" />
 		<Folder Include="Internal\Retry\" />
+		<Folder Include="Messages" />
 	</ItemGroup>
 	<ItemGroup>
 	  <PackageReference Include="Grpc.Net.Client" Version="2.61.0" />

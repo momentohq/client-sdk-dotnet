@@ -1,6 +1,3 @@
-using System;
-using Momento.Sdk.Requests.Vector;
-using Momento.Sdk.Responses.Vector;
 namespace Momento.Sdk.Tests.Integration;
 
 /// <summary>
@@ -42,51 +39,6 @@ public static class Utils
         if (result is not (CreateCacheResponse.Success or CreateCacheResponse.CacheAlreadyExists))
         {
             throw new Exception($"Error when creating cache: {result}");
-        }
-    }
-
-    public static _WithVectorIndex WithVectorIndex(IPreviewVectorIndexClient vectorIndexClient, IndexInfo indexInfo)
-    {
-        return new _WithVectorIndex(vectorIndexClient, indexInfo);
-    }
-
-    public static _WithVectorIndex WithVectorIndex(IPreviewVectorIndexClient vectorIndexClient, string indexName, int numDimensions, SimilarityMetric similarityMetric = SimilarityMetric.CosineSimilarity)
-    {
-        return WithVectorIndex(vectorIndexClient, new IndexInfo(indexName, numDimensions, similarityMetric));
-    }
-
-    public class _WithVectorIndex : IDisposable
-    {
-        public IPreviewVectorIndexClient VectorIndexClient { get; }
-
-        public IndexInfo IndexInfo { get; }
-
-        public _WithVectorIndex(IPreviewVectorIndexClient vectorIndexClient, IndexInfo indexInfo)
-        {
-            VectorIndexClient = vectorIndexClient;
-            IndexInfo = indexInfo;
-
-            // This usually isn't kosher in a constructor; because we want this class to encapsulate
-            // index creation and deletion in a using block, the class has to do RAII.
-            var createResponse = vectorIndexClient.CreateIndexAsync(indexInfo.Name, indexInfo.NumDimensions, indexInfo.SimilarityMetric).Result;
-            if (createResponse is not (CreateIndexResponse.Success or CreateIndexResponse.AlreadyExists))
-            {
-                throw new Exception($"Error when creating index: {createResponse}");
-            }
-        }
-
-        public _WithVectorIndex(IPreviewVectorIndexClient vectorIndexClient, string indexName, int numDimensions, SimilarityMetric similarityMetric = SimilarityMetric.CosineSimilarity)
-            : this(vectorIndexClient, new IndexInfo(indexName, numDimensions, similarityMetric))
-        {
-        }
-
-        public void Dispose()
-        {
-            var deleteResponse = VectorIndexClient.DeleteIndexAsync(IndexInfo.Name).Result;
-            if (deleteResponse is not DeleteIndexResponse.Success)
-            {
-                throw new Exception($"Error when deleting index: {deleteResponse}");
-            }
         }
     }
 }
