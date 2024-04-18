@@ -20,7 +20,7 @@ jobs:
             grpc-web: true
     runs-on: ${{ matrix.os }}
     env:
-      TEST_AUTH_TOKEN: ${{ secrets.ALPHA_TEST_AUTH_TOKEN }}
+      TEST_API_KEY: ${{ secrets.ALPHA_TEST_AUTH_TOKEN }}
 
     steps:
       - name: Get current time

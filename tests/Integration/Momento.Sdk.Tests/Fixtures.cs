@@ -19,7 +19,7 @@ public class CacheClientFixture : IDisposable
 
     public CacheClientFixture()
     {
-        AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
+        AuthProvider = new EnvMomentoTokenProvider("TEST_API_KEY");
         CacheName = $"dotnet-integration-{Utils.NewGuidString()}";
         Client = new TestCacheClient(Configurations.Laptop.Latest(LoggerFactory.Create(builder =>
                 {
@@ -60,7 +60,7 @@ public class TopicClientFixture : IDisposable
 
     public TopicClientFixture()
     {
-        AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
+        AuthProvider = new EnvMomentoTokenProvider("TEST_API_KEY");
         Client = new TopicClient(TopicConfigurations.Laptop.latest(LoggerFactory.Create(builder =>
         {
             builder.AddSimpleConsole(options =>
@@ -96,7 +96,7 @@ public class AuthClientFixture : IDisposable
 
     public AuthClientFixture()
     {
-        AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
+        AuthProvider = new EnvMomentoTokenProvider("TEST_API_KEY");
         Client = new AuthClient(AuthConfigurations.Default.Latest(LoggerFactory.Create(builder =>
         {
             builder.AddSimpleConsole(options =>
