@@ -19,7 +19,7 @@ public class CacheEagerConnectionTest
         builder.SetMinimumLevel(LogLevel.Information);
     });
     private readonly TimeSpan defaultTtl = TimeSpan.FromMinutes(1);
-    private readonly ICredentialProvider authProvider = new EnvMomentoTokenProvider("TEST_API_KEY");
+    private readonly ICredentialProvider authProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY");
 
     [Fact]
     public void CacheClientConstructor_LazyConnection()
