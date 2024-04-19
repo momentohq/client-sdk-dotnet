@@ -531,55 +531,6 @@ namespace Momento.Sdk.Internal
             return success;
         }
 
-        /// <summary>
-        /// Logs a message at TRACE level that indicates that a vector index request is about to be executed.
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="requestType"></param>
-        /// <param name="indexName"></param>
-        /// <returns></returns>
-        public static void LogTraceVectorIndexRequest(this ILogger logger, string requestType, string indexName)
-        {
-            if (logger.IsEnabled(LogLevel.Trace))
-            {
-                logger.LogTrace("Executing '{}' request: indexName: {}", requestType, indexName);
-            }
-        }
-
-        /// <summary>
-        /// Logs a message at TRACE level that indicates that a vector index request resulted in an error.
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="requestType"></param>
-        /// <param name="indexName"></param>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        public static TError LogTraceVectorIndexRequestError<TError>(this ILogger logger, string requestType, string indexName, TError error)
-        {
-            if (logger.IsEnabled(LogLevel.Trace))
-            {
-                logger.LogTrace("An error occurred while executing a '{}' request: indexName: {}; error: {}", requestType, indexName, error);
-            }
-            return error;
-        }
-
-        /// <summary>
-        /// Logs a message at TRACE level that indicates that a vector index request resulted in a success.
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="requestType"></param>
-        /// <param name="indexName"></param>
-        /// <param name="success"></param>
-        /// <returns></returns>
-        public static TSuccess LogTraceVectorIndexRequestSuccess<TSuccess>(this ILogger logger, string requestType, string indexName, TSuccess success)
-        {
-            if (logger.IsEnabled(LogLevel.Trace))
-            {
-                logger.LogTrace("Successfully executed '{}' request: indexName: {}; success: {}", requestType, indexName, success);
-            }
-            return success;
-        }
-
         private static string ReadableByteString(ByteString? input)
         {
             if (input == null)
