@@ -19,7 +19,7 @@ public class CacheClientFixture : IDisposable
 
     public CacheClientFixture()
     {
-        AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
+        AuthProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY");
         CacheName = $"dotnet-integration-{Utils.NewGuidString()}";
         Client = new TestCacheClient(Configurations.Laptop.Latest(LoggerFactory.Create(builder =>
                 {
@@ -60,7 +60,7 @@ public class TopicClientFixture : IDisposable
 
     public TopicClientFixture()
     {
-        AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
+        AuthProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY");
         Client = new TopicClient(TopicConfigurations.Laptop.latest(LoggerFactory.Create(builder =>
         {
             builder.AddSimpleConsole(options =>
@@ -96,7 +96,7 @@ public class AuthClientFixture : IDisposable
 
     public AuthClientFixture()
     {
-        AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
+        AuthProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY");
         Client = new AuthClient(AuthConfigurations.Default.Latest(LoggerFactory.Create(builder =>
         {
             builder.AddSimpleConsole(options =>
@@ -121,42 +121,6 @@ public class AuthClientFixture : IDisposable
 /// </summary>
 [CollectionDefinition("AuthClient")]
 public class AuthClientCollection : ICollectionFixture<AuthClientFixture>
-{
-
-}
-
-public class VectorIndexClientFixture : IDisposable
-{
-    public IPreviewVectorIndexClient Client { get; private set; }
-    public ICredentialProvider AuthProvider { get; private set; }
-
-    public VectorIndexClientFixture()
-    {
-        AuthProvider = new EnvMomentoTokenProvider("TEST_AUTH_TOKEN");
-        Client = new PreviewVectorIndexClient(VectorIndexConfigurations.Laptop.Latest(LoggerFactory.Create(builder =>
-        {
-            builder.AddSimpleConsole(options =>
-            {
-                options.IncludeScopes = true;
-                options.SingleLine = true;
-                options.TimestampFormat = "hh:mm:ss ";
-            });
-            builder.AddFilter("Grpc.Net.Client", LogLevel.Error);
-            builder.SetMinimumLevel(LogLevel.Information);
-        })), AuthProvider);
-    }
-
-    public void Dispose()
-    {
-        Client.Dispose();
-    }
-}
-
-/// <summary>
-/// Register the fixture in xUnit.
-/// </summary>
-[CollectionDefinition("VectorIndexClient")]
-public class VectorIndexClientCollection : ICollectionFixture<VectorIndexClientFixture>
 {
 
 }

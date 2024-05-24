@@ -44,9 +44,10 @@
 	<ItemGroup>
 		<Folder Include="Internal\Middleware\" />
 		<Folder Include="Internal\Retry\" />
+		<Folder Include="Messages" />
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="Grpc.Net.Client" Version="2.61.0" />
+	  <PackageReference Include="Grpc.Net.Client" Version="2.63.0" />
 	  <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
 	  <PackageReference Include="Momento.Protos" Version="0.106.0" />
 	  <PackageReference Include="JWT" Version="9.0.3" />
@@ -60,7 +61,7 @@
 	</ItemGroup>
 	<ItemGroup Condition=" $(DefineConstants.Contains('USE_GRPC_WEB')) ">
 	  <!-- Currently the Unity build needs gRPC-Web -->
-	  <PackageReference Include="Grpc.Net.Client.Web" Version="2.52.0" />
+	  <PackageReference Include="Grpc.Net.Client.Web" Version="2.63.0" />
 	</ItemGroup>
 	<ProjectExtensions>
 	  <MonoDevelop>

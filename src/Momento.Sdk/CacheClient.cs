@@ -55,10 +55,10 @@ public class CacheClient : ICacheClient
         {
             await cacheClient.DataClient.EagerConnectAsync(eagerConnectionTimeout);
         }
-        catch (Exception e)
+        catch (Exception)
         {
             cacheClient.Dispose();
-            throw e;
+            throw;
         }
         return cacheClient;
     }
