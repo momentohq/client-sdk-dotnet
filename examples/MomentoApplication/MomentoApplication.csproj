@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Momento.Sdk" Version="1.30.1" />
+    <PackageReference Include="Momento.Sdk" Version="1.34.0" />
   </ItemGroup>
 
   <ItemGroup>
