@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
@@ -22,6 +23,7 @@ public class ScsDataClientBase : IDisposable
     private readonly TimeSpan defaultTtl;
     private readonly TimeSpan dataClientOperationTimeout;
     private readonly ILogger _logger;
+    private bool hasSentOnetimeHeaders = false;
 
     protected readonly CacheExceptionMapper _exceptionMapper;
 
@@ -41,7 +43,13 @@ public class ScsDataClientBase : IDisposable
 
     protected Metadata MetadataWithCache(string cacheName)
     {
-        return new Metadata() { { "cache", cacheName } };
+        if (this.hasSentOnetimeHeaders) {
+            return new Metadata() { { "cache", cacheName } };
+        }
+        this.hasSentOnetimeHeaders = true;
+        string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        string runtimeVer = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
+        return new Metadata() { { "cache", cacheName }, { "Agent", $"dotnet:{version}" }, { "Runtime-Version", runtimeVer } };
     }
     protected DateTime CalculateDeadline()
     {
