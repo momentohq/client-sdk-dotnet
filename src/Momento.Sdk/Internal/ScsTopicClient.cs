@@ -39,7 +39,6 @@ public class ScsTopicClientBase : IDisposable
         this.hasSentOnetimeHeaders = true;
         string sdkVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
         string runtimeVer = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
-        Console.WriteLine($"cache: {cacheName}, agent:{sdkVersion}, runtime-version:{runtimeVer}");
         return new Metadata() { { "cache", cacheName }, { "Agent", $"dotnet:{sdkVersion}" }, { "Runtime-Version", runtimeVer } };
     }
 

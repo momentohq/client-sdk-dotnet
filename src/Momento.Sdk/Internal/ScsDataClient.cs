@@ -47,9 +47,9 @@ public class ScsDataClientBase : IDisposable
             return new Metadata() { { "cache", cacheName } };
         }
         this.hasSentOnetimeHeaders = true;
-        string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        string sdkVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
         string runtimeVer = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
-        return new Metadata() { { "cache", cacheName }, { "Agent", $"dotnet:{version}" }, { "Runtime-Version", runtimeVer } };
+        return new Metadata() { { "cache", cacheName }, { "Agent", $"dotnet:{sdkVersion}" }, { "Runtime-Version", runtimeVer } };
     }
     protected DateTime CalculateDeadline()
     {
