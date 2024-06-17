@@ -1,6 +1,7 @@
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
@@ -21,6 +22,7 @@ internal sealed class ScsTokenClient : IDisposable
     private readonly string authToken;
     private readonly TimeSpan authClientOperationTimeout;
     private readonly ILogger _logger;
+    private bool hasSentOnetimeHeaders = false;
     private readonly CacheExceptionMapper _exceptionMapper;
     public ScsTokenClient(IAuthConfiguration config, string authToken, string endpoint)
     {
@@ -29,6 +31,17 @@ internal sealed class ScsTokenClient : IDisposable
         this.authClientOperationTimeout = config.TransportStrategy.GrpcConfig.Deadline;
         this._logger = config.LoggerFactory.CreateLogger<ScsTokenClient>();
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
+    }
+    
+    private Metadata Metadata()
+    {
+        if (this.hasSentOnetimeHeaders) {
+            return new Metadata();
+        }
+        this.hasSentOnetimeHeaders = true;
+        string sdkVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        string runtimeVer = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
+        return new Metadata() { { "Agent", $"dotnet:auth:{sdkVersion}" }, { "Runtime-Version", runtimeVer } };
     }
 
     private DateTime CalculateDeadline()
@@ -65,9 +78,10 @@ internal sealed class ScsTokenClient : IDisposable
                 Permissions = permissions,
                 TokenId = tokenId ?? ""
             };
+            var metadata = Metadata();
             _logger.LogTraceExecutingGenericRequest(RequestTypeAuthGenerateDisposableToken);
             var response = await grpcManager.Client.generateDisposableToken(
-                request, new CallOptions(deadline: CalculateDeadline())
+                request, new CallOptions(headers: metadata, deadline: CalculateDeadline())
             );
             return _logger.LogTraceGenericRequestSuccess(RequestTypeAuthGenerateDisposableToken,
                 new GenerateDisposableTokenResponse.Success(response));
