@@ -1,6 +1,7 @@
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -18,6 +19,7 @@ public class ScsTopicClientBase : IDisposable
     protected readonly TopicGrpcManager grpcManager;
     private readonly TimeSpan dataClientOperationTimeout;
     private readonly ILogger _logger;
+    private bool hasSentOnetimeHeaders = false;
 
     protected readonly CacheExceptionMapper _exceptionMapper;
 
@@ -29,9 +31,15 @@ public class ScsTopicClientBase : IDisposable
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
     }
 
-    protected Metadata MetadataWithCache(string cacheName)
+    private Metadata MetadataWithCache(string cacheName)
     {
-        return new Metadata() { { "cache", cacheName } };
+        if (this.hasSentOnetimeHeaders) {
+            return new Metadata() { { "cache", cacheName } };
+        }
+        this.hasSentOnetimeHeaders = true;
+        string sdkVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        string runtimeVer = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
+        return new Metadata() { { "cache", cacheName }, { "Agent", $"dotnet:topic:{sdkVersion}" }, { "Runtime-Version", runtimeVer } };
     }
 
     protected DateTime CalculateDeadline()
