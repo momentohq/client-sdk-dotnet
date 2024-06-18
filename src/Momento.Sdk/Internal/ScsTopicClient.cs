@@ -31,7 +31,7 @@ public class ScsTopicClientBase : IDisposable
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
     }
 
-    protected Metadata MetadataWithCache(string cacheName)
+    private Metadata MetadataWithCache(string cacheName)
     {
         if (this.hasSentOnetimeHeaders) {
             return new Metadata() { { "cache", cacheName } };
@@ -39,7 +39,7 @@ public class ScsTopicClientBase : IDisposable
         this.hasSentOnetimeHeaders = true;
         string sdkVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
         string runtimeVer = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
-        return new Metadata() { { "cache", cacheName }, { "Agent", $"dotnet:{sdkVersion}" }, { "Runtime-Version", runtimeVer } };
+        return new Metadata() { { "cache", cacheName }, { "Agent", $"dotnet:topic:{sdkVersion}" }, { "Runtime-Version", runtimeVer } };
     }
 
     protected DateTime CalculateDeadline()
