@@ -33,13 +33,14 @@ public class ScsTopicClientBase : IDisposable
 
     private Metadata MetadataWithCache(string cacheName)
     {
-        if (this.hasSentOnetimeHeaders) {
+        if (this.hasSentOnetimeHeaders)
+        {
             return new Metadata() { { "cache", cacheName } };
         }
         this.hasSentOnetimeHeaders = true;
         string sdkVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
         string runtimeVer = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
-        return new Metadata() { { "cache", cacheName }, { "Agent", $"dotnet:topic:{sdkVersion}" }, { "Runtime-Version", runtimeVer } };
+        return new Metadata() { { "cache", cacheName }, { "agent", $"dotnet:topic:{sdkVersion}" }, { "runtime-v]ersion", runtimeVer } };
     }
 
     protected DateTime CalculateDeadline()
