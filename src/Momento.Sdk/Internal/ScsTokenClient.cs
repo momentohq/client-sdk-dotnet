@@ -32,16 +32,17 @@ internal sealed class ScsTokenClient : IDisposable
         this._logger = config.LoggerFactory.CreateLogger<ScsTokenClient>();
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
     }
-    
+
     private Metadata Metadata()
     {
-        if (this.hasSentOnetimeHeaders) {
+        if (this.hasSentOnetimeHeaders)
+        {
             return new Metadata();
         }
         this.hasSentOnetimeHeaders = true;
         string sdkVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
         string runtimeVer = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
-        return new Metadata() { { "Agent", $"dotnet:auth:{sdkVersion}" }, { "Runtime-Version", runtimeVer } };
+        return new Metadata() { { "agent", $"dotnet:auth:{sdkVersion}" }, { "runtime-version", runtimeVer } };
     }
 
     private DateTime CalculateDeadline()
