@@ -11,9 +11,9 @@ namespace Momento.Sdk.Internal.Middleware
 {
     internal class Header
     {
-        public const string AuthorizationKey = "Authorization";
-        public const string AgentKey = "Agent";
-        public const string RuntimeVersionKey = "Runtime_Version";
+        public const string AuthorizationKey = "authorization";
+        public const string AgentKey = "agent";
+        public const string RuntimeVersionKey = "runtime-version";
         public readonly List<string> onceOnlyHeaders = new List<string> { Header.AgentKey, Header.RuntimeVersionKey };
         public string Name;
         public string Value;

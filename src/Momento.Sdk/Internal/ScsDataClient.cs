@@ -35,7 +35,7 @@ public class ScsDataClientBase : IDisposable
         this._logger = config.LoggerFactory.CreateLogger<ScsDataClient>();
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
     }
-    
+
     internal Task EagerConnectAsync(TimeSpan eagerConnectionTimeout)
     {
         return this.grpcManager.EagerConnectAsync(eagerConnectionTimeout);
@@ -43,13 +43,14 @@ public class ScsDataClientBase : IDisposable
 
     protected Metadata MetadataWithCache(string cacheName)
     {
-        if (this.hasSentOnetimeHeaders) {
+        if (this.hasSentOnetimeHeaders)
+        {
             return new Metadata() { { "cache", cacheName } };
         }
         this.hasSentOnetimeHeaders = true;
         string sdkVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
         string runtimeVer = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
-        return new Metadata() { { "cache", cacheName }, { "Agent", $"dotnet:cache:{sdkVersion}" }, { "Runtime-Version", runtimeVer } };
+        return new Metadata() { { "cache", cacheName }, { "agent", $"dotnet:cache:{sdkVersion}" }, { "runtime-version", runtimeVer } };
     }
     protected DateTime CalculateDeadline()
     {
@@ -998,8 +999,8 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
         return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_SET_FETCH, cacheName, setName, new CacheSetFetchResponse.Miss());
     }
-    
-    
+
+
     const string REQUEST_TYPE_SET_SAMPLE = "SET_SAMPLE";
     private async Task<CacheSetSampleResponse> SendSetSampleAsync(string cacheName, string setName, ulong limit)
     {
@@ -1023,7 +1024,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
 
         return this._logger.LogTraceCollectionRequestSuccess(REQUEST_TYPE_SET_SAMPLE, cacheName, setName, new CacheSetSampleResponse.Miss());
     }
-    
+
     const string REQUEST_TYPE_SET_LENGTH = "SET_LENGTH";
     private async Task<CacheSetLengthResponse> SendSetLengthAsync(string cacheName, string setName)
     {
