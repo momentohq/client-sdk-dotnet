@@ -1,21 +1,48 @@
-.PHONY: all build clean clean-build precommit restore test test-net6 test-net-framework run-examples help
+.PHONY: all build build-dotnet6 build-dotnet-framework clean clean-build precommit restore test test-dotnet6 test-dotnet-framework run-examples help
+
+# Determine the operating system
+OS := $(shell uname)
+
+# Set the default .NET version to .NET 6.0
+DOTNET_VERSION := net6.0
+
+# Windows-specific settings
+ifeq ($(OS), Windows_NT)
+    BUILD_TARGETS := build-dotnet6 build-dotnet-framework
+    TEST_TARGETS := test-dotnet6 test-dotnet-framework
+else
+    BUILD_TARGETS := build-dotnet6
+    TEST_TARGETS := test-dotnet6
+endif
+
 
 ## Generate sync unit tests, format, lint, and test
 all: precommit
 
 
-## Build project
-build:
-	@dotnet build
+## Build the project (conditioned by OS)
+build: ${BUILD_TARGETS}
 
+
+## Build the project for .NET 6.0
+build-dotnet6:
+	@echo "Building the project for .NET 6.0..."
+	@dotnet build -f ${DOTNET_VERSION}
+
+
+## Build the project on .NET Framework
+build-dotnet-framework:
+	@echo "Building the project for .NET Framework 4.62..."
+	@dotnet build -f net462
 
 ## Remove build files
 clean:
+	@echo "Cleaning build artifacts..."
 	@dotnet clean
 
 
 ## Build project
-clean-build: clean restore build
+clean-build: clean restore ${BUILD_TARGETS}
 
 
 ## Run clean-build and test as a step before committing.
@@ -24,22 +51,22 @@ precommit: clean-build test
 
 ## Sync dependencies
 restore:
+	@echo "Restoring dependencies..."
 	@dotnet restore
 
 
-## Run unit and integration tests
-test:
-	@dotnet test
+## Run unit and integration tests (conditioned by OS)
+test: ${TEST_TARGETS}
 
 
 ## Run unit and integration tests on the .NET 6.0 runtime
-test-net6:
+test-dotnet6:
 	@echo "Running tests on .NET 6.0..."
-	@dotnet test -f net6.0
+	@dotnet test -f ${DOTNET_VERSION}
 
 
 ## Run unit and integration tests on the .NET Framework runtime (Windows only)
-test-net-framework:
+test-dotnet-framework:
 	@echo "Running tests on .NET Framework 4.62 (Windows only)..."
 	@dotnet test -f net462
 
