@@ -5,6 +5,7 @@ OS := $(shell uname)
 
 # Set the default .NET version to .NET 6.0
 DOTNET_VERSION := net6.0
+TEST_LOGGER_OPTIONS := --logger "console;verbosity=detailed"
 
 # Windows-specific settings
 ifeq ($(OS), Windows_NT)
@@ -62,13 +63,13 @@ test: ${TEST_TARGETS}
 ## Run unit and integration tests on the .NET 6.0 runtime
 test-dotnet6:
 	@echo "Running tests on .NET 6.0..."
-	@dotnet test -f ${DOTNET_VERSION}
+	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_VERSION}
 
 
 ## Run unit and integration tests on the .NET Framework runtime (Windows only)
 test-dotnet-framework:
 	@echo "Running tests on .NET Framework 4.62 (Windows only)..."
-	@dotnet test -f net462
+	@dotnet test ${TEST_LOGGER_OPTIONS} -f net462
 
 
 ## Run example applications and snippets
