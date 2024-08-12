@@ -40,12 +40,14 @@ test:
 .PHONY: test-net6
 ## Run unit and integration tests on the .NET 6.0 runtime
 test-net6:
+	@echo "Running tests on .NET 6.0..."
 	@dotnet test -f net6.0
 
 
 .PHONY: test-net-framework
-## Run unit and integration tests on the .NET Framework runtime
+## Run unit and integration tests on the .NET Framework runtime (Windows only)
 test-net-framework:
+	@echo "Running tests on .NET Framework 4.62 (Windows only)..."
 	@dotnet test -f net462
 
 
