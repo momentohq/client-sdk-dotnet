@@ -32,6 +32,7 @@ build: ${BUILD_TARGETS}
 
 ## Build the project for .NET 6.0
 build-dotnet6:
+	echo "Detected OS was: ${OS}"
 	@echo "Building the project for .NET 6.0..."
 	@dotnet build -f ${DOTNET_VERSION} ${GRPC_WEB_FLAG}
 
