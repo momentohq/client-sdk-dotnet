@@ -31,7 +31,7 @@ jobs:
       - name: Build
         run: make GRPC_WEB=${{ matrix.grpc-web }} build
 
-      - name: Unit and Integration Test
+      - name: Test
         run: make test
 
   generate_readme:
