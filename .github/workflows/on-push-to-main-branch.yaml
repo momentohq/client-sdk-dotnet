@@ -9,15 +9,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        target-framework: [net6.0]
         grpc-web: [false, true]
-        include:
-          - os: windows-latest
-            target-framework: net462
-            grpc-web: false
-          - os: windows-latest
-            target-framework: net462
-            grpc-web: true
     runs-on: ${{ matrix.os }}
     env:
       MOMENTO_API_KEY: ${{ secrets.ALPHA_TEST_AUTH_TOKEN }}
@@ -37,13 +29,10 @@ jobs:
           dotnet-version: "6.0.x"
 
       - name: Build
-        run: dotnet build ${{ matrix.grpc-web && '-p:DefineConstants=USE_GRPC_WEB' || '' }}
+        run: make GRPC_WEB=${{ matrix.grpc-web }} build
 
-      - name: Unit Test
-        run: dotnet test -f ${{ matrix.target-framework }} tests/Unit/Momento.Sdk.Tests
-
-      - name: Integration Test
-        run: dotnet test -f ${{ matrix.target-framework }} tests/Integration/Momento.Sdk.Tests
+      - name: Unit and Integration Test
+        run: make test
 
   generate_readme:
     runs-on: ubuntu-latest

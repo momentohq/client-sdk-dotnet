@@ -45,7 +45,7 @@ jobs:
           dotnet-version: "6.0.x"
 
       - name: Build
-        run: dotnet build
+        run: make build
 
       - name: Pack and Publish
         run: |
@@ -57,7 +57,7 @@ jobs:
             dotnet pack -c Release -p:Version=${VERSION}
             dotnet nuget push ./bin/Release/Momento.Sdk.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key=${{secrets.NUGET_API_KEY}}
           popd
-          
+
       - name: Build for Unity
         run: |
           set -x

@@ -16,6 +16,11 @@ else
     TEST_TARGETS := test-dotnet6
 endif
 
+# Enable gRPC-Web if requested
+GRPC_WEB_FLAG :=
+ifeq ($(GRPC_WEB), true)
+    GRPC_WEB_FLAG := -p:DefineConstants=USE_GRPC_WEB
+endif
 
 ## Generate sync unit tests, format, lint, and test
 all: precommit
@@ -28,13 +33,13 @@ build: ${BUILD_TARGETS}
 ## Build the project for .NET 6.0
 build-dotnet6:
 	@echo "Building the project for .NET 6.0..."
-	@dotnet build -f ${DOTNET_VERSION}
+	@dotnet build -f ${DOTNET_VERSION} ${GRPC_WEB_FLAG}
 
 
 ## Build the project on .NET Framework
 build-dotnet-framework:
 	@echo "Building the project for .NET Framework 4.62..."
-	@dotnet build -f net462
+	@dotnet build -f net462 ${GRPC_WEB_FLAG}
 
 ## Remove build files
 clean:
