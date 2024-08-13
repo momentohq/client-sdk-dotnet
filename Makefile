@@ -8,7 +8,8 @@ DOTNET_VERSION := net6.0
 TEST_LOGGER_OPTIONS := --logger "console;verbosity=detailed"
 
 # Windows-specific settings
-ifeq ($(OS), Windows_NT)
+# This tests if "NT" is in the OS string, which would indicate Windows.
+ifneq (,$(findstring NT,$(OS)))
     BUILD_TARGETS := build-dotnet6 build-dotnet-framework
     TEST_TARGETS := test-dotnet6 test-dotnet-framework
 else
@@ -32,7 +33,6 @@ build: ${BUILD_TARGETS}
 
 ## Build the project for .NET 6.0
 build-dotnet6:
-	echo "Detected OS was: ${OS}"
 	@echo "Building the project for .NET 6.0..."
 	@dotnet build -f ${DOTNET_VERSION} ${GRPC_WEB_FLAG}
 
