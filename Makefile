@@ -7,7 +7,7 @@
 #   - On Windows `make build` (test) runs both .NET 6.0 and .NET Framework build (test) targets.
 #   - On other operating systems `make build` (test) we only runs the .NET 6.0 build (test) targets.
 # - We also have a GRPC_WEB flag that can be set to true to enable gRPC-Web support.
-#   - The caller can run `make GRPC_WEB=true <target>` (eg build or test) to enable gRPC-Web support.
+#   - The caller can run `make GRPC_WEB=true build` to enable gRPC-Web support.
 # - We additionally group the integration tests by endpoint (cache, control, token).
 #   - This is to allow for more granular testing by endpoint.
 #   - Similar to `build` and `test` targets, we have `test-cache`, `test-control`, `test-token`, and `test-storage` targets
@@ -53,7 +53,6 @@ endif
 CACHE_ENDPOINT_TESTS_FILTER := "FullyQualifiedName~Momento.Sdk.Tests.Integration.Cache.Data|FullyQualifiedName~Momento.Sdk.Tests.Integration.Topics.Data"
 CONTROL_ENDPOINT_TESTS_FILTER := "FullyQualifiedName~Momento.Sdk.Tests.Integration.Cache.Control"
 TOKEN_ENDPOINT_TESTS_FILTER := "FullyQualifiedName~Momento.Sdk.Tests.Integration.Auth"
-UNIT_TESTS_FILTER := "FullyQualifiedName~Momento.Sdk.Tests.Unit"
 
 
 ## Generate sync unit tests, format, lint, and test
@@ -100,11 +99,9 @@ test: ${TEST_TARGETS}
 
 
 ## Run unit and integration tests on the .NET 6.0 runtime
-test-dotnet6: test-dotnet6-integration test-dotnet6-unit
-
-
-## Run integration tests on the .NET 6.0 runtime
-test-dotnet6-integration: test-dotnet6-cache test-dotnet6-control test-dotnet6-token
+test-dotnet6:
+	@echo "Running unit and integration tests on the .NET 6.0 runtime..."
+	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_VERSION}
 
 
 ## Run integration tests on the .NET 6.0 runtime against the cache endpoint
@@ -125,18 +122,10 @@ test-dotnet6-token:
 	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_VERSION} --filter ${TOKEN_ENDPOINT_TESTS_FILTER}
 
 
-## Run unit tests on the .NET 6.0 runtime
-test-dotnet6-unit:
-	@echo "Running unit tests on the .NET 6.0 runtime..."
-	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_VERSION} --filter ${UNIT_TESTS_FILTER}
-
-
 ## Run unit and integration tests on the .NET Framework runtime (Windows only)
-test-dotnet-framework: test-dotnet-framework-integration test-dotnet-framework-unit
-
-
-## Run integration tests on the .NET Framework runtime (Windows only)
-test-dotnet-framework-integration: test-dotnet-framework-cache test-dotnet-framework-control test-dotnet-framework-token
+test-dotnet-framework:
+	@echo "Running unit and integration tests on the .NET Framework runtime..."
+	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_FRAMEWORK_VERSION}
 
 
 ## Run integration tests on the .NET Framework runtime against the cache endpoint (Windows only)
@@ -155,12 +144,6 @@ test-dotnet-framework-control:
 test-dotnet-framework-token:
 	@echo "Running integration tests on the .NET Framework runtime against the token endpoint..."
 	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_FRAMEWORK_VERSION} --filter ${TOKEN_ENDPOINT_TESTS_FILTER}
-
-
-## Run unit tests on the .NET Framework runtime (Windows only)
-test-dotnet-framework-unit:
-	@echo "Running unit tests on the .NET Framework runtime..."
-	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_FRAMEWORK_VERSION} --filter ${UNIT_TESTS_FILTER}
 
 
 ## Run cache endpoint tests
