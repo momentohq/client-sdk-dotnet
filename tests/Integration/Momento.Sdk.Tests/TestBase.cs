@@ -1,7 +1,7 @@
 ﻿using Momento.Sdk.Auth;
 using Momento.Sdk.Tests;
 
-namespace Momento.Sdk.Tests;
+namespace Momento.Sdk.Tests.Integration;
 
 public class TestBase
 {

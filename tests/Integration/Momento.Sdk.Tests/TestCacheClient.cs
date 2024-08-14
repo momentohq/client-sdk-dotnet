@@ -4,7 +4,7 @@ using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Requests;
 
-namespace Momento.Sdk.Tests;
+namespace Momento.Sdk.Tests.Integration;
 
 /// <summary>
 /// Client call wrapper to make test expectations easier to write.
@@ -26,7 +26,8 @@ public class TestCacheClient : ICacheClient
     /// Momento in the same datacenter. From your laptop you'll pretty much always pay 10
     /// milliseconds to lightspeed tax, at least in 2023.
     /// </summary>
-    private async Task Quiesce() {
+    private async Task Quiesce()
+    {
         await Task.Delay(TimeSpan.FromMilliseconds(10));
     }
 
@@ -316,7 +317,7 @@ public class TestCacheClient : ICacheClient
     {
         return ((ICacheClient)client).SetFetchAsync(cacheName, setName);
     }
-    
+
     public Task<CacheSetSampleResponse> SetSampleAsync(string cacheName, string setName, int limit)
     {
         return ((ICacheClient)client).SetSampleAsync(cacheName, setName, limit);

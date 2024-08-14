@@ -3,7 +3,7 @@ using Momento.Sdk.Exceptions;
 using System;
 using Xunit;
 
-namespace Momento.Sdk.Tests;
+namespace Momento.Sdk.Tests.Unit;
 
 
 public class CredentialProviderTests

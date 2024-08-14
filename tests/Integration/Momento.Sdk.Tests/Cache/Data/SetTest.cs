@@ -6,7 +6,7 @@ using Momento.Sdk.Responses;
 using Momento.Sdk.Tests;
 using Xunit.Abstractions;
 
-namespace Momento.Sdk.Tests;
+namespace Momento.Sdk.Tests.Integration.Cache.Data;
 
 [Collection("CacheClient")]
 public class SetTest : TestBase
@@ -577,7 +577,7 @@ public class SetTest : TestBase
         var set2 = hitResponse.ValueSetString;
         Assert.Same(set1, set2);
     }
-    
+
     [Theory]
     [InlineData(null, "my-set", 100)]
     [InlineData("cache", null, 100)]
@@ -588,7 +588,7 @@ public class SetTest : TestBase
         Assert.True(response is CacheSetSampleResponse.Error, $"Unexpected response: {response}");
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheSetSampleResponse.Error)response).ErrorCode);
     }
-    
+
     [Fact]
     public async Task SetSampleAsync_Missing_HappyPath()
     {
@@ -609,17 +609,17 @@ public class SetTest : TestBase
         Assert.True(allElementsResponse is CacheSetSampleResponse.Hit, $"Unexpected response: {allElementsResponse}");
         var allElementsHitValues = ((CacheSetSampleResponse.Hit)allElementsResponse).ValueSetString;
         Assert.True(allValues.SetEquals(allElementsHitValues), $"Expected sample with with limit matching set size to return the entire set; expected ({String.Join(", ", allValues)}), got ({String.Join(", ", allElementsHitValues)})");
-        
+
         CacheSetSampleResponse limitGreaterThanSetSizeResponse = await client.SetSampleAsync(cacheName, setName, 1000);
         Assert.True(limitGreaterThanSetSizeResponse is CacheSetSampleResponse.Hit, $"Unexpected response: {limitGreaterThanSetSizeResponse}");
         var limitGreaterThanSetSizeHitValues = ((CacheSetSampleResponse.Hit)limitGreaterThanSetSizeResponse).ValueSetString;
         Assert.True(allValues.SetEquals(limitGreaterThanSetSizeHitValues), $"Expected sample with with limit greater than set size to return the entire set; expected ({String.Join(", ", allValues)}), got ({String.Join(", ", limitGreaterThanSetSizeHitValues)})");
-        
+
         CacheSetSampleResponse limitZeroResponse = await client.SetSampleAsync(cacheName, setName, 0);
         var emptySet = new HashSet<String>();
         var limitZeroHitValues = ((CacheSetSampleResponse.Hit)limitZeroResponse).ValueSetString;
         Assert.True(emptySet.SetEquals(limitZeroHitValues), $"Expected sample with with limit zero to return empty set; got ({limitZeroHitValues})");
-        
+
         for (int i = 0; i < 10; i++)
         {
             CacheSetSampleResponse response = await client.SetSampleAsync(cacheName, setName, allValues.Count - 2);
@@ -630,7 +630,7 @@ public class SetTest : TestBase
                 $"Expected hit values ({String.Join(", ", hitValues)}) to be subset of all values ({String.Join(", ", allValues)}), but it is not!");
         }
     }
-    
+
 
     [Fact]
     public async Task CacheSetFetchResponse_ToString_HappyPath()
@@ -675,7 +675,7 @@ public class SetTest : TestBase
         fetchResponse = await client.SetFetchAsync(cacheName, setName);
         Assert.True(fetchResponse is CacheSetFetchResponse.Miss, $"Unexpected response: {fetchResponse}");
     }
-    
+
     [Fact]
     public async Task SetLengthAsync_SetIsMissing()
     {

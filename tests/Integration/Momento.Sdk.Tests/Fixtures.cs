@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 
-namespace Momento.Sdk.Tests;
+namespace Momento.Sdk.Tests.Integration;
 
 /// <summary>
 /// A cache client fixture.
