@@ -30,14 +30,14 @@ TEST_LOGGER_OPTIONS := --logger "console;verbosity=detailed"
 # Windows-specific settings
 # This tests if "NT" is in the OS string, which would indicate Windows.
 ifneq (,$(findstring NT,$(OS)))
-    BUILD_TARGETS := build-dotnet6 build-dotnet-framework
-    TEST_TARGETS := test-dotnet6 test-dotnet-framework
+	BUILD_TARGETS := build-dotnet6 build-dotnet-framework
+	TEST_TARGETS := test-dotnet6 test-dotnet-framework
 	TEST_TARGETS_CACHE := test-dotnet6-cache test-dotnet-framework-cache
 	TEST_TARGETS_CONTROL := test-dotnet6-control test-dotnet-framework-control
 	TEST_TARGETS_TOKEN := test-dotnet6-token test-dotnet-framework-token
 else
-    BUILD_TARGETS := build-dotnet6
-    TEST_TARGETS := test-dotnet6
+	BUILD_TARGETS := build-dotnet6
+	TEST_TARGETS := test-dotnet6
 	TEST_TARGETS_CACHE := test-dotnet6-cache
 	TEST_TARGETS_CONTROL := test-dotnet6-control
 	TEST_TARGETS_TOKEN := test-dotnet6-token
@@ -46,7 +46,7 @@ endif
 # Enable gRPC-Web if requested
 GRPC_WEB_FLAG :=
 ifeq ($(GRPC_WEB), true)
-    GRPC_WEB_FLAG := -p:DefineConstants=USE_GRPC_WEB
+	GRPC_WEB_FLAG := -p:DefineConstants=USE_GRPC_WEB
 endif
 
 # Various test filters
