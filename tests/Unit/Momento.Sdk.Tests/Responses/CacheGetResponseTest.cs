@@ -3,7 +3,7 @@ using Momento.Protos.CacheClient;
 using Momento.Sdk.Responses;
 using Xunit;
 
-namespace Momento.Sdk.Tests.Responses;
+namespace Momento.Sdk.Tests.Unit;
 
 public class CacheGetResponseTest
 {

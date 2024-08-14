@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Momento.Sdk.Auth;
 
-namespace Momento.Sdk.Tests;
+namespace Momento.Sdk.Tests.Integration.Cache.Control;
 
 [Collection("CacheClient")]
 public class CacheControlTest : TestBase

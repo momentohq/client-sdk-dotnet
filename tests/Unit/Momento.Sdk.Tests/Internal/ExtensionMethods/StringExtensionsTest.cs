@@ -2,6 +2,8 @@ using System;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Xunit;
 
+namespace Momento.Sdk.Tests.Unit;
+
 public class StringExtensionsTest
 {
     [Fact]

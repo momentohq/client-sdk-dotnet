@@ -5,7 +5,7 @@ using Momento.Sdk.Auth.AccessControl;
 using Momento.Sdk.Config;
 using System.Collections.Generic;
 
-namespace Momento.Sdk.Tests;
+namespace Momento.Sdk.Tests.Integration.Auth;
 
 [Collection("AuthClient")]
 public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixture<AuthClientFixture>, IClassFixture<TopicClientFixture>

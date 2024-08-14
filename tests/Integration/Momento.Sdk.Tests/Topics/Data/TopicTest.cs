@@ -5,8 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-// ReSharper disable once CheckNamespace
-namespace Momento.Sdk.Tests;
+namespace Momento.Sdk.Tests.Integration.Topics.Data;
 
 public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicClientFixture>
 {
@@ -207,7 +206,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
                 throw new Exception("subscription error");
         }
     }
-    
+
     [Fact]
     public async Task MultipleSubscriptions_HappyPath()
     {
@@ -217,7 +216,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             Enumerable.Range(1, numTopics).Select(i =>
                 topicClient.SubscribeAsync(cacheName, $"topic{i}")
                     .ContinueWith(r => Tuple.Create(i, r.Result))).ToList());
-        
+
         var subscriptions = subscriptionResponses.Select(t =>
         {
             var (topicNum, subscriptionResponse) = t;
@@ -232,7 +231,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         var subscribers = subscriptions.Select(t => Task.Run(async () =>
         {
             var (topicNum, subscription) = t;
- 
+
             int messageCount = 0;
             await foreach (var message in subscription)
             {
@@ -246,7 +245,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
 
             return messageCount;
         })).ToList();
-    
+
         await Task.Delay(100);
 
         const int numMessagesToPublish = 50;
@@ -263,15 +262,15 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
 
             await Task.Delay(100);
         }
-    
+
         await Task.Delay(1_000);
-        
+
         foreach (var subscriptionTuple in subscriptions)
         {
             var (_, subscription) = subscriptionTuple;
             subscription.Dispose();
         }
-    
+
         var subscriberResults = await Task.WhenAll(subscribers);
         var numMessagesReceived = subscriberResults.Sum();
         Assert.Equal(numMessagesToPublish, numMessagesReceived);
