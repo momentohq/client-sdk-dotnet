@@ -4,7 +4,7 @@ using Momento.Sdk.Auth;
 using Momento.Sdk.Auth.AccessControl;
 using Momento.Sdk.Config;
 
-namespace Momento.Sdk.Tests;
+namespace Momento.Sdk.Tests.Integration.Auth;
 
 [Collection("AuthClient")]
 public class AuthClientCacheTest : IClassFixture<CacheClientFixture>, IClassFixture<AuthClientFixture>

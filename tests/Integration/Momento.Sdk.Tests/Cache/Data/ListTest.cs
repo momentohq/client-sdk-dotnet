@@ -6,7 +6,7 @@ using Momento.Sdk.Requests;
 using Momento.Sdk.Responses;
 using Momento.Sdk.Tests;
 
-namespace Momento.Sdk.Tests;
+namespace Momento.Sdk.Tests.Integration.Cache.Data;
 
 [Collection("CacheClient")]
 public class ListTest : TestBase
@@ -140,7 +140,7 @@ public class ListTest : TestBase
     public async Task ListRetainAsync_InvalidIndices_AreError()
     {
         var listName = Utils.NewGuidString();
-        
+
         // the positive startIndex is larger than the positive endIndex
         CacheListRetainResponse fetchResponse = await client.ListRetainAsync(cacheName, listName, 3, 1);
         Assert.True(fetchResponse is CacheListRetainResponse.Error, $"Unexpected response: {fetchResponse}");
@@ -156,7 +156,7 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListRetainResponse.Error, $"Unexpected response: {fetchResponse}");
         Assert.Equal(MomentoErrorCode.INVALID_ARGUMENT_ERROR, ((CacheListRetainResponse.Error)fetchResponse).ErrorCode);
     }
-    
+
     [Fact]
     public async Task ListRetainAsync_HappyPath()
     {
@@ -182,7 +182,7 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value2, value3, value4 }, hitResponse.ValueListString);
-        
+
         await resetList();
         retainResponse = await client.ListRetainAsync(cacheName, listName, 2, -1);
         Assert.True(retainResponse is CacheListRetainResponse.Success, $"Unexpected response: {retainResponse}");
@@ -190,7 +190,7 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value3, value4, value5 }, hitResponse.ValueListString);
-        
+
         await resetList();
         retainResponse = await client.ListRetainAsync(cacheName, listName, -4, -1);
         Assert.True(retainResponse is CacheListRetainResponse.Success, $"Unexpected response: {retainResponse}");
@@ -198,8 +198,8 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value3, value4, value5 }, hitResponse.ValueListString);
-        
-        await resetList();        
+
+        await resetList();
         // valid case for a negative startIndex and null endIndex
         retainResponse = await client.ListRetainAsync(cacheName, listName, -3, null);
         Assert.True(retainResponse is CacheListRetainResponse.Success, $"Unexpected response: {retainResponse}");
@@ -216,7 +216,7 @@ public class ListTest : TestBase
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
         Assert.Equal(new string[] { value3, value4, value5, value6 }, hitResponse.ValueListString);
-        
+
         await resetList();
         // valid case for null startIndex and positive endIndex
         retainResponse = await client.ListRetainAsync(cacheName, listName, null, 1);

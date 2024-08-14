@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Momento.Sdk.Internal.ExtensionMethods;
 
-namespace Momento.Sdk.Tests;
+namespace Momento.Sdk.Tests.Integration.Cache.Data;
 
 [Collection("CacheClient")]
 public class CacheDataTest : TestBase

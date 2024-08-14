@@ -4,6 +4,8 @@ using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Xunit;
 
+namespace Momento.Sdk.Tests.Unit;
+
 public class CacheClientConstructorTest
 {
     // this token can be parsed by the JWT parser, so it works for validating the constructors.  It is not a valid token, though, and cannot be used to make actual requests.

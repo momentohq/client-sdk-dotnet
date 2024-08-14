@@ -3,6 +3,8 @@ using Momento.Sdk.Config;
 using Momento.Sdk.Config.Transport;
 using Xunit;
 
+namespace Momento.Sdk.Tests.Unit;
+
 public class ConfigTest
 {
     [Fact]
