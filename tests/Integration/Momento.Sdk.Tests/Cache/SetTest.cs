@@ -6,7 +6,7 @@ using Momento.Sdk.Responses;
 using Momento.Sdk.Tests;
 using Xunit.Abstractions;
 
-namespace Momento.Sdk.Tests.Integration.Cache.Data;
+namespace Momento.Sdk.Tests.Integration.Cache;
 
 [Collection("CacheClient")]
 public class SetTest : TestBase

@@ -3,7 +3,7 @@ using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Transport;
 
-namespace Momento.Sdk.Tests.Integration.Cache.Data;
+namespace Momento.Sdk.Tests.Integration.Cache;
 
 public class CacheEagerConnectionTest
 {
