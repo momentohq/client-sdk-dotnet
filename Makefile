@@ -10,13 +10,13 @@
 #   - The caller can run `make GRPC_WEB=true build` to enable gRPC-Web support.
 # - We additionally group the integration tests by endpoint (cache, control, token).
 #   - This is to allow for more granular testing by endpoint.
-#   - Similar to `build` and `test` targets, we have `test-cache`, `test-control`, `test-token`, and `test-storage` targets
+#   - Similar to `build` and `test` targets, we have `test-cache-endpoint`, `test-control-endpoint`, `test-token-endpoint`, and `test-storage-endpoint` targets
 #	  that are conditionally run based on the operating system.
 
 .PHONY: all build build-dotnet6 build-dotnet-framework clean clean-build precommit restore test \
-	test-dotnet6 test-dotnet6-integration test-dotnet6-cache test-dotnet6-control test-dotnet6-token test-dotnet6-unit \
-	test-dotnet-framework test-dotnet-framework-integration test-dotnet-framework-cache test-dotnet-framework-control test-dotnet-framework-token test-dotnet-framework-unit \
-	test-control test-cache test-token test-storage \
+	test-dotnet6 test-dotnet6-integration test-dotnet6-cache-endpoint test-dotnet6-control-endpoint test-dotnet6-token-endpoint \
+	test-dotnet-framework test-dotnet-framework-integration test-dotnet-framework-cache-endpoint test-dotnet-framework-control-endpoint test-dotnet-framework-token-endpoint \
+	test-control-endpoint test-cache-endpoint test-token-endpoint test-storage-endpoint \
 	run-examples help
 
 # Determine the operating system
@@ -32,15 +32,15 @@ TEST_LOGGER_OPTIONS := --logger "console;verbosity=detailed"
 ifneq (,$(findstring NT,$(OS)))
 	BUILD_TARGETS := build-dotnet6 build-dotnet-framework
 	TEST_TARGETS := test-dotnet6 test-dotnet-framework
-	TEST_TARGETS_CACHE := test-dotnet6-cache test-dotnet-framework-cache
-	TEST_TARGETS_CONTROL := test-dotnet6-control test-dotnet-framework-control
-	TEST_TARGETS_TOKEN := test-dotnet6-token test-dotnet-framework-token
+	TEST_TARGETS_CACHE_ENDPOINT := test-dotnet6-cache-endpoint test-dotnet-framework-cache-endpoint
+	TEST_TARGETS_CONTROL_ENDPOINT := test-dotnet6-control-endpoint test-dotnet-framework-control-endpoint
+	TEST_TARGETS_TOKEN_ENDPOINT := test-dotnet6-token-endpoint test-dotnet-framework-token-endpoint
 else
 	BUILD_TARGETS := build-dotnet6
 	TEST_TARGETS := test-dotnet6
-	TEST_TARGETS_CACHE := test-dotnet6-cache
-	TEST_TARGETS_CONTROL := test-dotnet6-control
-	TEST_TARGETS_TOKEN := test-dotnet6-token
+	TEST_TARGETS_CACHE_ENDPOINT := test-dotnet6-cache-endpoint
+	TEST_TARGETS_CONTROL_ENDPOINT := test-dotnet6-control-endpoint
+	TEST_TARGETS_TOKEN_ENDPOINT := test-dotnet6-token-endpoint
 endif
 
 # Enable gRPC-Web if requested
@@ -105,19 +105,19 @@ test-dotnet6:
 
 
 ## Run integration tests on the .NET 6.0 runtime against the cache endpoint
-test-dotnet6-cache:
+test-dotnet6-cache-endpoint:
 	@echo "Running integration tests on the .NET 6.0 runtime against the cache endpoint..."
 	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_VERSION} --filter ${CACHE_ENDPOINT_TESTS_FILTER}
 
 
 ## Run integration tests on the .NET 6.0 runtime against the control endpoint
-test-dotnet6-control:
+test-dotnet6-control-endpoint:
 	@echo "Running integration tests on the .NET 6.0 runtime against the control endpoint..."
 	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_VERSION} --filter ${CONTROL_ENDPOINT_TESTS_FILTER}
 
 
 ## Run integration tests on the .NET 6.0 runtime against the token endpoint
-test-dotnet6-token:
+test-dotnet6-token-endpoint:
 	@echo "Running integration tests on the .NET 6.0 runtime against the token endpoint..."
 	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_VERSION} --filter ${TOKEN_ENDPOINT_TESTS_FILTER}
 
@@ -129,37 +129,37 @@ test-dotnet-framework:
 
 
 ## Run integration tests on the .NET Framework runtime against the cache endpoint (Windows only)
-test-dotnet-framework-cache:
+test-dotnet-framework-cache-endpoint:
 	@echo "Running integration tests on the .NET Framework runtime against the cache endpoint..."
 	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_FRAMEWORK_VERSION} --filter ${CACHE_ENDPOINT_TESTS_FILTER}
 
 
 ## Run integration tests on the .NET Framework runtime against the control endpoint (Windows only)
-test-dotnet-framework-control:
+test-dotnet-framework-control-endpoint:
 	@echo "Running integration tests on the .NET Framework runtime against the control endpoint..."
 	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_FRAMEWORK_VERSION} --filter ${CONTROL_ENDPOINT_TESTS_FILTER}
 
 
 ## Run integration tests on the .NET Framework runtime against the token endpoint (Windows only)
-test-dotnet-framework-token:
+test-dotnet-framework-token-endpoint:
 	@echo "Running integration tests on the .NET Framework runtime against the token endpoint..."
 	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_FRAMEWORK_VERSION} --filter ${TOKEN_ENDPOINT_TESTS_FILTER}
 
 
 ## Run cache endpoint tests
-test-cache: ${TEST_TARGETS_CACHE}
+test-cache-endpoint: ${TEST_TARGETS_CACHE_ENDPOINT}
 
 
 ## Run control endpoint tests
-test-control: ${TEST_TARGETS_CONTROL}
+test-control-endpoint: ${TEST_TARGETS_CONTROL_ENDPOINT}
 
 
 ## Run token endpoint tests
-test-token: ${TEST_TARGETS_TOKEN}
+test-token-endpoint: ${TEST_TARGETS_TOKEN_ENDPOINT}
 
 
 ## Run storage endpoint tests
-test-storage:
+test-storage-endpoint:
 	@echo "Storage tests are not yet implemented."
 
 
