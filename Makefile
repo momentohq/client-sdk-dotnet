@@ -8,7 +8,7 @@
 #   - On other operating systems `make build` (test) we only runs the .NET 6.0 build (test) targets.
 # - We also have a GRPC_WEB flag that can be set to true to enable gRPC-Web support.
 #   - The caller can run `make GRPC_WEB=true build` to enable gRPC-Web support.
-# - We additionally group the integration tests by service (cache, control, token).
+# - We additionally group the integration tests by service (auth, cache, topics).
 #   - This is to allow for more granular testing by service.
 #   - Similar to `build` and `test` targets, we have `test-cache-service`, `test-topics-service`, `test-auth-service` targets
 #	  that are conditionally run based on the operating system.
@@ -16,7 +16,7 @@
 .PHONY: all build build-dotnet6 build-dotnet-framework clean clean-build precommit restore test \
 	test-dotnet6 test-dotnet6-integration test-dotnet6-cache-service test-dotnet6-topics-service test-dotnet6-auth-service \
 	test-dotnet-framework test-dotnet-framework-integration test-dotnet-framework-cache-service test-dotnet-framework-topics-service test-dotnet-framework-auth-service \
-	test-control-service test-cache-service test-token-service \
+	test-auth-service test-cache-service test-leaderboard-service test-storage-service test-topics-service  \
 	run-examples help
 
 # Determine the operating system
@@ -32,15 +32,15 @@ TEST_LOGGER_OPTIONS := --logger "console;verbosity=detailed"
 ifneq (,$(findstring NT,$(OS)))
 	BUILD_TARGETS := build-dotnet6 build-dotnet-framework
 	TEST_TARGETS := test-dotnet6 test-dotnet-framework
+	TEST_TARGETS_AUTH_SERVICE := test-dotnet6-auth-service test-dotnet-framework-auth-service
 	TEST_TARGETS_CACHE_SERVICE := test-dotnet6-cache-service test-dotnet-framework-cache-service
 	TEST_TARGETS_TOPICS_SERVICE := test-dotnet6-topics-service test-dotnet-framework-topics-service
-	TEST_TARGETS_AUTH_SERVICE := test-dotnet6-auth-service test-dotnet-framework-auth-service
 else
 	BUILD_TARGETS := build-dotnet6
 	TEST_TARGETS := test-dotnet6
+	TEST_TARGETS_AUTH_SERVICE := test-dotnet6-auth-service
 	TEST_TARGETS_CACHE_SERVICE := test-dotnet6-cache-service
 	TEST_TARGETS_TOPICS_SERVICE := test-dotnet6-topics-service
-	TEST_TARGETS_AUTH_SERVICE := test-dotnet6-auth-service
 endif
 
 # Enable gRPC-Web if requested
@@ -146,16 +146,26 @@ test-dotnet-framework-auth-service:
 	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_FRAMEWORK_VERSION} --filter ${AUTH_SERVICE_TESTS_FILTER}
 
 
+## Run auth service tests
+test-auth-service: ${TEST_TARGETS_AUTH_SERVICE}
+
+
 ## Run cache service tests
 test-cache-service: ${TEST_TARGETS_CACHE_SERVICE}
 
 
+## Run leaderboard service tests
+test-leaderboard-service:
+	@echo "Leaderboard client not implemented yet."
+
+
+## Run storage service tests
+test-storage-service:
+	@echo "Storage client not implemented yet."
+
+
 ## Run topics service tests
 test-topics-service: ${TEST_TARGETS_TOPICS_SERVICE}
-
-
-## Run auth service tests
-test-auth-service: ${TEST_TARGETS_AUTH_SERVICE}
 
 
 ## Run example applications and snippets
