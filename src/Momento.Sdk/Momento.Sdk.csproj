@@ -13,21 +13,39 @@
 		<IncludeSymbols>true</IncludeSymbols>
 		<!-- Publish the repository URL in the built .nupkg -->
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<!-- Package metadata -->
-		<PackageId>Momento.Sdk</PackageId>
+
+		<!-- Common package metadata -->
 		<Authors>Momento</Authors>
 		<Company>Momento Inc</Company>
-		<Description>
-		C# SDK for Momento, a serverless cache that automatically scales without any of the
-		operational overhead required by traditional caching solutions.
-
-		Check out our SDK example here: https://github.com/momentohq/client-sdk-dotnet/tree/main/examples
-		</Description>
 		<PackageTags>caching, cache, serverless, key value, simple caching service, distributedcache</PackageTags>
 		<Copyright>Copyright (c) Momento Inc 2022</Copyright>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/momentohq/client-sdk-dotnet</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/momentohq/client-sdk-dotnet</RepositoryUrl>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<PackageId>Momento.Sdk</PackageId>
+		<AssemblyName>Momento.Sdk</AssemblyName>
+		<Description>
+			C# SDK for Momento, a serverless cache that automatically scales without any of the
+			operational overhead required by traditional caching solutions.
+
+			Check out our SDK example here: https://github.com/momentohq/client-sdk-dotnet/tree/main/examples
+		</Description>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" $(DefineConstants.Contains('USE_GRPC_WEB')) ">
+		<PackageId>Momento.Sdk.Web</PackageId>
+		<AssemblyName>Momento.Sdk.Web</AssemblyName>
+		<Description>
+			C# Web SDK for Momento, a serverless cache that automatically scales without any of the
+			operational overhead required by traditional caching solutions.
+
+			This version of the SDK uses gRPC-Web and is for clients that don't have access to HTTP 2.0.
+
+			Check out our SDK example here: https://github.com/momentohq/client-sdk-dotnet/tree/main/examples
+		</Description>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -60,7 +78,6 @@
 	  <PackageReference Include="System.Threading" Version="4.3.0" />
 	</ItemGroup>
 	<ItemGroup Condition=" $(DefineConstants.Contains('USE_GRPC_WEB')) ">
-	  <!-- Currently the Unity build needs gRPC-Web -->
 	  <PackageReference Include="Grpc.Net.Client.Web" Version="2.63.0" />
 	</ItemGroup>
 	<ProjectExtensions>
