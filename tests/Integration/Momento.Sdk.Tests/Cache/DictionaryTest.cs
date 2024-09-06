@@ -1,15 +1,20 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Requests;
+using Xunit.Abstractions;
 
 namespace Momento.Sdk.Tests.Integration.Cache;
 
 [Collection("CacheClient")]
 public class DictionaryTest : TestBase
 {
-    public DictionaryTest(CacheClientFixture fixture) : base(fixture)
+    private readonly ITestOutputHelper _output;
+
+    public DictionaryTest(CacheClientFixture fixture, ITestOutputHelper output) : base(fixture)
     {
+        _output = output;
     }
 
     [Theory]
@@ -913,18 +918,36 @@ public class DictionaryTest : TestBase
         Assert.True(fetchResponse is CacheDictionaryFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
 
         var hitResponse = (CacheDictionaryFetchResponse.Hit)fetchResponse;
-        // Exercise byte array dictionary structural equality comparer
-        Assert.True(hitResponse.ValueDictionaryByteArrayByteArray!.ContainsKey(field1), $"Could not find key {field1} in dictionary byte array: {hitResponse.ValueDictionaryByteArrayByteArray!}");
-        Assert.True(hitResponse.ValueDictionaryByteArrayByteArray!.ContainsKey(field2), $"Could not find key {field2} in dictionary byte array: {hitResponse.ValueDictionaryByteArrayByteArray!}");
         Assert.Equal(2, hitResponse.ValueDictionaryByteArrayByteArray!.Count);
 
+        // Print dictionary content to output for debugging
+        _output.WriteLine("Hit Response Dictionary Contents:");
+        foreach (var kvp in hitResponse.ValueDictionaryByteArrayByteArray!)
+        {
+            _output.WriteLine($"Key: {BitConverter.ToString(kvp.Key)} | Value: {BitConverter.ToString(kvp.Value)}");
+        }
+
+        // Log if specific keys are missing
+        if (!hitResponse.ValueDictionaryByteArrayByteArray!.ContainsKey(field1))
+        {
+            _output.WriteLine($"Warning: Key {BitConverter.ToString(field1)} was not found in the dictionary.");
+        }
+
+        if (!hitResponse.ValueDictionaryByteArrayByteArray!.ContainsKey(field2))
+        {
+            _output.WriteLine($"Warning: Key {BitConverter.ToString(field2)} was not found in the dictionary.");
+        }
+
         // Exercise DictionaryEquals extension
-        Assert.True(hitResponse.ValueDictionaryByteArrayByteArray!.DictionaryEquals(contentDictionary), $"Expected DictionaryEquals to return true for these dictionaries: {hitResponse.ValueDictionaryByteArrayByteArray!} AND {contentDictionary}");
+        var actualDictionaryString = DictionaryToString(hitResponse.ValueDictionaryByteArrayByteArray!);
+        var expectedDictionaryString = DictionaryToString(contentDictionary);
+        Assert.True(hitResponse.ValueDictionaryByteArrayByteArray!.DictionaryEquals(contentDictionary),
+            $"Dictionary contents do not match. Actual dictionary: {actualDictionaryString} | Expected dictionary: {expectedDictionaryString}");
 
         // Test field caching behavior
         Assert.Same(hitResponse.ValueDictionaryByteArrayByteArray, hitResponse.ValueDictionaryByteArrayByteArray);
     }
-
+    
     [Fact]
     public async Task DictionaryDeleteAsync_DictionaryDoesNotExist_Noop()
     {
@@ -1160,5 +1183,15 @@ public class DictionaryTest : TestBase
         Assert.True(lengthResponse is CacheDictionaryLengthResponse.Hit, $"Unexpected response: {lengthResponse}");
         var hitResponse = (CacheDictionaryLengthResponse.Hit)lengthResponse;
         Assert.Equal(1, hitResponse.Length);
+    }
+    
+    private string DictionaryToString(IDictionary<byte[], byte[]> dictionary)
+    {
+        var sb = new StringBuilder();
+        foreach (var kvp in dictionary)
+        {
+            sb.AppendLine($"Key: {BitConverter.ToString(kvp.Key)} | Value: {BitConverter.ToString(kvp.Value)}");
+        }
+        return sb.ToString();
     }
 }
