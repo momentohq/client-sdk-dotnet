@@ -4,13 +4,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Momento.Sdk.Internal.ExtensionMethods;
 
-namespace Momento.Sdk.Tests.Integration.Cache.Data;
+namespace Momento.Sdk.Tests.Integration.Cache;
 
 [Collection("CacheClient")]
-public class CacheDataTest : TestBase
+public class CacheScalarTest : TestBase
 {
     // Test initialization
-    public CacheDataTest(CacheClientFixture fixture) : base(fixture)
+    public CacheScalarTest(CacheClientFixture fixture) : base(fixture)
     {
     }
 

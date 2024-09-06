@@ -44,10 +44,7 @@ jobs:
         with:
           dotnet-version: "6.0.x"
 
-      - name: Build
-        run: make build
-
-      - name: Pack and Publish
+      - name: Pack and Publish the standard SDK
         run: |
           set -x
           pushd src/Momento.Sdk
@@ -56,6 +53,17 @@ jobs:
             dotnet build --configuration Release
             dotnet pack -c Release -p:Version=${VERSION}
             dotnet nuget push ./bin/Release/Momento.Sdk.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key=${{secrets.NUGET_API_KEY}}
+          popd
+          
+      - name: Pack and Publish the web SDK
+        run: |
+          set -x
+          pushd src/Momento.Sdk
+            VERSION="${{ needs.release.outputs.version }}"
+            echo "version: ${VERSION}"
+            dotnet build -p:DefineConstants=USE_GRPC_WEB --configuration Release
+            dotnet pack -p:DefineConstants=USE_GRPC_WEB -c Release -p:Version=${VERSION}
+            dotnet nuget push ./bin/Release/Momento.Sdk.Web.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key=${{secrets.NUGET_API_KEY}}
           popd
 
       - name: Build for Unity
@@ -68,7 +76,7 @@ jobs:
             dotnet publish --configuration Release -f netstandard2.0 -p:DefineConstants=USE_GRPC_WEB -p:VersionPrefix=${VERSION}
             mkdir ./bin/Release/netstandard2.0/MomentoSdkUnity
             pushd ./bin/Release/netstandard2.0/publish/
-              cp Google.Protobuf.dll Grpc.Core.Api.dll Grpc.Net.Client.dll Grpc.Net.Client.Web.dll Grpc.Net.Common.dll JWT.dll Microsoft.Bcl.AsyncInterfaces.dll Microsoft.Extensions.Logging.Abstractions.dll Momento.Protos.dll Momento.Sdk.dll Newtonsoft.Json.dll System.Diagnostics.DiagnosticSource.dll System.Runtime.CompilerServices.Unsafe.dll System.Threading.Channels.dll ../MomentoSdkUnity/
+              cp Google.Protobuf.dll Grpc.Core.Api.dll Grpc.Net.Client.dll Grpc.Net.Client.Web.dll Grpc.Net.Common.dll JWT.dll Microsoft.Bcl.AsyncInterfaces.dll Microsoft.Extensions.Logging.Abstractions.dll Momento.Protos.dll Momento.Sdk.Web.dll Newtonsoft.Json.dll System.Diagnostics.DiagnosticSource.dll System.Runtime.CompilerServices.Unsafe.dll System.Threading.Channels.dll ../MomentoSdkUnity/
             popd
             zip -jr MomentoSdkUnity.zip bin/Release/netstandard2.0/MomentoSdkUnity/
             ZIP_FILE=./MomentoSdkUnity.zip

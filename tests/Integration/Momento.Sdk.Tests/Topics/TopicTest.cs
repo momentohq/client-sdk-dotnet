@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Momento.Sdk.Tests.Integration.Topics.Data;
+namespace Momento.Sdk.Tests.Integration.Topics;
 
 public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicClientFixture>
 {

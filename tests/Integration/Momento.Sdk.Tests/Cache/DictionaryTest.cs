@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Requests;
 
-namespace Momento.Sdk.Tests.Integration.Cache.Data;
+namespace Momento.Sdk.Tests.Integration.Cache;
 
 [Collection("CacheClient")]
 public class DictionaryTest : TestBase
