@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Requests;
@@ -920,24 +920,6 @@ public class DictionaryTest : TestBase
         var hitResponse = (CacheDictionaryFetchResponse.Hit)fetchResponse;
         Assert.Equal(2, hitResponse.ValueDictionaryByteArrayByteArray!.Count);
 
-        // Print dictionary content to output for debugging
-        _output.WriteLine("Hit Response Dictionary Contents:");
-        foreach (var kvp in hitResponse.ValueDictionaryByteArrayByteArray!)
-        {
-            _output.WriteLine($"Key: {BitConverter.ToString(kvp.Key)} | Value: {BitConverter.ToString(kvp.Value)}");
-        }
-
-        // Log if specific keys are missing
-        if (!hitResponse.ValueDictionaryByteArrayByteArray!.ContainsKey(field1))
-        {
-            _output.WriteLine($"Warning: Key {BitConverter.ToString(field1)} was not found in the dictionary.");
-        }
-
-        if (!hitResponse.ValueDictionaryByteArrayByteArray!.ContainsKey(field2))
-        {
-            _output.WriteLine($"Warning: Key {BitConverter.ToString(field2)} was not found in the dictionary.");
-        }
-
         // Exercise DictionaryEquals extension
         var actualDictionaryString = DictionaryToString(hitResponse.ValueDictionaryByteArrayByteArray!);
         var expectedDictionaryString = DictionaryToString(contentDictionary);
@@ -1187,11 +1169,7 @@ public class DictionaryTest : TestBase
     
     private string DictionaryToString(IDictionary<byte[], byte[]> dictionary)
     {
-        var sb = new StringBuilder();
-        foreach (var kvp in dictionary)
-        {
-            sb.AppendLine($"Key: {BitConverter.ToString(kvp.Key)} | Value: {BitConverter.ToString(kvp.Value)}");
-        }
-        return sb.ToString();
+        return string.Join("; ", dictionary.Select(kvp =>
+            $"Key: {BitConverter.ToString(kvp.Key)} | Value: {BitConverter.ToString(kvp.Value)}"));
     }
 }
