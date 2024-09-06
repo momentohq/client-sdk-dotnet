@@ -44,9 +44,6 @@ jobs:
         with:
           dotnet-version: "6.0.x"
 
-      - name: Build
-        run: make build
-
       - name: Pack and Publish the standard SDK
         run: |
           set -x
@@ -58,7 +55,7 @@ jobs:
             dotnet nuget push ./bin/Release/Momento.Sdk.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key=${{secrets.NUGET_API_KEY}}
           popd
           
-      - name: Pack and Publish for the web SDK
+      - name: Pack and Publish the web SDK
         run: |
           set -x
           pushd src/Momento.Sdk
@@ -66,7 +63,7 @@ jobs:
             echo "version: ${VERSION}"
             dotnet build -p:DefineConstants=USE_GRPC_WEB --configuration Release
             dotnet pack -p:DefineConstants=USE_GRPC_WEB -c Release -p:Version=${VERSION}
-#            dotnet nuget push ./bin/Release/Momento.Sdk.Web.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key=${{secrets.NUGET_API_KEY}}
+            dotnet nuget push ./bin/Release/Momento.Sdk.Web.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key=${{secrets.NUGET_API_KEY}}
           popd
 
       - name: Build for Unity

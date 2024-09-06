@@ -24,6 +24,7 @@
 		<RepositoryUrl>https://github.com/momentohq/client-sdk-dotnet</RepositoryUrl>
 	</PropertyGroup>
 
+	<!-- The standard SDK package that builds by default	-->
 	<PropertyGroup>
 		<PackageId>Momento.Sdk</PackageId>
 		<AssemblyName>Momento.Sdk</AssemblyName>
@@ -35,6 +36,7 @@
 		</Description>
 	</PropertyGroup>
 
+    <!-- The web SDK package that builds instead of the standard if the gRPC web constant is defined	-->
 	<PropertyGroup Condition=" $(DefineConstants.Contains('USE_GRPC_WEB')) ">
 		<PackageId>Momento.Sdk.Web</PackageId>
 		<AssemblyName>Momento.Sdk.Web</AssemblyName>
