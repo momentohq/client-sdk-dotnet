@@ -4,11 +4,11 @@ using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Responses;
 
-ICredentialProvider authProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY");
+var authProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY");
 
-TimeSpan DEFAULT_TTL = TimeSpan.FromSeconds(60);
+var defaultTtl = TimeSpan.FromSeconds(60);
 
-using (ICacheClient client = new CacheClient(Configurations.Laptop.V1(), authProvider, DEFAULT_TTL))
+using (ICacheClient client = new CacheClient(Configurations.Laptop.V1(), authProvider, defaultTtl))
 {
     await AdvancedExamples.CreateCacheExample(client);
     await AdvancedExamples.ListCachesExample(client);
@@ -16,21 +16,20 @@ using (ICacheClient client = new CacheClient(Configurations.Laptop.V1(), authPro
     await AdvancedExamples.DeleteCacheExample(client);
     await AdvancedExamples.EagerConnectionExample();
 
-
     Console.WriteLine("\nProgram has completed successfully.");
 }
 
 
 public class AdvancedExamples {
-    const string CACHE_NAME = "momento-example";
-    const string KEY = "MyKey";
-    const string VALUE = "MyData";
+    private const string CacheName = "momento-example";
+    private const string Key = "MyKey";
+    private const string Value = "MyData";
 
     public static async Task CreateCacheExample(ICacheClient client)
     {
 
-        Console.WriteLine($"Creating cache {CACHE_NAME}");
-        var createCacheResponse = await client.CreateCacheAsync(CACHE_NAME);
+        Console.WriteLine($"Creating cache {CacheName}");
+        var createCacheResponse = await client.CreateCacheAsync(CacheName);
         // Check the create response for an error and handle as appropriate.
         if (createCacheResponse is CreateCacheResponse.Error createCacheError)
         {
@@ -48,7 +47,7 @@ public class AdvancedExamples {
         // If there's already a cache by this name, alert the user.
         if (createCacheResponse is CreateCacheResponse.CacheAlreadyExists)
         {
-            Console.WriteLine($"A cache with the name {CACHE_NAME} already exists");
+            Console.WriteLine($"A cache with the name {CacheName} already exists");
         }
     }
 
@@ -70,8 +69,8 @@ public class AdvancedExamples {
     }
 
     public static async Task SetGetDeleteExample(ICacheClient client) {
-        Console.WriteLine($"\nSetting key: {KEY} with value: {VALUE}");
-        var setResponse = await client.SetAsync(CACHE_NAME, KEY, VALUE);
+        Console.WriteLine($"\nSetting key: {Key} with value: {Value}");
+        var setResponse = await client.SetAsync(CacheName, Key, Value);
         if (setResponse is CacheSetResponse.Error setError)
         {
             // Warn the user of the error and exit.
@@ -79,16 +78,16 @@ public class AdvancedExamples {
             Environment.Exit(1);
         }
 
-        Console.WriteLine($"\nGetting value for key: {KEY}");
-        CacheGetResponse getResponse = await client.GetAsync(CACHE_NAME, KEY);
+        Console.WriteLine($"\nGetting value for key: {Key}");
+        CacheGetResponse getResponse = await client.GetAsync(CacheName, Key);
         if (getResponse is CacheGetResponse.Hit getHit)
         {
-            Console.WriteLine($"Looked up value: {getHit.ValueString}, Stored value: {VALUE}");
+            Console.WriteLine($"Looked up value: {getHit.ValueString}, Stored value: {Value}");
         }
         else if (getResponse is CacheGetResponse.Miss)
         {
             // This shouldn't be fatal but should be reported.
-            Console.WriteLine($"Error: got a cache miss for {KEY}!");
+            Console.WriteLine($"Error: got a cache miss for {Key}!");
         }
         else if (getResponse is CacheGetResponse.Error getError)
         {
@@ -96,8 +95,8 @@ public class AdvancedExamples {
             Console.WriteLine($"Error getting value: {getError.Message}!");
         }
 
-        Console.WriteLine($"\nDeleting key {KEY}");
-        var deleteKeyResponse = await client.DeleteAsync(CACHE_NAME, KEY);
+        Console.WriteLine($"\nDeleting key {Key}");
+        var deleteKeyResponse = await client.DeleteAsync(CacheName, Key);
         if (deleteKeyResponse is CacheDeleteResponse.Error deleteKeyError)
         {
             // Also not considered fatal.
@@ -107,8 +106,8 @@ public class AdvancedExamples {
 
     public static async Task DeleteCacheExample(ICacheClient client) {
 
-        Console.WriteLine($"\nDeleting cache {CACHE_NAME}");
-        var deleteCacheResponse = await client.DeleteCacheAsync(CACHE_NAME);
+        Console.WriteLine($"\nDeleting cache {CacheName}");
+        var deleteCacheResponse = await client.DeleteCacheAsync(CacheName);
         if (deleteCacheResponse is DeleteCacheResponse.Error deleteCacheError)
         {
             // Report fatal error and exit
@@ -116,7 +115,7 @@ public class AdvancedExamples {
             Environment.Exit(1);
         }
     }
-
+    
     /// <summary>
     /// By default, cache clients will connect lazily when the first request is
     /// issued.  This example shows how to configure a client to connect eagerly
