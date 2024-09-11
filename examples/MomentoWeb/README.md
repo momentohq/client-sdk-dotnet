@@ -1,8 +1,8 @@
 <img src="https://docs.momentohq.com/img/logo.svg" alt="logo" width="400"/>
 
-# Momento Application Example
+# Momento Web Example
 
-This example is intended to show off the complete suite of Momento's cache client's
+This example is intended to show off the Momento web cache client
 functionality, including:
 
 * instantiating the Momento client
@@ -20,10 +20,10 @@ functionality, including:
 Run the following from within the `examples` directory:
 
 ```bash
-MOMENTO_API_KEY=<YOUR API KEY> dotnet run --project MomentoApplication
+MOMENTO_API_KEY=<YOUR API KEY> dotnet run --project MomentoWeb
 ```
 
-Within the `MomentoAppication` directory you can run:
+Within the `MomentoWeb` directory you can run:
 
 ```bash
 MOMENTO_API_KEY=<YOUR API KEY> dotnet run
