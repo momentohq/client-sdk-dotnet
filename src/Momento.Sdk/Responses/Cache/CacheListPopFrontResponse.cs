@@ -37,7 +37,7 @@ namespace Momento.Sdk.Responses;
 /// </summary>
 public abstract class CacheListPopFrontResponse
 {
-    /// <include file="../docs.xml" path='docs/class[@name="Hit"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Hit"]/description/*' />
     public class Hit : CacheListPopFrontResponse
     {
 #pragma warning disable 1591
@@ -79,18 +79,18 @@ public abstract class CacheListPopFrontResponse
         }
     }
 
-    /// <include file="../docs.xml" path='docs/class[@name="Miss"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Miss"]/description/*' />
     public class Miss : CacheListPopFrontResponse
     {
 
     }
 
-    /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : CacheListPopFrontResponse, IError
     {
         private readonly SdkException _error;
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
+        /// <include file="../../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
         {
             _error = error;

@@ -32,7 +32,7 @@ namespace Momento.Sdk.Responses;
 /// </summary>
 public abstract class ListCachesResponse
 {
-    /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Success"]/description/*' />
     public class Success : ListCachesResponse
     {
         /// <summary>
@@ -41,7 +41,7 @@ public abstract class ListCachesResponse
         /// </summary>
         public List<CacheInfo> Caches { get; }
 
-        /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
+        /// <include file="../../docs.xml" path='docs/class[@name="Success"]/description/*' />
         /// <param name="result">gRPC list caches request result</param>
         public Success(_ListCachesResponse result)
         {
@@ -65,12 +65,12 @@ public abstract class ListCachesResponse
 
     }
 
-    /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : ListCachesResponse, IError
     {
         private readonly SdkException _error;
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
+        /// <include file="../../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
         {
             _error = error;

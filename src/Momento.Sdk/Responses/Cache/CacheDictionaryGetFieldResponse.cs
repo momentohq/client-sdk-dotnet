@@ -64,7 +64,7 @@ public abstract class CacheDictionaryGetFieldResponse
     }
 #pragma warning restore 1591
 
-    /// <include file="../docs.xml" path='docs/class[@name="Hit"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Hit"]/description/*' />
     public class Hit : CacheDictionaryGetFieldResponse
     {
 #pragma warning disable 1591
@@ -110,7 +110,7 @@ public abstract class CacheDictionaryGetFieldResponse
         }
     }
 
-    /// <include file="../docs.xml" path='docs/class[@name="Miss"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Miss"]/description/*' />
     public class Miss : CacheDictionaryGetFieldResponse
     {
         /// <summary>
@@ -122,18 +122,18 @@ public abstract class CacheDictionaryGetFieldResponse
         }
     }
 
-    /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : CacheDictionaryGetFieldResponse, IError
     {
         private readonly SdkException _error;
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
+        /// <include file="../../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error) : base(ByteString.Empty)
         {
             _error = error;
         }
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
+        /// <include file="../../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(ByteString field, SdkException error) : base(field)
         {
             _error = error;

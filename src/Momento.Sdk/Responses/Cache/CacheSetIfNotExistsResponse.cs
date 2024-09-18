@@ -34,22 +34,22 @@ namespace Momento.Sdk.Responses;
 /// </summary>
 public abstract class CacheSetIfNotExistsResponse
 {
-    /// <include file="../docs.xml" path='docs/class[@name="Stored"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Stored"]/description/*' />
     public class Stored : CacheSetIfNotExistsResponse
     {
     }
 
-    /// <include file="../docs.xml" path='docs/class[@name="NotStored"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="NotStored"]/description/*' />
     public class NotStored : CacheSetIfNotExistsResponse
     {
     }
 
-    /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : CacheSetIfNotExistsResponse, IError
     {
         private readonly SdkException _error;
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
+        /// <include file="../../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
         {
             _error = error;

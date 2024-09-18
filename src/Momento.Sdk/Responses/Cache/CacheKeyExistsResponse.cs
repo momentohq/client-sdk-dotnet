@@ -31,7 +31,7 @@ using Momento.Sdk.Exceptions;
 public abstract class CacheKeyExistsResponse
 {
 
-    /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Success"]/description/*' />
     public class Success : CacheKeyExistsResponse
     {
         /// <summary>
@@ -39,7 +39,7 @@ public abstract class CacheKeyExistsResponse
         /// </summary>
         public bool Exists { get; private set; }
 
-        /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
+        /// <include file="../../docs.xml" path='docs/class[@name="Success"]/description/*' />
         public Success(bool exists)
         {
             Exists = exists;
@@ -52,12 +52,12 @@ public abstract class CacheKeyExistsResponse
         }
     }
 
-    /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : CacheKeyExistsResponse, IError
     {
         private readonly SdkException _error;
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
+        /// <include file="../../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
         {
             _error = error;

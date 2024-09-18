@@ -36,7 +36,7 @@ using Momento.Sdk.Exceptions;
 public abstract class CacheKeysExistResponse
 {
 
-    /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Success"]/description/*' />
     public class Success : CacheKeysExistResponse
     {
         private readonly List<ByteString> keys;
@@ -55,7 +55,7 @@ public abstract class CacheKeysExistResponse
         /// </summary>
         public IDictionary<string, bool> ExistsDictionary { get => _existsDictionary.Value; }
 
-        /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
+        /// <include file="../../docs.xml" path='docs/class[@name="Success"]/description/*' />
         public Success(IEnumerable<ByteString> keys, _KeysExistResponse response)
         {
             this.keys = keys.ToList();
@@ -81,12 +81,12 @@ public abstract class CacheKeysExistResponse
         }
     }
 
-    /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : CacheKeysExistResponse, IError
     {
         private readonly SdkException _error;
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
+        /// <include file="../../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
         {
             _error = error;

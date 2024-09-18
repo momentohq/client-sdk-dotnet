@@ -30,7 +30,7 @@ namespace Momento.Sdk.Responses;
 /// </summary>
 public abstract class CacheIncrementResponse
 {
-    /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Success"]/description/*' />
     public class Success : CacheIncrementResponse
     {
         /// <summary>
@@ -38,7 +38,7 @@ public abstract class CacheIncrementResponse
         /// </summary>
         public long Value { get; private set; }
 
-        /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
+        /// <include file="../../docs.xml" path='docs/class[@name="Success"]/description/*' />
         public Success(_IncrementResponse response)
         {
             Value = response.Value;
@@ -51,12 +51,12 @@ public abstract class CacheIncrementResponse
         }
     }
 
-    /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : CacheIncrementResponse, IError
     {
         private readonly SdkException _error;
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
+        /// <include file="../../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
         {
             _error = error;

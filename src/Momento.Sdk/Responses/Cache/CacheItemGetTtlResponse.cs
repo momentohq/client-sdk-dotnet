@@ -45,7 +45,7 @@ public abstract class CacheItemGetTtlResponse
         /// </summary>
         protected readonly ulong value;
 
-        /// <include file="../docs.xml" path='docs/class[@name="Hit"]/description/*' />
+        /// <include file="../../docs.xml" path='docs/class[@name="Hit"]/description/*' />
         public Hit(_ItemGetTtlResponse response)
         {
             value = response.Found.RemainingTtlMillis;
@@ -71,12 +71,12 @@ public abstract class CacheItemGetTtlResponse
     /// </summary>
     public class Miss : CacheItemGetTtlResponse { }
 
-    /// <include file = "../docs.xml" path='docs/class[@name="Error"]/description/*' />
+    /// <include file = "../../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : CacheItemGetTtlResponse, IError
     {
         private readonly SdkException _error;
 
-        /// <include file = "../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
+        /// <include file = "../../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
         {
             _error = error;

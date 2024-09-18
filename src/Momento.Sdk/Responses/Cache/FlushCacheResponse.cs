@@ -29,15 +29,15 @@ using Momento.Sdk.Exceptions;
 /// </summary>
 public abstract class FlushCacheResponse
 {
-    /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Success"]/description/*' />
     public class Success : FlushCacheResponse { }
 
-    /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : FlushCacheResponse, IError
     {
         private readonly SdkException _error;
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
+        /// <include file="../../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
         {
             _error = error;

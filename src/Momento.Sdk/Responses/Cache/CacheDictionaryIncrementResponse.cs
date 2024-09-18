@@ -30,7 +30,7 @@ namespace Momento.Sdk.Responses;
 /// </summary>
 public abstract class CacheDictionaryIncrementResponse
 {
-    /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Success"]/description/*' />
     public class Success : CacheDictionaryIncrementResponse
     {
         /// <summary>
@@ -38,7 +38,7 @@ public abstract class CacheDictionaryIncrementResponse
         /// </summary>
         public long Value { get; private set; }
 
-        /// <include file="../docs.xml" path='docs/class[@name="Success"]/description/*' />
+        /// <include file="../../docs.xml" path='docs/class[@name="Success"]/description/*' />
         public Success(_DictionaryIncrementResponse response)
         {
             Value = response.Value;
@@ -51,12 +51,12 @@ public abstract class CacheDictionaryIncrementResponse
         }
     }
 
-    /// <include file="../docs.xml" path='docs/class[@name="Error"]/description/*' />
+    /// <include file="../../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : CacheDictionaryIncrementResponse, IError
     {
         private readonly SdkException _error;
 
-        /// <include file="../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
+        /// <include file="../../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
         {
             _error = error;

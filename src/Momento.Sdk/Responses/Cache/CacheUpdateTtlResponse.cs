@@ -46,12 +46,12 @@ public abstract class CacheUpdateTtlResponse
     /// </summary>
     public class Miss : CacheUpdateTtlResponse { }
 
-    /// <include file = "../docs.xml" path='docs/class[@name="Error"]/description/*' />
+    /// <include file = "../../docs.xml" path='docs/class[@name="Error"]/description/*' />
     public class Error : CacheUpdateTtlResponse, IError
     {
         private readonly SdkException _error;
 
-        /// <include file = "../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
+        /// <include file = "../../docs.xml" path='docs/class[@name="Error"]/constructor/*' />
         public Error(SdkException error)
         {
             _error = error;
