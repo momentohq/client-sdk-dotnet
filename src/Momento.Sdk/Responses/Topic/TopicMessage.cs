@@ -41,9 +41,10 @@ public abstract class TopicMessage
         /// <summary>
         /// A topic message containing a text value.
         /// </summary>
-        public Text(_TopicValue topicValue, string? tokenId = null)
+        public Text(_TopicValue topicValue, long topicSequenceNumber, string? tokenId = null)
         {
             Value = topicValue.Text;
+            TopicSequenceNumber = topicSequenceNumber;
             TokenId = tokenId;
         }
 
@@ -51,6 +52,11 @@ public abstract class TopicMessage
         /// The text value of this message.
         /// </summary>
         public string Value { get; }
+
+        /// <summary>
+        /// The sequence number of this message.
+        /// </summary>
+        public long TopicSequenceNumber { get; }
 
         /// <summary>
         /// The TokenId that was used to publish the message, or null if the token did not have an id.
@@ -67,9 +73,10 @@ public abstract class TopicMessage
         /// <summary>
         /// A topic message containing a binary value.
         /// </summary>
-        public Binary(_TopicValue topicValue, string? tokenId = null)
+        public Binary(_TopicValue topicValue, long topicSequenceNumber, string? tokenId = null)
         {
             Value = topicValue.Binary.ToByteArray();
+            TopicSequenceNumber = topicSequenceNumber;
             TokenId = tokenId;
         }
 
@@ -77,6 +84,11 @@ public abstract class TopicMessage
         /// The binary value of this message.
         /// </summary>
         public byte[] Value { get; }
+
+        /// <summary>
+        /// The sequence number of this message.
+        /// </summary>
+        public long TopicSequenceNumber { get; }
 
         /// <summary>
         /// The TokenId that was used to publish the message, or null if the token did not have an id.

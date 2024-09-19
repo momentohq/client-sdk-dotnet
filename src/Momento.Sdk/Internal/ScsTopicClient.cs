@@ -251,10 +251,10 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                         {
                             case _TopicValue.KindOneofCase.Text:
                                 _logger.LogTraceTopicMessageReceived("text", _cacheName, _topicName);
-                                return new TopicMessage.Text(message.Item.Value, message.Item.PublisherId == "" ? null : message.Item.PublisherId);
+                                return new TopicMessage.Text(message.Item.Value, checked((long)message.Item.TopicSequenceNumber), message.Item.PublisherId == "" ? null : message.Item.PublisherId);
                             case _TopicValue.KindOneofCase.Binary:
                                 _logger.LogTraceTopicMessageReceived("binary", _cacheName, _topicName);
-                                return new TopicMessage.Binary(message.Item.Value, message.Item.PublisherId == "" ? null : message.Item.PublisherId);
+                                return new TopicMessage.Binary(message.Item.Value, checked((long)message.Item.TopicSequenceNumber), message.Item.PublisherId == "" ? null : message.Item.PublisherId);
                             case _TopicValue.KindOneofCase.None:
                             default:
                                 _logger.LogTraceTopicMessageReceived("unknown", _cacheName, _topicName);
