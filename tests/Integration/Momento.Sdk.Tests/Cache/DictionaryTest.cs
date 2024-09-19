@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Requests;
@@ -863,8 +864,10 @@ public class DictionaryTest : TestBase
     {
         var dictionaryName = Utils.NewGuidString();
         await client.DictionarySetFieldAsync(cacheName, dictionaryName, "a", "b");
+        
+        Thread.Sleep(100);
 
-        CacheDictionaryFetchResponse fetchResponse = await client.DictionaryFetchAsync(cacheName, dictionaryName);
+        var fetchResponse = await client.DictionaryFetchAsync(cacheName, dictionaryName);
 
         Assert.True(fetchResponse is CacheDictionaryFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheDictionaryFetchResponse.Hit)fetchResponse;
