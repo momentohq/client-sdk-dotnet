@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Requests;
@@ -706,14 +707,13 @@ public class ListTest : TestBase
         var listName = Utils.NewGuidString();
         var value1 = Utils.NewGuidString();
 
-        CacheListPushFrontResponse pushResponse = await client.ListPushFrontAsync(cacheName, listName, value1);
+        var pushResponse = await client.ListPushFrontAsync(cacheName, listName, value1);
         Assert.True(pushResponse is CacheListPushFrontResponse.Success, $"Unexpected response: {pushResponse}");
         var successResponse = (CacheListPushFrontResponse.Success)pushResponse;
         Assert.Equal(1, successResponse.ListLength);
         Assert.Equal("Momento.Sdk.Responses.CacheListPushFrontResponse+Success: ListLength: 1", successResponse.ToString());
-        successResponse = (CacheListPushFrontResponse.Success)pushResponse;
 
-        CacheListFetchResponse fetchResponse = await client.ListFetchAsync(cacheName, listName);
+        var fetchResponse = await client.ListFetchAsync(cacheName, listName);
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         var hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
 
@@ -727,7 +727,9 @@ public class ListTest : TestBase
         Assert.True(pushResponse is CacheListPushFrontResponse.Success, $"Unexpected response: {pushResponse}");
         successResponse = (CacheListPushFrontResponse.Success)pushResponse;
         Assert.Equal(2, successResponse.ListLength);
-
+        
+        Thread.Sleep(100);
+        
         fetchResponse = await client.ListFetchAsync(cacheName, listName);
         Assert.True(fetchResponse is CacheListFetchResponse.Hit, $"Unexpected response: {fetchResponse}");
         hitResponse = (CacheListFetchResponse.Hit)fetchResponse;
