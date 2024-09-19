@@ -198,7 +198,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
             _subscribed = true;
         }
 
-        public async ValueTask<TopicMessage?> GetNextRelevantMessageFromGrpcStreamAsync(
+        public async ValueTask<ITopicEvent?> GetNextRelevantMessageFromGrpcStreamAsync(
             CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)

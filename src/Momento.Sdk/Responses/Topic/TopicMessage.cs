@@ -31,7 +31,7 @@ namespace Momento.Sdk.Responses;
 /// }
 /// </code>
 /// </summary>
-public abstract class TopicMessage
+public abstract class TopicMessage : ITopicEvent
 {
     /// <summary>
     /// A topic message containing a text value.

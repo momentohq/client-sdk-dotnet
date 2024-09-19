@@ -43,14 +43,14 @@ public abstract class TopicSubscribeResponse
     /// </summary>
     public class Subscription : TopicSubscribeResponse, IDisposable, IAsyncEnumerable<TopicMessage?>
     {
-        private readonly Func<CancellationToken, ValueTask<TopicMessage?>> _moveNextFunction;
+        private readonly Func<CancellationToken, ValueTask<ITopicEvent?>> _moveNextFunction;
         private CancellationTokenSource _subscriptionCancellationToken = new();
         private readonly Action _disposalAction;
 
         /// <summary>
         /// Constructs a Subscription with a wrapped topic iterator and an action to dispose of it.
         /// </summary>
-        public Subscription(Func<CancellationToken, ValueTask<TopicMessage?>> moveNextFunction, Action disposalAction)
+        public Subscription(Func<CancellationToken, ValueTask<ITopicEvent?>> moveNextFunction, Action disposalAction)
         {
             _moveNextFunction = moveNextFunction;
             _disposalAction = disposalAction;
@@ -78,12 +78,12 @@ public abstract class TopicSubscribeResponse
 
     private class TopicMessageEnumerator : IAsyncEnumerator<TopicMessage?>
     {
-        private readonly Func<CancellationToken, ValueTask<TopicMessage?>> _moveNextFunction;
+        private readonly Func<CancellationToken, ValueTask<ITopicEvent?>> _moveNextFunction;
         private readonly CancellationToken _subscriptionCancellationToken;
         private readonly CancellationToken _enumeratorCancellationToken;
 
         public TopicMessageEnumerator(
-            Func<CancellationToken, ValueTask<TopicMessage?>> moveNextFunction,
+            Func<CancellationToken, ValueTask<ITopicEvent?>> moveNextFunction,
             CancellationToken subscriptionCancellationToken,
             CancellationToken enumeratorCancellationToken)
         {
@@ -107,10 +107,10 @@ public abstract class TopicSubscribeResponse
             {
                 case TopicMessage.Text:
                 case TopicMessage.Binary:
-                    Current = nextMessage;
+                    Current = (TopicMessage)nextMessage;
                     return true;
                 case TopicMessage.Error:
-                    Current = nextMessage;
+                    Current = (TopicMessage)nextMessage;
                     return false;
                 default:
                     Current = null;
