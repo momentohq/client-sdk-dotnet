@@ -3,12 +3,12 @@ namespace Momento.Sdk.Responses;
 /// <summary>
 /// Represents a system event that can be published to a topic.
 /// </summary>
-public abstract class TopicEvent : ITopicEvent
+public abstract class TopicSystemEvent : ITopicEvent
 {
     /// <summary>
     /// Represents a heartbeat event.
     /// </summary>
-    public class Heartbeat : TopicEvent
+    public class Heartbeat : TopicSystemEvent
     {
         /// <summary>
         /// Constructs a new heartbeat event.
@@ -22,7 +22,7 @@ public abstract class TopicEvent : ITopicEvent
     /// <summary>
     /// Represents a discontinuity event.
     /// </summary>
-    public class Discontinuity : TopicEvent
+    public class Discontinuity : TopicSystemEvent
     {
         /// <summary>
         /// Constructs a new discontinuity event.
