@@ -17,6 +17,9 @@ public abstract class TopicSystemEvent : ITopicEvent
         {
 
         }
+
+        /// <inheritdoc/>
+        public override string ToString() => base.ToString() ?? "Heartbeat";
     }
 
     /// <summary>
@@ -43,5 +46,11 @@ public abstract class TopicSystemEvent : ITopicEvent
         /// The sequence number of the discontinuity.
         /// </summary>
         public long SequenceNumber { get; }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"{base.ToString()}: LastKnownSequenceNumber: {LastKnownSequenceNumber} SequenceNumber: {SequenceNumber}";
+        }
     }
 }
