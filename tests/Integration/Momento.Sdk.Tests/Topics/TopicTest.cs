@@ -163,7 +163,6 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         };
 
         var produceCancellation = new CancellationTokenSource();
-        //produceCancellation.CancelAfter(2000);
 
         // we don't need to put this on a different thread
         var consumeTask = ConsumeAllEvents(topicName, produceCancellation.Token);
