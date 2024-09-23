@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Momento.Sdk.Exceptions;
@@ -96,25 +97,34 @@ public abstract class TopicSubscribeResponse
 
         public async ValueTask<bool> MoveNextAsync()
         {
-            if (_subscriptionCancellationToken.IsCancellationRequested || _enumeratorCancellationToken.IsCancellationRequested)
+            // We iterate over the stream until we get a TopicMessage, an error, or the stream is closed.
+            // We skip over system events like heartbeats and discontinuities.
+            while (true)
             {
-                Current = null;
-                return false;
-            }
-
-            var nextMessage = await _moveNextFunction.Invoke(_enumeratorCancellationToken);
-            switch (nextMessage)
-            {
-                case TopicMessage.Text:
-                case TopicMessage.Binary:
-                    Current = (TopicMessage)nextMessage;
-                    return true;
-                case TopicMessage.Error:
-                    Current = (TopicMessage)nextMessage;
-                    return false;
-                default:
+                if (_subscriptionCancellationToken.IsCancellationRequested || _enumeratorCancellationToken.IsCancellationRequested)
+                {
                     Current = null;
                     return false;
+                }
+
+                var nextEvent = await _moveNextFunction.Invoke(_enumeratorCancellationToken);
+                switch (nextEvent)
+                {
+                    case TopicMessage.Text:
+                    case TopicMessage.Binary:
+                        Current = (TopicMessage)nextEvent;
+                        return true;
+                    case TopicMessage.Error:
+                        Current = (TopicMessage)nextEvent;
+                        return false;
+                    // This enumerator excludes system events from the stream
+                    case TopicSystemEvent.Discontinuity:
+                    case TopicSystemEvent.Heartbeat:
+                        continue;
+                    default:
+                        Current = null;
+                        return false;
+                }
             }
         }
 
