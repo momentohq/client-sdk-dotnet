@@ -117,7 +117,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
     [Fact(Timeout = 5000)]
     public async Task PublishAndSubscribe_String_Succeeds()
     {
-        const string topicName = "topic_string";
+        var topicName = Utils.NewGuidString();
         var valuesToSend = new List<string>
         {
             "one",
@@ -148,6 +148,61 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             Assert.Equal(textMessage.TopicSequenceNumber, i + 1);
         }
     }
+
+    [Fact(Timeout = 15000)]
+    public async Task PublishAndSubscribe_AllEventsString_Succeeds()
+    {
+        var topicName = Utils.NewGuidString();
+        var valuesToSend = new List<string>
+        {
+            "one",
+            "two",
+            "three",
+            "four",
+            "five"
+        };
+
+        var produceCancellation = new CancellationTokenSource();
+        //produceCancellation.CancelAfter(2000);
+
+        // we don't need to put this on a different thread
+        var consumeTask = ConsumeAllEvents(topicName, produceCancellation.Token);
+        await Task.Delay(500);
+
+        await ProduceMessages(topicName, valuesToSend);
+        await Task.Delay(10000);
+
+        produceCancellation.Cancel();
+
+        var consumedEvents = await consumeTask;
+        var messageCount = 0;
+        var heartbeatCount = 0;
+        var discontinuityCount = 0;
+        foreach (var topicEvent in consumedEvents)
+        {
+            switch (topicEvent)
+            {
+                case TopicMessage.Text textMessage:
+                    Assert.Equal(textMessage.Value, valuesToSend[messageCount]);
+                    Assert.Equal(textMessage.TopicSequenceNumber, messageCount + 1);
+                    messageCount++;
+                    break;
+                case TopicSystemEvent.Heartbeat:
+                    heartbeatCount++;
+                    break;
+                case TopicSystemEvent.Discontinuity:
+                    discontinuityCount++;
+                    break;
+                default:
+                    throw new Exception("bad message received");
+            }
+        }
+
+        Assert.Equal(valuesToSend.Count, messageCount);
+        Assert.True(heartbeatCount > 0);
+        Assert.Equal(0, discontinuityCount);
+    }
+
 
     private async Task ProduceMessages(string topicName, List<byte[]> valuesToSend)
     {
@@ -202,6 +257,34 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
                     }
                 }
 
+                subscription.Dispose();
+                return receivedSet;
+            default:
+                throw new Exception("subscription error");
+        }
+    }
+
+    private async Task<List<ITopicEvent>> ConsumeAllEvents(string topicName, CancellationToken token)
+    {
+        var subscribeResponse = await topicClient.SubscribeAsync(cacheName, topicName);
+        switch (subscribeResponse)
+        {
+            case TopicSubscribeResponse.Subscription subscription:
+                var cancellableSubscription = subscription.WithCancellationForAllEvents(token);
+                var receivedSet = new List<ITopicEvent>();
+                await foreach (var topicEvent in cancellableSubscription)
+                {
+                    switch (topicEvent)
+                    {
+                        case TopicMessage.Binary:
+                        case TopicMessage.Text:
+                        case TopicSystemEvent:
+                            receivedSet.Add(topicEvent);
+                            break;
+                        default:
+                            throw new Exception("bad message received");
+                    }
+                }
                 subscription.Dispose();
                 return receivedSet;
             default:
