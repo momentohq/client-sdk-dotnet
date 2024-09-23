@@ -1,5 +1,6 @@
 using Momento.Protos.CacheClient.Pubsub;
 using Momento.Sdk.Exceptions;
+using Momento.Sdk.Internal.ExtensionMethods;
 
 namespace Momento.Sdk.Responses;
 
@@ -31,7 +32,7 @@ namespace Momento.Sdk.Responses;
 /// }
 /// </code>
 /// </summary>
-public abstract class TopicMessage
+public abstract class TopicMessage : ITopicEvent
 {
     /// <summary>
     /// A topic message containing a text value.
@@ -63,6 +64,12 @@ public abstract class TopicMessage
         /// This can be used to securely identify the sender of a message.
         /// </summary>
         public string? TokenId { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{base.ToString()}: Value: \"{this.Value.Truncate()}\" SequenceNumber: {this.TopicSequenceNumber} TokenId: \"{this.TokenId}\"";
+        }
     }
 
     /// <summary>
@@ -95,6 +102,12 @@ public abstract class TopicMessage
         /// This can be used to securely identify the sender of a message.
         /// </summary>
         public string? TokenId { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{base.ToString()}: Value: \"{Value.ToPrettyHexString().Truncate()}\" SequenceNumber: {this.TopicSequenceNumber} TokenId: \"{this.TokenId}\"";
+        }
     }
 
     /// <include file="../../docs.xml" path='docs/class[@name="Error"]/description/*' />

@@ -142,7 +142,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         }
 
         var response = new TopicSubscribeResponse.Subscription(
-            cancellationToken => subscriptionWrapper.GetNextRelevantMessageFromGrpcStreamAsync(cancellationToken),
+            cancellationToken => subscriptionWrapper.GetNextEventFromGrpcStreamAsync(cancellationToken),
             subscriptionWrapper.Dispose);
         return _logger.LogTraceTopicRequestSuccess(RequestTypeTopicSubscribe, cacheName, topicName,
             response);
@@ -198,7 +198,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
             _subscribed = true;
         }
 
-        public async ValueTask<TopicMessage?> GetNextRelevantMessageFromGrpcStreamAsync(
+        public async ValueTask<ITopicEvent?> GetNextEventFromGrpcStreamAsync(
             CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
@@ -251,10 +251,10 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                         {
                             case _TopicValue.KindOneofCase.Text:
                                 _logger.LogTraceTopicMessageReceived("text", _cacheName, _topicName);
-                                return new TopicMessage.Text(message.Item.Value, checked((long)message.Item.TopicSequenceNumber), message.Item.PublisherId == "" ? null : message.Item.PublisherId);
+                                return new TopicMessage.Text(message.Item.Value, checked((long)_lastSequenceNumber), message.Item.PublisherId == "" ? null : message.Item.PublisherId);
                             case _TopicValue.KindOneofCase.Binary:
                                 _logger.LogTraceTopicMessageReceived("binary", _cacheName, _topicName);
-                                return new TopicMessage.Binary(message.Item.Value, checked((long)message.Item.TopicSequenceNumber), message.Item.PublisherId == "" ? null : message.Item.PublisherId);
+                                return new TopicMessage.Binary(message.Item.Value, checked((long)_lastSequenceNumber), message.Item.PublisherId == "" ? null : message.Item.PublisherId);
                             case _TopicValue.KindOneofCase.None:
                             default:
                                 _logger.LogTraceTopicMessageReceived("unknown", _cacheName, _topicName);
@@ -266,10 +266,11 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                         _logger.LogTraceTopicDiscontinuityReceived(_cacheName, _topicName,
                             message.Discontinuity.LastTopicSequence, message.Discontinuity.NewTopicSequence);
                         _lastSequenceNumber = message.Discontinuity.NewTopicSequence;
-                        break;
+                        return new TopicSystemEvent.Discontinuity(checked((long)message.Discontinuity.LastTopicSequence),
+                            checked((long)message.Discontinuity.NewTopicSequence));
                     case _SubscriptionItem.KindOneofCase.Heartbeat:
                         _logger.LogTraceTopicMessageReceived("heartbeat", _cacheName, _topicName);
-                        break;
+                        return new TopicSystemEvent.Heartbeat();
                     case _SubscriptionItem.KindOneofCase.None:
                         _logger.LogTraceTopicMessageReceived("none", _cacheName, _topicName);
                         break;
