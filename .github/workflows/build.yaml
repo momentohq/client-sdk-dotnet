@@ -69,6 +69,12 @@ jobs:
         working-directory: ./examples/MomentoApplication
         run: dotnet run
 
+      - name: Run MomentoWeb example
+        id: validation-momento-web
+        continue-on-error: true
+        working-directory: ./examples/MomentoWeb
+        run: dotnet run
+
       - name: Run doc API snippets
         id: validation-docexampleapis
         continue-on-error: true
@@ -78,7 +84,7 @@ jobs:
       - name: Test example failure
         id: test-example-failure
         run: |
-          if [[ "${{ steps.validation-momentoapplication.outcome }}" == "failure" || "${{ steps.validation-docexampleapis.outcome }}" == "failure" ]]
+          if [[ "${{ steps.validation-momentoapplication.outcome }}" == "failure" || "${{ steps.validation-momento-web.outcome }}" == "failure" || "${{ steps.validation-docexampleapis.outcome }}" == "failure" ]]
           then
             echo "failure=true" >> $GITHUB_OUTPUT
           else

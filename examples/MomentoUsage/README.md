@@ -27,13 +27,13 @@ MOMENTO_API_KEY=<YOUR API KEY> dotnet run
 
 ## Error Handling
 
-Errors that occur in calls to SimpleCacheClient methods are surfaced to developers as part of the return values of
+Errors that occur in calls to CacheClient methods are surfaced to developers as part of the return values of
 the calls, as opposed to by throwing exceptions.  This makes them more visible, and allows your IDE to be more
 helpful in ensuring that you've handled the ones you care about.  (For more on our philosophy about this, see our
 blog post on why [Exceptions are bugs](https://www.gomomento.com/blog/exceptions-are-bugs).  And send us any
 feedback you have!)
 
-The preferred way of interpreting the return values from SimpleCacheClient methods is using [Pattern matching](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/pattern-matching).  Here's a quick example:
+The preferred way of interpreting the return values from CacheClient methods is using [Pattern matching](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/pattern-matching).  Here's a quick example:
 
 ```csharp
 CacheGetResponse getResponse = await client.GetAsync(CACHE_NAME, KEY);
@@ -64,5 +64,5 @@ if (getResponse is CacheGetResponse.Error errorResponse)
 }
 ```
 
-Note that, outside of SimpleCacheClient responses, exceptions can occur and should be handled as usual. For example, trying to instantiate a SimpleCacheClient with an invalid authentication token will result in an
+Note that, outside of CacheClient responses, exceptions can occur and should be handled as usual. For example, trying to instantiate a CacheClient with an invalid authentication token will result in an
 IllegalArgumentException being thrown.
