@@ -143,7 +143,9 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         Assert.Equal(valuesToSend.Count, consumedMessages.Count);
         for (var i = 0; i < valuesToSend.Count; ++i)
         {
-            Assert.Equal(((TopicMessage.Text)consumedMessages[i]).Value, valuesToSend[i]);
+            var textMessage = (TopicMessage.Text)consumedMessages[i];
+            Assert.Equal(textMessage.Value, valuesToSend[i]);
+            Assert.Equal(textMessage.TopicSequenceNumber, i + 1);
         }
     }
 
