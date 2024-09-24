@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopicExample", "TopicExampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MomentoWeb", "MomentoWeb\MomentoWeb.csproj", "{DE3FDC58-9342-4B93-A4DB-C4039A235BA3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopicHeartbeatExample", "TopicHeartbeatExample\TopicHeartbeatExample.csproj", "{31E3111A-655E-4844-86DD-06F2B2AD9DE6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{DE3FDC58-9342-4B93-A4DB-C4039A235BA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE3FDC58-9342-4B93-A4DB-C4039A235BA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE3FDC58-9342-4B93-A4DB-C4039A235BA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31E3111A-655E-4844-86DD-06F2B2AD9DE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31E3111A-655E-4844-86DD-06F2B2AD9DE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31E3111A-655E-4844-86DD-06F2B2AD9DE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31E3111A-655E-4844-86DD-06F2B2AD9DE6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
