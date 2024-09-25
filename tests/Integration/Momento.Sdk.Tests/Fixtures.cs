@@ -42,7 +42,7 @@ public class CacheClientFixture : IDisposable
         }
 
         CacheName = $"dotnet-integration-{Utils.NewGuidString()}";
-        Client = new TestCacheClient(config, AuthProvider, defaultTtl: DefaultTtl);
+        Client = new CacheClient(config, AuthProvider, defaultTtl: DefaultTtl);
         Utils.CreateCacheForTest(Client, CacheName);
     }
 
