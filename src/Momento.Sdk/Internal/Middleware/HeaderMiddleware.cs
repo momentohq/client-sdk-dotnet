@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Microsoft.Extensions.Logging;
+using Momento.Sdk.Config;
 using Momento.Sdk.Config.Middleware;
 
 namespace Momento.Sdk.Internal.Middleware
@@ -14,6 +15,7 @@ namespace Momento.Sdk.Internal.Middleware
         public const string AuthorizationKey = "authorization";
         public const string AgentKey = "agent";
         public const string RuntimeVersionKey = "runtime-version";
+        public const string ReadConcern = "read-concern";
         public readonly List<string> onceOnlyHeaders = new List<string> { Header.AgentKey, Header.RuntimeVersionKey };
         public string Name;
         public string Value;

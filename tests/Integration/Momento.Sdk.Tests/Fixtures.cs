@@ -20,19 +20,29 @@ public class CacheClientFixture : IDisposable
     public CacheClientFixture()
     {
         AuthProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY");
+        
+        // Enable consistent reads if the CONSISTENT_READS env var is set to anything
+        var consistentReads = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("CONSISTENT_READS"));
+
+        var config = Configurations.Laptop.Latest(LoggerFactory.Create(builder =>
+        {
+            builder.AddSimpleConsole(options =>
+            {
+                options.IncludeScopes = true;
+                options.SingleLine = true;
+                options.TimestampFormat = "hh:mm:ss ";
+            });
+            builder.AddFilter("Grpc.Net.Client", LogLevel.Error);
+            builder.SetMinimumLevel(LogLevel.Information);
+        }));
+
+        if (consistentReads)
+        {
+            config = config.WithReadConcern(ReadConcern.Consistent);
+        }
+
         CacheName = $"dotnet-integration-{Utils.NewGuidString()}";
-        Client = new TestCacheClient(Configurations.Laptop.Latest(LoggerFactory.Create(builder =>
-                {
-                    builder.AddSimpleConsole(options =>
-                    {
-                        options.IncludeScopes = true;
-                        options.SingleLine = true;
-                        options.TimestampFormat = "hh:mm:ss ";
-                    });
-                    builder.AddFilter("Grpc.Net.Client", LogLevel.Error);
-                    builder.SetMinimumLevel(LogLevel.Information);
-                })),
-                AuthProvider, defaultTtl: DefaultTtl);
+        Client = new TestCacheClient(config, AuthProvider, defaultTtl: DefaultTtl);
         Utils.CreateCacheForTest(Client, CacheName);
     }
 

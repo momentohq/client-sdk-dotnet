@@ -4,11 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
-using Grpc.Net.Client;
-using System.Net.Http;
-#if USE_GRPC_WEB
-using Grpc.Net.Client.Web;
-#endif
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient;
 using Momento.Protos.CachePing;
@@ -17,7 +12,6 @@ using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal.Middleware;
-using static System.Reflection.Assembly;
 
 namespace Momento.Sdk.Internal;
 
@@ -256,10 +250,13 @@ public class DataGrpcManager : GrpcManager
 
     internal DataGrpcManager(IConfiguration config, string authToken, string endpoint): base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authToken, endpoint, "DataGrpcManager")
     {
+        var readConcernHeader = new Header(Header.ReadConcern, config.ReadConcern.ToStringValue());
+        headers.Add(readConcernHeader);
+        
         var middlewares = config.Middlewares.Concat(
             new List<IMiddleware> {
                 new RetryMiddleware(config.LoggerFactory, config.RetryStrategy),
-                new HeaderMiddleware(config.LoggerFactory, this.headers),
+                new HeaderMiddleware(config.LoggerFactory, headers),
                 new MaxConcurrentRequestsMiddleware(config.LoggerFactory, config.TransportStrategy.MaxConcurrentRequests)
             }
         ).ToList();
@@ -280,7 +277,7 @@ public class DataGrpcManager : GrpcManager
         catch (RpcException ex)
         {
             MomentoErrorTransportDetails transportDetails = new MomentoErrorTransportDetails(
-                new MomentoGrpcErrorDetails(ex.StatusCode, ex.Message, null)
+                new MomentoGrpcErrorDetails(ex.StatusCode, ex.Message)
             );
             throw new ConnectionException("Eager connection to server failed", transportDetails, ex);
         }
