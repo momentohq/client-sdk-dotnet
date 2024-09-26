@@ -250,9 +250,13 @@ public class DataGrpcManager : GrpcManager
 
     internal DataGrpcManager(IConfiguration config, string authToken, string endpoint): base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authToken, endpoint, "DataGrpcManager")
     {
-        var readConcernHeader = new Header(Header.ReadConcern, config.ReadConcern.ToStringValue());
-        headers.Add(readConcernHeader);
-        
+        // Not sending a head concern header is treated the same as sending a balanced read concern header
+        if (config.ReadConcern != ReadConcern.Balanced)
+        {
+            var readConcernHeader = new Header(Header.ReadConcern, config.ReadConcern.ToStringValue());
+            headers.Add(readConcernHeader);
+        }
+
         var middlewares = config.Middlewares.Concat(
             new List<IMiddleware> {
                 new RetryMiddleware(config.LoggerFactory, config.RetryStrategy),

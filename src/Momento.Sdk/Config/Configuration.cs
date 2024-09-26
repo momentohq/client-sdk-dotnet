@@ -40,26 +40,9 @@ public class Configuration : IConfiguration
     /// <param name="middlewares">The Middleware interface allows the Configuration to provide a higher-order function that wraps all requests.</param>
     /// <param name="transportStrategy">This is responsible for configuring network tunables.</param>
     /// <param name="loggerFactory">This is responsible for configuring logging.</param>
+    /// <param name="readConcern">The client-wide setting for read-after-write consistency. Defaults to Balanced.</param>
     public Configuration(ILoggerFactory loggerFactory, IRetryStrategy retryStrategy, IList<IMiddleware> middlewares,
-        ITransportStrategy transportStrategy)
-    {
-        LoggerFactory = loggerFactory;
-        RetryStrategy = retryStrategy;
-        Middlewares = middlewares;
-        TransportStrategy = transportStrategy;
-        ReadConcern = ReadConcern.Balanced;
-    }
-
-    /// <summary>
-    /// Create a new instance of Configuration object with provided arguments: <see cref="Momento.Sdk.Config.IConfiguration.RetryStrategy" />, <see cref="Momento.Sdk.Config.IConfiguration.Middlewares" />, <see cref="Momento.Sdk.Config.IConfiguration.TransportStrategy"/>, and <see cref="Momento.Sdk.Config.IConfiguration.LoggerFactory"/>
-    /// </summary>
-    /// <param name="retryStrategy">Defines a contract for how and when to retry a request</param>
-    /// <param name="middlewares">The Middleware interface allows the Configuration to provide a higher-order function that wraps all requests.</param>
-    /// <param name="transportStrategy">This is responsible for configuring network tunables.</param>
-    /// <param name="loggerFactory">This is responsible for configuring logging.</param>
-    /// <param name="readConcern">The client-wide setting for read-after-write consistency.</param>
-    public Configuration(ILoggerFactory loggerFactory, IRetryStrategy retryStrategy, IList<IMiddleware> middlewares,
-        ITransportStrategy transportStrategy, ReadConcern readConcern)
+        ITransportStrategy transportStrategy, ReadConcern readConcern = ReadConcern.Balanced)
     {
         LoggerFactory = loggerFactory;
         RetryStrategy = retryStrategy;
