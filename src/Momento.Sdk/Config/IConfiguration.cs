@@ -21,6 +21,8 @@ public interface IConfiguration
     public IList<IMiddleware> Middlewares { get; }
     /// <inheritdoc cref="Momento.Sdk.Config.Transport.ITransportStrategy" />
     public ITransportStrategy TransportStrategy { get; }
+    /// <inheritdoc cref="Momento.Sdk.Config.ReadConcern" />
+    public ReadConcern ReadConcern { get; }
 
     /// <summary>
     /// Creates a new instance of the Configuration object, updated to use the specified retry strategy.
@@ -49,4 +51,11 @@ public interface IConfiguration
     /// <param name="clientTimeout">The amount of time to wait before cancelling the request.</param>
     /// <returns>Configuration object with custom client timeout provided</returns>
     public IConfiguration WithClientTimeout(TimeSpan clientTimeout);
+    
+    /// <summary>
+    /// Creates a new instance of the Configuration object, updated to use the specified read concern.
+    /// </summary>
+    /// <param name="readConcern">The read concern setting.</param>
+    /// <returns>Configuration object with custom read concern provided</returns>
+    public IConfiguration WithReadConcern(ReadConcern readConcern);
 }
