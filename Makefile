@@ -32,13 +32,9 @@ TEST_LOGGER_OPTIONS := --logger "console;verbosity=detailed"
 ifneq (,$(findstring NT,$(OS)))
 	BUILD_TARGETS := build-dotnet6 build-dotnet-framework
 	TEST_TARGETS := test-dotnet6 test-dotnet-framework
-	TEST_TARGETS_AUTH_SERVICE := test-dotnet6-auth-service test-dotnet-framework-auth-service
-	TEST_TARGETS_TOPICS_SERVICE := test-dotnet6-topics-service test-dotnet-framework-topics-service
 else
 	BUILD_TARGETS := build-dotnet6
 	TEST_TARGETS := test-dotnet6
-	TEST_TARGETS_AUTH_SERVICE := test-dotnet6-auth-service
-	TEST_TARGETS_TOPICS_SERVICE := test-dotnet6-topics-service
 endif
 
 # Enable gRPC-Web if requested
@@ -155,7 +151,12 @@ test-dotnet-framework-auth-service:
 
 
 ## Run auth service tests
-test-auth-service: ${TEST_TARGETS_AUTH_SERVICE}
+test-auth-service:
+ifeq (,$(findstring NT,$(OS)))
+	@CONSISTENT_READS=1 $(MAKE) test-dotnet6-auth-service
+else
+	@set CONSISTENT_READS=1 && $(MAKE) test-dotnet6-auth-service test-dotnet-framework-auth-service
+endif
 
 
 ## Run cache service tests
@@ -178,7 +179,12 @@ test-storage-service:
 
 
 ## Run topics service tests
-test-topics-service: ${TEST_TARGETS_TOPICS_SERVICE}
+test-topics-service:
+ifeq (,$(findstring NT,$(OS)))
+	@CONSISTENT_READS=1 $(MAKE) test-dotnet6-topics-service
+else
+	@set CONSISTENT_READS=1 && $(MAKE) test-dotnet6-topics-service test-dotnet-framework-topics-service
+endif
 
 
 ## Run example applications and snippets
