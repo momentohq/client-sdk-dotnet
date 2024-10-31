@@ -14,31 +14,31 @@ public class LimitExceededException : SdkException
         if (errMetadata != null) {
             this.MessageWrapper = errMetadata switch
             {
-                "topic_subscriptions_limit_exceeded" => LimitExceededMessageWrapper.TopicSubscriptionsLimitExceeded.Value,
-                "operations_rate_limit_exceeded" => LimitExceededMessageWrapper.OperationsRateLimitExceeded.Value,
-                "throughput_rate_limit_exceeded" => LimitExceededMessageWrapper.ThroughputRateLimitExceeded.Value,
-                "request_size_limit_exceeded" => LimitExceededMessageWrapper.RequestSizeLimitExceeded.Value,
-                "item_size_limit_exceeded" => LimitExceededMessageWrapper.ItemSizeLimitExceeded.Value,
-                "element_size_limit_exceeded" => LimitExceededMessageWrapper.ElementSizeLimitExceeded.Value,
-                _ => LimitExceededMessageWrapper.UnknownLimitExceeded.Value,
+                "topic_subscriptions_limit_exceeded" => LimitExceededMessageWrapper.TopicSubscriptionsLimitExceeded,
+                "operations_rate_limit_exceeded" => LimitExceededMessageWrapper.OperationsRateLimitExceeded,
+                "throughput_rate_limit_exceeded" => LimitExceededMessageWrapper.ThroughputRateLimitExceeded,
+                "request_size_limit_exceeded" => LimitExceededMessageWrapper.RequestSizeLimitExceeded,
+                "item_size_limit_exceeded" => LimitExceededMessageWrapper.ItemSizeLimitExceeded,
+                "element_size_limit_exceeded" => LimitExceededMessageWrapper.ElementSizeLimitExceeded,
+                _ => LimitExceededMessageWrapper.UnknownLimitExceeded,
             };
         } else {
             var lowerCasedMessage = message.ToLower();
-            this.MessageWrapper = LimitExceededMessageWrapper.UnknownLimitExceeded.Value;
+            this.MessageWrapper = LimitExceededMessageWrapper.UnknownLimitExceeded;
             if (lowerCasedMessage.Contains("subscribers")) {
-                this.MessageWrapper = LimitExceededMessageWrapper.TopicSubscriptionsLimitExceeded.Value;
+                this.MessageWrapper = LimitExceededMessageWrapper.TopicSubscriptionsLimitExceeded;
             } else if (lowerCasedMessage.Contains("operations")) {
-                this.MessageWrapper = LimitExceededMessageWrapper.OperationsRateLimitExceeded.Value;
+                this.MessageWrapper = LimitExceededMessageWrapper.OperationsRateLimitExceeded;
             } else if (lowerCasedMessage.Contains("throughput")) {
-                this.MessageWrapper = LimitExceededMessageWrapper.ThroughputRateLimitExceeded.Value;
+                this.MessageWrapper = LimitExceededMessageWrapper.ThroughputRateLimitExceeded;
             } else if (lowerCasedMessage.Contains("request limit")) {
-                this.MessageWrapper = LimitExceededMessageWrapper.RequestSizeLimitExceeded.Value;
+                this.MessageWrapper = LimitExceededMessageWrapper.RequestSizeLimitExceeded;
             } else if (lowerCasedMessage.Contains("item size")) {
-                this.MessageWrapper = LimitExceededMessageWrapper.ItemSizeLimitExceeded.Value;
+                this.MessageWrapper = LimitExceededMessageWrapper.ItemSizeLimitExceeded;
             } else if (lowerCasedMessage.Contains("element size")) {
-                this.MessageWrapper = LimitExceededMessageWrapper.ElementSizeLimitExceeded.Value;
+                this.MessageWrapper = LimitExceededMessageWrapper.ElementSizeLimitExceeded;
             } else {
-                this.MessageWrapper = LimitExceededMessageWrapper.UnknownLimitExceeded.Value;
+                this.MessageWrapper = LimitExceededMessageWrapper.UnknownLimitExceeded;
             }
         }
     }
@@ -47,45 +47,35 @@ public class LimitExceededException : SdkException
 /// <summary>
 /// Provides a specific reason for the limit exceeded error.
 /// </summary>
-public sealed class LimitExceededMessageWrapper
+public static class LimitExceededMessageWrapper
 {
     /// <summary>
     /// Topic subscriptions limit exceeded for this account.
     /// </summary>
-    public static readonly LimitExceededMessageWrapper TopicSubscriptionsLimitExceeded = new LimitExceededMessageWrapper("Topic subscriptions limit exceeded for this account");
+    public static string TopicSubscriptionsLimitExceeded = "Topic subscriptions limit exceeded for this account";
     /// <summary>
     /// Request rate limit exceeded for this account.
     /// </summary>
-    public static readonly LimitExceededMessageWrapper OperationsRateLimitExceeded = new LimitExceededMessageWrapper("Request rate limit exceeded for this account");
+    public static string OperationsRateLimitExceeded = "Request rate limit exceeded for this account";
 
     /// <summary>
     /// Bandwidth limit exceeded for this account.
     /// </summary>
-    public static readonly LimitExceededMessageWrapper ThroughputRateLimitExceeded = new LimitExceededMessageWrapper("Bandwidth limit exceeded for this account");
+    public static string ThroughputRateLimitExceeded = "Bandwidth limit exceeded for this account";
     /// <summary>
     /// Request size limit exceeded for this account.
     /// </summary>
-    public static readonly LimitExceededMessageWrapper RequestSizeLimitExceeded = new LimitExceededMessageWrapper("Request size limit exceeded for this account");
+    public static string RequestSizeLimitExceeded = "Request size limit exceeded for this account";
     /// <summary>
     /// Item size limit exceeded for this account.
     /// </summary>
-    public static readonly LimitExceededMessageWrapper ItemSizeLimitExceeded = new LimitExceededMessageWrapper("Item size limit exceeded for this account");
+    public static string ItemSizeLimitExceeded = "Item size limit exceeded for this account";
     /// <summary>
     /// Element size limit exceeded for this account.
     /// </summary>
-    public static readonly LimitExceededMessageWrapper ElementSizeLimitExceeded = new LimitExceededMessageWrapper("Element size limit exceeded for this account");
+    public static string ElementSizeLimitExceeded = "Element size limit exceeded for this account";
     /// <summary>
     /// Unknown limit exceeded for this account.
     /// </summary>
-    public static readonly LimitExceededMessageWrapper UnknownLimitExceeded = new LimitExceededMessageWrapper("Limit exceeded for this account");
-
-    private LimitExceededMessageWrapper(string value)
-    {
-        Value = value;
-    }
-
-    /// <summary>
-    /// The value of the LimitExceededMessageWrapper.
-    /// </summary>
-    public string Value { get; private set; }
+    public static string UnknownLimitExceeded = "Limit exceeded for this account";
 }
