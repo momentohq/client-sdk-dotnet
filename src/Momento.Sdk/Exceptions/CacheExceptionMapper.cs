@@ -78,7 +78,7 @@ public class CacheExceptionMapper
                     return new AuthenticationException(ex.Message, transportDetails);
 
                 case StatusCode.ResourceExhausted:
-                    return new LimitExceededException(ex.Message, transportDetails, ex);
+                    return LimitExceededException.CreateWithMessageWrapper(ex.Message, transportDetails, ex);
 
                 case StatusCode.NotFound:
                     return new NotFoundException(ex.Message, transportDetails);
