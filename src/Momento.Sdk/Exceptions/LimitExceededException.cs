@@ -1,6 +1,5 @@
 ﻿namespace Momento.Sdk.Exceptions;
 
-using System;
 using Grpc.Core;
 
 /// <summary>
