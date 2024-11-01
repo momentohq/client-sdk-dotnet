@@ -8,6 +8,8 @@ public static class Utils
 
     public static string TestCacheName() => "dotnet-integration-" + NewGuidString();
 
+    public static string TestTopicName() => "topic-dotnet-integration-" + NewGuidString();
+
     /// <summary>
     /// Returns a test vector index name that is unique to this test run.
     /// </summary>

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
 using Momento.Sdk.Config.Transport;
@@ -14,18 +13,24 @@ public class Configuration : IConfiguration
 {
     /// <inheritdoc />
     public ILoggerFactory LoggerFactory { get; }
+
     /// <inheritdoc />
     public IRetryStrategy RetryStrategy { get; }
+
     /// <inheritdoc />
     public IList<IMiddleware> Middlewares { get; }
+
     /// <inheritdoc />
     public ITransportStrategy TransportStrategy { get; }
 
+    /// <inheritdoc />
+    public ReadConcern ReadConcern { get; }
+
     /// <inheritdoc cref="Momento.Sdk.Config.IConfiguration" />
-    public Configuration(ILoggerFactory loggerFactory, IRetryStrategy retryStrategy, ITransportStrategy transportStrategy)
+    public Configuration(ILoggerFactory loggerFactory, IRetryStrategy retryStrategy,
+        ITransportStrategy transportStrategy)
         : this(loggerFactory, retryStrategy, new List<IMiddleware>(), transportStrategy)
     {
-
     }
 
     /// <summary>
@@ -34,31 +39,34 @@ public class Configuration : IConfiguration
     /// <param name="retryStrategy">Defines a contract for how and when to retry a request</param>
     /// <param name="middlewares">The Middleware interface allows the Configuration to provide a higher-order function that wraps all requests.</param>
     /// <param name="transportStrategy">This is responsible for configuring network tunables.</param>
-    /// <param name="loggerFactory">This is responsible for configuraing logging.</param>
-    public Configuration(ILoggerFactory loggerFactory, IRetryStrategy retryStrategy, IList<IMiddleware> middlewares, ITransportStrategy transportStrategy)
+    /// <param name="loggerFactory">This is responsible for configuring logging.</param>
+    /// <param name="readConcern">The client-wide setting for read-after-write consistency. Defaults to Balanced.</param>
+    public Configuration(ILoggerFactory loggerFactory, IRetryStrategy retryStrategy, IList<IMiddleware> middlewares,
+        ITransportStrategy transportStrategy, ReadConcern readConcern = ReadConcern.Balanced)
     {
-        this.LoggerFactory = loggerFactory;
-        this.RetryStrategy = retryStrategy;
-        this.Middlewares = middlewares;
-        this.TransportStrategy = transportStrategy;
+        LoggerFactory = loggerFactory;
+        RetryStrategy = retryStrategy;
+        Middlewares = middlewares;
+        TransportStrategy = transportStrategy;
+        ReadConcern = readConcern;
     }
 
     /// <inheritdoc />
     public IConfiguration WithRetryStrategy(IRetryStrategy retryStrategy)
     {
-        return new Configuration(LoggerFactory, retryStrategy, Middlewares, TransportStrategy);
+        return new Configuration(LoggerFactory, retryStrategy, Middlewares, TransportStrategy, ReadConcern);
     }
 
     /// <inheritdoc />
     public IConfiguration WithMiddlewares(IList<IMiddleware> middlewares)
     {
-        return new Configuration(LoggerFactory, RetryStrategy, middlewares, TransportStrategy);
+        return new Configuration(LoggerFactory, RetryStrategy, middlewares, TransportStrategy, ReadConcern);
     }
 
     /// <inheritdoc />
     public IConfiguration WithTransportStrategy(ITransportStrategy transportStrategy)
     {
-        return new Configuration(LoggerFactory, RetryStrategy, Middlewares, transportStrategy);
+        return new Configuration(LoggerFactory, RetryStrategy, Middlewares, transportStrategy, ReadConcern);
     }
 
     /// <summary>
@@ -72,12 +80,13 @@ public class Configuration : IConfiguration
             retryStrategy: RetryStrategy,
             middlewares: Middlewares.Concat(additionalMiddlewares).ToList(),
             transportStrategy: TransportStrategy,
-            loggerFactory: LoggerFactory
+            loggerFactory: LoggerFactory,
+            readConcern: ReadConcern
         );
     }
 
     /// <summary>
-    /// Add the specified client timeout to an existing instance of Configuration object as an addiion to the existing transport strategy.
+    /// Add the specified client timeout to an existing instance of Configuration object as an addition to the existing transport strategy.
     /// </summary>
     /// <param name="clientTimeout">The amount of time to wait before cancelling the request.</param>
     /// <returns>Configuration object with client timeout provided</returns>
@@ -87,7 +96,20 @@ public class Configuration : IConfiguration
             retryStrategy: RetryStrategy,
             middlewares: Middlewares,
             transportStrategy: TransportStrategy.WithClientTimeout(clientTimeout),
-            loggerFactory: LoggerFactory
+            loggerFactory: LoggerFactory,
+            readConcern: ReadConcern
+        );
+    }
+
+    /// <inheritdoc />
+    public IConfiguration WithReadConcern(ReadConcern readConcern)
+    {
+        return new Configuration(
+            retryStrategy: RetryStrategy,
+            middlewares: Middlewares,
+            transportStrategy: TransportStrategy,
+            loggerFactory: LoggerFactory,
+            readConcern: readConcern
         );
     }
 
@@ -106,9 +128,10 @@ public class Configuration : IConfiguration
 
         var other = (Configuration)obj;
         return RetryStrategy.Equals(other.RetryStrategy) &&
-            Middlewares.SequenceEqual(other.Middlewares) &&
-            TransportStrategy.Equals(other.TransportStrategy) &&
-            LoggerFactory.Equals(other.LoggerFactory);
+               Middlewares.SequenceEqual(other.Middlewares) &&
+               TransportStrategy.Equals(other.TransportStrategy) &&
+               LoggerFactory.Equals(other.LoggerFactory) &&
+               ReadConcern.Equals(other.ReadConcern);
     }
 
     /// <inheritdoc />

@@ -142,7 +142,7 @@ public class Program
 
     public static async Task Example_API_SetSample(CacheClient cacheClient)
     {
-        var setAddResult = await cacheClient.SetAddElementsAsync("test-cache", "test-set", new string[] {"foo", "bar", "baz"});
+        var setAddResult = await cacheClient.SetAddElementsAsync("test-cache", "test-set", new string[] { "foo", "bar", "baz" });
         if (setAddResult is CacheSetAddElementsResponse.Success)
         {
             Console.WriteLine("Added elements to 'test-set' successfully");
@@ -261,27 +261,34 @@ public class Program
     public static async Task Example_API_TopicSubscribe(ITopicClient topicClient)
     {
         var produceCancellation = new CancellationTokenSource();
-        produceCancellation.CancelAfter(2000);
+        produceCancellation.CancelAfter(5_000);
 
         var subscribeResponse = await topicClient.SubscribeAsync("test-cache", "test-topic");
         switch (subscribeResponse)
         {
             case TopicSubscribeResponse.Subscription subscription:
-                var cancellableSubscription = subscription.WithCancellation(produceCancellation.Token);
+                // Note: use `WithCancellation` to filter only the `TopicMessage` types
+                var cancellableSubscription = subscription.WithCancellationForAllEvents(produceCancellation.Token);
 
                 await Task.Delay(1_000);
                 await topicClient.PublishAsync("test-cache", "test-topic", "test-topic-value");
                 await Task.Delay(1_000);
 
-                await foreach (var message in cancellableSubscription)
+                await foreach (var topicEvent in cancellableSubscription)
                 {
-                    switch (message)
+                    switch (topicEvent)
                     {
                         case TopicMessage.Binary:
                             Console.WriteLine("Received unexpected binary message from topic.");
                             break;
                         case TopicMessage.Text text:
                             Console.WriteLine($"Received string message from topic: {text.Value}");
+                            break;
+                        case TopicSystemEvent.Heartbeat:
+                            Console.WriteLine("Received heartbeat from topic.");
+                            break;
+                        case TopicSystemEvent.Discontinuity discontinuity:
+                            Console.WriteLine($"Received discontinuity from topic: {discontinuity}");
                             break;
                         case TopicMessage.Error error:
                             throw new Exception($"An error occurred while receiving topic message: {error.ErrorCode}: {error}");

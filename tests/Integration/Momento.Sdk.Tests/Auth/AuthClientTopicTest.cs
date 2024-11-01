@@ -14,7 +14,6 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     private readonly ITopicClient topicClient;
     private readonly ICacheClient cacheClient;
     private readonly string cacheName;
-    private readonly string topicName = "topic";
     private readonly string topicNamePrefix;
 
     public AuthClientTopicTest(
@@ -25,7 +24,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         cacheClient = cacheFixture.Client;
         cacheName = cacheFixture.CacheName;
         topicClient = topicFixture.Client;
-        topicNamePrefix = topicName.Substring(0, 3);
+        topicNamePrefix = "top";
     }
 
     private async Task<ITopicClient> GetClientForTokenScope(DisposableTokenScope scope)
@@ -332,7 +331,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
         }
     }
 
-    private async Task GenerateDisposableTopicAuthToken_ReadWrite_Common(ITopicClient readwriteTopicClient, string messageValue)
+    private async Task GenerateDisposableTopicAuthToken_ReadWrite_Common(ITopicClient readwriteTopicClient, string messageValue, string topicName)
     {
         var subscribeResponse = await readwriteTopicClient.SubscribeAsync(cacheName, topicName);
         Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription, $"Unexpected response: {subscribeResponse}");
@@ -348,17 +347,19 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_ReadWrite_HappyPath()
     {
+        var topicName = Utils.TestTopicName();
         const string messageValue = "hello";
         var readwriteTopicClient = await GetClientForTokenScope(
             DisposableTokenScopes.TopicPublishSubscribe(cacheName, topicName)
         );
-        await GenerateDisposableTopicAuthToken_ReadWrite_Common(readwriteTopicClient, messageValue);
+        await GenerateDisposableTopicAuthToken_ReadWrite_Common(readwriteTopicClient, messageValue, topicName);
     }
 
 
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_ReadWrite_WithTokenId_HappyPath()
     {
+        var topicName = Utils.TestTopicName();
         const string messageValue = "hello";
         const string tokenId = "tacoToken";
         var readwriteTopicClient = await GetClientForTokenScope(
@@ -380,14 +381,15 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_ReadWrite_NamePrefix_HappyPath()
     {
+        var topicName = Utils.TestTopicName();
         const string messageValue = "hello";
         var readwriteTopicClient = await GetClientForTokenScope(
             DisposableTokenScopes.TopicPublishSubscribe(cacheName, TopicSelector.ByTopicNamePrefix(topicNamePrefix))
         );
-        await GenerateDisposableTopicAuthToken_ReadWrite_Common(readwriteTopicClient, messageValue);
+        await GenerateDisposableTopicAuthToken_ReadWrite_Common(readwriteTopicClient, messageValue, topicName);
     }
 
-    private async Task GenerateDisposableTopicAuthToken_ReadOnly_Common(ITopicClient readonlyTopicClient, string messageValue)
+    private async Task GenerateDisposableTopicAuthToken_ReadOnly_Common(ITopicClient readonlyTopicClient, string messageValue, string topicName)
     {
         var subscribeResponse = await readonlyTopicClient.SubscribeAsync(cacheName, topicName);
         Assert.True(subscribeResponse is TopicSubscribeResponse.Subscription, $"Unexpected response: {subscribeResponse}");
@@ -403,26 +405,29 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_ReadOnly_HappyPath()
     {
+        var topicName = Utils.TestTopicName();
         const string messageValue = "hello";
         var readonlyTopicClient = await GetClientForTokenScope(
             DisposableTokenScopes.TopicSubscribeOnly(cacheName, topicName)
         );
-        await GenerateDisposableTopicAuthToken_ReadOnly_Common(readonlyTopicClient, messageValue);
+        await GenerateDisposableTopicAuthToken_ReadOnly_Common(readonlyTopicClient, messageValue, topicName);
     }
 
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_ReadOnly_NamePrefix_HappyPath()
     {
+        var topicName = Utils.TestTopicName();
         const string messageValue = "hello";
         var readonlyTopicClient = await GetClientForTokenScope(
             DisposableTokenScopes.TopicSubscribeOnly(cacheName, TopicSelector.ByTopicNamePrefix(topicNamePrefix))
         );
-        await GenerateDisposableTopicAuthToken_ReadOnly_Common(readonlyTopicClient, messageValue);
+        await GenerateDisposableTopicAuthToken_ReadOnly_Common(readonlyTopicClient, messageValue, topicName);
     }
 
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_WriteOnly_CantSubscribe()
     {
+        var topicName = Utils.TestTopicName();
         var writeOnlyTopicClient = await GetClientForTokenScope(
             DisposableTokenScopes.TopicPublishOnly(cacheName, topicName)
         );
@@ -437,7 +442,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     }
 
     private async Task GenerateDisposableTopicAuthToken_WriteOnly_CanPublish_Common(
-        ITopicClient writeOnlyTopicClient, string messageValue
+        ITopicClient writeOnlyTopicClient, string messageValue, string topicName
     )
     {
         var subscribeResponse = await topicClient.SubscribeAsync(cacheName, topicName);
@@ -454,26 +459,29 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_WriteOnly_CanPublish()
     {
+        var topicName = Utils.TestTopicName();
         const string messageValue = "hello";
         var writeOnlyTopicClient = await GetClientForTokenScope(
             DisposableTokenScopes.TopicPublishOnly(cacheName, topicName)
         );
-        await GenerateDisposableTopicAuthToken_WriteOnly_CanPublish_Common(writeOnlyTopicClient, messageValue);
+        await GenerateDisposableTopicAuthToken_WriteOnly_CanPublish_Common(writeOnlyTopicClient, messageValue, topicName);
     }
 
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_WriteOnly_NamePrefix_CanPublish()
     {
+        var topicName = Utils.TestTopicName();
         const string messageValue = "hello";
         var writeOnlyTopicClient = await GetClientForTokenScope(
             DisposableTokenScopes.TopicPublishOnly(cacheName, TopicSelector.ByTopicNamePrefix(topicNamePrefix))
         );
-        await GenerateDisposableTopicAuthToken_WriteOnly_CanPublish_Common(writeOnlyTopicClient, messageValue);
+        await GenerateDisposableTopicAuthToken_WriteOnly_CanPublish_Common(writeOnlyTopicClient, messageValue, topicName);
     }
 
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_NoCachePerms_CantPublish()
     {
+        var topicName = Utils.TestTopicName();
         var noCachePermsClient = await GetClientForTokenScope(
             DisposableTokenScopes.TopicPublishSubscribe("notthecacheyourelookingfor", topicName)
         );
@@ -492,6 +500,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_NoCachePerms_CantSubscribe()
     {
+        var topicName = Utils.TestTopicName();
         var noCachePermsClient = await GetClientForTokenScope(
             DisposableTokenScopes.TopicPublishSubscribe("notthecacheyourelookingfor", topicName)
         );
@@ -510,6 +519,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_NoTopicPerms_CantPublish()
     {
+        var topicName = Utils.TestTopicName();
         var noCachePermsClient = await GetClientForTokenScope(
             DisposableTokenScopes.TopicPublishSubscribe(cacheName, "notthetopicyourelookingfor")
         );
@@ -520,6 +530,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_NoTopicPerms_CantSubscribe()
     {
+        var topicName = Utils.TestTopicName();
         var noCachePermsClient = await GetClientForTokenScope(
             DisposableTokenScopes.TopicPublishSubscribe(cacheName, TopicSelector.ByTopicNamePrefix("notthe"))
         );
@@ -532,6 +543,7 @@ public class AuthClientTopicTest : IClassFixture<CacheClientFixture>, IClassFixt
     [Fact]
     public async Task GenerateDisposableTopicAuthToken_MultiplePerms()
     {
+        var topicName = Utils.TestTopicName();
         var scope = new DisposableTokenScope(Permissions: new List<DisposableTokenPermission>
         {
             new DisposableToken.TopicPermission(

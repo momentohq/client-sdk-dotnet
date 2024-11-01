@@ -32,7 +32,7 @@ jobs:
         run: make GRPC_WEB=${{ matrix.grpc-web }} build
 
       - name: Test
-        run: make test
+        run: make prod-test
 
   generate_readme:
     runs-on: ubuntu-latest

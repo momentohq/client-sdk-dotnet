@@ -83,7 +83,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
     [Fact(Timeout = 5000)]
     public async Task PublishAndSubscribe_ByteArray_Succeeds()
     {
-        const string topicName = "topic_bytes";
+        var topicName = Utils.NewGuidString();
         var valuesToSend = new List<byte[]>
         {
             new byte[] { 0x00 },

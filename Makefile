@@ -32,15 +32,9 @@ TEST_LOGGER_OPTIONS := --logger "console;verbosity=detailed"
 ifneq (,$(findstring NT,$(OS)))
 	BUILD_TARGETS := build-dotnet6 build-dotnet-framework
 	TEST_TARGETS := test-dotnet6 test-dotnet-framework
-	TEST_TARGETS_AUTH_SERVICE := test-dotnet6-auth-service test-dotnet-framework-auth-service
-	TEST_TARGETS_CACHE_SERVICE := test-dotnet6-cache-service test-dotnet-framework-cache-service
-	TEST_TARGETS_TOPICS_SERVICE := test-dotnet6-topics-service test-dotnet-framework-topics-service
 else
 	BUILD_TARGETS := build-dotnet6
 	TEST_TARGETS := test-dotnet6
-	TEST_TARGETS_AUTH_SERVICE := test-dotnet6-auth-service
-	TEST_TARGETS_CACHE_SERVICE := test-dotnet6-cache-service
-	TEST_TARGETS_TOPICS_SERVICE := test-dotnet6-topics-service
 endif
 
 # Enable gRPC-Web if requested
@@ -98,6 +92,16 @@ restore:
 test: ${TEST_TARGETS}
 
 
+## Run unit and integration tests with consistent reads (conditioned by OS)
+prod-test:
+	@echo "running tests with consistent reads..."
+ifeq (,$(findstring NT,$(OS)))
+	@CONSISTENT_READS=1 $(MAKE) ${TEST_TARGETS}
+else
+	@set CONSISTENT_READS=1 && $(MAKE) ${TEST_TARGETS}
+endif
+
+
 ## Run unit and integration tests on the .NET 6.0 runtime
 test-dotnet6:
 	@echo "Running unit and integration tests on the .NET 6.0 runtime..."
@@ -147,11 +151,21 @@ test-dotnet-framework-auth-service:
 
 
 ## Run auth service tests
-test-auth-service: ${TEST_TARGETS_AUTH_SERVICE}
+test-auth-service:
+ifeq (,$(findstring NT,$(OS)))
+	@CONSISTENT_READS=1 $(MAKE) test-dotnet6-auth-service
+else
+	@set CONSISTENT_READS=1 && $(MAKE) test-dotnet6-auth-service test-dotnet-framework-auth-service
+endif
 
 
 ## Run cache service tests
-test-cache-service: ${TEST_TARGETS_CACHE_SERVICE}
+test-cache-service:
+ifeq (,$(findstring NT,$(OS)))
+	@CONSISTENT_READS=1 $(MAKE) test-dotnet6-cache-service
+else
+	@set CONSISTENT_READS=1 && $(MAKE) test-dotnet6-cache-service test-dotnet-framework-cache-service
+endif
 
 
 ## Run leaderboard service tests
@@ -165,7 +179,12 @@ test-storage-service:
 
 
 ## Run topics service tests
-test-topics-service: ${TEST_TARGETS_TOPICS_SERVICE}
+test-topics-service:
+ifeq (,$(findstring NT,$(OS)))
+	@CONSISTENT_READS=1 $(MAKE) test-dotnet6-topics-service
+else
+	@set CONSISTENT_READS=1 && $(MAKE) test-dotnet6-topics-service test-dotnet-framework-topics-service
+endif
 
 
 ## Run example applications and snippets
