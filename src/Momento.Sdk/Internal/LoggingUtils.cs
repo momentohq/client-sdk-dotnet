@@ -457,11 +457,12 @@ namespace Momento.Sdk.Internal
         /// <param name="topicName"></param>
         /// <param name="lastSequenceNumber"></param>
         /// <param name="newSequenceNumber"></param>
-        public static void LogTraceTopicDiscontinuityReceived(this ILogger logger, string cacheName, string topicName, ulong lastSequenceNumber, ulong newSequenceNumber)
+        /// <param name="newSequencePage"></param>
+        public static void LogTraceTopicDiscontinuityReceived(this ILogger logger, string cacheName, string topicName, ulong lastSequenceNumber, ulong newSequenceNumber, ulong newSequencePage)
         {
             if (logger.IsEnabled(LogLevel.Trace))
             {
-                logger.LogTrace("Received discontinuity: cacheName: {}; topicName: {}, lastSequenceNumber: {}, newSequenceNumber: {}", cacheName, topicName, lastSequenceNumber, newSequenceNumber);
+                logger.LogTrace("Received discontinuity: cacheName: {}; topicName: {}, lastSequenceNumber: {}, newSequenceNumber: {}, newSequencePage: {}", cacheName, topicName, lastSequenceNumber, newSequenceNumber, newSequencePage);
             }
         }
 

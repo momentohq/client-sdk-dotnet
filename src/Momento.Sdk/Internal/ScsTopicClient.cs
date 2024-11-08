@@ -83,9 +83,9 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
     }
 
     public async Task<TopicSubscribeResponse> Subscribe(string cacheName, string topicName,
-        ulong? resumeAtTopicSequenceNumber = null)
+        ulong? resumeAtTopicSequenceNumber = null, ulong? resumeAtTopicSequencePage = null)
     {
-        return await SendSubscribe(cacheName, topicName, resumeAtTopicSequenceNumber);
+        return await SendSubscribe(cacheName, topicName, resumeAtTopicSequenceNumber, resumeAtTopicSequencePage);
     }
 
     private const string RequestTypeTopicPublish = "TOPIC_PUBLISH";
@@ -116,7 +116,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
     }
 
     private async Task<TopicSubscribeResponse> SendSubscribe(string cacheName, string topicName,
-        ulong? resumeAtTopicSequenceNumber)
+        ulong? resumeAtTopicSequenceNumber, ulong? resumeAtTopicSequencePage)
     {
         var request = new _SubscriptionRequest
         {
@@ -126,6 +126,10 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         if (resumeAtTopicSequenceNumber != null)
         {
             request.ResumeAtTopicSequenceNumber = resumeAtTopicSequenceNumber.Value;
+        }
+        if (resumeAtTopicSequencePage != null)
+        {
+            request.SequencePage = resumeAtTopicSequencePage.Value;
         }
 
         SubscriptionWrapper subscriptionWrapper;
@@ -158,6 +162,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
 
         private AsyncServerStreamingCall<_SubscriptionItem>? _subscription;
         private ulong? _lastSequenceNumber;
+        private ulong? _lastSequencePage;
         private bool _subscribed;
 
         public SubscriptionWrapper(TopicGrpcManager grpcManager, string cacheName,
@@ -177,9 +182,15 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                 CacheName = _cacheName,
                 Topic = _topicName
             };
+
             if (_lastSequenceNumber != null)
             {
                 request.ResumeAtTopicSequenceNumber = _lastSequenceNumber.Value;
+            }
+
+            if (_lastSequencePage != null)
+            {
+                request.SequencePage = _lastSequencePage.Value;
             }
 
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, _cacheName, _topicName);
@@ -247,14 +258,16 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                 {
                     case _SubscriptionItem.KindOneofCase.Item:
                         _lastSequenceNumber = message.Item.TopicSequenceNumber;
+                        _lastSequencePage = message.Item.SequencePage;
+
                         switch (message.Item.Value.KindCase)
                         {
                             case _TopicValue.KindOneofCase.Text:
                                 _logger.LogTraceTopicMessageReceived("text", _cacheName, _topicName);
-                                return new TopicMessage.Text(message.Item.Value, checked((long)_lastSequenceNumber), message.Item.PublisherId == "" ? null : message.Item.PublisherId);
+                                return new TopicMessage.Text(message.Item.Value, checked((long)_lastSequenceNumber), checked((long)_lastSequencePage), message.Item.PublisherId == "" ? null : message.Item.PublisherId);
                             case _TopicValue.KindOneofCase.Binary:
                                 _logger.LogTraceTopicMessageReceived("binary", _cacheName, _topicName);
-                                return new TopicMessage.Binary(message.Item.Value, checked((long)_lastSequenceNumber), message.Item.PublisherId == "" ? null : message.Item.PublisherId);
+                                return new TopicMessage.Binary(message.Item.Value, checked((long)_lastSequenceNumber), checked((long)_lastSequencePage), message.Item.PublisherId == "" ? null : message.Item.PublisherId);
                             case _TopicValue.KindOneofCase.None:
                             default:
                                 _logger.LogTraceTopicMessageReceived("unknown", _cacheName, _topicName);
@@ -264,10 +277,12 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                         break;
                     case _SubscriptionItem.KindOneofCase.Discontinuity:
                         _logger.LogTraceTopicDiscontinuityReceived(_cacheName, _topicName,
-                            message.Discontinuity.LastTopicSequence, message.Discontinuity.NewTopicSequence);
+                            message.Discontinuity.LastTopicSequence, message.Discontinuity.NewTopicSequence, message.Discontinuity.NewSequencePage);
                         _lastSequenceNumber = message.Discontinuity.NewTopicSequence;
+                        _lastSequencePage = message.Discontinuity.NewSequencePage;
                         return new TopicSystemEvent.Discontinuity(checked((long)message.Discontinuity.LastTopicSequence),
-                            checked((long)message.Discontinuity.NewTopicSequence));
+                            checked((long)message.Discontinuity.NewTopicSequence),
+                            checked((long)message.Discontinuity.NewSequencePage));
                     case _SubscriptionItem.KindOneofCase.Heartbeat:
                         _logger.LogTraceTopicMessageReceived("heartbeat", _cacheName, _topicName);
                         return new TopicSystemEvent.Heartbeat();
