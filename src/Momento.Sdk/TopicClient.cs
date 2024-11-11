@@ -59,7 +59,7 @@ public class TopicClient : ITopicClient
     }
 
     /// <inheritdoc />
-    public async Task<TopicSubscribeResponse> SubscribeAsync(string cacheName, string topicName, ulong? resumeAtSequenceNumber = null)
+    public async Task<TopicSubscribeResponse> SubscribeAsync(string cacheName, string topicName, ulong? resumeAtSequenceNumber = null, ulong? resumeAtSequencePage = null)
     {
         try
         {
@@ -70,7 +70,7 @@ public class TopicClient : ITopicClient
         {
             return new TopicSubscribeResponse.Error(new InvalidArgumentException(e.Message));
         }
-        return await scsTopicClient.Subscribe(cacheName, topicName, resumeAtSequenceNumber);
+        return await scsTopicClient.Subscribe(cacheName, topicName, resumeAtSequenceNumber, resumeAtSequencePage);
     }
 
     /// <inheritdoc />
