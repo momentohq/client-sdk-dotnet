@@ -145,7 +145,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         {
             var textMessage = (TopicMessage.Text)consumedMessages[i];
             Assert.Equal(textMessage.Value, valuesToSend[i]);
-            Assert.Equal(textMessage.TopicSequenceNumber, checked((ulong)(i + 1));
+            Assert.Equal(textMessage.TopicSequenceNumber, checked((ulong)(i + 1)));
         }
     }
 
