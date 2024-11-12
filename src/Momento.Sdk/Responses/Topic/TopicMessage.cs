@@ -42,10 +42,11 @@ public abstract class TopicMessage : ITopicEvent
         /// <summary>
         /// A topic message containing a text value.
         /// </summary>
-        public Text(_TopicValue topicValue, long topicSequenceNumber, string? tokenId = null)
+        public Text(_TopicValue topicValue, ulong topicSequenceNumber, ulong topicSequencePage, string? tokenId = null)
         {
             Value = topicValue.Text;
             TopicSequenceNumber = topicSequenceNumber;
+            TopicSequencePage = topicSequencePage;
             TokenId = tokenId;
         }
 
@@ -57,7 +58,12 @@ public abstract class TopicMessage : ITopicEvent
         /// <summary>
         /// The sequence number of this message.
         /// </summary>
-        public long TopicSequenceNumber { get; }
+        public ulong TopicSequenceNumber { get; }
+
+        /// <summary>
+        /// The sequence page of this message.
+        /// </summary>
+        public ulong TopicSequencePage { get; }
 
         /// <summary>
         /// The TokenId that was used to publish the message, or null if the token did not have an id.
@@ -68,7 +74,7 @@ public abstract class TopicMessage : ITopicEvent
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{base.ToString()}: Value: \"{this.Value.Truncate()}\" SequenceNumber: {this.TopicSequenceNumber} TokenId: \"{this.TokenId}\"";
+            return $"{base.ToString()}: Value: \"{this.Value.Truncate()}\" SequenceNumber: {this.TopicSequenceNumber} SequencePage: {this.TopicSequencePage} TokenId: \"{this.TokenId}\"";
         }
     }
 
@@ -80,12 +86,14 @@ public abstract class TopicMessage : ITopicEvent
         /// <summary>
         /// A topic message containing a binary value.
         /// </summary>
-        public Binary(_TopicValue topicValue, long topicSequenceNumber, string? tokenId = null)
+        public Binary(_TopicValue topicValue, ulong topicSequenceNumber, ulong topicSequencePage, string? tokenId = null)
         {
             Value = topicValue.Binary.ToByteArray();
             TopicSequenceNumber = topicSequenceNumber;
+            TopicSequencePage = topicSequencePage;
             TokenId = tokenId;
         }
+
 
         /// <summary>
         /// The binary value of this message.
@@ -95,7 +103,12 @@ public abstract class TopicMessage : ITopicEvent
         /// <summary>
         /// The sequence number of this message.
         /// </summary>
-        public long TopicSequenceNumber { get; }
+        public ulong TopicSequenceNumber { get; }
+
+        /// <summary>
+        /// The sequence page of this message.
+        /// </summary>
+        public ulong TopicSequencePage { get; }
 
         /// <summary>
         /// The TokenId that was used to publish the message, or null if the token did not have an id.
@@ -106,7 +119,7 @@ public abstract class TopicMessage : ITopicEvent
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{base.ToString()}: Value: \"{Value.ToPrettyHexString().Truncate()}\" SequenceNumber: {this.TopicSequenceNumber} TokenId: \"{this.TokenId}\"";
+            return $"{base.ToString()}: Value: \"{Value.ToPrettyHexString().Truncate()}\" SequenceNumber: {this.TopicSequenceNumber} SequencePage: {this.TopicSequencePage} TokenId: \"{this.TokenId}\"";
         }
     }
 
