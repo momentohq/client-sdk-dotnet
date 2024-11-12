@@ -183,7 +183,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
             {
                 case TopicMessage.Text textMessage:
                     Assert.Equal(textMessage.Value, valuesToSend[messageCount]);
-                    Assert.Equal(textMessage.TopicSequenceNumber, messageCount + 1);
+                    Assert.Equal(textMessage.TopicSequenceNumber, checked((ulong)(messageCount + 1)));
                     messageCount++;
                     break;
                 case TopicSystemEvent.Heartbeat:
