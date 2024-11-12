@@ -42,7 +42,7 @@ public abstract class TopicMessage : ITopicEvent
         /// <summary>
         /// A topic message containing a text value.
         /// </summary>
-        public Text(_TopicValue topicValue, long topicSequenceNumber, long topicSequencePage, string? tokenId = null)
+        public Text(_TopicValue topicValue, ulong topicSequenceNumber, ulong topicSequencePage, string? tokenId = null)
         {
             Value = topicValue.Text;
             TopicSequenceNumber = topicSequenceNumber;
@@ -58,12 +58,12 @@ public abstract class TopicMessage : ITopicEvent
         /// <summary>
         /// The sequence number of this message.
         /// </summary>
-        public long TopicSequenceNumber { get; }
+        public ulong TopicSequenceNumber { get; }
 
         /// <summary>
         /// The sequence page of this message.
         /// </summary>
-        public long TopicSequencePage { get; }
+        public ulong TopicSequencePage { get; }
 
         /// <summary>
         /// The TokenId that was used to publish the message, or null if the token did not have an id.
@@ -86,7 +86,7 @@ public abstract class TopicMessage : ITopicEvent
         /// <summary>
         /// A topic message containing a binary value.
         /// </summary>
-        public Binary(_TopicValue topicValue, long topicSequenceNumber, long topicSequencePage, string? tokenId = null)
+        public Binary(_TopicValue topicValue, ulong topicSequenceNumber, ulong topicSequencePage, string? tokenId = null)
         {
             Value = topicValue.Binary.ToByteArray();
             TopicSequenceNumber = topicSequenceNumber;
@@ -103,12 +103,12 @@ public abstract class TopicMessage : ITopicEvent
         /// <summary>
         /// The sequence number of this message.
         /// </summary>
-        public long TopicSequenceNumber { get; }
+        public ulong TopicSequenceNumber { get; }
 
         /// <summary>
         /// The sequence page of this message.
         /// </summary>
-        public long TopicSequencePage { get; }
+        public ulong TopicSequencePage { get; }
 
         /// <summary>
         /// The TokenId that was used to publish the message, or null if the token did not have an id.
