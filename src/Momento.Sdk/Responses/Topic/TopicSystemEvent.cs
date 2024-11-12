@@ -33,7 +33,7 @@ public abstract class TopicSystemEvent : ITopicEvent
         /// <param name="lastKnownSequenceNumber">The last known sequence number before the discontinuity.</param>
         /// <param name="sequenceNumber">The sequence number of the discontinuity.</param>
         /// <param name="sequencePage">The sequence page of the discontinuity.</param>
-        public Discontinuity(long lastKnownSequenceNumber, long sequenceNumber, long sequencePage)
+        public Discontinuity(ulong lastKnownSequenceNumber, ulong sequenceNumber, ulong sequencePage)
         {
             LastKnownSequenceNumber = lastKnownSequenceNumber;
             SequenceNumber = sequenceNumber;
@@ -43,17 +43,17 @@ public abstract class TopicSystemEvent : ITopicEvent
         /// <summary>
         /// The last known sequence number before the discontinuity.
         /// </summary>
-        public long LastKnownSequenceNumber { get; }
+        public ulong LastKnownSequenceNumber { get; }
 
         /// <summary>
         /// The sequence number of the discontinuity.
         /// </summary>
-        public long SequenceNumber { get; }
+        public ulong SequenceNumber { get; }
 
         /// <summary>
         /// The sequence page of the discontinuity.
         /// </summary>
-        public long SequencePage { get; }
+        public ulong SequencePage { get; }
 
         /// <inheritdoc/>
         public override string ToString()

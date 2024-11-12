@@ -161,9 +161,10 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         private readonly ILogger _logger;
 
         private AsyncServerStreamingCall<_SubscriptionItem>? _subscription;
-        private ulong? _lastSequenceNumber;
-        private ulong? _lastSequencePage;
+        private ulong _lastSequenceNumber;
+        private ulong _lastSequencePage;
         private bool _subscribed;
+        private bool _firstSubscribeCall = true;
 
         public SubscriptionWrapper(TopicGrpcManager grpcManager, string cacheName,
             string topicName, CacheExceptionMapper exceptionMapper, ILogger logger)
@@ -183,14 +184,12 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                 Topic = _topicName
             };
 
-            if (_lastSequenceNumber != null)
+            // Use the caller supplied sequence number and page on the initial subscribe.
+            // Otherwise we will resume from the last known sequence number and page.
+            if (!_firstSubscribeCall)
             {
-                request.ResumeAtTopicSequenceNumber = _lastSequenceNumber.Value;
-            }
-
-            if (_lastSequencePage != null)
-            {
-                request.SequencePage = _lastSequencePage.Value;
+                request.ResumeAtTopicSequenceNumber = _lastSequenceNumber;
+                request.SequencePage = _lastSequencePage;
             }
 
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, _cacheName, _topicName);
@@ -207,6 +206,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
 
             _subscription = subscription;
             _subscribed = true;
+            _firstSubscribeCall = false;
         }
 
         public async ValueTask<ITopicEvent?> GetNextEventFromGrpcStreamAsync(
@@ -264,10 +264,10 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                         {
                             case _TopicValue.KindOneofCase.Text:
                                 _logger.LogTraceTopicMessageReceived("text", _cacheName, _topicName);
-                                return new TopicMessage.Text(message.Item.Value, checked((long)_lastSequenceNumber), checked((long)_lastSequencePage), message.Item.PublisherId == "" ? null : message.Item.PublisherId);
+                                return new TopicMessage.Text(message.Item.Value, _lastSequenceNumber, _lastSequencePage, message.Item.PublisherId == "" ? null : message.Item.PublisherId);
                             case _TopicValue.KindOneofCase.Binary:
                                 _logger.LogTraceTopicMessageReceived("binary", _cacheName, _topicName);
-                                return new TopicMessage.Binary(message.Item.Value, checked((long)_lastSequenceNumber), checked((long)_lastSequencePage), message.Item.PublisherId == "" ? null : message.Item.PublisherId);
+                                return new TopicMessage.Binary(message.Item.Value, _lastSequenceNumber, _lastSequencePage, message.Item.PublisherId == "" ? null : message.Item.PublisherId);
                             case _TopicValue.KindOneofCase.None:
                             default:
                                 _logger.LogTraceTopicMessageReceived("unknown", _cacheName, _topicName);
@@ -280,9 +280,9 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                             message.Discontinuity.LastTopicSequence, message.Discontinuity.NewTopicSequence, message.Discontinuity.NewSequencePage);
                         _lastSequenceNumber = message.Discontinuity.NewTopicSequence;
                         _lastSequencePage = message.Discontinuity.NewSequencePage;
-                        return new TopicSystemEvent.Discontinuity(checked((long)message.Discontinuity.LastTopicSequence),
-                            checked((long)message.Discontinuity.NewTopicSequence),
-                            checked((long)message.Discontinuity.NewSequencePage));
+                        return new TopicSystemEvent.Discontinuity(message.Discontinuity.LastTopicSequence,
+                            message.Discontinuity.NewTopicSequence,
+                            message.Discontinuity.NewSequencePage);
                     case _SubscriptionItem.KindOneofCase.Heartbeat:
                         _logger.LogTraceTopicMessageReceived("heartbeat", _cacheName, _topicName);
                         return new TopicSystemEvent.Heartbeat();
