@@ -118,25 +118,12 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
     private async Task<TopicSubscribeResponse> SendSubscribe(string cacheName, string topicName,
         ulong? resumeAtTopicSequenceNumber, ulong? resumeAtTopicSequencePage)
     {
-        var request = new _SubscriptionRequest
-        {
-            CacheName = cacheName,
-            Topic = topicName
-        };
-        if (resumeAtTopicSequenceNumber != null)
-        {
-            request.ResumeAtTopicSequenceNumber = resumeAtTopicSequenceNumber.Value;
-        }
-        if (resumeAtTopicSequencePage != null)
-        {
-            request.SequencePage = resumeAtTopicSequencePage.Value;
-        }
-
         SubscriptionWrapper subscriptionWrapper;
         try
         {
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, cacheName, topicName);
-            subscriptionWrapper = new SubscriptionWrapper(grpcManager, cacheName, topicName, _exceptionMapper, _logger);
+            subscriptionWrapper = new SubscriptionWrapper(grpcManager, cacheName, topicName,
+                resumeAtTopicSequenceNumber ?? 0, resumeAtTopicSequencePage ?? 0, _exceptionMapper, _logger);
             await subscriptionWrapper.Subscribe();
         }
         catch (Exception e)
@@ -164,14 +151,16 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         private ulong _lastSequenceNumber;
         private ulong _lastSequencePage;
         private bool _subscribed;
-        private bool _firstSubscribeCall = true;
 
         public SubscriptionWrapper(TopicGrpcManager grpcManager, string cacheName,
-            string topicName, CacheExceptionMapper exceptionMapper, ILogger logger)
+            string topicName, ulong resumeAtTopicSequenceNumber, ulong resumeAtTopicSequencePage,
+            CacheExceptionMapper exceptionMapper, ILogger logger)
         {
             _grpcManager = grpcManager;
             _cacheName = cacheName;
             _topicName = topicName;
+            _lastSequenceNumber = resumeAtTopicSequenceNumber;
+            _lastSequencePage = resumeAtTopicSequencePage;
             _exceptionMapper = exceptionMapper;
             _logger = logger;
         }
@@ -184,13 +173,8 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                 Topic = _topicName
             };
 
-            // Use the caller supplied sequence number and page on the initial subscribe.
-            // Otherwise we will resume from the last known sequence number and page.
-            if (!_firstSubscribeCall)
-            {
-                request.ResumeAtTopicSequenceNumber = _lastSequenceNumber;
-                request.SequencePage = _lastSequencePage;
-            }
+            request.ResumeAtTopicSequenceNumber = _lastSequenceNumber;
+            request.SequencePage = _lastSequencePage;
 
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, _cacheName, _topicName);
             var subscription = _grpcManager.Client.subscribe(request, new CallOptions());
@@ -206,7 +190,6 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
 
             _subscription = subscription;
             _subscribed = true;
-            _firstSubscribeCall = false;
         }
 
         public async ValueTask<ITopicEvent?> GetNextEventFromGrpcStreamAsync(
