@@ -123,7 +123,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         {
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, cacheName, topicName);
             subscriptionWrapper = new SubscriptionWrapper(grpcManager, cacheName, topicName,
-                resumeAtTopicSequenceNumber ?? 0, resumeAtTopicSequencePage ?? 0, _exceptionMapper, _logger);
+                resumeAtTopicSequenceNumber, resumeAtTopicSequencePage, _exceptionMapper, _logger);
             await subscriptionWrapper.Subscribe();
         }
         catch (Exception e)
@@ -153,14 +153,14 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         private bool _subscribed;
 
         public SubscriptionWrapper(TopicGrpcManager grpcManager, string cacheName,
-            string topicName, ulong resumeAtTopicSequenceNumber, ulong resumeAtTopicSequencePage,
+            string topicName, ulong? resumeAtTopicSequenceNumber, ulong? resumeAtTopicSequencePage,
             CacheExceptionMapper exceptionMapper, ILogger logger)
         {
             _grpcManager = grpcManager;
             _cacheName = cacheName;
             _topicName = topicName;
-            _lastSequenceNumber = resumeAtTopicSequenceNumber;
-            _lastSequencePage = resumeAtTopicSequencePage;
+            _lastSequenceNumber = resumeAtTopicSequenceNumber ?? 0;
+            _lastSequencePage = resumeAtTopicSequencePage ?? 0;
             _exceptionMapper = exceptionMapper;
             _logger = logger;
         }
