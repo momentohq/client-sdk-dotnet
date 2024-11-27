@@ -186,6 +186,10 @@ else
 	@set CONSISTENT_READS=1 && $(MAKE) test-dotnet6-topics-service test-dotnet-framework-topics-service
 endif
 
+# Run http service tests
+test-http-service:
+	@echo "No tests for http service."
+
 
 ## Run example applications and snippets
 run-examples:
