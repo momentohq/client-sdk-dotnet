@@ -11,11 +11,13 @@ namespace Momento.Sdk.Tests.Integration;
 /// </summary>
 public class CacheClientFixture : IDisposable
 {
-    public ICacheClient Client { get; private set; }
-    public ICredentialProvider AuthProvider { get; private set; }
-    public string CacheName { get; private set; }
+    public ICacheClient Client { get; }
+    public ICacheClient ClientWithConsistentReads { get; }
+    public ICacheClient ClientWithBalancedReads { get; }
+    public ICredentialProvider AuthProvider { get; }
+    public string CacheName { get; }
 
-    public TimeSpan DefaultTtl { get; private set; } = TimeSpan.FromSeconds(10);
+    public TimeSpan DefaultTtl { get; } = TimeSpan.FromSeconds(10);
 
     public CacheClientFixture()
     {
@@ -35,14 +37,14 @@ public class CacheClientFixture : IDisposable
             builder.AddFilter("Grpc.Net.Client", LogLevel.Error);
             builder.SetMinimumLevel(LogLevel.Information);
         }));
-
-        if (consistentReads)
-        {
-            config = config.WithReadConcern(ReadConcern.Consistent);
-        }
+        var configWithConsistentReads = config.WithReadConcern(ReadConcern.Consistent);
+        
+        ClientWithBalancedReads = new CacheClient(config, AuthProvider, defaultTtl: DefaultTtl);
+        ClientWithConsistentReads = new CacheClient(configWithConsistentReads, AuthProvider, defaultTtl: DefaultTtl);
+        Client = consistentReads ? ClientWithConsistentReads : ClientWithBalancedReads;
 
         CacheName = $"dotnet-integration-{Utils.NewGuidString()}";
-        Client = new CacheClient(config, AuthProvider, defaultTtl: DefaultTtl);
+
         Utils.CreateCacheForTest(Client, CacheName);
     }
 
