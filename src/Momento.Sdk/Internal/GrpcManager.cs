@@ -66,6 +66,8 @@ public class GrpcManager : IDisposable
         var channelOptions = grpcConfig.GrpcChannelOptions;
         channelOptions.Credentials = ChannelCredentials.SecureSsl;
         channelOptions.LoggerFactory ??= loggerFactory;
+        // Always disable gRPC service config 
+        channelOptions.ServiceConfig = null;
 #if NET5_0_OR_GREATER
         if (SocketsHttpHandler.IsSupported) // see: https://github.com/grpc/grpc-dotnet/blob/098dca892a3949ade411c3f2f66003f7b330dfd2/src/Shared/HttpHandlerFactory.cs#L28-L30
         {
