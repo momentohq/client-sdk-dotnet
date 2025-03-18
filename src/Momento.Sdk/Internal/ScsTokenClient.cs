@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 
+using Momento.Sdk.Auth;
 using Momento.Sdk.Auth.AccessControl;
 using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
@@ -24,10 +25,10 @@ internal sealed class ScsTokenClient : IDisposable
     private readonly ILogger _logger;
     private bool hasSentOnetimeHeaders = false;
     private readonly CacheExceptionMapper _exceptionMapper;
-    public ScsTokenClient(IAuthConfiguration config, string authToken, string endpoint)
+    public ScsTokenClient(IAuthConfiguration config, ICredentialProvider authProvider)
     {
-        this.grpcManager = new AuthGrpcManager(config, authToken, endpoint);
-        this.authToken = authToken;
+        this.grpcManager = new AuthGrpcManager(config, authProvider);
+        this.authToken = authProvider.AuthToken;
         this.authClientOperationTimeout = config.TransportStrategy.GrpcConfig.Deadline;
         this._logger = config.LoggerFactory.CreateLogger<ScsTokenClient>();
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);

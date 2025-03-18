@@ -7,6 +7,7 @@ using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient;
 using Momento.Protos.CachePing;
+using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
@@ -248,7 +249,7 @@ public class DataGrpcManager : GrpcManager
 {
     public readonly IDataClient Client;
 
-    internal DataGrpcManager(IConfiguration config, string authToken, string endpoint): base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authToken, endpoint, "DataGrpcManager")
+    internal DataGrpcManager(IConfiguration config, ICredentialProvider authProvider): base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authProvider, authProvider.CacheEndpoint, "DataGrpcManager")
     {
         // Not sending a head concern header is treated the same as sending a balanced read concern header
         if (config.ReadConcern != ReadConcern.Balanced)

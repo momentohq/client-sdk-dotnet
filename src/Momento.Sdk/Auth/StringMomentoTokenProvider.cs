@@ -19,6 +19,8 @@ public class StringMomentoTokenProvider : ICredentialProvider
     public string CacheEndpoint { get; private set; }
     /// <inheritdoc />
     public string TokenEndpoint { get; private set; }
+    /// <inheritdoc />
+    public bool SecureEndpoints { get; private set; } = true;
 
     /// <summary>
     /// Reads and parses a JWT token from a string.

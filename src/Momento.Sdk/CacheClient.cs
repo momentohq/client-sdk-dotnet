@@ -76,7 +76,7 @@ public class CacheClient : ICacheClient
         this.config = config;
         this._logger = config.LoggerFactory.CreateLogger<CacheClient>();
         Utils.ArgumentStrictlyPositive(defaultTtl, "defaultTtl");
-        this.controlClient = new(config, authProvider.AuthToken, authProvider.ControlEndpoint);
+        this.controlClient = new(config, authProvider);
         this.dataClients = new List<ScsDataClient>();
         int minNumGrpcChannels = this.config.TransportStrategy.GrpcConfig.MinNumGrpcChannels;
         int currentMaxConcurrentRequests = this.config.TransportStrategy.MaxConcurrentRequests;
@@ -119,7 +119,7 @@ public class CacheClient : ICacheClient
         }
         for (var i = 1; i <= minNumGrpcChannels; i++)
         {
-            this.dataClients.Add(new(config, authProvider.AuthToken, authProvider.CacheEndpoint, defaultTtl));
+            this.dataClients.Add(new(config, authProvider, defaultTtl));
         }
     }
 

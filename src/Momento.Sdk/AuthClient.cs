@@ -22,7 +22,7 @@ public class AuthClient : IAuthClient
     /// <param name="authProvider">The auth provider.</param>
     public AuthClient(IAuthConfiguration config, ICredentialProvider authProvider)
     {
-        scsTokenClient = new ScsTokenClient(config, authProvider.AuthToken, authProvider.TokenEndpoint);
+        scsTokenClient = new ScsTokenClient(config, authProvider);
     }
     
     /// <inheritdoc />
