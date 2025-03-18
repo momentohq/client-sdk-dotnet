@@ -45,7 +45,7 @@ public class MomentoLocalProvider : ICredentialProvider
     {
         AuthToken = "";
         Port = 8080;
-        string endpoint = $"{hostname}:{8080}";
+        string endpoint = $"{hostname}:{Port}";
         ControlEndpoint = endpoint;
         CacheEndpoint = endpoint;
         TokenEndpoint = endpoint;
@@ -60,7 +60,7 @@ public class MomentoLocalProvider : ICredentialProvider
     {
         AuthToken = "";
         Port = port;
-        string endpoint = $"127.0.0.1:{port}";
+        string endpoint = $"127.0.0.1:{Port}";
         ControlEndpoint = endpoint;
         CacheEndpoint = endpoint;
         TokenEndpoint = endpoint;
@@ -75,7 +75,7 @@ public class MomentoLocalProvider : ICredentialProvider
     {
         AuthToken = "";
         Port = port;
-        string endpoint = $"{hostname}:{port}";
+        string endpoint = $"{hostname}:{Port}";
         ControlEndpoint = endpoint;
         CacheEndpoint = endpoint;
         TokenEndpoint = endpoint;
