@@ -21,6 +21,12 @@ public interface ICredentialProvider
     /// The host which the Momento client will connect to the token endpoint
     /// </summary>
     string TokenEndpoint { get; }
+    /// <summary>
+    /// Indicates whether secure (SSL) connections should be created when connecting
+    /// to the endpoint. Note: momento-local uses insecure endpoints.
+    /// Defaults to true (use secure endpoints).
+    /// </summary>
+    bool SecureEndpoints { get; }
 
     /// <summary>
     /// Copy constructor to override the CacheEndpoint

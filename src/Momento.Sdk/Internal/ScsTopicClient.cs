@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient.Pubsub;
+using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal.ExtensionMethods;
@@ -23,9 +24,9 @@ public class ScsTopicClientBase : IDisposable
 
     protected readonly CacheExceptionMapper _exceptionMapper;
 
-    public ScsTopicClientBase(ITopicConfiguration config, string authToken, string endpoint)
+    public ScsTopicClientBase(ITopicConfiguration config, ICredentialProvider authProvider)
     {
-        this.grpcManager = new TopicGrpcManager(config, authToken, endpoint);
+        this.grpcManager = new TopicGrpcManager(config, authProvider);
         this.dataClientOperationTimeout = config.TransportStrategy.GrpcConfig.Deadline;
         this._logger = config.LoggerFactory.CreateLogger<ScsDataClient>();
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
@@ -58,8 +59,8 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
 {
     private readonly ILogger _logger;
 
-    public ScsTopicClient(ITopicConfiguration config, string authToken, string endpoint)
-        : base(config, authToken, endpoint)
+    public ScsTopicClient(ITopicConfiguration config, ICredentialProvider authProvider)
+        : base(config, authProvider)
     {
         this._logger = config.LoggerFactory.CreateLogger<ScsTopicClient>();
     }

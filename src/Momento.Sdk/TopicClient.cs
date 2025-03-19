@@ -23,7 +23,7 @@ public class TopicClient : ITopicClient
     /// <param name="authProvider">Momento auth provider.</param>
     public TopicClient(ITopicConfiguration config, ICredentialProvider authProvider)
     {
-        scsTopicClient = new ScsTopicClient(config, authProvider.AuthToken, authProvider.CacheEndpoint);
+        scsTopicClient = new ScsTopicClient(config, authProvider);
     }
 
     /// <inheritdoc />

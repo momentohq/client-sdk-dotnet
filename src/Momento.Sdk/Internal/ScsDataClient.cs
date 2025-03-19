@@ -10,6 +10,7 @@ using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient;
 using Momento.Protos.Common;
+using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal.ExtensionMethods;
@@ -28,9 +29,9 @@ public class ScsDataClientBase : IDisposable
 
     protected readonly CacheExceptionMapper _exceptionMapper;
 
-    public ScsDataClientBase(IConfiguration config, string authToken, string endpoint, TimeSpan defaultTtl)
+    public ScsDataClientBase(IConfiguration config, ICredentialProvider authProvider, TimeSpan defaultTtl)
     {
-        this.grpcManager = new(config, authToken, endpoint);
+        this.grpcManager = new(config, authProvider);
         this.defaultTtl = defaultTtl;
         this.dataClientOperationTimeout = config.TransportStrategy.GrpcConfig.Deadline;
         this._logger = config.LoggerFactory.CreateLogger<ScsDataClient>();
@@ -85,8 +86,8 @@ internal sealed class ScsDataClient : ScsDataClientBase
 {
     private readonly ILogger _logger;
 
-    public ScsDataClient(IConfiguration config, string authToken, string endpoint, TimeSpan defaultTtl)
-        : base(config, authToken, endpoint, defaultTtl)
+    public ScsDataClient(IConfiguration config, ICredentialProvider authProvider, TimeSpan defaultTtl)
+        : base(config, authProvider, defaultTtl)
     {
         this._logger = config.LoggerFactory.CreateLogger<ScsDataClient>();
     }

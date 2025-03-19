@@ -13,6 +13,7 @@ using Grpc.Net.Client.Web;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient.Pubsub;
 using Momento.Protos.Common;
+using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
@@ -70,7 +71,7 @@ public class TopicGrpcManager : GrpcManager
 {
     public readonly IPubsubClient Client;
 
-    internal TopicGrpcManager(ITopicConfiguration config, string authToken, string endpoint) : base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authToken, endpoint, "TopicGrpcManager")
+    internal TopicGrpcManager(ITopicConfiguration config, ICredentialProvider authProvider) : base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authProvider, authProvider.CacheEndpoint, "TopicGrpcManager")
     {
         var middlewares = new List<IMiddleware>
         {
