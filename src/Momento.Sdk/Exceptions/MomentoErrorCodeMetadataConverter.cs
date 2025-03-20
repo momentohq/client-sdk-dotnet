@@ -2,6 +2,9 @@ using System;
 
 namespace Momento.Sdk.Exceptions;
 
+/// <summary>
+/// Converts Momento error codes to string values for use in metadata sent to momento-local.
+/// </summary>
 public static class MomentoErrorCodeMetadataConverter
 {
     /// <summary>
