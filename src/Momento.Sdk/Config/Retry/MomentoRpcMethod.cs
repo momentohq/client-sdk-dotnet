@@ -111,7 +111,7 @@ public static class MomentoRpcMethodExtensions
             MomentoRpcMethod.SortedSetLengthByScore => "_SortedSetLengthByScoreRequest",
             MomentoRpcMethod.TopicPublish => "_PublishRequest",
             MomentoRpcMethod.TopicSubscribe => "_SubscribeRequest",
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new ArgumentOutOfRangeException(nameof(rpcMethod), "Unknown rpc method to convert to string")
         };
     }
 }
