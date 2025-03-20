@@ -114,4 +114,62 @@ public static class MomentoRpcMethodExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(rpcMethod), "Unknown rpc method to convert to string")
         };
     }
+
+    /// <summary>
+    /// Converts a string value to a MomentoRpcMethod.
+    /// </summary>
+    /// <param name="methodName"></param>
+    /// <returns></returns>
+    public static MomentoRpcMethod FromString(string methodName)
+    {
+        return methodName switch
+        {
+            "_GetRequest" => MomentoRpcMethod.Get,
+            "_SetRequest" => MomentoRpcMethod.Set,
+            "_DeleteRequest" => MomentoRpcMethod.Delete,
+            "_IncrementRequest" => MomentoRpcMethod.Increment,
+            "_SetIfRequest" => MomentoRpcMethod.SetIf,
+            "_SetIfNotExistsRequest" => MomentoRpcMethod.SetIfNotExists,
+            "_GetBatchRequest" => MomentoRpcMethod.GetBatch,
+            "_SetBatchRequest" => MomentoRpcMethod.SetBatch,
+            "_KeysExistRequest" => MomentoRpcMethod.KeysExist,
+            "_UpdateTtlRequest" => MomentoRpcMethod.UpdateTtl,
+            "_ItemGetTtlRequest" => MomentoRpcMethod.ItemGetTtl,
+            "_ItemGetTypeRequest" => MomentoRpcMethod.ItemGetType,
+            "_DictionaryGetRequest" => MomentoRpcMethod.DictionaryGet,
+            "_DictionarySetRequest" => MomentoRpcMethod.DictionarySet,
+            "_DictionaryIncrementRequest" => MomentoRpcMethod.DictionaryIncrement,
+            "_DictionaryDeleteRequest" => MomentoRpcMethod.DictionaryDelete,
+            "_DictionaryLengthRequest" => MomentoRpcMethod.DictionaryLength,
+            "_SetFetchRequest" => MomentoRpcMethod.SetFetch,
+            "_SetSampleRequest" => MomentoRpcMethod.SetSample,
+            "_SetUnionRequest" => MomentoRpcMethod.SetUnion,
+            "_SetDifferenceRequest" => MomentoRpcMethod.SetDifference,
+            "_SetContainsRequest" => MomentoRpcMethod.SetContains,
+            "_SetLengthRequest" => MomentoRpcMethod.SetLength,
+            "_SetPopRequest" => MomentoRpcMethod.SetPop,
+            "_ListPushFrontRequest" => MomentoRpcMethod.ListPushFront,
+            "_ListPushBackRequest" => MomentoRpcMethod.ListPushBack,
+            "_ListPopFrontRequest" => MomentoRpcMethod.ListPopFront,
+            "_ListPopBackRequest" => MomentoRpcMethod.ListPopBack,
+            "_ListEraseRequest" => MomentoRpcMethod.ListErase,
+            "_ListRemoveRequest" => MomentoRpcMethod.ListRemove,
+            "_ListFetchRequest" => MomentoRpcMethod.ListFetch,
+            "_ListLengthRequest" => MomentoRpcMethod.ListLength,
+            "_ListConcatenateFrontRequest" => MomentoRpcMethod.ListConcatenateFront,
+            "_ListConcatenateBackRequest" => MomentoRpcMethod.ListConcatenateBack,
+            "_ListRetainRequest" => MomentoRpcMethod.ListRetain,
+            "_SortedSetPutRequest" => MomentoRpcMethod.SortedSetPut,
+            "_SortedSetFetchRequest" => MomentoRpcMethod.SortedSetFetch,
+            "_SortedSetGetScoreRequest" => MomentoRpcMethod.SortedSetGetScore,
+            "_SortedSetRemoveRequest" => MomentoRpcMethod.SortedSetRemove,
+            "_SortedSetIncrementRequest" => MomentoRpcMethod.SortedSetIncrement,
+            "_SortedSetGetRankRequest" => MomentoRpcMethod.SortedSetGetRank,
+            "_SortedSetLengthRequest" => MomentoRpcMethod.SortedSetLength,
+            "_SortedSetLengthByScoreRequest" => MomentoRpcMethod.SortedSetLengthByScore,
+            "_PublishRequest" => MomentoRpcMethod.TopicPublish,
+            "_SubscribeRequest" => MomentoRpcMethod.TopicSubscribe,
+            _ => throw new ArgumentOutOfRangeException(nameof(methodName), "Unknown rpc method to convert from string")
+        };
+    }
 }
