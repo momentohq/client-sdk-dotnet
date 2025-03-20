@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Momento.Protos.CacheClient;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Grpc.Core;
+using System.Collections.Generic;
 
 // namespace Momento.Sdk.Tests.Integration.Cache;
 namespace Momento.Sdk.Tests.Integration.Retry;
@@ -34,7 +35,7 @@ public class MomentoLocalMiddlewareTests
             builder.AddFilter("Grpc.Net.Client", LogLevel.Error);
             builder.SetMinimumLevel(LogLevel.Information);
         });
-        var config = Configurations.Laptop.Latest(loggerFactory).WithMiddlewares([new MomentoLocalMiddleware(loggerFactory, args)]);
+        var config = Configurations.Laptop.Latest(loggerFactory).WithMiddlewares(new List<IMiddleware>() { CreateMiddleware(args) });
         var cacheClient = new CacheClient(config, _authProvider, TimeSpan.FromSeconds(10));
         return cacheClient;
     }
@@ -159,12 +160,12 @@ public class MomentoLocalMiddlewareTests
             TestMetricsCollector = testMetricsCollector,
             RequestId = Utils.NewGuidString(),
             ReturnError = MomentoErrorCode.INTERNAL_SERVER_ERROR,
-            ErrorRpcList = [MomentoRpcMethod.Get],
+            ErrorRpcList = new List<MomentoRpcMethod> { MomentoRpcMethod.Get },
             ErrorCount = 1,
-            DelayRpcList = [MomentoRpcMethod.Set],
+            DelayRpcList = new List<MomentoRpcMethod> { MomentoRpcMethod.Set },
             DelayMillis = 100,
             DelayCount = 1,
-            StreamErrorRpcList = [MomentoRpcMethod.TopicSubscribe],
+            StreamErrorRpcList = new List<MomentoRpcMethod> { MomentoRpcMethod.TopicSubscribe },
             StreamError = MomentoErrorCode.INTERNAL_SERVER_ERROR,
             StreamErrorMessageLimit = 1,
         };
