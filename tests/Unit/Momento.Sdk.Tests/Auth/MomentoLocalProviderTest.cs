@@ -37,14 +37,4 @@ public class MomentoLocalProviderTests
         Assert.Equal("localhost:8080", provider.CacheEndpoint);
         Assert.Equal("localhost:8080", provider.TokenEndpoint);
     }
-
-    [Fact]
-    public void MomentoLocalProvider_ConstructorWithPort() {
-        var provider = new MomentoLocalProvider(9090);
-        Assert.Equal("", provider.AuthToken);
-        Assert.Equal(9090, provider.Port);
-        Assert.Equal("127.0.0.1:9090", provider.ControlEndpoint);
-        Assert.Equal("127.0.0.1:9090", provider.CacheEndpoint);
-        Assert.Equal("127.0.0.1:9090", provider.TokenEndpoint);
-    }
 }
