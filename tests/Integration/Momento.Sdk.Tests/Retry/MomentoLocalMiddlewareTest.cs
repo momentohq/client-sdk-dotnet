@@ -8,7 +8,8 @@ using Momento.Protos.CacheClient;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Grpc.Core;
 
-namespace Momento.Sdk.Tests.Integration.Cache;
+// namespace Momento.Sdk.Tests.Integration.Cache;
+namespace Momento.Sdk.Tests.Integration.Retry;
 
 [Collection("Retry")]
 public class MomentoLocalMiddlewareTests

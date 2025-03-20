@@ -1,6 +1,7 @@
 using Momento.Sdk.Config.Retry;
 
-namespace Momento.Sdk.Tests.Integration.Cache;
+// namespace Momento.Sdk.Tests.Integration.Cache;
+namespace Momento.Sdk.Tests.Integration.Retry;
 
 [Collection("Retry")]
 public class TestRetryMetricsCollectorTests

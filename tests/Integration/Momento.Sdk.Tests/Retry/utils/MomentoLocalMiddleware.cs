@@ -6,7 +6,8 @@ using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
 
-namespace Momento.Sdk.Tests.Integration.Cache;
+// namespace Momento.Sdk.Tests.Integration.Cache;
+namespace Momento.Sdk.Tests.Integration.Retry;
 
 public class MomentoLocalMiddlewareArgs
 {

@@ -47,6 +47,7 @@ endif
 CACHE_SERVICE_TESTS_FILTER := "FullyQualifiedName~Momento.Sdk.Tests.Integration.Cache"
 TOPICS_SERVICE_TESTS_FILTER := "FullyQualifiedName~Momento.Sdk.Tests.Integration.Topics"
 AUTH_SERVICE_TESTS_FILTER := "FullyQualifiedName~Momento.Sdk.Tests.Integration.Auth"
+RETRY_TESTS_FILTER := "FullyQualifiedName~Momento.Sdk.Tests.Integration.Retry"
 
 
 ## Generate sync unit tests, format, lint, and test
@@ -176,6 +177,12 @@ test-leaderboard-service:
 ## Run storage service tests
 test-storage-service:
 	@echo "Storage client not implemented yet."
+
+
+# Run momento-local retry tests
+test-retry:
+	@echo "Running retry tests..."
+	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_VERSION} --filter ${RETRY_TESTS_FILTER}
 
 
 ## Run topics service tests
