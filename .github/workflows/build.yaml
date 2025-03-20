@@ -101,3 +101,27 @@ jobs:
       - name: Flag Job Failure
         if: ${{ steps.test-example-failure.outputs.failure == 'true' }}
         run: exit 1
+
+  test_momento_local:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        grpc-web: [false, true]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: Build
+        run: make GRPC_WEB=${{ matrix.grpc-web }} build
+
+      - name: Start Momento Local
+        run: |
+         docker run --rm -d -p 8080:8080 gomomento/momento-local
+
+      - name: Run momento-local retry tests
+        run: make test-retry
