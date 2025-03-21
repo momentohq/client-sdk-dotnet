@@ -9,7 +9,6 @@ using Momento.Sdk.Internal.ExtensionMethods;
 using Grpc.Core;
 using System.Collections.Generic;
 
-// namespace Momento.Sdk.Tests.Integration.Cache;
 namespace Momento.Sdk.Tests.Integration.Retry;
 
 [Collection("Retry")]
