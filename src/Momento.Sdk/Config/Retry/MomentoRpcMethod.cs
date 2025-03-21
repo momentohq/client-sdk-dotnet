@@ -94,7 +94,6 @@ public static class MomentoRpcMethodExtensions
             MomentoRpcMethod.ListPushBack => "_ListPushBackRequest",
             MomentoRpcMethod.ListPopFront => "_ListPopFrontRequest",
             MomentoRpcMethod.ListPopBack => "_ListPopBackRequest",
-            MomentoRpcMethod.ListErase => "_ListEraseRequest",
             MomentoRpcMethod.ListRemove => "_ListRemoveRequest",
             MomentoRpcMethod.ListFetch => "_ListFetchRequest",
             MomentoRpcMethod.ListLength => "_ListLengthRequest",
@@ -152,7 +151,6 @@ public static class MomentoRpcMethodExtensions
             "_ListPushBackRequest" => MomentoRpcMethod.ListPushBack,
             "_ListPopFrontRequest" => MomentoRpcMethod.ListPopFront,
             "_ListPopBackRequest" => MomentoRpcMethod.ListPopBack,
-            "_ListEraseRequest" => MomentoRpcMethod.ListErase,
             "_ListRemoveRequest" => MomentoRpcMethod.ListRemove,
             "_ListFetchRequest" => MomentoRpcMethod.ListFetch,
             "_ListLengthRequest" => MomentoRpcMethod.ListLength,
@@ -170,6 +168,64 @@ public static class MomentoRpcMethodExtensions
             "_PublishRequest" => MomentoRpcMethod.TopicPublish,
             "_SubscribeRequest" => MomentoRpcMethod.TopicSubscribe,
             _ => throw new ArgumentOutOfRangeException(nameof(methodName), "Unknown rpc method to convert from string")
+        };
+    }
+
+    /// <summary>
+    /// Converts the rpc method to a string value recognized by momento-local.
+    /// </summary>
+    /// <param name="rpcMethod">to convert to a string</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException">if given an unknown rpc method</exception>
+    public static string ToMomentoLocalMetadataString(this MomentoRpcMethod rpcMethod)
+    {
+        return rpcMethod switch
+        {
+            MomentoRpcMethod.Get => "get",
+            MomentoRpcMethod.Set => "set",
+            MomentoRpcMethod.Delete => "delete",
+            MomentoRpcMethod.Increment => "increment",
+            MomentoRpcMethod.SetIf => "set-if",
+            MomentoRpcMethod.SetIfNotExists => "set-if",
+            MomentoRpcMethod.GetBatch => "get-batch",
+            MomentoRpcMethod.SetBatch => "set-batch",
+            MomentoRpcMethod.KeysExist => "keys-exist",
+            MomentoRpcMethod.UpdateTtl => "update-ttl",
+            MomentoRpcMethod.ItemGetTtl => "item-get-ttl",
+            MomentoRpcMethod.ItemGetType => "item-get-type",
+            MomentoRpcMethod.DictionaryGet => "dictionary-get",
+            MomentoRpcMethod.DictionarySet => "dictionary-set",
+            MomentoRpcMethod.DictionaryIncrement => "dictionary-increment",
+            MomentoRpcMethod.DictionaryDelete => "dictionary-delete",
+            MomentoRpcMethod.DictionaryLength => "dictionary-length",
+            MomentoRpcMethod.SetFetch => "set-fetch",
+            MomentoRpcMethod.SetSample => "set-sample",
+            MomentoRpcMethod.SetUnion => "set-union",
+            MomentoRpcMethod.SetDifference => "set-difference",
+            MomentoRpcMethod.SetContains => "set-contains",
+            MomentoRpcMethod.SetLength => "set-length",
+            MomentoRpcMethod.SetPop => "set-pop",
+            MomentoRpcMethod.ListPushFront => "list-push-front",
+            MomentoRpcMethod.ListPushBack => "list-push-back",
+            MomentoRpcMethod.ListPopFront => "list-pop-front",
+            MomentoRpcMethod.ListPopBack => "list-pop-back",
+            MomentoRpcMethod.ListRemove => "list-remove",
+            MomentoRpcMethod.ListFetch => "list-fetch",
+            MomentoRpcMethod.ListLength => "list-length",
+            MomentoRpcMethod.ListConcatenateFront => "list-concatenate-front",
+            MomentoRpcMethod.ListConcatenateBack => "list-concatenate-back",
+            MomentoRpcMethod.ListRetain => "list-retain",
+            MomentoRpcMethod.SortedSetPut => "sorted-set-put",
+            MomentoRpcMethod.SortedSetFetch => "sorted-set-fetch",
+            MomentoRpcMethod.SortedSetGetScore => "sorted-set-get-score",
+            MomentoRpcMethod.SortedSetRemove => "sorted-set-remove",
+            MomentoRpcMethod.SortedSetIncrement => "sorted-set-increment",
+            MomentoRpcMethod.SortedSetGetRank => "sorted-set-get-rank",
+            MomentoRpcMethod.SortedSetLength => "sorted-set-length",
+            MomentoRpcMethod.SortedSetLengthByScore => "sorted-set-length-by-score",
+            MomentoRpcMethod.TopicPublish => "topic-publish",
+            MomentoRpcMethod.TopicSubscribe => "topic-subscribe",
+            _ => throw new ArgumentOutOfRangeException(nameof(rpcMethod), "Unknown rpc method to convert to string")
         };
     }
 }
