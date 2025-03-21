@@ -48,6 +48,7 @@ CACHE_SERVICE_TESTS_FILTER := "FullyQualifiedName~Momento.Sdk.Tests.Integration.
 TOPICS_SERVICE_TESTS_FILTER := "FullyQualifiedName~Momento.Sdk.Tests.Integration.Topics"
 AUTH_SERVICE_TESTS_FILTER := "FullyQualifiedName~Momento.Sdk.Tests.Integration.Auth"
 RETRY_TESTS_FILTER := "FullyQualifiedName~Momento.Sdk.Tests.Integration.Retry"
+EXCLUDE_RETRY_TESTS_FILTER := "FullyQualifiedName\!~Momento.Sdk.Tests.Integration.Retry"
 
 
 ## Generate sync unit tests, format, lint, and test
@@ -106,7 +107,7 @@ endif
 ## Run unit and integration tests on the .NET 6.0 runtime
 test-dotnet6:
 	@echo "Running unit and integration tests on the .NET 6.0 runtime..."
-	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_VERSION}
+	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_VERSION} -- filter ${EXCLUDE_RETRY_TESTS_FILTER}
 
 
 ## Run integration tests on the .NET 6.0 runtime against the cache service
@@ -130,7 +131,7 @@ test-dotnet6-auth-service:
 ## Run unit and integration tests on the .NET Framework runtime (Windows only)
 test-dotnet-framework:
 	@echo "Running unit and integration tests on the .NET Framework runtime..."
-	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_FRAMEWORK_VERSION}
+	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_FRAMEWORK_VERSION} --filter ${EXCLUDE_RETRY_TESTS_FILTER}
 
 
 ## Run integration tests on the .NET Framework runtime against the cache service (Windows only)

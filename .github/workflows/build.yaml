@@ -105,7 +105,10 @@ jobs:
   test_momento_local:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        # TODO: Add windows-latest back in once we have a momento-local image for windows/amd64 as per the error:
+        # "docker: no matching manifest for windows/amd64 10.0.20348 in the manifest list entries.""
+        # os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         grpc-web: [false, true]
     runs-on: ${{ matrix.os }}
 
