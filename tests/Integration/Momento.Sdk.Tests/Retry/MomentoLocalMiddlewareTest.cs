@@ -16,15 +16,13 @@ namespace Momento.Sdk.Tests.Integration.Retry;
 public class MomentoLocalMiddlewareTests
 {
     private readonly ICredentialProvider _authProvider;
+    private readonly ILoggerFactory _loggerFactory;
+    private readonly IConfiguration _cacheConfig;
 
     public MomentoLocalMiddlewareTests()
     {
         _authProvider = new MomentoLocalProvider();
-    }
-
-    private ICacheClient CreateClientWithMiddleware(MomentoLocalMiddlewareArgs args)
-    {
-        var loggerFactory = LoggerFactory.Create(builder =>
+        _loggerFactory = LoggerFactory.Create(builder =>
         {
             builder.AddSimpleConsole(options =>
             {
@@ -35,35 +33,26 @@ public class MomentoLocalMiddlewareTests
             builder.AddFilter("Grpc.Net.Client", LogLevel.Error);
             builder.SetMinimumLevel(LogLevel.Information);
         });
-        var config = Configurations.Laptop.Latest(loggerFactory).WithMiddlewares(new List<IMiddleware>() { CreateMiddleware(args) });
-        var cacheClient = new CacheClient(config, _authProvider, TimeSpan.FromSeconds(10));
+        _cacheConfig = Configurations.Laptop.Latest(_loggerFactory);
+    }
+
+    private ICacheClient CreateClientWithMiddleware(MomentoLocalMiddleware middleware)
+    {
+        var config = _cacheConfig.WithMiddlewares(new List<IMiddleware>() { middleware });
+        var cacheClient = new CacheClient(config, _authProvider, TimeSpan.FromSeconds(60));
         return cacheClient;
     }
 
-    private static MomentoLocalMiddleware CreateMiddleware(MomentoLocalMiddlewareArgs args)
+    private MomentoLocalMiddleware CreateMiddleware(MomentoLocalMiddlewareArgs? args)
     {
-        var loggerFactory = LoggerFactory.Create(builder =>
-        {
-            builder.AddSimpleConsole(options =>
-            {
-                options.IncludeScopes = true;
-                options.SingleLine = true;
-                options.TimestampFormat = "hh:mm:ss ";
-            });
-            builder.AddFilter("Grpc.Net.Client", LogLevel.Error);
-            builder.SetMinimumLevel(LogLevel.Information);
-        });
-        return new MomentoLocalMiddleware(loggerFactory, args);
+        return new MomentoLocalMiddleware(_loggerFactory, args);
     }
 
     [Fact]
     public void MomentoLocalMiddleware_OneCache_OneRequest() {
-      var testMetricsCollector = new TestRetryMetricsCollector();
-        var args = new MomentoLocalMiddlewareArgs {
-            TestMetricsCollector = testMetricsCollector,
-            RequestId = Utils.NewGuidString(),
-        };
-        var cacheClient = CreateClientWithMiddleware(args);
+        var middleware = CreateMiddleware(null);
+        var testMetricsCollector = middleware.TestMetricsCollector;
+        var cacheClient = CreateClientWithMiddleware(middleware);
 
         var cacheName = Utils.NewGuidString();
         cacheClient.CreateCacheAsync(cacheName).Wait();
@@ -80,12 +69,9 @@ public class MomentoLocalMiddlewareTests
 
     [Fact]
     public void MomentoLocalMiddleware_OneCache_MultipleRequests() {
-        var testMetricsCollector = new TestRetryMetricsCollector();
-        var args = new MomentoLocalMiddlewareArgs {
-            TestMetricsCollector = testMetricsCollector,
-            RequestId = Utils.NewGuidString(),
-        };
-        var cacheClient = CreateClientWithMiddleware(args);
+        var middleware = CreateMiddleware(null);
+        var testMetricsCollector = middleware.TestMetricsCollector;
+        var cacheClient = CreateClientWithMiddleware(middleware);
 
         var cacheName = Utils.NewGuidString();
         cacheClient.CreateCacheAsync(cacheName).Wait();
@@ -118,12 +104,9 @@ public class MomentoLocalMiddlewareTests
 
     [Fact]
     public void MomentoLocalMiddleware_MultipleCaches_MultipleRequests() {
-        var testMetricsCollector = new TestRetryMetricsCollector();
-        var args = new MomentoLocalMiddlewareArgs {
-            TestMetricsCollector = testMetricsCollector,
-            RequestId = Utils.NewGuidString(),
-        };
-        var cacheClient = CreateClientWithMiddleware(args);
+        var middleware = CreateMiddleware(null);
+        var testMetricsCollector = middleware.TestMetricsCollector;
+        var cacheClient = CreateClientWithMiddleware(middleware);
 
         var cacheName1 = Utils.NewGuidString();
         var cacheName2 = Utils.NewGuidString();
@@ -155,10 +138,7 @@ public class MomentoLocalMiddlewareTests
 
     [Fact]
     public async Task MomentoLocalMiddleware_SetsCorrectMomentoLocalMetadata() {
-        var testMetricsCollector = new TestRetryMetricsCollector();
         var args = new MomentoLocalMiddlewareArgs {
-            TestMetricsCollector = testMetricsCollector,
-            RequestId = Utils.NewGuidString(),
             ReturnError = MomentoErrorCode.INTERNAL_SERVER_ERROR,
             ErrorRpcList = new List<MomentoRpcMethod> { MomentoRpcMethod.Get },
             ErrorCount = 1,
@@ -169,11 +149,13 @@ public class MomentoLocalMiddlewareTests
             StreamError = MomentoErrorCode.INTERNAL_SERVER_ERROR,
             StreamErrorMessageLimit = 1,
         };
-        var mw = CreateMiddleware(args);
+        var middleware = CreateMiddleware(args);
+        var testMetricsCollector = middleware.TestMetricsCollector;
+
         _GetRequest request = new _GetRequest() { CacheKey = "key".ToByteString() };
         var callOptions = new CallOptions().WithHeaders(new Metadata());
         callOptions.Headers!.Add("cache", "cache");
-        var wrapped = await mw.WrapRequest(request, callOptions, async (req, opts) => {
+        var wrapped = await middleware.WrapRequest(request, callOptions, async (req, opts) => {
             await Task.Delay(100);
             return new MiddlewareResponseState<_GetResponse>(
                 ResponseAsync: Task.FromResult(new _GetResponse()),
@@ -184,7 +166,7 @@ public class MomentoLocalMiddlewareTests
         });
 
         var trailers = wrapped.GetTrailers();
-        Assert.Equal(args.RequestId, trailers.Get("request-id")?.Value);
+        Assert.Equal(middleware.RequestId, trailers.Get("request-id")?.Value);
         Assert.Equal(MomentoErrorCodeMetadataConverter.ToStringValue(MomentoErrorCode.INTERNAL_SERVER_ERROR), trailers.Get("return-error")?.Value);
         Assert.Equal(MomentoRpcMethodExtensions.ToStringValue(args.ErrorRpcList[0]), trailers.Get("error-rpcs")?.Value);
         Assert.Equal("1", trailers.Get("error-count")?.Value);

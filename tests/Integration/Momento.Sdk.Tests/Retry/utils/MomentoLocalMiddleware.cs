@@ -12,14 +12,6 @@ namespace Momento.Sdk.Tests.Integration.Retry;
 public class MomentoLocalMiddlewareArgs
 {
     /// <summary>
-    /// Metrics collector class for documenting timestamps of retries for test assertions.
-    /// </summary>
-    public TestRetryMetricsCollector TestMetricsCollector { get; set; } = new TestRetryMetricsCollector();
-    /// <summary>
-    /// ID to uniquely identify api calls in a test.
-    /// </summary>
-    public string RequestId { get; set; } = Utils.NewGuidString();
-    /// <summary>
     /// Error to return from momento-local.
     /// </summary>
     public MomentoErrorCode? ReturnError { get; set; } = null;
@@ -61,12 +53,24 @@ public class MomentoLocalMiddleware : IMiddleware
 {
     /// <inheritdoc cref="Microsoft.Extensions.Logging.ILogger" />
     private readonly ILogger _logger;
+    /// <summary>
+    /// Arguments for configuring the behavior of momento-local for requests
+    /// using the given request ID.
+    /// </summary>
     private readonly MomentoLocalMiddlewareArgs _args;
+    /// <summary>
+    /// Metrics collector class for documenting timestamps of retries for test assertions.
+    /// </summary>
+    public TestRetryMetricsCollector TestMetricsCollector { get; set; } = new TestRetryMetricsCollector();
+    /// <summary>
+    /// ID to uniquely identify api calls in a test.
+    /// </summary>
+    public string RequestId { get; set; } = Utils.NewGuidString();
 
-    public MomentoLocalMiddleware(ILoggerFactory loggerFactory, MomentoLocalMiddlewareArgs args)
+    public MomentoLocalMiddleware(ILoggerFactory loggerFactory, MomentoLocalMiddlewareArgs? args)
     {
         _logger = loggerFactory.CreateLogger<MomentoLocalMiddleware>();
-        _args = args;
+        _args = args ?? new MomentoLocalMiddlewareArgs();
     }
 
     public async Task<MiddlewareResponseState<TResponse>> WrapRequest<TRequest, TResponse>(
@@ -83,8 +87,8 @@ public class MomentoLocalMiddleware : IMiddleware
 
         var headers = callOptionsWithHeaders.Headers!;
 
-        _logger.LogDebug($"MomentoLocalMiddleware: requestId={_args.RequestId}");
-        headers.Add("request-id", _args.RequestId);
+        _logger.LogDebug($"MomentoLocalMiddleware: requestId={RequestId}");
+        headers.Add("request-id", RequestId);
 
         if (_args.ReturnError != null)
         {
@@ -143,7 +147,7 @@ public class MomentoLocalMiddleware : IMiddleware
 
         // Then convert to the approrpriate enum
         var rpcMethod = MomentoRpcMethodExtensions.FromString(requestName);
-        _args.TestMetricsCollector.AddTimestamp(cacheName, rpcMethod, 1);
+        TestMetricsCollector.AddTimestamp(cacheName, rpcMethod, 1);
 
         var nextState = await continuation(request, callOptionsWithHeaders);
         return new MiddlewareResponseState<TResponse>(
