@@ -54,21 +54,6 @@ public class MomentoLocalProvider : ICredentialProvider
 
     /// <summary>
     /// Constructor for MomentoLocalProvider.
-    /// Uses the default hostname (localhost) and provided port to connect to momento-local.
-    /// </summary>
-    public MomentoLocalProvider(int port)
-    {
-        AuthToken = "";
-        Port = port;
-        string endpoint = $"127.0.0.1:{Port}";
-        ControlEndpoint = endpoint;
-        CacheEndpoint = endpoint;
-        TokenEndpoint = endpoint;
-        
-    }
-
-    /// <summary>
-    /// Constructor for MomentoLocalProvider.
     /// Uses the provided hostname and provided port to connect to momento-local.
     /// </summary>
     public MomentoLocalProvider(string hostname, int port)
