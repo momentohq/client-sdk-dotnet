@@ -199,4 +199,14 @@ public static class Utils
         }
         return;
     }
+
+    /// <summary>
+    /// Calculate the deadline given a timeout.
+    /// </summary>
+    /// <param name="timeout"></param>
+    /// <returns></returns>
+    public static DateTime CalculateDeadline(TimeSpan timeout)
+    {
+        return DateTime.UtcNow.Add(timeout);
+    }
 }
