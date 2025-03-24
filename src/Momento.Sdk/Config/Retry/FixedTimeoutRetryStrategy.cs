@@ -6,7 +6,10 @@ using Momento.Sdk.Internal.Retry;
 namespace Momento.Sdk.Config.Retry;
 
 /// <summary>
-/// TODO
+/// Retry failed requests up until the client's timeout has been reached.
+/// Retries are attempted at fixed intervals (retryDelayIntervalMillis) +/- jitter.
+/// Retry attempts time out after responseDataReceivedTimeoutMillis to be able to 
+/// allow multiple retries before the client's timeout is reached.
 /// </summary>
 public class FixedTimeoutRetryStrategy : IRetryStrategy
 {
@@ -17,12 +20,12 @@ public class FixedTimeoutRetryStrategy : IRetryStrategy
     private readonly TimeSpan _responseDataReceivedTimeoutMillis;
 
     /// <summary>
-    /// TODO
+    /// Constructor for the FixedTimeoutRetryStrategy.
     /// </summary>
     /// <param name="loggerFactory"></param>
     /// <param name="eligibilityStrategy"></param>
-    /// <param name="retryDelayIntervalMillis"></param>
-    /// <param name="responseDataReceivedTimeoutMillis"></param>
+    /// <param name="retryDelayIntervalMillis">Amount of time between retry attempts.</param>
+    /// <param name="responseDataReceivedTimeoutMillis">How long to wait for a retry attempt to succeed or timeout.</param>
     public FixedTimeoutRetryStrategy(ILoggerFactory loggerFactory, IRetryEligibilityStrategy? eligibilityStrategy = null, TimeSpan? retryDelayIntervalMillis = null, TimeSpan? responseDataReceivedTimeoutMillis = null)
     {
         _loggerFactory = loggerFactory;

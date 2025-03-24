@@ -18,7 +18,7 @@ public interface IRetryStrategy
     public int? DetermineWhenToRetryRequest<TRequest>(Status grpcStatus, TRequest grpcRequest, int attemptNumber) where TRequest : class;
 
     /// <summary>
-    /// TODO
+    /// Get the time to wait for a response from a retried request before timing out.
     /// </summary>
     /// <returns></returns>
     public double? GetResponseDataReceivedTimeoutMillis();
