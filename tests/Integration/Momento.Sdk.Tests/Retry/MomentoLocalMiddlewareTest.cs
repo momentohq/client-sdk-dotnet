@@ -176,4 +176,18 @@ public class MomentoLocalMiddlewareTests
         Assert.Equal(MomentoErrorCodeMetadataConverter.ToStringValue(MomentoErrorCode.INTERNAL_SERVER_ERROR), trailers.Get("stream-error")?.Value);
         Assert.Equal("1", trailers.Get("stream-error-message-limit")?.Value);
     }
+
+    [Fact]
+    public void MomentoLocalMiddleware_EnumConversions() {
+        var getEnum = MomentoRpcMethod.Get;
+        Assert.Equal("Get", getEnum.ToString());
+        Assert.Equal("MomentoRpcMethod", getEnum.GetType().Name);
+        Assert.Equal("_GetRequest", MomentoRpcMethodExtensions.ToStringValue(getEnum));
+        Assert.Equal("get", MomentoRpcMethodExtensions.ToMomentoLocalMetadataString(getEnum));
+
+        var errorCodeEnum = MomentoErrorCode.INTERNAL_SERVER_ERROR;
+        Assert.Equal("INTERNAL_SERVER_ERROR", errorCodeEnum.ToString());
+        Assert.Equal("MomentoErrorCode", errorCodeEnum.GetType().Name);
+        Assert.Equal("internal", MomentoErrorCodeMetadataConverter.ToStringValue(errorCodeEnum));
+    }
 }
