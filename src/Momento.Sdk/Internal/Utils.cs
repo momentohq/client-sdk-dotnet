@@ -3,15 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Extensions.Logging;
-using Grpc.Core;
-using Grpc.Net.Client;
-using System.Net.Http;
 #if USE_GRPC_WEB
 using Grpc.Net.Client.Web;
 #endif
 
-using Momento.Sdk.Config.Transport;
 using Momento.Sdk.Exceptions;
 
 namespace Momento.Sdk.Internal;
