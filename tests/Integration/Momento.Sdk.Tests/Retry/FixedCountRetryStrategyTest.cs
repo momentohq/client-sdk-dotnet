@@ -45,7 +45,6 @@ public class FixedCountRetryStrategyTests
         var middlewareArgs = new MomentoLocalMiddlewareArgs {
             ReturnError = MomentoErrorCode.SERVER_UNAVAILABLE,
             ErrorRpcList = new List<MomentoRpcMethod> { MomentoRpcMethod.Get },
-            ErrorCount = maxAttempts
         };
         var testProps = new MomentoLocalCacheAndCacheClient(_authProvider, _loggerFactory, _cacheConfig, middlewareArgs, new FixedCountRetryStrategy(_loggerFactory, maxAttempts));
         testProps.CacheClient.GetAsync(testProps.CacheName, "key").Wait();
