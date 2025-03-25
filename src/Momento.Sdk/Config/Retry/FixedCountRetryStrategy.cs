@@ -1,7 +1,5 @@
-using System.Net.NetworkInformation;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Momento.Sdk.Internal.Retry;
 
 namespace Momento.Sdk.Config.Retry;
