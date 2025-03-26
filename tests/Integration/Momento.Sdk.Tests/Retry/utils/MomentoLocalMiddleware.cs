@@ -94,12 +94,10 @@ public class MomentoLocalMiddleware : IMiddleware
         if (_args.ReturnError != null && headers.GetValue("return-error") == null)
         {
             _logger.LogDebug($"MomentoLocalMiddleware: return-error={_args.ReturnError}");
-            // headers.Add("return-error", MomentoErrorCodeMetadataConverter.ToStringValue((MomentoErrorCode)_args.ReturnError));
             headers.Add("return-error", _args.ReturnError);
         }
         if (_args.ErrorRpcList != null && _args.ErrorRpcList.Count > 0 && headers.GetValue("error-rpcs") == null)
         {
-            // var errorRpcList = string.Join(" ", _args.ErrorRpcList.Select(MomentoRpcMethodExtensions.ToMomentoLocalMetadataString));
             var errorRpcList = string.Join(" ", _args.ErrorRpcList);
             _logger.LogDebug($"MomentoLocalMiddleware: error-rpcs={errorRpcList}");
             headers.Add("error-rpcs", errorRpcList);
@@ -111,7 +109,6 @@ public class MomentoLocalMiddleware : IMiddleware
         }
         if (_args.DelayRpcList != null && _args.DelayRpcList.Count > 0 && headers.GetValue("delay-rpcs") == null)
         {
-            // var delayRpcList = string.Join(" ", _args.DelayRpcList.Select(MomentoRpcMethodExtensions.ToMomentoLocalMetadataString));
             var delayRpcList = string.Join(" ", _args.DelayRpcList);
             _logger.LogDebug($"MomentoLocalMiddleware: delay-rpcs={delayRpcList}");
             headers.Add("delay-rpcs", delayRpcList);
@@ -128,7 +125,6 @@ public class MomentoLocalMiddleware : IMiddleware
         }
         if (_args.StreamErrorRpcList != null && _args.StreamErrorRpcList.Count > 0 && headers.GetValue("stream-error-rpcs") == null)
         {
-            // var streamErrorRpcList = string.Join(" ", _args.StreamErrorRpcList.Select(MomentoRpcMethodExtensions.ToMomentoLocalMetadataString));
             var streamErrorRpcList = string.Join(" ", _args.StreamErrorRpcList);
             _logger.LogDebug($"MomentoLocalMiddleware: stream-error-rpcs={streamErrorRpcList}");
             headers.Add("stream-error-rpcs", streamErrorRpcList);
@@ -136,7 +132,6 @@ public class MomentoLocalMiddleware : IMiddleware
         if (_args.StreamError != null && headers.GetValue("stream-error") == null)
         {
             _logger.LogDebug($"MomentoLocalMiddleware: stream-error={_args.StreamError}");
-            // headers.Add("stream-error", MomentoErrorCodeMetadataConverter.ToStringValue((MomentoErrorCode)_args.StreamError));
             headers.Add("stream-error", _args.StreamError);
         }
         if (_args.StreamErrorMessageLimit != null && headers.GetValue("stream-error-message-limit") == null)
