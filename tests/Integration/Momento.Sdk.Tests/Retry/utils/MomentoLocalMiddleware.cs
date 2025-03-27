@@ -103,7 +103,7 @@ public class MomentoLocalMiddleware : IMiddleware
         // Request name appears as "Momento.Protos.CacheClient._GetRequest" so we need to extract the last part.
         var requestName = request.GetType().ToString().Split('.').Last();
 
-        // Then convert to the approrpriate enum
+        // Then convert to the appropriate enum
         var rpcMethod = MomentoRpcMethodExtensions.FromString(requestName);
         TestMetricsCollector.AddTimestamp(cacheName, rpcMethod, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
 
