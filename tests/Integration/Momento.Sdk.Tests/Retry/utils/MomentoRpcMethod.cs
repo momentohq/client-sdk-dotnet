@@ -1,5 +1,4 @@
 #pragma warning disable 1591
-using System;
 
 namespace Momento.Sdk.Tests.Integration.Retry;
 

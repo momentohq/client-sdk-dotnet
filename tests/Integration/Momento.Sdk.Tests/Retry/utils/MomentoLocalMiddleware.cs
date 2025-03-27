@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config.Middleware;
-using Momento.Sdk.Config.Retry;
 using Momento.Sdk.Internal.ExtensionMethods;
 
 namespace Momento.Sdk.Tests.Integration.Retry;
