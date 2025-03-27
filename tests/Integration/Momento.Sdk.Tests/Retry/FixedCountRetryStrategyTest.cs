@@ -43,8 +43,8 @@ public class FixedCountRetryStrategyTests
     {
         var maxAttempts = 3;
         var middlewareArgs = new MomentoLocalMiddlewareArgs {
-            ReturnError = MomentoErrorCodeMetadataConverter.ToStringValue(MomentoErrorCode.SERVER_UNAVAILABLE),
-            ErrorRpcList = new List<string> { MomentoRpcMethodExtensions.ToMomentoLocalMetadataString(MomentoRpcMethod.Get) },
+            ReturnError = MomentoErrorCode.SERVER_UNAVAILABLE.ToStringValue(),
+            ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
         };
         var testProps = new MomentoLocalCacheAndCacheClient(_authProvider, _loggerFactory, _cacheConfig, middlewareArgs, new FixedCountRetryStrategy(_loggerFactory, maxAttempts));
         testProps.CacheClient.GetAsync(testProps.CacheName, "key").Wait();
@@ -55,8 +55,8 @@ public class FixedCountRetryStrategyTests
     public void FixedCountRetryStrategy_EligibleRpc_TemporaryOutage() 
     {
         var middlewareArgs = new MomentoLocalMiddlewareArgs {
-            ReturnError = MomentoErrorCodeMetadataConverter.ToStringValue(MomentoErrorCode.SERVER_UNAVAILABLE),
-            ErrorRpcList = new List<string> { MomentoRpcMethodExtensions.ToMomentoLocalMetadataString(MomentoRpcMethod.Get) },
+            ReturnError =  MomentoErrorCode.SERVER_UNAVAILABLE.ToStringValue(),
+            ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
             ErrorCount = 2
         };
         var testProps = new MomentoLocalCacheAndCacheClient(_authProvider, _loggerFactory, _cacheConfig, middlewareArgs, new FixedCountRetryStrategy(_loggerFactory, 3));

@@ -138,14 +138,14 @@ public class MomentoLocalMiddlewareTests
     [Fact]
     public async Task MomentoLocalMiddleware_SetsCorrectMomentoLocalMetadata() {
         var args = new MomentoLocalMiddlewareArgs {
-            ReturnError = MomentoErrorCodeMetadataConverter.ToStringValue(MomentoErrorCode.INTERNAL_SERVER_ERROR),
-            ErrorRpcList = new List<string> { MomentoRpcMethodExtensions.ToMomentoLocalMetadataString(MomentoRpcMethod.Get) },
+            ReturnError = MomentoErrorCode.INTERNAL_SERVER_ERROR.ToStringValue(),
+            ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
             ErrorCount = 1,
-            DelayRpcList = new List<string> { MomentoRpcMethodExtensions.ToMomentoLocalMetadataString(MomentoRpcMethod.Set) },
+            DelayRpcList = new List<string> { MomentoRpcMethod.Set.ToMomentoLocalMetadataString() },
             DelayMillis = 100,
             DelayCount = 1,
-            StreamErrorRpcList = new List<string> { MomentoRpcMethodExtensions.ToMomentoLocalMetadataString(MomentoRpcMethod.TopicSubscribe) },
-            StreamError = MomentoErrorCodeMetadataConverter.ToStringValue(MomentoErrorCode.INTERNAL_SERVER_ERROR),
+            StreamErrorRpcList = new List<string> { MomentoRpcMethod.TopicSubscribe.ToMomentoLocalMetadataString() },
+            StreamError = MomentoErrorCode.INTERNAL_SERVER_ERROR.ToStringValue(),
             StreamErrorMessageLimit = 1,
         };
         var middleware = CreateMiddleware(args);
@@ -166,14 +166,14 @@ public class MomentoLocalMiddlewareTests
 
         var trailers = wrapped.GetTrailers();
         Assert.Equal(middleware.RequestId, trailers.Get("request-id")?.Value);
-        Assert.Equal(MomentoErrorCodeMetadataConverter.ToStringValue(MomentoErrorCode.INTERNAL_SERVER_ERROR), trailers.Get("return-error")?.Value);
+        Assert.Equal(MomentoErrorCode.INTERNAL_SERVER_ERROR.ToStringValue(), trailers.Get("return-error")?.Value);
         Assert.Equal(args.ErrorRpcList[0], trailers.Get("error-rpcs")?.Value);
         Assert.Equal("1", trailers.Get("error-count")?.Value);
         Assert.Equal(args.DelayRpcList[0], trailers.Get("delay-rpcs")?.Value);
         Assert.Equal("100", trailers.Get("delay-ms")?.Value);
         Assert.Equal("1", trailers.Get("delay-count")?.Value);
         Assert.Equal(args.StreamErrorRpcList[0], trailers.Get("stream-error-rpcs")?.Value);
-        Assert.Equal(MomentoErrorCodeMetadataConverter.ToStringValue(MomentoErrorCode.INTERNAL_SERVER_ERROR), trailers.Get("stream-error")?.Value);
+        Assert.Equal(MomentoErrorCode.INTERNAL_SERVER_ERROR.ToStringValue(), trailers.Get("stream-error")?.Value);
         Assert.Equal("1", trailers.Get("stream-error-message-limit")?.Value);
     }
 
@@ -182,12 +182,12 @@ public class MomentoLocalMiddlewareTests
         var getEnum = MomentoRpcMethod.Get;
         Assert.Equal("Get", getEnum.ToString());
         Assert.Equal("MomentoRpcMethod", getEnum.GetType().Name);
-        Assert.Equal("_GetRequest", MomentoRpcMethodExtensions.ToStringValue(getEnum));
-        Assert.Equal("get", MomentoRpcMethodExtensions.ToMomentoLocalMetadataString(getEnum));
+        Assert.Equal("_GetRequest", getEnum.ToStringValue());
+        Assert.Equal("get", MomentoRpcMethod.Get.ToMomentoLocalMetadataString());
 
         var errorCodeEnum = MomentoErrorCode.INTERNAL_SERVER_ERROR;
         Assert.Equal("INTERNAL_SERVER_ERROR", errorCodeEnum.ToString());
         Assert.Equal("MomentoErrorCode", errorCodeEnum.GetType().Name);
-        Assert.Equal("internal", MomentoErrorCodeMetadataConverter.ToStringValue(errorCodeEnum));
+        Assert.Equal("internal", errorCodeEnum.ToStringValue());
     }
 }
