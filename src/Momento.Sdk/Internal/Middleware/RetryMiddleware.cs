@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
@@ -103,6 +104,12 @@ namespace Momento.Sdk.Config.Retry
         public override int GetHashCode()
         {
             return base.GetHashCode();
+        }
+
+        /// <inheritdoc/>
+        public IList<Tuple<string, string>> AddStreamRequestHeaders()
+        {
+            return new List<Tuple<string, string>>();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
@@ -88,6 +89,12 @@ namespace Momento.Sdk.Internal.Middleware
         public override int GetHashCode()
         {
             return base.GetHashCode();
+        }
+
+        /// <inheritdoc/>
+        public IList<Tuple<string, string>> AddStreamRequestHeaders()
+        {
+            return new List<Tuple<string, string>>();
         }
     }
 }

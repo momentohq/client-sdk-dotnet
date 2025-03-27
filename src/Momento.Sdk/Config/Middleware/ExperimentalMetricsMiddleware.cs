@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -136,5 +137,10 @@ namespace Momento.Sdk.Config.Middleware
             return nextState;
         }
 
+        /// <inheritdoc/>
+        public IList<Tuple<string, string>> AddStreamRequestHeaders()
+        {
+            return new List<Tuple<string, string>>();
+        }
     }
 }

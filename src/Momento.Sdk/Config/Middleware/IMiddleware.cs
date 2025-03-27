@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
@@ -37,6 +39,11 @@ public record struct MiddlewareResponseState<TResponse>(
 public interface IMiddleware
 {
     /// <summary>
+    /// Add headers to gRPC stream requests since middlewares are incompatible with gRPC streams.
+    /// </summary>
+    public IList<Tuple<string, string>> AddStreamRequestHeaders();
+
+    /// <summary>
     /// Called as a wrapper around each request; can be used to time the request and collect metrics etc.
     /// </summary>
     /// <typeparam name="TRequest"></typeparam>
@@ -51,5 +58,4 @@ public interface IMiddleware
         CallOptions callOptions,
         Func<TRequest, CallOptions, Task<MiddlewareResponseState<TResponse>>> continuation
     ) where TRequest : class where TResponse : class;
-
 }

@@ -34,8 +34,7 @@ public class PubsubClientWithMiddleware : IPubsubClient
     private readonly IList<IMiddleware> _middlewares;
     private readonly IList<Tuple<string, string>> _headers;
 
-    public PubsubClientWithMiddleware(Pubsub.PubsubClient generatedClient, IList<IMiddleware> middlewares,
-        IList<Tuple<string, string>> headers)
+    public PubsubClientWithMiddleware(Pubsub.PubsubClient generatedClient, IList<IMiddleware> middlewares, IList<Tuple<string, string>> headers)
     {
         _generatedClient = generatedClient;
         _middlewares = middlewares;
@@ -51,16 +50,33 @@ public class PubsubClientWithMiddleware : IPubsubClient
     public AsyncServerStreamingCall<_SubscriptionItem> subscribe(_SubscriptionRequest request, CallOptions callOptions)
     {
         // Middleware is not currently compatible with gRPC streaming calls,
-        // so we manually add the headers to ensure the call has the auth token.
+        // so we manually add the headers to ensure the call has the auth token
+        // and any other headers that were added.
         var callHeaders = callOptions.Headers ?? new Metadata();
         if (callOptions.Headers == null)
         {
             callOptions = callOptions.WithHeaders(new Metadata());
         }
 
+        // The _headers are from the base GrpcManager, includes authorization, agent, and runtime version.
         foreach (var header in _headers)
         {
-            callHeaders.Add(header.Item1, header.Item2);
+            if (callHeaders.Get(header.Item1) == null)
+            {
+                callHeaders.Add(header.Item1, header.Item2);
+            }
+        }
+
+        // We also add any stream headers configured on the middlewares.
+        foreach (var middleware in _middlewares)
+        {
+            foreach (var header in middleware.AddStreamRequestHeaders())
+            {
+                if (callHeaders.Get(header.Item1) == null) 
+                {
+                    callHeaders.Add(header.Item1, header.Item2);
+                }
+            }
         }
 
         return _generatedClient.Subscribe(request, callOptions.WithHeaders(callHeaders));
@@ -73,10 +89,12 @@ public class TopicGrpcManager : GrpcManager
 
     internal TopicGrpcManager(ITopicConfiguration config, ICredentialProvider authProvider) : base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authProvider, authProvider.CacheEndpoint, "TopicGrpcManager")
     {
-        var middlewares = new List<IMiddleware>
-        {
-            new HeaderMiddleware(config.LoggerFactory, this.headers),
-        };
+        var middlewares = config.Middlewares.Concat(
+            new List<IMiddleware>
+            {
+                new HeaderMiddleware(config.LoggerFactory, this.headers),
+            }
+        ).ToList();
 
         var client = new Pubsub.PubsubClient(this.invoker);
         Client = new PubsubClientWithMiddleware(client, middlewares, this.headerTuples);

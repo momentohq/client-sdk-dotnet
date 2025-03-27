@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -91,6 +92,12 @@ namespace Momento.Sdk.Internal.Middleware
                 GetStatus: nextState.GetStatus,
                 GetTrailers: nextState.GetTrailers
             );
+        }
+
+        /// <inheritdoc/>
+        public IList<Tuple<string, string>> AddStreamRequestHeaders()
+        {
+            return _headers.Select(header => new Tuple<string, string>(header.Name, header.Value)).ToList();
         }
 
         public override bool Equals(object obj)
