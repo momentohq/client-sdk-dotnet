@@ -6,23 +6,28 @@ using Momento.Sdk.Internal.Retry;
 namespace Momento.Sdk.Config.Retry;
 
 /// <summary>
-/// TODO
+/// Retry strategy that uses exponential backoff with decorrelated jitter.
+/// - The first retry has a fixed delay of `initialDelayMillis`
+/// - Backoff for subsequent retries is calculated as `initialDelayMillis * 2^attemptNumber`
+/// - Subsequent retries have a delay that is a random value between 
+/// the current backoff and 3 times the previous backoff, with the 
+/// current backoff capped at `maxBackoffMillis`
 /// </summary>
 public class ExponentialBackoffRetryStrategy : IRetryStrategy
 {
     /// <summary>
-    /// TODO
+    /// Default initial delay for the first retry (in milliseconds)
     /// </summary>
     public static readonly double DEFAULT_INITIAL_DELAY_MS = 0.5;
     /// <summary>
-    /// TODO
+    /// Default growth factor for exponential backoff
     /// </summary>
     public static readonly double DEFAULT_GROWTH_FACTOR = 2;
     /// <summary>
-    /// TODO
+    /// Default maximum delay to cap the exponential growth (in milliseconds)
     /// </summary>
-
     public static readonly double DEFAULT_MAX_BACKOFF_MS = 1000;
+
     private ILoggerFactory _loggerFactory;
     private ILogger _logger;
     private readonly IRetryEligibilityStrategy _eligibilityStrategy;
@@ -33,7 +38,7 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
     private readonly Random _random = new Random();
 
     /// <summary>
-    /// TODO
+    /// Constructor for ExponentialBackoffRetryStrategy
     /// </summary>
     /// <param name="loggerFactory"></param>
     /// <param name="eligibilityStrategy"></param>
