@@ -5,6 +5,7 @@ using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
+using Momento.Sdk.Internal.ExtensionMethods;
 
 namespace Momento.Sdk.Tests.Integration.Retry;
 
@@ -85,60 +86,16 @@ public class MomentoLocalMiddleware : IMiddleware
         }
 
         var headers = callOptionsWithHeaders.Headers!;
-
-        if (headers.GetValue("request-id") == null)
-        {
-            _logger.LogDebug($"MomentoLocalMiddleware: requestId={RequestId}");
-            headers.Add("request-id", RequestId);
-        }
-        if (_args.ReturnError != null && headers.GetValue("return-error") == null)
-        {
-            _logger.LogDebug($"MomentoLocalMiddleware: return-error={_args.ReturnError}");
-            headers.Add("return-error", _args.ReturnError);
-        }
-        if (_args.ErrorRpcList != null && _args.ErrorRpcList.Count > 0 && headers.GetValue("error-rpcs") == null)
-        {
-            var errorRpcList = string.Join(" ", _args.ErrorRpcList);
-            _logger.LogDebug($"MomentoLocalMiddleware: error-rpcs={errorRpcList}");
-            headers.Add("error-rpcs", errorRpcList);
-        }
-        if (_args.ErrorCount != null && headers.GetValue("error-count") == null)
-        {
-            _logger.LogDebug($"MomentoLocalMiddleware: error-count={_args.ErrorCount}");
-            headers.Add("error-count", _args.ErrorCount.ToString()!);
-        }
-        if (_args.DelayRpcList != null && _args.DelayRpcList.Count > 0 && headers.GetValue("delay-rpcs") == null)
-        {
-            var delayRpcList = string.Join(" ", _args.DelayRpcList);
-            _logger.LogDebug($"MomentoLocalMiddleware: delay-rpcs={delayRpcList}");
-            headers.Add("delay-rpcs", delayRpcList);
-        }
-        if (_args.DelayMillis != null && headers.GetValue("delay-ms") == null)
-        {
-            _logger.LogDebug($"MomentoLocalMiddleware: delay-ms={_args.DelayMillis}");
-            headers.Add("delay-ms", _args.DelayMillis.ToString()!);
-        }
-        if (_args.DelayCount != null && headers.GetValue("delay-count") == null)
-        {
-            _logger.LogDebug($"MomentoLocalMiddleware: delay-count={_args.DelayCount}");
-            headers.Add("delay-count", _args.DelayCount.ToString()!);
-        }
-        if (_args.StreamErrorRpcList != null && _args.StreamErrorRpcList.Count > 0 && headers.GetValue("stream-error-rpcs") == null)
-        {
-            var streamErrorRpcList = string.Join(" ", _args.StreamErrorRpcList);
-            _logger.LogDebug($"MomentoLocalMiddleware: stream-error-rpcs={streamErrorRpcList}");
-            headers.Add("stream-error-rpcs", streamErrorRpcList);
-        }
-        if (_args.StreamError != null && headers.GetValue("stream-error") == null)
-        {
-            _logger.LogDebug($"MomentoLocalMiddleware: stream-error={_args.StreamError}");
-            headers.Add("stream-error", _args.StreamError);
-        }
-        if (_args.StreamErrorMessageLimit != null && headers.GetValue("stream-error-message-limit") == null)
-        {
-            _logger.LogDebug($"MomentoLocalMiddleware: stream-error-message-limit={_args.StreamErrorMessageLimit}");
-            headers.Add("stream-error-message-limit", _args.StreamErrorMessageLimit.ToString()!);
-        }
+        headers.TryAddHeader("request-id", RequestId);
+        headers.TryAddHeader("return-error", _args.ReturnError);
+        headers.TryAddHeader("error-rpcs", _args.ErrorRpcList);
+        headers.TryAddHeader("error-count", _args.ErrorCount);
+        headers.TryAddHeader("delay-rpcs", _args.DelayRpcList);
+        headers.TryAddHeader("delay-ms", _args.DelayMillis);
+        headers.TryAddHeader("delay-count", _args.DelayCount);
+        headers.TryAddHeader("stream-error-rpcs", _args.StreamErrorRpcList);
+        headers.TryAddHeader("stream-error", _args.StreamError);
+        headers.TryAddHeader("stream-error-message-limit", _args.StreamErrorMessageLimit);
 
         // Get the cache name from the metadata that should already exist on the request.
         var cacheName = headers.GetValue("cache") ?? "default-cache-name";
