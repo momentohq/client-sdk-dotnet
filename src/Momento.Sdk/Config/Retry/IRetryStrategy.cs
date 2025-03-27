@@ -1,5 +1,4 @@
 using Grpc.Core;
-using Microsoft.Extensions.Logging;
 
 namespace Momento.Sdk.Config.Retry;
 

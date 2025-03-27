@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-using Momento.Protos.CacheClient;
 using Momento.Sdk.Config.Middleware;
 
 namespace Momento.Sdk.Config.Retry

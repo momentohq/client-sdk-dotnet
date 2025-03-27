@@ -1,6 +1,6 @@
 using Momento.Sdk.Config.Retry;
 
-namespace Momento.Sdk.Tests.Integration.Cache;
+namespace Momento.Sdk.Tests.Integration.Retry;
 
 [Collection("Retry")]
 public class TestRetryMetricsCollectorTests
@@ -38,7 +38,7 @@ public class TestRetryMetricsCollectorTests
 
         // cache1 should have 2 entries: Get and Set. cache2 should have 1 entry: Set.
         Assert.Equal(2, collector.AllMetrics["cache1"].Count);
-        Assert.Equal(1, collector.AllMetrics["cache2"].Count);
+        Assert.Single(collector.AllMetrics["cache2"]);
 
         // Should have 1 timestamp for each method and cache that we added timestamps for.
         Assert.Single(collector.AllMetrics["cache1"][MomentoRpcMethod.Get]);
