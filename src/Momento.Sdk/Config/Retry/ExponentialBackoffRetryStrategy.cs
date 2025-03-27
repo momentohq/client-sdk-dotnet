@@ -30,6 +30,7 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
     private readonly double _initialDelayMillis;
     private readonly double _growthFactor;
     private readonly double _maxBackoffMillis;
+    private readonly Random _random = new Random();
 
     /// <summary>
     /// TODO
@@ -89,7 +90,7 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
       if (min >= max) {
         return min;
       }
-      return min + (new Random().NextDouble() * (max - min));
+      return min + (_random.NextDouble() * (max - min));
     }
 
     /// <summary>
