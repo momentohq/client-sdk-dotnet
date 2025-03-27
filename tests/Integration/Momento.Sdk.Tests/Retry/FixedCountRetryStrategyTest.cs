@@ -49,6 +49,8 @@ public class FixedCountRetryStrategyTests
         var testProps = new MomentoLocalCacheAndCacheClient(_authProvider, _loggerFactory, _cacheConfig, middlewareArgs, new FixedCountRetryStrategy(_loggerFactory, maxAttempts));
         testProps.CacheClient.GetAsync(testProps.CacheName, "key").Wait();
         Assert.Equal(maxAttempts, testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get));
+        var averageTimeBetweenRetries = testProps.TestMetricsCollector.GetAverageTimeBetweenRetries(testProps.CacheName, MomentoRpcMethod.Get);
+        Assert.InRange(averageTimeBetweenRetries, 0, 10); // should be a negligible amount of time between retries
     }
 
     [Fact]
@@ -62,5 +64,7 @@ public class FixedCountRetryStrategyTests
         var testProps = new MomentoLocalCacheAndCacheClient(_authProvider, _loggerFactory, _cacheConfig, middlewareArgs, new FixedCountRetryStrategy(_loggerFactory, 3));
         testProps.CacheClient.GetAsync(testProps.CacheName, "key").Wait();
         Assert.Equal(2, testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get));
+        var averageTimeBetweenRetries = testProps.TestMetricsCollector.GetAverageTimeBetweenRetries(testProps.CacheName, MomentoRpcMethod.Get);
+        Assert.InRange(averageTimeBetweenRetries, 0, 10); // should be a negligible amount of time between retries
     }
 }
