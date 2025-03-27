@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
@@ -35,4 +36,9 @@ public class PassThroughMiddleware : IMiddleware
         return continuation(request, callOptions);
     }
 
+    /// <inheritdoc/>
+    public IList<Tuple<string, string>> AddStreamRequestHeaders()
+    {
+        return new List<Tuple<string, string>>();
+    }
 }
