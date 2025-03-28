@@ -1,6 +1,5 @@
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
-using Momento.Sdk.Config.Retry;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config.Middleware;
 using System.Threading.Tasks;
@@ -78,18 +77,6 @@ public class MomentoLocalMiddlewareTests
         cacheClient.GetAsync(cacheName, "key").Wait();
         cacheClient.SetAsync(cacheName, "another-key", "value").Wait();
         cacheClient.GetAsync(cacheName, "another-key").Wait();
-
-        // print all metrics
-        foreach (var cache in testMetricsCollector.AllMetrics)
-        {
-            foreach (var method in cache.Value)
-            {
-                foreach (var timestamp in method.Value)
-                {
-                    Console.WriteLine($"Cache: {cache.Key}, Method: {method.Key}, Timestamp: {timestamp}");
-                }
-            }
-        }
 
         // Should contain only a single entry in the outer dictionary for the one cache
         Assert.Single(testMetricsCollector.AllMetrics);

@@ -260,7 +260,7 @@ public class DataGrpcManager : GrpcManager
 
         var middlewares = config.Middlewares.Concat(
             new List<IMiddleware> {
-                new RetryMiddleware(config.LoggerFactory, config.RetryStrategy),
+                new RetryMiddleware(config.LoggerFactory, config.RetryStrategy, config.TransportStrategy.GrpcConfig.Deadline),
                 new HeaderMiddleware(config.LoggerFactory, headers),
                 new MaxConcurrentRequestsMiddleware(config.LoggerFactory, config.TransportStrategy.MaxConcurrentRequests)
             }
