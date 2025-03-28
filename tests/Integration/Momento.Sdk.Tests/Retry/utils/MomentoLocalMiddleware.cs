@@ -103,7 +103,12 @@ public class MomentoLocalMiddleware : IMiddleware
         var headers = callOptionsWithHeaders.Headers!;
         foreach (var header in ConvertArgsToHeaders())
         {
-            headers.Add(header);
+            // Check if the header already exists. If it does, we don't want to add it again
+            // as it causes momento-local to not recognize the header.
+            if (headers.GetValue(header.Key) == null)
+            {
+                headers.Add(header);
+            }
         }
 
         // Get the cache name from the metadata that should already exist on the request.

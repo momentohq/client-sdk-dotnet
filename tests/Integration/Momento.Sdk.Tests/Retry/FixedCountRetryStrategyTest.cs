@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
@@ -39,7 +40,7 @@ public class FixedCountRetryStrategyTests
     }
 
     [Fact]
-    public void FixedCountRetryStrategy_EligibleRpc_FullOutage() 
+    public async Task FixedCountRetryStrategy_EligibleRpc_FullOutage() 
     {
         var maxAttempts = 3;
         var middlewareArgs = new MomentoLocalMiddlewareArgs {
@@ -47,14 +48,23 @@ public class FixedCountRetryStrategyTests
             ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
         };
         var testProps = new MomentoLocalCacheAndCacheClient(_authProvider, _loggerFactory, _cacheConfig, middlewareArgs, new FixedCountRetryStrategy(_loggerFactory, maxAttempts));
-        testProps.CacheClient.GetAsync(testProps.CacheName, "key").Wait();
+        var result = await testProps.CacheClient.GetAsync(testProps.CacheName, "key");
+        switch (result)
+        {
+            case CacheGetResponse.Error error:
+                Assert.Equal(MomentoErrorCode.SERVER_UNAVAILABLE, error.ErrorCode);
+                break;
+            default:
+                Assert.Fail("Expected a CacheGetResponse.Error, Got CacheGetResponse.Miss or CacheGetResponse.Hit instead");
+                break;
+        }
         Assert.Equal(maxAttempts, testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get));
         var averageTimeBetweenRetries = testProps.TestMetricsCollector.GetAverageTimeBetweenRetries(testProps.CacheName, MomentoRpcMethod.Get);
         Assert.InRange(averageTimeBetweenRetries, 0, 10); // should be a negligible amount of time between retries
     }
 
     [Fact]
-    public void FixedCountRetryStrategy_EligibleRpc_TemporaryOutage() 
+    public async Task FixedCountRetryStrategy_EligibleRpc_TemporaryOutage() 
     {
         var middlewareArgs = new MomentoLocalMiddlewareArgs {
             ReturnError =  MomentoErrorCode.SERVER_UNAVAILABLE.ToStringValue(),
@@ -62,7 +72,8 @@ public class FixedCountRetryStrategyTests
             ErrorCount = 2
         };
         var testProps = new MomentoLocalCacheAndCacheClient(_authProvider, _loggerFactory, _cacheConfig, middlewareArgs, new FixedCountRetryStrategy(_loggerFactory, 3));
-        testProps.CacheClient.GetAsync(testProps.CacheName, "key").Wait();
+        var result = await testProps.CacheClient.GetAsync(testProps.CacheName, "key");
+        Assert.False(result is CacheGetResponse.Error);
         Assert.Equal(2, testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get));
         var averageTimeBetweenRetries = testProps.TestMetricsCollector.GetAverageTimeBetweenRetries(testProps.CacheName, MomentoRpcMethod.Get);
         Assert.InRange(averageTimeBetweenRetries, 0, 10); // should be a negligible amount of time between retries

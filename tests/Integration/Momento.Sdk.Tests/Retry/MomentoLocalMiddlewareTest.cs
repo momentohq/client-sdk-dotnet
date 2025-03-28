@@ -128,7 +128,10 @@ public class MomentoLocalMiddlewareTests
             ReturnError = MomentoErrorCode.INTERNAL_SERVER_ERROR.ToStringValue(),
             ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
             ErrorCount = 1,
-            DelayRpcList = new List<string> { MomentoRpcMethod.Set.ToMomentoLocalMetadataString() },
+            DelayRpcList = new List<string> { 
+                MomentoRpcMethod.Set.ToMomentoLocalMetadataString(), 
+                MomentoRpcMethod.Get.ToMomentoLocalMetadataString() 
+            },
             DelayMillis = 100,
             DelayCount = 1,
             StreamErrorRpcList = new List<string> { MomentoRpcMethod.TopicSubscribe.ToMomentoLocalMetadataString() },
@@ -156,7 +159,7 @@ public class MomentoLocalMiddlewareTests
         Assert.Equal(MomentoErrorCode.INTERNAL_SERVER_ERROR.ToStringValue(), trailers.Get("return-error")?.Value);
         Assert.Equal(args.ErrorRpcList[0], trailers.Get("error-rpcs")?.Value);
         Assert.Equal("1", trailers.Get("error-count")?.Value);
-        Assert.Equal(args.DelayRpcList[0], trailers.Get("delay-rpcs")?.Value);
+        Assert.Equal(args.DelayRpcList[0] + " " + args.DelayRpcList[1], trailers.Get("delay-rpcs")?.Value);
         Assert.Equal("100", trailers.Get("delay-ms")?.Value);
         Assert.Equal("1", trailers.Get("delay-count")?.Value);
         Assert.Equal(args.StreamErrorRpcList[0], trailers.Get("stream-error-rpcs")?.Value);
