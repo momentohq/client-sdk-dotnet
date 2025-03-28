@@ -79,18 +79,6 @@ public class MomentoLocalMiddlewareTests
         cacheClient.SetAsync(cacheName, "another-key", "value").Wait();
         cacheClient.GetAsync(cacheName, "another-key").Wait();
 
-        // print all metrics
-        foreach (var cache in testMetricsCollector.AllMetrics)
-        {
-            foreach (var method in cache.Value)
-            {
-                foreach (var timestamp in method.Value)
-                {
-                    Console.WriteLine($"Cache: {cache.Key}, Method: {method.Key}, Timestamp: {timestamp}");
-                }
-            }
-        }
-
         // Should contain only a single entry in the outer dictionary for the one cache
         Assert.Single(testMetricsCollector.AllMetrics);
         // Should contain two entries for this cache for the Get and Set methods
@@ -141,7 +129,10 @@ public class MomentoLocalMiddlewareTests
             ReturnError = MomentoErrorCode.INTERNAL_SERVER_ERROR.ToStringValue(),
             ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
             ErrorCount = 1,
-            DelayRpcList = new List<string> { MomentoRpcMethod.Set.ToMomentoLocalMetadataString() },
+            DelayRpcList = new List<string> { 
+                MomentoRpcMethod.Set.ToMomentoLocalMetadataString(), 
+                MomentoRpcMethod.Get.ToMomentoLocalMetadataString() 
+            },
             DelayMillis = 100,
             DelayCount = 1,
             StreamErrorRpcList = new List<string> { MomentoRpcMethod.TopicSubscribe.ToMomentoLocalMetadataString() },
@@ -169,7 +160,7 @@ public class MomentoLocalMiddlewareTests
         Assert.Equal(MomentoErrorCode.INTERNAL_SERVER_ERROR.ToStringValue(), trailers.Get("return-error")?.Value);
         Assert.Equal(args.ErrorRpcList[0], trailers.Get("error-rpcs")?.Value);
         Assert.Equal("1", trailers.Get("error-count")?.Value);
-        Assert.Equal(args.DelayRpcList[0], trailers.Get("delay-rpcs")?.Value);
+        Assert.Equal(args.DelayRpcList[0] + " " + args.DelayRpcList[1], trailers.Get("delay-rpcs")?.Value);
         Assert.Equal("100", trailers.Get("delay-ms")?.Value);
         Assert.Equal("1", trailers.Get("delay-count")?.Value);
         Assert.Equal(args.StreamErrorRpcList[0], trailers.Get("stream-error-rpcs")?.Value);
