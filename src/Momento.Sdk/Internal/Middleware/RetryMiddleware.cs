@@ -30,7 +30,6 @@ namespace Momento.Sdk.Config.Retry
             // in case we're using the FixedTimeoutRetryStrategy
             DateTime _overallDeadline = callOptions.Deadline ?? Utils.CalculateDeadline(_clientTimeout);
             
-            var foo = request.GetType();
             MiddlewareResponseState<TResponse> nextState;
             int attemptNumber = 0;
             int? retryAfterMillis = 0;

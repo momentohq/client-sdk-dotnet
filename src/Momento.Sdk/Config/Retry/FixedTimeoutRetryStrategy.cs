@@ -29,7 +29,7 @@ public class FixedTimeoutRetryStrategy : IRetryStrategy
     public FixedTimeoutRetryStrategy(ILoggerFactory loggerFactory, IRetryEligibilityStrategy? eligibilityStrategy = null, TimeSpan? retryDelayIntervalMillis = null, TimeSpan? responseDataReceivedTimeoutMillis = null)
     {
         _loggerFactory = loggerFactory;
-        _logger = loggerFactory.CreateLogger<FixedCountRetryStrategy>();
+        _logger = loggerFactory.CreateLogger<FixedTimeoutRetryStrategy>();
         _eligibilityStrategy = eligibilityStrategy ?? new DefaultRetryEligibilityStrategy(loggerFactory);
         _retryDelayIntervalMillis = retryDelayIntervalMillis ?? TimeSpan.FromMilliseconds(100);
         _responseDataReceivedTimeoutMillis = responseDataReceivedTimeoutMillis ?? TimeSpan.FromMilliseconds(1000);
