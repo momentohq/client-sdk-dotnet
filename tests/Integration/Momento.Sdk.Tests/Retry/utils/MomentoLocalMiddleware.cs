@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config.Middleware;
-using Momento.Sdk.Config.Retry;
 using Momento.Sdk.Internal.ExtensionMethods;
 
 namespace Momento.Sdk.Tests.Integration.Retry;
@@ -73,6 +72,22 @@ public class MomentoLocalMiddleware : IMiddleware
         _args = args ?? new MomentoLocalMiddlewareArgs();
     }
 
+    private Metadata ConvertArgsToHeaders()
+    {
+        var headers = new Metadata();
+        headers.TryAddHeader("request-id", RequestId);
+        headers.TryAddHeader("return-error", _args.ReturnError);
+        headers.TryAddHeader("error-rpcs", _args.ErrorRpcList);
+        headers.TryAddHeader("error-count", _args.ErrorCount);
+        headers.TryAddHeader("delay-rpcs", _args.DelayRpcList);
+        headers.TryAddHeader("delay-ms", _args.DelayMillis);
+        headers.TryAddHeader("delay-count", _args.DelayCount);
+        headers.TryAddHeader("stream-error-rpcs", _args.StreamErrorRpcList);
+        headers.TryAddHeader("stream-error", _args.StreamError);
+        headers.TryAddHeader("stream-error-message-limit", _args.StreamErrorMessageLimit);
+        return headers;
+    }
+
     public async Task<MiddlewareResponseState<TResponse>> WrapRequest<TRequest, TResponse>(
         TRequest request,
         CallOptions callOptions,
@@ -86,16 +101,15 @@ public class MomentoLocalMiddleware : IMiddleware
         }
 
         var headers = callOptionsWithHeaders.Headers!;
-        headers.TryAddHeader("request-id", RequestId);
-        headers.TryAddHeader("return-error", _args.ReturnError);
-        headers.TryAddHeader("error-rpcs", _args.ErrorRpcList);
-        headers.TryAddHeader("error-count", _args.ErrorCount);
-        headers.TryAddHeader("delay-rpcs", _args.DelayRpcList);
-        headers.TryAddHeader("delay-ms", _args.DelayMillis);
-        headers.TryAddHeader("delay-count", _args.DelayCount);
-        headers.TryAddHeader("stream-error-rpcs", _args.StreamErrorRpcList);
-        headers.TryAddHeader("stream-error", _args.StreamError);
-        headers.TryAddHeader("stream-error-message-limit", _args.StreamErrorMessageLimit);
+        foreach (var header in ConvertArgsToHeaders())
+        {
+            // Check if the header already exists. If it does, we don't want to add it again
+            // as it causes momento-local to not recognize the header.
+            if (headers.GetValue(header.Key) == null)
+            {
+                headers.Add(header);
+            }
+        }
 
         // Get the cache name from the metadata that should already exist on the request.
         var cacheName = headers.GetValue("cache") ?? "default-cache-name";
@@ -105,7 +119,7 @@ public class MomentoLocalMiddleware : IMiddleware
 
         // Then convert to the approrpriate enum
         var rpcMethod = MomentoRpcMethodExtensions.FromString(requestName);
-        TestMetricsCollector.AddTimestamp(cacheName, rpcMethod, 1);
+        TestMetricsCollector.AddTimestamp(cacheName, rpcMethod, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
 
         var nextState = await continuation(request, callOptionsWithHeaders);
         return new MiddlewareResponseState<TResponse>(
@@ -114,5 +128,17 @@ public class MomentoLocalMiddleware : IMiddleware
             GetStatus: nextState.GetStatus,
             GetTrailers: nextState.GetTrailers
         );
+    }
+
+    /// <inheritdoc/>
+    public IList<Tuple<string, string>> AddStreamRequestHeaders()
+    {
+        // Convert momento-local args to headers for stream calls.
+        var streamHeaders = new List<Tuple<string, string>>();
+        foreach (var header in ConvertArgsToHeaders())
+        {
+            streamHeaders.Add(new Tuple<string, string>(header.Key, header.Value));
+        }
+        return streamHeaders;
     }
 }
