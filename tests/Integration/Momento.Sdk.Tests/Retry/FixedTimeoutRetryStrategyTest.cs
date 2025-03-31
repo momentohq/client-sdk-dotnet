@@ -44,13 +44,11 @@ public class FixedTimeoutRetryStrategyTests
     [Fact]
     public void FixedTimeoutRetryStrategy_EligibleRpc_FullOutage_ShortDelays() 
     {
-        var maxAttempts = Convert.ToInt32(
-            CLIENT_TIMEOUT_MILLIS.TotalMilliseconds / RETRY_DELAY_MILLIS.TotalMilliseconds
-        );
+        var shortDelay = RETRY_DELAY_MILLIS.TotalMilliseconds + 100;
         var middlewareArgs = new MomentoLocalMiddlewareArgs {
             ReturnError = MomentoErrorCode.SERVER_UNAVAILABLE.ToStringValue(),
             ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
-            DelayMillis = Convert.ToInt32(RETRY_DELAY_MILLIS.TotalMilliseconds)+100,
+            DelayMillis = Convert.ToInt32(shortDelay),
             DelayRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
         };
         var testProps = new MomentoLocalCacheAndCacheClient(
@@ -65,19 +63,27 @@ public class FixedTimeoutRetryStrategyTests
             )
         );
         testProps.CacheClient.GetAsync(testProps.CacheName, "key").Wait();
+
+        var delayBetweenAttempts = RETRY_DELAY_MILLIS.TotalMilliseconds + shortDelay;
+        var maxAttempts = Convert.ToInt32(
+            CLIENT_TIMEOUT_MILLIS.TotalMilliseconds / delayBetweenAttempts
+        );
         Assert.InRange(testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get), 1, maxAttempts);
+
+        // Jitter will be +/- 10% of the retry delay interval
+        var minDelay = delayBetweenAttempts * 0.9;
+        var maxDelay = delayBetweenAttempts * 1.1;
+        Assert.InRange(testProps.TestMetricsCollector.GetAverageTimeBetweenRetries(testProps.CacheName, MomentoRpcMethod.Get), minDelay, maxDelay);
     }
 
     [Fact]
     public void FixedTimeoutRetryStrategy_EligibleRpc_FullOutage_LongDelays() 
     {
-        var maxAttempts = Convert.ToInt32(
-            CLIENT_TIMEOUT_MILLIS.TotalMilliseconds / RESPONSE_DATA_RECEIVED_TIMEOUT_MILLIS.TotalMilliseconds
-        );
+        var longDelay = RESPONSE_DATA_RECEIVED_TIMEOUT_MILLIS.TotalMilliseconds + 100;
         var middlewareArgs = new MomentoLocalMiddlewareArgs {
             ReturnError = MomentoErrorCode.SERVER_UNAVAILABLE.ToStringValue(),
             ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
-            DelayMillis = Convert.ToInt32(RESPONSE_DATA_RECEIVED_TIMEOUT_MILLIS.TotalMilliseconds)+100,
+            DelayMillis = Convert.ToInt32(longDelay),
             DelayRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
         };
         var testProps = new MomentoLocalCacheAndCacheClient(
@@ -92,7 +98,17 @@ public class FixedTimeoutRetryStrategyTests
             )
         );
         testProps.CacheClient.GetAsync(testProps.CacheName, "key").Wait();
+
+        var delayBetweenAttempts = RETRY_DELAY_MILLIS.TotalMilliseconds + longDelay;
+        var maxAttempts = Convert.ToInt32(
+            CLIENT_TIMEOUT_MILLIS.TotalMilliseconds / delayBetweenAttempts
+        );
         Assert.InRange(testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get), 1, maxAttempts);
+
+        // Jitter will be +/- 10% of the retry delay interval
+        var minDelay = delayBetweenAttempts * 0.9;
+        var maxDelay = delayBetweenAttempts * 1.1;
+        Assert.InRange(testProps.TestMetricsCollector.GetAverageTimeBetweenRetries(testProps.CacheName, MomentoRpcMethod.Get), minDelay, maxDelay);
     }
 
     [Fact]
@@ -118,6 +134,11 @@ public class FixedTimeoutRetryStrategyTests
         );
         testProps.CacheClient.GetAsync(testProps.CacheName, "key").Wait();
         Assert.InRange(testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get), 1, maxAttempts);
+
+        // Jitter will be +/- 10% of the retry delay interval
+        var minDelay = RETRY_DELAY_MILLIS.TotalMilliseconds * 0.9;
+        var maxDelay = RETRY_DELAY_MILLIS.TotalMilliseconds * 1.1;
+        Assert.InRange(testProps.TestMetricsCollector.GetAverageTimeBetweenRetries(testProps.CacheName, MomentoRpcMethod.Get), minDelay, maxDelay);
     }
 
     [Fact]
@@ -140,9 +161,11 @@ public class FixedTimeoutRetryStrategyTests
             )
         );
         testProps.CacheClient.GetAsync(testProps.CacheName, "key").Wait();
-        var maxAttempts = Convert.ToInt32(
-            CLIENT_TIMEOUT_MILLIS.TotalMilliseconds / RESPONSE_DATA_RECEIVED_TIMEOUT_MILLIS.TotalMilliseconds
-        );
-        Assert.InRange(testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get), 1, maxAttempts);
+        Assert.Equal(2, testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get));
+
+        // Jitter will be +/- 10% of the retry delay interval
+        var minDelay = RETRY_DELAY_MILLIS.TotalMilliseconds * 0.9;
+        var maxDelay = RETRY_DELAY_MILLIS.TotalMilliseconds * 1.1;
+        Assert.InRange(testProps.TestMetricsCollector.GetAverageTimeBetweenRetries(testProps.CacheName, MomentoRpcMethod.Get), minDelay, maxDelay);
     }
 }

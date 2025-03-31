@@ -104,7 +104,7 @@ public class MomentoLocalMiddleware : IMiddleware
 
         // Then convert to the approrpriate enum
         var rpcMethod = MomentoRpcMethodExtensions.FromString(requestName);
-        TestMetricsCollector.AddTimestamp(cacheName, rpcMethod, 1);
+        TestMetricsCollector.AddTimestamp(cacheName, rpcMethod, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
 
         var nextState = await continuation(request, callOptionsWithHeaders);
         return new MiddlewareResponseState<TResponse>(
