@@ -114,9 +114,6 @@ public class FixedTimeoutRetryStrategyTests
     [Fact]
     public void FixedTimeoutRetryStrategy_EligibleRpc_FullOutage_NoDelays() 
     {
-        var maxAttempts = Convert.ToInt32(
-            CLIENT_TIMEOUT_MILLIS.TotalMilliseconds / RETRY_DELAY_MILLIS.TotalMilliseconds
-        );
         var middlewareArgs = new MomentoLocalMiddlewareArgs {
             ReturnError = MomentoErrorCode.SERVER_UNAVAILABLE.ToStringValue(),
             ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
@@ -133,6 +130,10 @@ public class FixedTimeoutRetryStrategyTests
             )
         );
         testProps.CacheClient.GetAsync(testProps.CacheName, "key").Wait();
+
+        var maxAttempts = Convert.ToInt32(
+            CLIENT_TIMEOUT_MILLIS.TotalMilliseconds / RETRY_DELAY_MILLIS.TotalMilliseconds
+        ) + 1; // +1 to account for jitter on retry delay (can be 10% longer or shorter)
         Assert.InRange(testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get), 1, maxAttempts);
 
         // Jitter will be +/- 10% of the retry delay interval
