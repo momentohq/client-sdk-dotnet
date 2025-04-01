@@ -28,7 +28,6 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
     /// </summary>
     public static readonly TimeSpan DEFAULT_MAX_BACKOFF = TimeSpan.FromMilliseconds(1000);
 
-    private ILoggerFactory _loggerFactory;
     private ILogger _logger;
     private readonly IRetryEligibilityStrategy _eligibilityStrategy;
     
@@ -46,7 +45,6 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
     /// <param name="maxBackoff"></param>
     public ExponentialBackoffRetryStrategy(ILoggerFactory loggerFactory, IRetryEligibilityStrategy? eligibilityStrategy = null, TimeSpan? initialDelay = null, TimeSpan? maxBackoff = null) 
     {
-        _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<ExponentialBackoffRetryStrategy>();
         _eligibilityStrategy = eligibilityStrategy ?? new DefaultRetryEligibilityStrategy(loggerFactory);
         _initialDelay = initialDelay ?? DEFAULT_INITIAL_DELAY;
@@ -112,7 +110,6 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
         return _initialDelay.Equals(other._initialDelay) &&
             _growthFactor.Equals(other._growthFactor) &&
             _maxBackoff.Equals(other._maxBackoff) &&
-            _loggerFactory.Equals(other._loggerFactory) &&
             _eligibilityStrategy.Equals(other._eligibilityStrategy);
     }
 
