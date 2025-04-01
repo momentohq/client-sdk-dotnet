@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Google.Protobuf;
-using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient;
@@ -23,7 +22,7 @@ public class ScsDataClientBase : IDisposable
 {
     protected readonly DataGrpcManager grpcManager;
     private readonly TimeSpan defaultTtl;
-    private readonly TimeSpan dataClientOperationTimeout;
+    protected readonly TimeSpan dataClientOperationTimeout;
     private readonly ILogger _logger;
     private bool hasSentOnetimeHeaders = false;
 
@@ -53,10 +52,6 @@ public class ScsDataClientBase : IDisposable
         string sdkVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
         string runtimeVer = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
         return new Metadata() { { "cache", cacheName }, { "agent", $"dotnet:cache:{sdkVersion}" }, { "runtime-version", runtimeVer } };
-    }
-    protected DateTime CalculateDeadline()
-    {
-        return DateTime.UtcNow.Add(dataClientOperationTimeout);
     }
 
     /// <summary>
@@ -433,7 +428,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingRequest(REQUEST_TYPE_KEY_EXISTS, cacheName, key, null, null);
-            response = await this.grpcManager.Client.KeysExistAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.KeysExistAsync(request, new CallOptions(headers: metadata, deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -453,7 +448,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingRequest(REQUEST_TYPE_KEYS_EXIST, cacheName, keys.ToString().ToByteString(), null, null);
-            response = await this.grpcManager.Client.KeysExistAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.KeysExistAsync(request, new CallOptions(headers: metadata, deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -476,7 +471,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingRequest(REQUEST_TYPE_UPDATE_TTL, cacheName, key, null, ttl);
-            response = await this.grpcManager.Client.UpdateTtlAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.UpdateTtlAsync(request, new CallOptions(headers: metadata, deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -507,12 +502,12 @@ internal sealed class ScsDataClient : ScsDataClientBase
         var metadata = MetadataWithCache(cacheName);
         try
         {
-            this._logger.LogTraceExecutingRequest(REQUEST_TYPE_UPDATE_TTL, cacheName, key, null, null);
-            response = await this.grpcManager.Client.ItemGetTtlAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+            this._logger.LogTraceExecutingRequest(REQUEST_TYPE_ITEM_GET_TTL, cacheName, key, null, null);
+            response = await this.grpcManager.Client.ItemGetTtlAsync(request, new CallOptions(headers: metadata, deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
-            return this._logger.LogTraceRequestError(REQUEST_TYPE_UPDATE_TTL, cacheName, key, null, null, new CacheItemGetTtlResponse.Error(_exceptionMapper.Convert(e, metadata)));
+            return this._logger.LogTraceRequestError(REQUEST_TYPE_ITEM_GET_TTL, cacheName, key, null, null, new CacheItemGetTtlResponse.Error(_exceptionMapper.Convert(e, metadata)));
         }
 
         if (response.ResultCase == _ItemGetTtlResponse.ResultOneofCase.Missing)
@@ -539,7 +534,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingRequest(REQUEST_TYPE_SET, cacheName, key, value, ttl);
-            await this.grpcManager.Client.SetAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+            await this.grpcManager.Client.SetAsync(request, new CallOptions(headers: metadata, deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -558,7 +553,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingRequest(REQUEST_TYPE_GET, cacheName, key, null, null);
-            response = await this.grpcManager.Client.GetAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.GetAsync(request, new CallOptions(headers: metadata, deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -580,7 +575,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingRequest(REQUEST_TYPE_DELETE, cacheName, key, null, null);
-            await this.grpcManager.Client.DeleteAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+            await this.grpcManager.Client.DeleteAsync(request, new CallOptions(headers: metadata, deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -600,7 +595,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingRequest(REQUEST_TYPE_SET_IF_NOT_EXISTS, cacheName, key, value, ttl);
-            response = await this.grpcManager.Client.SetIfNotExistsAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.SetIfNotExistsAsync(request, new CallOptions(headers: metadata, deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -630,7 +625,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingRequest(REQUEST_TYPE_INCREMENT, cacheName, field, null, ttl);
-            response = await this.grpcManager.Client.IncrementAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.IncrementAsync(request, new CallOptions(headers: metadata, deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -650,7 +645,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_DICTIONARY_FETCH, cacheName, dictionaryName);
-            response = await this.grpcManager.Client.DictionaryFetchAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.DictionaryFetchAsync(request, new CallOptions(headers: metadata, deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -677,7 +672,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_DICTIONARY_GET_FIELD, cacheName, dictionaryName, field, null);
-            response = await this.grpcManager.Client.DictionaryGetAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.DictionaryGetAsync(request, new CallOptions(headers: metadata, deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -714,7 +709,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_DICTIONARY_GET_FIELDS, cacheName, dictionaryName, fields, null);
-            response = await this.grpcManager.Client.DictionaryGetAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.DictionaryGetAsync(request, new CallOptions(headers: metadata, deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -744,7 +739,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_DICTIONARY_SET_FIELD, cacheName, dictionaryName, elements, ttl);
-            await this.grpcManager.Client.DictionarySetAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+            await this.grpcManager.Client.DictionarySetAsync(request, new CallOptions(headers: metadata, deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -769,7 +764,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_DICTIONARY_SET_FIELDS, cacheName, dictionaryName, elements, ttl);
-            await this.grpcManager.Client.DictionarySetAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+            await this.grpcManager.Client.DictionarySetAsync(request, new CallOptions(headers: metadata, deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -797,7 +792,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_DICTIONARY_INCREMENT, cacheName, dictionaryName, field, ttl);
-            response = await this.grpcManager.Client.DictionaryIncrementAsync(request, new CallOptions(headers: metadata, deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.DictionaryIncrementAsync(request, new CallOptions(headers: metadata, deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -821,7 +816,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_DICTIONARY_REMOVE_FIELD, cacheName, dictionaryName, field, null);
-            await this.grpcManager.Client.DictionaryDeleteAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            await this.grpcManager.Client.DictionaryDeleteAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -845,7 +840,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_DICTIONARY_REMOVE_FIELDS, cacheName, dictionaryName, fields, null);
-            await this.grpcManager.Client.DictionaryDeleteAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            await this.grpcManager.Client.DictionaryDeleteAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -865,7 +860,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_DICTIONARY_LENGTH, cacheName, dictionaryName);
-            response = await this.grpcManager.Client.DictionaryLengthAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.DictionaryLengthAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -895,7 +890,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_SET_ADD_ELEMENT, cacheName, setName, elements, ttl);
-            await this.grpcManager.Client.SetUnionAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            await this.grpcManager.Client.SetUnionAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -920,7 +915,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_SET_ADD_ELEMENTS, cacheName, setName, elements, ttl);
-            await this.grpcManager.Client.SetUnionAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            await this.grpcManager.Client.SetUnionAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -944,7 +939,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_SET_REMOVE_ELEMENT, cacheName, setName, elements, null);
-            await this.grpcManager.Client.SetDifferenceAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            await this.grpcManager.Client.SetDifferenceAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -968,7 +963,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_SET_REMOVE_ELEMENTS, cacheName, setName, elements, null);
-            await this.grpcManager.Client.SetDifferenceAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            await this.grpcManager.Client.SetDifferenceAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -988,7 +983,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_SET_FETCH, cacheName, setName);
-            response = await this.grpcManager.Client.SetFetchAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.SetFetchAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -1013,7 +1008,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_SET_SAMPLE, cacheName, setName);
-            response = await this.grpcManager.Client.SetSampleAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.SetSampleAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -1037,7 +1032,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_SET_LENGTH, cacheName, setName);
-            response = await this.grpcManager.Client.SetLengthAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.SetLengthAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -1070,7 +1065,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_LIST_CONCATENATE_FRONT, cacheName, listName, values, ttl);
-            response = await this.grpcManager.Client.ListConcatenateFrontAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.ListConcatenateFrontAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -1097,7 +1092,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_LIST_CONCATENATE_BACK, cacheName, listName, values, ttl);
-            response = await this.grpcManager.Client.ListConcatenateBackAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.ListConcatenateBackAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -1123,7 +1118,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_LIST_PUSH_FRONT, cacheName, listName, value, ttl);
-            response = await this.grpcManager.Client.ListPushFrontAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.ListPushFrontAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -1150,7 +1145,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_LIST_PUSH_BACK, cacheName, listName, value, ttl);
-            response = await this.grpcManager.Client.ListPushBackAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.ListPushBackAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -1170,7 +1165,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_LIST_POP_FRONT, cacheName, listName);
-            response = await this.grpcManager.Client.ListPopFrontAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.ListPopFrontAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -1195,7 +1190,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_LIST_POP_BACK, cacheName, listName);
-            response = await this.grpcManager.Client.ListPopBackAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.ListPopBackAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -1237,7 +1232,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_LIST_FETCH, cacheName, listName);
-            response = await this.grpcManager.Client.ListFetchAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.ListFetchAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -1279,7 +1274,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_LIST_RETAIN, cacheName, listName);
-            response = await this.grpcManager.Client.ListRetainAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.ListRetainAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -1303,7 +1298,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_LIST_REMOVE_VALUE, cacheName, listName, value, null);
-            response = await this.grpcManager.Client.ListRemoveAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.ListRemoveAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -1326,7 +1321,7 @@ internal sealed class ScsDataClient : ScsDataClientBase
         try
         {
             this._logger.LogTraceExecutingCollectionRequest(REQUEST_TYPE_LIST_LENGTH, cacheName, listName);
-            response = await this.grpcManager.Client.ListLengthAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: CalculateDeadline()));
+            response = await this.grpcManager.Client.ListLengthAsync(request, new CallOptions(headers: MetadataWithCache(cacheName), deadline: Utils.CalculateDeadline(dataClientOperationTimeout)));
         }
         catch (Exception e)
         {

@@ -18,7 +18,7 @@ namespace Momento.Sdk.Internal;
 public class ScsTopicClientBase : IDisposable
 {
     protected readonly TopicGrpcManager grpcManager;
-    private readonly TimeSpan dataClientOperationTimeout;
+    protected readonly TimeSpan topicClientOperationTimeout = TimeSpan.FromSeconds(60);
     private readonly ILogger _logger;
     private bool hasSentOnetimeHeaders = false;
 
@@ -27,9 +27,9 @@ public class ScsTopicClientBase : IDisposable
     public ScsTopicClientBase(ITopicConfiguration config, ICredentialProvider authProvider)
     {
         this.grpcManager = new TopicGrpcManager(config, authProvider);
-        this.dataClientOperationTimeout = config.TransportStrategy.GrpcConfig.Deadline;
-        this._logger = config.LoggerFactory.CreateLogger<ScsDataClient>();
+        this._logger = config.LoggerFactory.CreateLogger<ScsTopicClient>();
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
+        this.topicClientOperationTimeout = config.TransportStrategy.GrpcConfig.Deadline;
     }
 
     private Metadata MetadataWithCache(string cacheName)
@@ -42,11 +42,6 @@ public class ScsTopicClientBase : IDisposable
         string sdkVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
         string runtimeVer = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
         return new Metadata() { { "cache", cacheName }, { "agent", $"dotnet:topic:{sdkVersion}" }, { "runtime-v]ersion", runtimeVer } };
-    }
-
-    protected DateTime CalculateDeadline()
-    {
-        return DateTime.UtcNow.Add(dataClientOperationTimeout);
     }
 
     public void Dispose()
@@ -104,7 +99,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         try
         {
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicPublish, cacheName, topicName);
-            await grpcManager.Client.publish(request, new CallOptions(deadline: CalculateDeadline()));
+            await grpcManager.Client.publish(request, new CallOptions(deadline: Utils.CalculateDeadline(topicClientOperationTimeout)));
         }
         catch (Exception e)
         {

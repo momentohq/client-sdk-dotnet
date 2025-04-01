@@ -1,4 +1,3 @@
-using Momento.Sdk.Config.Retry;
 using System.Collections.Generic;
 
 namespace Momento.Sdk.Tests.Integration.Retry;
