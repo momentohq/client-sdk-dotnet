@@ -63,11 +63,11 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
             return null;
         }
 
-        double baseDelay = ComputeBaseDelay(attemptNumber);
-        double previousBaseDelay = ComputePreviousBaseDelay(baseDelay);
-        double maxDelay = previousBaseDelay * 3;
-        double jitteredDelay = RandomInRange(baseDelay, maxDelay);
-        int jitteredDelayMs = Convert.ToInt32(jitteredDelay);
+        var baseDelay = ComputeBaseDelay(attemptNumber);
+        var previousBaseDelay = ComputePreviousBaseDelay(baseDelay);
+        var maxDelay = previousBaseDelay * 3;
+        var jitteredDelay = RandomInRange(baseDelay, maxDelay);
+        var jitteredDelayMs = Convert.ToInt32(jitteredDelay);
 
         _logger.LogDebug($"Request is eligible for retry (attempt {attemptNumber}), retrying after {jitteredDelayMs}ms.");
         return jitteredDelayMs;
@@ -77,8 +77,8 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
         if (attemptNumber <= 0) {
             return _initialDelay.TotalMilliseconds;
         }
-        double multiplier = Math.Pow(_growthFactor, attemptNumber);
-        double baseDelay = _initialDelay.TotalMilliseconds * multiplier;
+        var multiplier = Math.Pow(_growthFactor, attemptNumber);
+        var baseDelay = _initialDelay.TotalMilliseconds * multiplier;
         return Math.Min(baseDelay, _maxBackoff.TotalMilliseconds);
     }
 
