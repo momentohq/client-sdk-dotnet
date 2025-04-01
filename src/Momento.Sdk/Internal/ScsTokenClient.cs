@@ -45,12 +45,6 @@ internal sealed class ScsTokenClient : IDisposable
         string runtimeVer = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
         return new Metadata() { { "agent", $"dotnet:auth:{sdkVersion}" }, { "runtime-version", runtimeVer } };
     }
-
-    private DateTime CalculateDeadline()
-    {
-        return DateTime.UtcNow.Add(authClientOperationTimeout);
-    }
-
     private const string RequestTypeAuthGenerateDisposableToken = "GENERATE_DISPOSABLE_TOKEN";
 
     public async Task<GenerateDisposableTokenResponse> GenerateDisposableToken(
@@ -83,7 +77,7 @@ internal sealed class ScsTokenClient : IDisposable
             var metadata = Metadata();
             _logger.LogTraceExecutingGenericRequest(RequestTypeAuthGenerateDisposableToken);
             var response = await grpcManager.Client.generateDisposableToken(
-                request, new CallOptions(headers: metadata, deadline: CalculateDeadline())
+                request, new CallOptions(headers: metadata, deadline: Utils.CalculateDeadline(authClientOperationTimeout))
             );
             return _logger.LogTraceGenericRequestSuccess(RequestTypeAuthGenerateDisposableToken,
                 new GenerateDisposableTokenResponse.Success(response));

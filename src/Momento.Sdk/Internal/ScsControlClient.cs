@@ -44,7 +44,7 @@ internal sealed class ScsControlClient : IDisposable
         {
             CheckValidCacheName(cacheName);
             _CreateCacheRequest request = new _CreateCacheRequest() { CacheName = cacheName };
-            await this.grpcManager.Client.CreateCacheAsync(request, new CallOptions(deadline: CalculateDeadline()));
+            await this.grpcManager.Client.CreateCacheAsync(request, new CallOptions(deadline: Utils.CalculateDeadline(deadline)));
             return new CreateCacheResponse.Success();
         }
         catch (Exception e)
@@ -63,7 +63,7 @@ internal sealed class ScsControlClient : IDisposable
         {
             CheckValidCacheName(cacheName);
             _DeleteCacheRequest request = new _DeleteCacheRequest() { CacheName = cacheName };
-            await this.grpcManager.Client.DeleteCacheAsync(request, new CallOptions(deadline: CalculateDeadline()));
+            await this.grpcManager.Client.DeleteCacheAsync(request, new CallOptions(deadline: Utils.CalculateDeadline(deadline)));
             return new DeleteCacheResponse.Success();
         }
         catch (Exception e)
@@ -78,7 +78,7 @@ internal sealed class ScsControlClient : IDisposable
         {
             CheckValidCacheName(cacheName);
             _FlushCacheRequest request = new() { CacheName = cacheName };
-            await this.grpcManager.Client.FlushCacheAsync(request, new CallOptions(deadline: CalculateDeadline()));
+            await this.grpcManager.Client.FlushCacheAsync(request, new CallOptions(deadline: Utils.CalculateDeadline(deadline)));
             return new FlushCacheResponse.Success();
         }
         catch (Exception e)
@@ -92,7 +92,7 @@ internal sealed class ScsControlClient : IDisposable
         _ListCachesRequest request = new _ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
         try
         {
-            _ListCachesResponse result = await this.grpcManager.Client.ListCachesAsync(request, new CallOptions(deadline: CalculateDeadline()));
+            _ListCachesResponse result = await this.grpcManager.Client.ListCachesAsync(request, new CallOptions(deadline: Utils.CalculateDeadline(deadline)));
             return new ListCachesResponse.Success(result);
         }
         catch (Exception e)
@@ -108,11 +108,6 @@ internal sealed class ScsControlClient : IDisposable
             throw new InvalidArgumentException("Cache name must be nonempty");
         }
         return true;
-    }
-
-    private DateTime CalculateDeadline()
-    {
-        return DateTime.UtcNow.Add(deadline);
     }
 
     public void Dispose()
