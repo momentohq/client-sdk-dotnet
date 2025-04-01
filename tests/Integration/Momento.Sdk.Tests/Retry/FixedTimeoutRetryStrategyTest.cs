@@ -13,8 +13,8 @@ public class FixedTimeoutRetryStrategyTests
     private readonly ILoggerFactory _loggerFactory;
     private readonly IConfiguration _cacheConfig;
     private readonly TimeSpan CLIENT_TIMEOUT_MILLIS = TimeSpan.FromMilliseconds(3000);
-    private readonly TimeSpan RETRY_DELAY_MILLIS = TimeSpan.FromMilliseconds(100);
-    private readonly TimeSpan RESPONSE_DATA_RECEIVED_TIMEOUT_MILLIS = TimeSpan.FromMilliseconds(1000);
+    private readonly TimeSpan RETRY_DELAY = TimeSpan.FromMilliseconds(100);
+    private readonly TimeSpan RESPONSE_DATA_RECEIVED_TIMEOUT = TimeSpan.FromMilliseconds(1000);
 
     public FixedTimeoutRetryStrategyTests()
     {
@@ -44,7 +44,7 @@ public class FixedTimeoutRetryStrategyTests
     [Fact]
     public void FixedTimeoutRetryStrategy_EligibleRpc_FullOutage_ShortDelays() 
     {
-        var shortDelay = RETRY_DELAY_MILLIS.TotalMilliseconds + 100;
+        var shortDelay = RETRY_DELAY.TotalMilliseconds + 100;
         var middlewareArgs = new MomentoLocalMiddlewareArgs {
             ReturnError = MomentoErrorCode.SERVER_UNAVAILABLE.ToStringValue(),
             ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
@@ -58,13 +58,13 @@ public class FixedTimeoutRetryStrategyTests
             middlewareArgs, 
             new FixedTimeoutRetryStrategy(
                 _loggerFactory, 
-                retryDelayIntervalMillis: RETRY_DELAY_MILLIS, 
-                responseDataReceivedTimeoutMillis: RESPONSE_DATA_RECEIVED_TIMEOUT_MILLIS
+                retryDelayInterval: RETRY_DELAY, 
+                responseDataReceivedTimeout: RESPONSE_DATA_RECEIVED_TIMEOUT
             )
         );
         testProps.CacheClient.GetAsync(testProps.CacheName, "key").Wait();
 
-        var delayBetweenAttempts = RETRY_DELAY_MILLIS.TotalMilliseconds + shortDelay;
+        var delayBetweenAttempts = RETRY_DELAY.TotalMilliseconds + shortDelay;
         var maxAttempts = Convert.ToInt32(
             CLIENT_TIMEOUT_MILLIS.TotalMilliseconds / delayBetweenAttempts
         );
@@ -79,7 +79,7 @@ public class FixedTimeoutRetryStrategyTests
     [Fact]
     public void FixedTimeoutRetryStrategy_EligibleRpc_FullOutage_LongDelays() 
     {
-        var longDelay = RESPONSE_DATA_RECEIVED_TIMEOUT_MILLIS.TotalMilliseconds + 100;
+        var longDelay = RESPONSE_DATA_RECEIVED_TIMEOUT.TotalMilliseconds + 100;
         var middlewareArgs = new MomentoLocalMiddlewareArgs {
             ReturnError = MomentoErrorCode.SERVER_UNAVAILABLE.ToStringValue(),
             ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
@@ -93,13 +93,13 @@ public class FixedTimeoutRetryStrategyTests
             middlewareArgs, 
             new FixedTimeoutRetryStrategy(
                 _loggerFactory, 
-                retryDelayIntervalMillis: RETRY_DELAY_MILLIS, 
-                responseDataReceivedTimeoutMillis: RESPONSE_DATA_RECEIVED_TIMEOUT_MILLIS
+                retryDelayInterval: RETRY_DELAY, 
+                responseDataReceivedTimeout: RESPONSE_DATA_RECEIVED_TIMEOUT
             )
         );
         testProps.CacheClient.GetAsync(testProps.CacheName, "key").Wait();
 
-        var delayBetweenAttempts = RETRY_DELAY_MILLIS.TotalMilliseconds + longDelay;
+        var delayBetweenAttempts = RETRY_DELAY.TotalMilliseconds + longDelay;
         var maxAttempts = Convert.ToInt32(
             CLIENT_TIMEOUT_MILLIS.TotalMilliseconds / delayBetweenAttempts
         );
@@ -125,20 +125,20 @@ public class FixedTimeoutRetryStrategyTests
             middlewareArgs, 
             new FixedTimeoutRetryStrategy(
                 _loggerFactory, 
-                retryDelayIntervalMillis: RETRY_DELAY_MILLIS, 
-                responseDataReceivedTimeoutMillis: RESPONSE_DATA_RECEIVED_TIMEOUT_MILLIS
+                retryDelayInterval: RETRY_DELAY, 
+                responseDataReceivedTimeout: RESPONSE_DATA_RECEIVED_TIMEOUT
             )
         );
         testProps.CacheClient.GetAsync(testProps.CacheName, "key").Wait();
 
         var maxAttempts = Convert.ToInt32(
-            CLIENT_TIMEOUT_MILLIS.TotalMilliseconds / RETRY_DELAY_MILLIS.TotalMilliseconds
+            CLIENT_TIMEOUT_MILLIS.TotalMilliseconds / RETRY_DELAY.TotalMilliseconds
         ) + 1; // +1 to account for jitter on retry delay (can be 10% longer or shorter)
         Assert.InRange(testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get), 1, maxAttempts);
 
         // Jitter will be +/- 10% of the retry delay interval
-        var minDelay = RETRY_DELAY_MILLIS.TotalMilliseconds * 0.9;
-        var maxDelay = RETRY_DELAY_MILLIS.TotalMilliseconds * 1.1;
+        var minDelay = RETRY_DELAY.TotalMilliseconds * 0.9;
+        var maxDelay = RETRY_DELAY.TotalMilliseconds * 1.1;
         Assert.InRange(testProps.TestMetricsCollector.GetAverageTimeBetweenRetries(testProps.CacheName, MomentoRpcMethod.Get), minDelay, maxDelay);
     }
 
@@ -157,16 +157,16 @@ public class FixedTimeoutRetryStrategyTests
             middlewareArgs, 
             new FixedTimeoutRetryStrategy(
                 _loggerFactory, 
-                retryDelayIntervalMillis: RETRY_DELAY_MILLIS, 
-                responseDataReceivedTimeoutMillis: RESPONSE_DATA_RECEIVED_TIMEOUT_MILLIS
+                retryDelayInterval: RETRY_DELAY, 
+                responseDataReceivedTimeout: RESPONSE_DATA_RECEIVED_TIMEOUT
             )
         );
         testProps.CacheClient.GetAsync(testProps.CacheName, "key").Wait();
         Assert.Equal(2, testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get));
 
         // Jitter will be +/- 10% of the retry delay interval
-        var minDelay = RETRY_DELAY_MILLIS.TotalMilliseconds * 0.9;
-        var maxDelay = RETRY_DELAY_MILLIS.TotalMilliseconds * 1.1;
+        var minDelay = RETRY_DELAY.TotalMilliseconds * 0.9;
+        var maxDelay = RETRY_DELAY.TotalMilliseconds * 1.1;
         Assert.InRange(testProps.TestMetricsCollector.GetAverageTimeBetweenRetries(testProps.CacheName, MomentoRpcMethod.Get), minDelay, maxDelay);
     }
 }

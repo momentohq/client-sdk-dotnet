@@ -13,26 +13,35 @@ namespace Momento.Sdk.Config.Retry;
 /// </summary>
 public class FixedTimeoutRetryStrategy : IRetryStrategy
 {
+    /// <summary>
+    /// The default retry delay interval. Schedules retry attempts to be 100ms later +/- jitter.
+    /// </summary>
+    public static readonly TimeSpan DEFAULT_RETRY_DELAY_INTERVAL = TimeSpan.FromMilliseconds(100);
+    /// <summary>
+    /// The default timeout for retry attempts.
+    /// </summary>
+    public static readonly TimeSpan DEFAULT_RESPONSE_DATA_RECEIVED_TIMEOUT = TimeSpan.FromMilliseconds(1000);
+
     private ILoggerFactory _loggerFactory;
     private ILogger _logger;
     private readonly IRetryEligibilityStrategy _eligibilityStrategy;
-    private readonly TimeSpan _retryDelayIntervalMillis;
-    private readonly TimeSpan _responseDataReceivedTimeoutMillis;
+    private readonly TimeSpan _retryDelayInterval;
+    private readonly TimeSpan _responseDataReceivedTimeout;
 
     /// <summary>
     /// Constructor for the FixedTimeoutRetryStrategy.
     /// </summary>
     /// <param name="loggerFactory"></param>
     /// <param name="eligibilityStrategy"></param>
-    /// <param name="retryDelayIntervalMillis">Amount of time between retry attempts.</param>
-    /// <param name="responseDataReceivedTimeoutMillis">How long to wait for a retry attempt to succeed or timeout.</param>
-    public FixedTimeoutRetryStrategy(ILoggerFactory loggerFactory, IRetryEligibilityStrategy? eligibilityStrategy = null, TimeSpan? retryDelayIntervalMillis = null, TimeSpan? responseDataReceivedTimeoutMillis = null)
+    /// <param name="retryDelayInterval">Amount of time between retry attempts.</param>
+    /// <param name="responseDataReceivedTimeout">How long to wait for a retry attempt to succeed or timeout.</param>
+    public FixedTimeoutRetryStrategy(ILoggerFactory loggerFactory, IRetryEligibilityStrategy? eligibilityStrategy = null, TimeSpan? retryDelayInterval = null, TimeSpan? responseDataReceivedTimeout = null)
     {
         _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<FixedTimeoutRetryStrategy>();
         _eligibilityStrategy = eligibilityStrategy ?? new DefaultRetryEligibilityStrategy(loggerFactory);
-        _retryDelayIntervalMillis = retryDelayIntervalMillis ?? TimeSpan.FromMilliseconds(100);
-        _responseDataReceivedTimeoutMillis = responseDataReceivedTimeoutMillis ?? TimeSpan.FromMilliseconds(1000);
+        _retryDelayInterval = retryDelayInterval ?? DEFAULT_RETRY_DELAY_INTERVAL;
+        _responseDataReceivedTimeout = responseDataReceivedTimeout ?? DEFAULT_RESPONSE_DATA_RECEIVED_TIMEOUT;
     }
 
     /// <inheritdoc/>
@@ -43,8 +52,8 @@ public class FixedTimeoutRetryStrategy : IRetryStrategy
         {
             return null;
         }
-        _logger.LogDebug($"Request is eligible for retry (attempt {attemptNumber}), retrying after {_retryDelayIntervalMillis} +/- jitter.");
-        return AddJitter((int)_retryDelayIntervalMillis.TotalMilliseconds);
+        _logger.LogDebug($"Request is eligible for retry (attempt {attemptNumber}), retrying after {_retryDelayInterval.TotalMilliseconds}ms +/- jitter.");
+        return AddJitter((int)_retryDelayInterval.TotalMilliseconds);
     }
 
     private int AddJitter(int whenToRetry)
@@ -65,8 +74,8 @@ public class FixedTimeoutRetryStrategy : IRetryStrategy
         }
 
         var other = (FixedTimeoutRetryStrategy)obj;
-        return _retryDelayIntervalMillis.Equals(other._retryDelayIntervalMillis) &&
-            _responseDataReceivedTimeoutMillis.Equals(other._responseDataReceivedTimeoutMillis) &&
+        return _retryDelayInterval.Equals(other._retryDelayInterval) &&
+            _responseDataReceivedTimeout.Equals(other._responseDataReceivedTimeout) &&
             _loggerFactory.Equals(other._loggerFactory) &&
             _eligibilityStrategy.Equals(other._eligibilityStrategy);
     }
@@ -83,6 +92,6 @@ public class FixedTimeoutRetryStrategy : IRetryStrategy
     /// <inheritdoc/>
     public double? GetResponseDataReceivedTimeoutMillis()
     {
-        return _responseDataReceivedTimeoutMillis.TotalMilliseconds;
+        return _responseDataReceivedTimeout.TotalMilliseconds;
     }
 }
