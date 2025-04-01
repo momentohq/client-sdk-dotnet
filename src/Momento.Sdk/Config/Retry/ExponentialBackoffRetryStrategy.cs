@@ -18,7 +18,7 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
     /// <summary>
     /// Default initial delay for the first retry (in milliseconds)
     /// </summary>
-    public static readonly double DEFAULT_INITIAL_DELAY_MS = 0.5;
+    public static readonly TimeSpan DEFAULT_INITIAL_DELAY = TimeSpan.FromMilliseconds(0.5);
     /// <summary>
     /// Default growth factor for exponential backoff
     /// </summary>
@@ -26,15 +26,15 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
     /// <summary>
     /// Default maximum delay to cap the exponential growth (in milliseconds)
     /// </summary>
-    public static readonly double DEFAULT_MAX_BACKOFF_MS = 1000;
+    public static readonly TimeSpan DEFAULT_MAX_BACKOFF = TimeSpan.FromMilliseconds(1000);
 
     private ILoggerFactory _loggerFactory;
     private ILogger _logger;
     private readonly IRetryEligibilityStrategy _eligibilityStrategy;
     
-    private readonly double _initialDelayMillis;
+    private readonly TimeSpan _initialDelay;
     private readonly double _growthFactor;
-    private readonly double _maxBackoffMillis;
+    private readonly TimeSpan _maxBackoff;
     private readonly Random _random = new Random();
 
     /// <summary>
@@ -42,16 +42,16 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
     /// </summary>
     /// <param name="loggerFactory"></param>
     /// <param name="eligibilityStrategy"></param>
-    /// <param name="initialDelayMillis"></param>
-    /// <param name="maxBackoffMillis"></param>
-    public ExponentialBackoffRetryStrategy(ILoggerFactory loggerFactory, IRetryEligibilityStrategy? eligibilityStrategy = null, double? initialDelayMillis = null, double? maxBackoffMillis = null) 
+    /// <param name="initialDelay"></param>
+    /// <param name="maxBackoff"></param>
+    public ExponentialBackoffRetryStrategy(ILoggerFactory loggerFactory, IRetryEligibilityStrategy? eligibilityStrategy = null, TimeSpan? initialDelay = null, TimeSpan? maxBackoff = null) 
     {
         _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<ExponentialBackoffRetryStrategy>();
         _eligibilityStrategy = eligibilityStrategy ?? new DefaultRetryEligibilityStrategy(loggerFactory);
-        _initialDelayMillis = initialDelayMillis ?? DEFAULT_INITIAL_DELAY_MS;
+        _initialDelay = initialDelay ?? DEFAULT_INITIAL_DELAY;
         _growthFactor = DEFAULT_GROWTH_FACTOR;
-        _maxBackoffMillis = maxBackoffMillis ?? DEFAULT_MAX_BACKOFF_MS;
+        _maxBackoff = maxBackoff ?? DEFAULT_MAX_BACKOFF;
     }
 
     /// <inheritdoc/>
@@ -63,39 +63,37 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
             return null;
         }
 
-        double baseDelay = computeBaseDelay(attemptNumber);
-        double previousBaseDelay = computePreviousBaseDelay(baseDelay);
+        double baseDelay = ComputeBaseDelay(attemptNumber);
+        double previousBaseDelay = ComputePreviousBaseDelay(baseDelay);
         double maxDelay = previousBaseDelay * 3;
-        double jitteredDelay = randomInRange(baseDelay, maxDelay);
+        double jitteredDelay = RandomInRange(baseDelay, maxDelay);
         int jitteredDelayMs = Convert.ToInt32(jitteredDelay);
 
         _logger.LogDebug($"Request is eligible for retry (attempt {attemptNumber}), retrying after {jitteredDelayMs}ms.");
         return jitteredDelayMs;
     }
 
-    private double computeBaseDelay(int attemptNumber) {
-      if (attemptNumber <= 0) {
-        return _initialDelayMillis;
-      }
-
+    private double ComputeBaseDelay(int attemptNumber) {
+        if (attemptNumber <= 0) {
+            return _initialDelay.TotalMilliseconds;
+        }
         double multiplier = Math.Pow(_growthFactor, attemptNumber);
-        double baseDelay = _initialDelayMillis * multiplier;
-        return Math.Min(baseDelay, _maxBackoffMillis);
+        double baseDelay = _initialDelay.TotalMilliseconds * multiplier;
+        return Math.Min(baseDelay, _maxBackoff.TotalMilliseconds);
     }
 
-    private double computePreviousBaseDelay(double currentBaseDelay) {
-      if (currentBaseDelay == _initialDelayMillis) {
-        return _initialDelayMillis;
-      }
-
-      return currentBaseDelay / _growthFactor;
+    private double ComputePreviousBaseDelay(double currentBaseDelay) {
+        if (currentBaseDelay == _initialDelay.TotalMilliseconds) {
+            return _initialDelay.TotalMilliseconds;
+        }
+        return currentBaseDelay / _growthFactor;
     }
 
-    private double randomInRange(double min, double max) {
-      if (min >= max) {
-        return min;
-      }
-      return min + (_random.NextDouble() * (max - min));
+    private double RandomInRange(double min, double max) {
+        if (min >= max) {
+            return min;
+        }
+        return min + (_random.NextDouble() * (max - min));
     }
 
     /// <summary>
@@ -111,9 +109,9 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
         }
 
         var other = (ExponentialBackoffRetryStrategy)obj;
-        return _initialDelayMillis.Equals(other._initialDelayMillis) &&
+        return _initialDelay.Equals(other._initialDelay) &&
             _growthFactor.Equals(other._growthFactor) &&
-            _maxBackoffMillis.Equals(other._maxBackoffMillis) &&
+            _maxBackoff.Equals(other._maxBackoff) &&
             _loggerFactory.Equals(other._loggerFactory) &&
             _eligibilityStrategy.Equals(other._eligibilityStrategy);
     }
