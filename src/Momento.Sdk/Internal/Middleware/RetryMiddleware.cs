@@ -63,24 +63,7 @@ namespace Momento.Sdk.Config.Retry
                     _logger.LogDebug($"Request failed with status {status.StatusCode}, checking to see if we should retry; attempt Number: {attemptNumber}");
                     _logger.LogTrace($"Failed request status: {status}");
                     retryAfterMillis = _retryStrategy.DetermineWhenToRetryRequest(nextState.GetStatus(), request, attemptNumber);
-
-                    // Calculate the deadline for the next retry attempt.
-                    // If using FixedTimeoutRetryStrategy, the deadline will be current time + responseDataReceivedTimeoutMillis.
-                    // Otherwise the deadline will remain unchanged (set to the overall deadline).
-                    double? nextTimeout = _retryStrategy.GetResponseDataReceivedTimeoutMillis();
-                    if (nextTimeout != null)
-                    {
-                        var retryDeadline = DateTime.UtcNow.AddMilliseconds((double)nextTimeout);
-
-                        // Check if new deadline would exceed overall deadline. Use overall if so.
-                        if (retryDeadline > _overallDeadline)
-                        {
-                            callOptions = callOptions.WithDeadline(_overallDeadline);
-                        } else
-                        {
-                            callOptions = callOptions.WithDeadline(retryDeadline);
-                        }
-                    }
+                    callOptions = CalculateRetryDeadline(callOptions, _overallDeadline);
                 }
             }
             while (retryAfterMillis != null);
@@ -91,6 +74,19 @@ namespace Momento.Sdk.Config.Retry
                 GetStatus: nextState.GetStatus,
                 GetTrailers: nextState.GetTrailers
             );
+        }
+
+        private CallOptions CalculateRetryDeadline(CallOptions callOptions, DateTime overallDeadline)
+        {
+            // If using FixedTimeoutRetryStrategy, the retry deadline will be current time + responseDataReceivedTimeoutMillis.
+            // Otherwise the deadline will remain unchanged (set to the overall deadline).
+            double? nextTimeout = _retryStrategy.GetResponseDataReceivedTimeoutMillis();
+            if (nextTimeout != null)
+            {
+                var retryDeadline = DateTime.UtcNow.AddMilliseconds((double)nextTimeout);
+                return callOptions.WithDeadline(retryDeadline > overallDeadline ? overallDeadline : retryDeadline);
+            }
+            return callOptions;
         }
 
         public override bool Equals(object obj)
