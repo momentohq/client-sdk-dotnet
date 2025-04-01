@@ -22,8 +22,7 @@ public class FixedTimeoutRetryStrategy : IRetryStrategy
     /// </summary>
     public static readonly TimeSpan DEFAULT_RESPONSE_DATA_RECEIVED_TIMEOUT = TimeSpan.FromMilliseconds(1000);
 
-    private ILoggerFactory _loggerFactory;
-    private ILogger _logger;
+    private readonly ILogger _logger;
     private readonly IRetryEligibilityStrategy _eligibilityStrategy;
     private readonly TimeSpan _retryDelayInterval;
     private readonly TimeSpan _responseDataReceivedTimeout;
@@ -37,7 +36,6 @@ public class FixedTimeoutRetryStrategy : IRetryStrategy
     /// <param name="responseDataReceivedTimeout">How long to wait for a retry attempt to succeed or timeout.</param>
     public FixedTimeoutRetryStrategy(ILoggerFactory loggerFactory, IRetryEligibilityStrategy? eligibilityStrategy = null, TimeSpan? retryDelayInterval = null, TimeSpan? responseDataReceivedTimeout = null)
     {
-        _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<FixedTimeoutRetryStrategy>();
         _eligibilityStrategy = eligibilityStrategy ?? new DefaultRetryEligibilityStrategy(loggerFactory);
         _retryDelayInterval = retryDelayInterval ?? DEFAULT_RETRY_DELAY_INTERVAL;
@@ -76,7 +74,6 @@ public class FixedTimeoutRetryStrategy : IRetryStrategy
         var other = (FixedTimeoutRetryStrategy)obj;
         return _retryDelayInterval.Equals(other._retryDelayInterval) &&
             _responseDataReceivedTimeout.Equals(other._responseDataReceivedTimeout) &&
-            _loggerFactory.Equals(other._loggerFactory) &&
             _eligibilityStrategy.Equals(other._eligibilityStrategy);
     }
 
