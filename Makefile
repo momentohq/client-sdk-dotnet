@@ -16,7 +16,7 @@
 .PHONY: all build build-dotnet6 build-dotnet-framework clean clean-build precommit restore test \
 	test-dotnet6 test-dotnet6-integration test-dotnet6-cache-service test-dotnet6-topics-service test-dotnet6-auth-service \
 	test-dotnet-framework test-dotnet-framework-integration test-dotnet-framework-cache-service test-dotnet-framework-topics-service test-dotnet-framework-auth-service \
-	test-auth-service test-cache-service test-leaderboard-service test-storage-service test-topics-service test-http-service  \
+	test-auth-service test-cache-service test-leaderboard-service test-topics-service test-http-service  \
 	run-examples help
 
 # Determine the operating system
@@ -173,11 +173,6 @@ endif
 ## Run leaderboard service tests
 test-leaderboard-service:
 	@echo "Leaderboard client not implemented yet."
-
-
-## Run storage service tests
-test-storage-service:
-	@echo "Storage client not implemented yet."
 
 
 # Run momento-local retry tests
