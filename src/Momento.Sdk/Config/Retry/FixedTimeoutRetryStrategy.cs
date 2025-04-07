@@ -43,9 +43,18 @@ public class FixedTimeoutRetryStrategy : IRetryStrategy
     }
 
     /// <inheritdoc/>
-    public int? DetermineWhenToRetryRequest<TRequest>(Status grpcStatus, TRequest grpcRequest, int attemptNumber) where TRequest : class
+    public int? DetermineWhenToRetryRequest<TRequest>(Status grpcStatus, TRequest grpcRequest, int attemptNumber, DateTime overallDeadline) where TRequest : class
     {
         _logger.LogDebug($"Determining whether request is eligible for retry; status code: {grpcStatus.StatusCode}, request type: {grpcRequest.GetType()}, attemptNumber: {attemptNumber}");
+
+        // If a retry attempt's timeout has passed but the client's overall timeout has not yet passed,
+        // we should reset the deadline and retry.
+        // Note: dotnet appears to return Cancelled instead of DeadlineExceeded when the deadline passes.
+        if (attemptNumber > 1 && overallDeadline > DateTime.UtcNow && (grpcStatus.StatusCode == StatusCode.DeadlineExceeded || grpcStatus.StatusCode == StatusCode.Cancelled))
+        {
+            return AddJitter((int)_retryDelayInterval.TotalMilliseconds);
+        }
+
         if (!_eligibilityStrategy.IsEligibleForRetry(grpcStatus, grpcRequest))
         {
             return null;

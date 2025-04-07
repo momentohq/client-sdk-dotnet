@@ -12,7 +12,7 @@ public class FixedTimeoutRetryStrategyTests
     private readonly ICredentialProvider _authProvider;
     private readonly ILoggerFactory _loggerFactory;
     private readonly IConfiguration _cacheConfig;
-    private readonly TimeSpan CLIENT_TIMEOUT_MILLIS = TimeSpan.FromMilliseconds(3000);
+    private readonly TimeSpan CLIENT_TIMEOUT_MILLIS = TimeSpan.FromMilliseconds(5000);
     private readonly TimeSpan RETRY_DELAY = TimeSpan.FromMilliseconds(100);
     private readonly TimeSpan RESPONSE_DATA_RECEIVED_TIMEOUT = TimeSpan.FromMilliseconds(1000);
 
@@ -105,11 +105,11 @@ public class FixedTimeoutRetryStrategyTests
         var maxAttempts = Convert.ToInt32(
             CLIENT_TIMEOUT_MILLIS.TotalMilliseconds / delayBetweenAttempts
         );
-        Assert.InRange(testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get), 1, maxAttempts);
+        Assert.InRange(testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get), 2, maxAttempts);
 
         // Jitter will be +/- 10% of the retry delay interval
-        var minDelay = delayBetweenAttempts * 0.9;
-        var maxDelay = delayBetweenAttempts * 1.1;
+        var minDelay = RESPONSE_DATA_RECEIVED_TIMEOUT.TotalMilliseconds * 0.9;
+        var maxDelay = RESPONSE_DATA_RECEIVED_TIMEOUT.TotalMilliseconds * 1.1;
         Assert.InRange(testProps.TestMetricsCollector.GetAverageTimeBetweenRetries(testProps.CacheName, MomentoRpcMethod.Get), minDelay, maxDelay);
     }
 
@@ -168,9 +168,9 @@ public class FixedTimeoutRetryStrategyTests
         testProps.CacheClient.GetAsync(testProps.CacheName, "key").Wait();
         Assert.Equal(2, testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get));
 
-        // Jitter will be +/- 10% of the retry delay interval
-        var minDelay = RETRY_DELAY.TotalMilliseconds * 0.9;
-        var maxDelay = RETRY_DELAY.TotalMilliseconds * 1.1;
+        // Jitter will be +/- 10% of the retry delay interval, plus some time for the retry attempts to be processed
+        var minDelay = RETRY_DELAY.TotalMilliseconds * 0.85;
+        var maxDelay = RETRY_DELAY.TotalMilliseconds * 1.15;
         Assert.InRange(testProps.TestMetricsCollector.GetAverageTimeBetweenRetries(testProps.CacheName, MomentoRpcMethod.Get), minDelay, maxDelay);
     }
 }

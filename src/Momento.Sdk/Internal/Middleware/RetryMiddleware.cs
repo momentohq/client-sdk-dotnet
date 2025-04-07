@@ -29,7 +29,6 @@ namespace Momento.Sdk.Config.Retry
             // The first time we enter WrapRequest, we capture the overall deadline for the request
             // in case we're using the FixedTimeoutRetryStrategy
             DateTime _overallDeadline = callOptions.Deadline ?? Utils.CalculateDeadline(_clientTimeout);
-
             MiddlewareResponseState<TResponse> nextState;
             int attemptNumber = 0;
             int? retryAfterMillis = 0;
@@ -62,7 +61,7 @@ namespace Momento.Sdk.Config.Retry
                     var status = nextState.GetStatus();
                     _logger.LogDebug($"Request failed with status {status.StatusCode}, checking to see if we should retry; attempt Number: {attemptNumber}");
                     _logger.LogTrace($"Failed request status: {status}");
-                    retryAfterMillis = _retryStrategy.DetermineWhenToRetryRequest(nextState.GetStatus(), request, attemptNumber);
+                    retryAfterMillis = _retryStrategy.DetermineWhenToRetryRequest(nextState.GetStatus(), request, attemptNumber, _overallDeadline);
                     callOptions = CalculateRetryDeadline(callOptions, _overallDeadline);
                 }
             }

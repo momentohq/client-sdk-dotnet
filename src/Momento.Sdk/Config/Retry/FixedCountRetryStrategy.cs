@@ -1,3 +1,4 @@
+using System;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Internal.Retry;
@@ -43,7 +44,7 @@ public class FixedCountRetryStrategy : IRetryStrategy
     }
 
     /// <inheritdoc/>
-    public int? DetermineWhenToRetryRequest<TRequest>(Status grpcStatus, TRequest grpcRequest, int attemptNumber) where TRequest : class
+    public int? DetermineWhenToRetryRequest<TRequest>(Status grpcStatus, TRequest grpcRequest, int attemptNumber, DateTime overallDeadline) where TRequest : class
     {
         _logger.LogDebug($"Determining whether request is eligible for retry; status code: {grpcStatus.StatusCode}, request type: {grpcRequest.GetType()}, attemptNumber: {attemptNumber}, maxAttempts: {MaxAttempts}");
         if (!_eligibilityStrategy.IsEligibleForRetry(grpcStatus, grpcRequest))
