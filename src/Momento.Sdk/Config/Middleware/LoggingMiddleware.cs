@@ -3,6 +3,7 @@ using Grpc.Core;
 using System.Threading.Tasks;
 using Grpc.Core.Interceptors;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace Momento.Sdk.Config.Middleware
 {
@@ -21,6 +22,12 @@ namespace Momento.Sdk.Config.Middleware
         public LoggingMiddleware(ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<LoggingMiddleware>();
+        }
+
+        /// <inheritdoc/>
+        public IList<Tuple<string, string>> AddStreamRequestHeaders()
+        {
+            return new List<Tuple<string, string>>();
         }
 
         /// <inheritdoc/>
