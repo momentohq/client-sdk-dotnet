@@ -5,6 +5,12 @@ on:
     branches: [main]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lint
+        run: make lint
+
   build_csharp:
     strategy:
       matrix:
