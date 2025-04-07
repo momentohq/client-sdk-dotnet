@@ -39,7 +39,8 @@ public abstract class CacheItemGetTtlResponse
     /// <summary>
     /// Indicates the key was found in the cache and the ttl was returned.
     /// </summary>
-    public class Hit : CacheItemGetTtlResponse {
+    public class Hit : CacheItemGetTtlResponse
+    {
         /// <summary>
         /// The value of the ttl.
         /// </summary>

@@ -4,7 +4,7 @@ using FluentAssertions;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-public class MomentoXunitFramework: XunitTestFramework
+public class MomentoXunitFramework : XunitTestFramework
 {
     public MomentoXunitFramework(IMessageSink messageSink)
         : base(messageSink)

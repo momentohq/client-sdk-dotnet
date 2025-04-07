@@ -30,7 +30,7 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
 
     private ILogger _logger;
     private readonly IRetryEligibilityStrategy _eligibilityStrategy;
-    
+
     private readonly TimeSpan _initialDelay;
     private readonly double _growthFactor;
     private readonly TimeSpan _maxBackoff;
@@ -43,7 +43,7 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
     /// <param name="eligibilityStrategy"></param>
     /// <param name="initialDelay"></param>
     /// <param name="maxBackoff"></param>
-    public ExponentialBackoffRetryStrategy(ILoggerFactory loggerFactory, IRetryEligibilityStrategy? eligibilityStrategy = null, TimeSpan? initialDelay = null, TimeSpan? maxBackoff = null) 
+    public ExponentialBackoffRetryStrategy(ILoggerFactory loggerFactory, IRetryEligibilityStrategy? eligibilityStrategy = null, TimeSpan? initialDelay = null, TimeSpan? maxBackoff = null)
     {
         _logger = loggerFactory.CreateLogger<ExponentialBackoffRetryStrategy>();
         _eligibilityStrategy = eligibilityStrategy ?? new DefaultRetryEligibilityStrategy(loggerFactory);
@@ -71,8 +71,10 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
         return jitteredDelayMs;
     }
 
-    private double ComputeBaseDelay(int attemptNumber) {
-        if (attemptNumber <= 0) {
+    private double ComputeBaseDelay(int attemptNumber)
+    {
+        if (attemptNumber <= 0)
+        {
             return _initialDelay.TotalMilliseconds;
         }
         var multiplier = Math.Pow(_growthFactor, attemptNumber);
@@ -80,15 +82,19 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
         return Math.Min(baseDelay, _maxBackoff.TotalMilliseconds);
     }
 
-    private double ComputePreviousBaseDelay(double currentBaseDelay) {
-        if (currentBaseDelay == _initialDelay.TotalMilliseconds) {
+    private double ComputePreviousBaseDelay(double currentBaseDelay)
+    {
+        if (currentBaseDelay == _initialDelay.TotalMilliseconds)
+        {
             return _initialDelay.TotalMilliseconds;
         }
         return currentBaseDelay / _growthFactor;
     }
 
-    private double RandomInRange(double min, double max) {
-        if (min >= max) {
+    private double RandomInRange(double min, double max)
+    {
+        if (min >= max)
+        {
             return min;
         }
         return min + (_random.NextDouble() * (max - min));

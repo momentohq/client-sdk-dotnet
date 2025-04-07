@@ -249,7 +249,7 @@ public class DataGrpcManager : GrpcManager
 {
     public readonly IDataClient Client;
 
-    internal DataGrpcManager(IConfiguration config, ICredentialProvider authProvider): base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authProvider, authProvider.CacheEndpoint, "DataGrpcManager")
+    internal DataGrpcManager(IConfiguration config, ICredentialProvider authProvider) : base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authProvider, authProvider.CacheEndpoint, "DataGrpcManager")
     {
         // Not sending a head concern header is treated the same as sending a balanced read concern header
         if (config.ReadConcern != ReadConcern.Balanced)

@@ -34,7 +34,7 @@ public class FixedTimeoutRetryStrategyTests
     }
 
     [Fact]
-    public void FixedTimeoutRetryStrategy_IneligibleRpc() 
+    public void FixedTimeoutRetryStrategy_IneligibleRpc()
     {
         var testProps = new MomentoLocalCacheAndCacheClient(_authProvider, _loggerFactory, _cacheConfig, null, new FixedTimeoutRetryStrategy(_loggerFactory));
         testProps.CacheClient.IncrementAsync(testProps.CacheName, "key").Wait();
@@ -42,23 +42,24 @@ public class FixedTimeoutRetryStrategyTests
     }
 
     [Fact]
-    public void FixedTimeoutRetryStrategy_EligibleRpc_FullOutage_ShortDelays() 
+    public void FixedTimeoutRetryStrategy_EligibleRpc_FullOutage_ShortDelays()
     {
         var shortDelay = RETRY_DELAY.TotalMilliseconds + 100;
-        var middlewareArgs = new MomentoLocalMiddlewareArgs {
+        var middlewareArgs = new MomentoLocalMiddlewareArgs
+        {
             ReturnError = MomentoErrorCode.SERVER_UNAVAILABLE.ToStringValue(),
             ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
             DelayMillis = Convert.ToInt32(shortDelay),
             DelayRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
         };
         var testProps = new MomentoLocalCacheAndCacheClient(
-            _authProvider, 
-            _loggerFactory, 
-            _cacheConfig, 
-            middlewareArgs, 
+            _authProvider,
+            _loggerFactory,
+            _cacheConfig,
+            middlewareArgs,
             new FixedTimeoutRetryStrategy(
-                _loggerFactory, 
-                retryDelayInterval: RETRY_DELAY, 
+                _loggerFactory,
+                retryDelayInterval: RETRY_DELAY,
                 responseDataReceivedTimeout: RESPONSE_DATA_RECEIVED_TIMEOUT
             )
         );
@@ -77,23 +78,24 @@ public class FixedTimeoutRetryStrategyTests
     }
 
     [Fact]
-    public void FixedTimeoutRetryStrategy_EligibleRpc_FullOutage_LongDelays() 
+    public void FixedTimeoutRetryStrategy_EligibleRpc_FullOutage_LongDelays()
     {
         var longDelay = RESPONSE_DATA_RECEIVED_TIMEOUT.TotalMilliseconds + 100;
-        var middlewareArgs = new MomentoLocalMiddlewareArgs {
+        var middlewareArgs = new MomentoLocalMiddlewareArgs
+        {
             ReturnError = MomentoErrorCode.SERVER_UNAVAILABLE.ToStringValue(),
             ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
             DelayMillis = Convert.ToInt32(longDelay),
             DelayRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
         };
         var testProps = new MomentoLocalCacheAndCacheClient(
-            _authProvider, 
-            _loggerFactory, 
-            _cacheConfig, 
-            middlewareArgs, 
+            _authProvider,
+            _loggerFactory,
+            _cacheConfig,
+            middlewareArgs,
             new FixedTimeoutRetryStrategy(
-                _loggerFactory, 
-                retryDelayInterval: RETRY_DELAY, 
+                _loggerFactory,
+                retryDelayInterval: RETRY_DELAY,
                 responseDataReceivedTimeout: RESPONSE_DATA_RECEIVED_TIMEOUT
             )
         );
@@ -112,20 +114,21 @@ public class FixedTimeoutRetryStrategyTests
     }
 
     [Fact]
-    public void FixedTimeoutRetryStrategy_EligibleRpc_FullOutage_NoDelays() 
+    public void FixedTimeoutRetryStrategy_EligibleRpc_FullOutage_NoDelays()
     {
-        var middlewareArgs = new MomentoLocalMiddlewareArgs {
+        var middlewareArgs = new MomentoLocalMiddlewareArgs
+        {
             ReturnError = MomentoErrorCode.SERVER_UNAVAILABLE.ToStringValue(),
             ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
         };
         var testProps = new MomentoLocalCacheAndCacheClient(
-            _authProvider, 
-            _loggerFactory, 
-            _cacheConfig, 
-            middlewareArgs, 
+            _authProvider,
+            _loggerFactory,
+            _cacheConfig,
+            middlewareArgs,
             new FixedTimeoutRetryStrategy(
-                _loggerFactory, 
-                retryDelayInterval: RETRY_DELAY, 
+                _loggerFactory,
+                retryDelayInterval: RETRY_DELAY,
                 responseDataReceivedTimeout: RESPONSE_DATA_RECEIVED_TIMEOUT
             )
         );
@@ -143,21 +146,22 @@ public class FixedTimeoutRetryStrategyTests
     }
 
     [Fact]
-    public void FixedTimeoutRetryStrategy_EligibleRpc_TemporaryOutage() 
+    public void FixedTimeoutRetryStrategy_EligibleRpc_TemporaryOutage()
     {
-        var middlewareArgs = new MomentoLocalMiddlewareArgs {
+        var middlewareArgs = new MomentoLocalMiddlewareArgs
+        {
             ReturnError = MomentoErrorCode.SERVER_UNAVAILABLE.ToStringValue(),
             ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
             ErrorCount = 2
         };
         var testProps = new MomentoLocalCacheAndCacheClient(
-            _authProvider, 
-            _loggerFactory, 
-            _cacheConfig, 
-            middlewareArgs, 
+            _authProvider,
+            _loggerFactory,
+            _cacheConfig,
+            middlewareArgs,
             new FixedTimeoutRetryStrategy(
-                _loggerFactory, 
-                retryDelayInterval: RETRY_DELAY, 
+                _loggerFactory,
+                retryDelayInterval: RETRY_DELAY,
                 responseDataReceivedTimeout: RESPONSE_DATA_RECEIVED_TIMEOUT
             )
         );

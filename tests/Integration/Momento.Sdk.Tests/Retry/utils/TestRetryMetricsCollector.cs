@@ -8,7 +8,7 @@ public class TestRetryMetricsCollector
     /// Data structure to store timestamps for all requests: cacheName -> requestName -> [timestamps]
     /// </summary>
     public Dictionary<string, Dictionary<MomentoRpcMethod, List<long>>> AllMetrics { get; private set; }
-    
+
     public TestRetryMetricsCollector()
     {
         AllMetrics = new Dictionary<string, Dictionary<MomentoRpcMethod, List<long>>>();
@@ -59,4 +59,4 @@ public class TestRetryMetricsCollector
 
         return total / (timestamps.Count - 1);
     }
-} 
+}

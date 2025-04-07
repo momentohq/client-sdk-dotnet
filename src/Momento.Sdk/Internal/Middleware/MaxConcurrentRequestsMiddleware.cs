@@ -60,7 +60,7 @@ namespace Momento.Sdk.Internal.Middleware
             }
 
             await _semaphore.WaitOne();
-            
+
             try
             {
                 var result = await continuation(request, callOptions);

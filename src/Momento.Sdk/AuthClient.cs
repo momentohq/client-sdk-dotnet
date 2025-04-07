@@ -24,7 +24,7 @@ public class AuthClient : IAuthClient
     {
         scsTokenClient = new ScsTokenClient(config, authProvider);
     }
-    
+
     /// <inheritdoc />
     public async Task<GenerateDisposableTokenResponse> GenerateDisposableTokenAsync(DisposableTokenScope scope, ExpiresIn expiresIn, string? tokenId = null)
     {

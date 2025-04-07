@@ -542,7 +542,7 @@ public interface ICacheClient : IDisposable
     /// <param name="setName">The set to fetch.</param>
     /// <returns>Task representing the status of the fetch operation and the associated set.</returns>
     public Task<CacheSetFetchResponse> SetFetchAsync(string cacheName, string setName);
-    
+
     /// <summary>
     /// Fetch a random sample of elements from the set. Returns a different random sample for each call.
     /// </summary>
@@ -551,7 +551,7 @@ public interface ICacheClient : IDisposable
     /// <param name="limit">The maximum number of elements to return. If the set contains fewer than 'limit' elements, the entire set will be returned.</param>
     /// <returns>Task representing the status of the sample operation and the associated set.</returns>
     public Task<CacheSetSampleResponse> SetSampleAsync(string cacheName, string setName, int limit);
-    
+
     /// <summary>
     /// Calculate the length of a set in the cache.
     ///

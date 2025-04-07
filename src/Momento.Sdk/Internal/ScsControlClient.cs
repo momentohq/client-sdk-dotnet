@@ -31,7 +31,7 @@ internal sealed class ScsControlClient : IDisposable
             keepAlivePermitWithoutCalls: false
         );
         var controlConfig = config.WithTransportStrategy(config.TransportStrategy.WithSocketsHttpHandlerOptions(overrideKeepalive));
-        
+
         this.grpcManager = new ControlGrpcManager(controlConfig, authProvider);
         this.authToken = authProvider.AuthToken;
         this._logger = config.LoggerFactory.CreateLogger<ScsControlClient>();

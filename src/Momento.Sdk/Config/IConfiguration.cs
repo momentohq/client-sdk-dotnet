@@ -58,7 +58,7 @@ public interface IConfiguration
     /// <param name="clientTimeout">The amount of time to wait before cancelling the request.</param>
     /// <returns>Configuration object with custom client timeout provided</returns>
     public IConfiguration WithClientTimeout(TimeSpan clientTimeout);
-    
+
     /// <summary>
     /// Creates a new instance of the Configuration object, updated to use the specified read concern.
     /// </summary>

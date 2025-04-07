@@ -78,7 +78,7 @@ public class GrpcManager : IDisposable
         {
             channelOptions.Credentials = ChannelCredentials.Insecure;
         }
-        
+
 #if NET5_0_OR_GREATER
         if (SocketsHttpHandler.IsSupported) // see: https://github.com/grpc/grpc-dotnet/blob/098dca892a3949ade411c3f2f66003f7b330dfd2/src/Shared/HttpHandlerFactory.cs#L28-L30
         {

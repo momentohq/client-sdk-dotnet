@@ -49,7 +49,8 @@ public abstract class CacheDictionaryLengthResponse
         /// <param name="response">The cache response.</param>
         public Hit(_DictionaryLengthResponse response)
         {
-            if(response.DictionaryCase == _DictionaryLengthResponse.DictionaryOneofCase.Found) {
+            if (response.DictionaryCase == _DictionaryLengthResponse.DictionaryOneofCase.Found)
+            {
                 Length = checked((int)response.Found.Length);
             }
         }

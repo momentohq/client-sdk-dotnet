@@ -105,8 +105,8 @@ public static class Utils
             throw new ArgumentOutOfRangeException(paramName, "int must be strictly positive.");
         }
     }
-    
-    
+
+
     /// <summary>
     /// Throw an exception if the value is negative.
     /// </summary>
