@@ -69,6 +69,18 @@ public class FixedTimeoutRetryStrategy : IRetryStrategy
     }
 
     /// <summary>
+    /// Calculates the deadline for a retry attempt.
+    /// </summary>
+    /// <param name="callOptions"></param>
+    /// <param name="overallDeadline"></param>
+    /// <returns></returns>
+    public CallOptions CalculateRetryDeadline(CallOptions callOptions, DateTime overallDeadline)
+    {
+        var retryDeadline = DateTime.UtcNow.AddMilliseconds((double)_responseDataReceivedTimeout.TotalMilliseconds);
+        return callOptions.WithDeadline(retryDeadline > overallDeadline ? overallDeadline : retryDeadline);
+    }
+
+    /// <summary>
     /// Test equality by value.
     /// </summary>
     /// <param name="obj"></param>
@@ -93,11 +105,5 @@ public class FixedTimeoutRetryStrategy : IRetryStrategy
     public override int GetHashCode()
     {
         return base.GetHashCode();
-    }
-
-    /// <inheritdoc/>
-    public double? GetResponseDataReceivedTimeoutMillis()
-    {
-        return _responseDataReceivedTimeout.TotalMilliseconds;
     }
 }

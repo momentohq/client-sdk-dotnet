@@ -17,10 +17,4 @@ public interface IRetryStrategy
   /// <param name="overallDeadline"></param>
   /// <returns>Returns number of milliseconds after which the request should be retried, or <see langword="null"/> if the request should not be retried.</returns>
   public int? DetermineWhenToRetryRequest<TRequest>(Status grpcStatus, TRequest grpcRequest, int attemptNumber, DateTime overallDeadline) where TRequest : class;
-
-    /// <summary>
-    /// Get the time to wait for a response from a retried request before timing out.
-    /// </summary>
-    /// <returns></returns>
-    public double? GetResponseDataReceivedTimeoutMillis();
 }

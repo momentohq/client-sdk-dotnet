@@ -127,10 +127,4 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
     {
         return base.GetHashCode();
     }
-
-    /// <inheritdoc/>
-    public double? GetResponseDataReceivedTimeoutMillis()
-    {
-        return null;
-    }
 }
