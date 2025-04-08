@@ -340,7 +340,7 @@ public class TopicClientRetryTests
         var momentoLocalArgs = new MomentoLocalMiddlewareArgs
         {
             DelayRpcList = new List<string> { MomentoRpcMethod.TopicSubscribe.ToMomentoLocalMetadataString() },
-            DelayMillis = 2000
+            DelayMillis = 1000
         };
         var testProps = new MomentoLocalCacheAndTopicClient(_authProvider, _loggerFactory, _cacheConfig, _topicConfig.WithClientTimeout(TimeSpan.FromMilliseconds(500)), momentoLocalArgs);
 
