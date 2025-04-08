@@ -134,7 +134,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         {
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, cacheName, topicName);
             subscriptionWrapper = new SubscriptionWrapper(grpcManager, cacheName, topicName,
-                resumeAtTopicSequenceNumber, resumeAtTopicSequencePage, _exceptionMapper, _logger, _callbacks);
+                resumeAtTopicSequenceNumber, resumeAtTopicSequencePage, topicClientOperationTimeout, _exceptionMapper, _logger, _callbacks);
             await subscriptionWrapper.Subscribe();
         }
         catch (Exception e)
@@ -163,9 +163,10 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         private ulong _lastSequencePage;
         private bool _subscribed;
         private ITopicSubscriptionConnectionStateCallbacks? _callbacks;
+        private TimeSpan _topicClientOperationTimeout;
 
         public SubscriptionWrapper(TopicGrpcManager grpcManager, string cacheName,
-            string topicName, ulong? resumeAtTopicSequenceNumber, ulong? resumeAtTopicSequencePage,
+            string topicName, ulong? resumeAtTopicSequenceNumber, ulong? resumeAtTopicSequencePage, TimeSpan topicClientOperationTimeout,
             CacheExceptionMapper exceptionMapper, ILogger logger, ITopicSubscriptionConnectionStateCallbacks? callbacks = null)
         {
             _grpcManager = grpcManager;
@@ -173,6 +174,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
             _topicName = topicName;
             _lastSequenceNumber = resumeAtTopicSequenceNumber ?? 0;
             _lastSequencePage = resumeAtTopicSequencePage ?? 0;
+            _topicClientOperationTimeout = topicClientOperationTimeout;
             _exceptionMapper = exceptionMapper;
             _logger = logger;
             _callbacks = callbacks;
@@ -190,9 +192,39 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
             request.SequencePage = _lastSequencePage;
 
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, _cacheName, _topicName);
-            var subscription = _grpcManager.Client.subscribe(request, new CallOptions());
 
-            await subscription.ResponseStream.MoveNext();
+            // Create a linked token source to support cancellation
+            using var cts = new CancellationTokenSource();
+            var subscription = _grpcManager.Client.subscribe(request, new CallOptions(cancellationToken: cts.Token));
+
+            var moveNextTask = subscription.ResponseStream.MoveNext();
+            var timeoutTask = Task.Delay(_topicClientOperationTimeout, cts.Token);
+            var completedTask = await Task.WhenAny(moveNextTask, timeoutTask);
+
+            if (completedTask == timeoutTask)
+            {
+                // cancel the stream
+                _logger.LogWarning("Timed out waiting for first message (heartbeat) for topic {Topic} on cache {Cache}", _topicName, _cacheName);
+                cts.Cancel();
+                subscription.Dispose();
+
+                throw new Exceptions.TimeoutException(
+                    $"Timed out after {_topicClientOperationTimeout.TotalSeconds} seconds waiting for first message (heartbeat) for topic {_topicName} on cache {_cacheName}",
+                    new MomentoErrorTransportDetails(
+                        new MomentoGrpcErrorDetails(
+                            StatusCode.DeadlineExceeded,
+                            "Timed out waiting for first message (heartbeat)"
+                        )
+                    )
+                );
+            }
+
+            if (!await moveNextTask)
+            {
+                throw new InternalServerException($"Subscription stream closed unexpectedly for topic {_topicName} on cache {_cacheName}");
+            }
+
+
             var firstMessage = subscription.ResponseStream.Current;
             // The first message to a new subscription will always be a heartbeat.
             if (firstMessage.KindCase is not _SubscriptionItem.KindOneofCase.Heartbeat)
