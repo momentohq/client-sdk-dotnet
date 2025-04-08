@@ -69,7 +69,7 @@ public class FixedTimeoutRetryStrategyTests
         var maxAttempts = Convert.ToInt32(
             CLIENT_TIMEOUT_MILLIS.TotalMilliseconds / delayBetweenAttempts
         );
-        Assert.InRange(testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get), 1, maxAttempts);
+        Assert.InRange(testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get), 2, maxAttempts);
 
         // Jitter will be +/- 10% of the retry delay interval
         var minDelay = delayBetweenAttempts * 0.9;
@@ -80,7 +80,9 @@ public class FixedTimeoutRetryStrategyTests
     [Fact]
     public void FixedTimeoutRetryStrategy_EligibleRpc_FullOutage_LongDelays()
     {
-        var longDelay = RESPONSE_DATA_RECEIVED_TIMEOUT.TotalMilliseconds + 100;
+        // Momento-local should delay responses for longer than the retry timeout so that
+        // we can test the retry strategy's timeout is actually being respected.
+        var longDelay = RESPONSE_DATA_RECEIVED_TIMEOUT.TotalMilliseconds + 500;
         var middlewareArgs = new MomentoLocalMiddlewareArgs
         {
             ReturnError = MomentoErrorCode.SERVER_UNAVAILABLE.ToStringValue(),
@@ -101,15 +103,21 @@ public class FixedTimeoutRetryStrategyTests
         );
         testProps.CacheClient.GetAsync(testProps.CacheName, "key").Wait();
 
+        // Fixed timeout retry strategy should retry at least twice.
+        // If it retries only once, it could mean that the retry attempt is timing out and if we aren't
+        // handling that case correctly, then it won't continue retrying until the client timeout is reached.
         var delayBetweenAttempts = RETRY_DELAY.TotalMilliseconds + longDelay;
         var maxAttempts = Convert.ToInt32(
             CLIENT_TIMEOUT_MILLIS.TotalMilliseconds / delayBetweenAttempts
-        );
+        ) + 1; // +1 to account for jitter on retry delay (can be 10% longer or shorter);
         Assert.InRange(testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get), 2, maxAttempts);
 
-        // Jitter will be +/- 10% of the retry delay interval
-        var minDelay = RESPONSE_DATA_RECEIVED_TIMEOUT.TotalMilliseconds * 0.9;
-        var maxDelay = RESPONSE_DATA_RECEIVED_TIMEOUT.TotalMilliseconds * 1.1;
+        // Jitter will contribute +/- 10% of the delay between retry attempts.
+        // The expected delay here is not longDelay because the retry strategy's timeout is
+        // shorter than that and retry attempts should stop before longDelay is reached.
+        var expectedDelayBetweenAttempts = RESPONSE_DATA_RECEIVED_TIMEOUT.TotalMilliseconds + RETRY_DELAY.TotalMilliseconds;
+        var minDelay = expectedDelayBetweenAttempts * 0.9;
+        var maxDelay = expectedDelayBetweenAttempts * 1.1;
         Assert.InRange(testProps.TestMetricsCollector.GetAverageTimeBetweenRetries(testProps.CacheName, MomentoRpcMethod.Get), minDelay, maxDelay);
     }
 
@@ -137,7 +145,7 @@ public class FixedTimeoutRetryStrategyTests
         var maxAttempts = Convert.ToInt32(
             CLIENT_TIMEOUT_MILLIS.TotalMilliseconds / RETRY_DELAY.TotalMilliseconds
         ) + 1; // +1 to account for jitter on retry delay (can be 10% longer or shorter)
-        Assert.InRange(testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get), 1, maxAttempts);
+        Assert.InRange(testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get), 2, maxAttempts);
 
         // Jitter will be +/- 10% of the retry delay interval
         var minDelay = RETRY_DELAY.TotalMilliseconds * 0.9;
