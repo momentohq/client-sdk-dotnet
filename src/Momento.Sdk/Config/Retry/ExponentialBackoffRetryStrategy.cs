@@ -71,6 +71,13 @@ public class ExponentialBackoffRetryStrategy : IRetryStrategy
         return jitteredDelayMs;
     }
 
+    /// <inheritdoc/>
+    public CallOptions CalculateRetryDeadline(CallOptions callOptions, DateTime overallDeadline)
+    {
+        // The deadline for the retry attempt is the same as the overall deadline
+        return callOptions.WithDeadline(overallDeadline);
+    }
+
     private double ComputeBaseDelay(int attemptNumber)
     {
         if (attemptNumber <= 0)

@@ -70,7 +70,7 @@ public class FixedTimeoutRetryStrategy : IRetryStrategy
     }
 
     /// <summary>
-    /// Calculates the deadline for a retry attempt.
+    /// Calculates the deadline for a retry attempt using the retry timeout. Clips the deadline to the overall deadline if it is earlier.
     /// </summary>
     /// <param name="callOptions"></param>
     /// <param name="overallDeadline"></param>

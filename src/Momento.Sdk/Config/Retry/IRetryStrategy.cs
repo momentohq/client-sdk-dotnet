@@ -17,4 +17,12 @@ public interface IRetryStrategy
   /// <param name="overallDeadline"></param>
   /// <returns>Returns number of milliseconds after which the request should be retried, or <see langword="null"/> if the request should not be retried.</returns>
   public int? DetermineWhenToRetryRequest<TRequest>(Status grpcStatus, TRequest grpcRequest, int attemptNumber, DateTime? overallDeadline = null) where TRequest : class;
+
+  /// <summary>
+  /// Calculates the deadline for a retry attempt, which may be different from the overall deadline.
+  /// </summary>
+  /// <param name="callOptions"></param>
+  /// <param name="overallDeadline"></param>
+  /// <returns></returns>
+  public CallOptions CalculateRetryDeadline(CallOptions callOptions, DateTime overallDeadline);
 }

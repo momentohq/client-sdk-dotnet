@@ -60,6 +60,13 @@ public class FixedCountRetryStrategy : IRetryStrategy
         return 0;
     }
 
+    /// <inheritdoc/>
+    public CallOptions CalculateRetryDeadline(CallOptions callOptions, DateTime overallDeadline)
+    {
+        // The deadline for the retry attempt is the same as the overall deadline
+        return callOptions.WithDeadline(overallDeadline);
+    }
+
     /// <summary>
     /// Test equality by value.
     /// </summary>

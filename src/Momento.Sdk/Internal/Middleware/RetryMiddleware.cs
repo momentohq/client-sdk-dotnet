@@ -62,10 +62,7 @@ namespace Momento.Sdk.Config.Retry
                     _logger.LogDebug($"Request failed with status {status.StatusCode}, checking to see if we should retry; attempt Number: {attemptNumber}");
                     _logger.LogTrace($"Failed request status: {status}");
                     retryAfterMillis = _retryStrategy.DetermineWhenToRetryRequest(nextState.GetStatus(), request, attemptNumber, _overallDeadline);
-                    if (_retryStrategy is FixedTimeoutRetryStrategy strategy)
-                    {
-                        callOptions = strategy.CalculateRetryDeadline(callOptions, _overallDeadline);
-                    }
+                    callOptions = _retryStrategy.CalculateRetryDeadline(callOptions, _overallDeadline);
                 }
             }
             while (retryAfterMillis != null);
