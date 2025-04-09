@@ -181,4 +181,35 @@ public class FixedTimeoutRetryStrategyTests
         var maxDelay = RETRY_DELAY.TotalMilliseconds * 1.15;
         Assert.InRange(testProps.TestMetricsCollector.GetAverageTimeBetweenRetries(testProps.CacheName, MomentoRpcMethod.Get), minDelay, maxDelay);
     }
+
+    [Fact]
+    public void FixedTimeoutRetryStrategy_RetryTimeoutLongerThanClientTimeout()
+    {
+        var responseDelayMillis = 1000;
+        var middlewareArgs = new MomentoLocalMiddlewareArgs
+        {
+            ReturnError = MomentoErrorCode.SERVER_UNAVAILABLE.ToStringValue(),
+            ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
+            DelayMillis = responseDelayMillis,
+            DelayRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
+        };
+
+        var clientTimeoutMillis = 2000;
+        var retryTimeoutMillis = 3000;
+        var testProps = new MomentoLocalCacheAndCacheClient(
+            _authProvider,
+            _loggerFactory,
+            _cacheConfig.WithClientTimeout(TimeSpan.FromMilliseconds(clientTimeoutMillis)),
+            middlewareArgs,
+            new FixedTimeoutRetryStrategy(
+                _loggerFactory,
+                retryDelayInterval: RETRY_DELAY,
+                responseDataReceivedTimeout: TimeSpan.FromMilliseconds(retryTimeoutMillis)
+            )
+        );
+        testProps.CacheClient.GetAsync(testProps.CacheName, "key").Wait();
+
+        Assert.Equal(1, testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get));
+        Assert.InRange(testProps.TestMetricsCollector.GetAverageTimeBetweenRetries(testProps.CacheName, MomentoRpcMethod.Get), 0, clientTimeoutMillis);
+    }
 }
