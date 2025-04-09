@@ -1,8 +1,8 @@
-﻿using System;
-using Grpc.Core;
-using System.Threading.Tasks;
+﻿using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk.Config.Middleware
 {

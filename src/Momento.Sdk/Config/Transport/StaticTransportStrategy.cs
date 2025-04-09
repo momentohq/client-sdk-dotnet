@@ -1,8 +1,8 @@
-using System;
-using System.Net.Http;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Internal;
+using System;
+using System.Net.Http;
 
 namespace Momento.Sdk.Config.Transport;
 

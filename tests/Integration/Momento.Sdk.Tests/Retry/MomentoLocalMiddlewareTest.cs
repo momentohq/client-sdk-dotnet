@@ -1,12 +1,12 @@
+using Grpc.Core;
+using Microsoft.Extensions.Logging;
+using Momento.Protos.CacheClient;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
-using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config.Middleware;
-using System.Threading.Tasks;
-using Momento.Protos.CacheClient;
 using Momento.Sdk.Internal.ExtensionMethods;
-using Grpc.Core;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk.Tests.Integration.Retry;
 

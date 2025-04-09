@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Grpc.Core;
+﻿using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.ControlClient;
 using Momento.Sdk.Auth;
@@ -8,6 +6,8 @@ using Momento.Sdk.Config;
 using Momento.Sdk.Config.Transport;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Responses;
+using System;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk.Internal;
 

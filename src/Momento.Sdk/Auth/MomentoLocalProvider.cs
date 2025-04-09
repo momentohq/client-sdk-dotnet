@@ -1,7 +1,7 @@
 namespace Momento.Sdk.Auth;
 
-using System;
 using Momento.Sdk.Exceptions;
+using System;
 
 /// <summary>
 /// Sets the endpoint and port for connecting to momento-local.

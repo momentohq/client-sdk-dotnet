@@ -1,19 +1,18 @@
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
-using System;
-using System.Reflection;
-using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-
+using Momento.Protos.PermissionMessages;
+using Momento.Protos.TokenClient;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Auth.AccessControl;
 using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Responses;
-using Momento.Protos.TokenClient;
-using Momento.Protos.PermissionMessages;
+using System;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk.Internal;
 

@@ -1,9 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using Grpc.Core;
+﻿using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Internal;
+using System;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk.Config.Retry
 {

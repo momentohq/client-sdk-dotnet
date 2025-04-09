@@ -2,11 +2,11 @@
 
 namespace Momento.Sdk.Responses;
 
-using System.Collections.Generic;
-using System.Linq;
 using Google.Protobuf;
 using Momento.Protos.CacheClient;
 using Momento.Sdk.Exceptions;
+using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// Parent response type for a cache KeysExist request. The

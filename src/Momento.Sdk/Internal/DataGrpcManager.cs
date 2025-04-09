@@ -1,8 +1,4 @@
 ﻿#pragma warning disable 1591
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient;
@@ -13,6 +9,10 @@ using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal.Middleware;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk.Internal;
 

@@ -1,7 +1,7 @@
-using System;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal;
 using Newtonsoft.Json;
+using System;
 
 namespace Momento.Sdk.Auth;
 

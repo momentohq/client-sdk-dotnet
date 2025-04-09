@@ -1,7 +1,7 @@
 namespace Momento.Sdk.Auth;
 
-using System;
 using Momento.Sdk.Exceptions;
+using System;
 
 /// <summary>
 /// Reads and parses a JWT token stored as a string.

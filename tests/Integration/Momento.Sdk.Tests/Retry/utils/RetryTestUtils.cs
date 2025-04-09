@@ -1,9 +1,9 @@
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
+using System.Collections.Generic;
 
 namespace Momento.Sdk.Tests.Integration.Retry;
 

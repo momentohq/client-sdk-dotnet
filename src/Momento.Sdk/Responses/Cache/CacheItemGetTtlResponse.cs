@@ -1,8 +1,8 @@
 ﻿namespace Momento.Sdk.Responses;
 
-using System;
 using Momento.Protos.CacheClient;
 using Momento.Sdk.Exceptions;
+using System;
 
 /// <summary>
 /// Parent response type for a cache item get ttl request. The

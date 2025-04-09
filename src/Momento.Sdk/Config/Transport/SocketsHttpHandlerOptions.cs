@@ -1,7 +1,7 @@
 #pragma warning disable 1591
+using Momento.Sdk.Internal;
 using System;
 using System.Net.Http;
-using Momento.Sdk.Internal;
 namespace Momento.Sdk.Config.Transport;
 
 public class SocketsHttpHandlerOptions

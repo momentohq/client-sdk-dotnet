@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Momento.Sdk.Internal.ExtensionMethods;
+using Momento.Sdk.Requests;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Momento.Sdk.Internal.ExtensionMethods;
-using Momento.Sdk.Requests;
 using Xunit.Abstractions;
 
 namespace Momento.Sdk.Tests.Integration.Cache;

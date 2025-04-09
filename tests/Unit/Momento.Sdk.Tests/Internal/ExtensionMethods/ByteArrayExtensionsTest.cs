@@ -1,5 +1,5 @@
-using System;
 using Momento.Sdk.Internal.ExtensionMethods;
+using System;
 using Xunit;
 
 namespace Momento.Sdk.Tests.Unit;
