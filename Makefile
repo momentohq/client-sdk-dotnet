@@ -51,7 +51,7 @@ RETRY_TESTS_FILTER := "FullyQualifiedName~Momento.Sdk.Tests.Integration.Retry"
 EXCLUDE_RETRY_TESTS_FILTER := "FullyQualifiedName!~Momento.Sdk.Tests.Integration.Retry"
 
 
-## Generate sync unit tests, format, lint, and test
+## Generate sync unit tests, format-check, and test
 all: precommit
 
 
