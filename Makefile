@@ -59,9 +59,9 @@ all: precommit
 build: ${BUILD_TARGETS}
 
 
-## Lint the project
-lint:
-	@echo "Linting the project..."
+## Check but do not apply formatting to the project
+format-check:
+	@echo "Format-checking the project..."
 	@dotnet format --verify-no-changes
 
 
@@ -93,7 +93,7 @@ clean-build: clean restore ${BUILD_TARGETS}
 
 
 ## Run clean-build and test as a step before committing.
-precommit: clean-build test lint
+precommit: clean-build test format-check
 
 
 ## Sync dependencies
