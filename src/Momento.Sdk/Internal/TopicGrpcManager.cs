@@ -31,20 +31,20 @@ public interface IPubsubClient
 public class PubsubClientWithMiddleware : IPubsubClient
 {
     private readonly Pubsub.PubsubClient _generatedClient;
-    private readonly IList<IMiddleware> _middlewares;
+    private readonly IList<IMiddleware> _unaryMiddlewares;
     private readonly IList<Tuple<string, string>> _headers;
 
     public PubsubClientWithMiddleware(Pubsub.PubsubClient generatedClient, IList<IMiddleware> middlewares,
         IList<Tuple<string, string>> headers)
     {
         _generatedClient = generatedClient;
-        _middlewares = middlewares;
+        _unaryMiddlewares = middlewares;
         _headers = headers;
     }
 
     public async Task<_Empty> publish(_PublishRequest request, CallOptions callOptions)
     {
-        var wrapped = await _middlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.PublishAsync(r, o));
+        var wrapped = await _unaryMiddlewares.WrapRequest(request, callOptions, (r, o) => _generatedClient.PublishAsync(r, o));
         return await wrapped.ResponseAsync;
     }
 
@@ -73,12 +73,22 @@ public class TopicGrpcManager : GrpcManager
 
     internal TopicGrpcManager(ITopicConfiguration config, ICredentialProvider authProvider) : base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authProvider, authProvider.CacheEndpoint, "TopicGrpcManager")
     {
-        var middlewares = new List<IMiddleware>
+        // Extract headers from the middlewares in the topic config
+        var middlewareHeaders = config.Middlewares.OfType<ITopicMiddleware>().SelectMany(h => h.WithHeaders()).ToList();
+
+        // Publish requests can use a HeaderMiddleware to provide the usual sdk headers,
+        // as well as any additional headers from the config middlewares.
+        var unaryHeaders = middlewareHeaders.Select(h => new Header(name: h.Item1, value: h.Item2)).Concat(this.headers).ToList();
+        var unaryMiddlewares = new List<IMiddleware>
         {
-            new HeaderMiddleware(config.LoggerFactory, this.headers),
+            new HeaderMiddleware(config.LoggerFactory, unaryHeaders),
         };
 
+        // Subscribe request will take headers as tuples to be converted into grpc metadata.
+        // Adds the usual sdk headers, as well as any additional headers from the config middlewares.
+        var streamHeaders = middlewareHeaders.Concat(this.headerTuples).ToList();
+
         var client = new Pubsub.PubsubClient(this.invoker);
-        Client = new PubsubClientWithMiddleware(client, middlewares, this.headerTuples);
+        Client = new PubsubClientWithMiddleware(client, unaryMiddlewares, streamHeaders);
     }
 }

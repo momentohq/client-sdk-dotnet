@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Logging;
+using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Transport;
 using System;
+using System.Collections.Generic;
 
 namespace Momento.Sdk.Config;
 
@@ -14,6 +16,8 @@ public interface ITopicConfiguration
     public ILoggerFactory LoggerFactory { get; }
     /// <inheritdoc cref="Momento.Sdk.Config.Transport.ITransportStrategy" />
     public ITopicTransportStrategy TransportStrategy { get; }
+    /// TODO
+    public IList<ITopicMiddleware> Middlewares { get; }
 
     /// <summary>
     /// Creates a new instance of the Configuration object, updated to use the specified transport strategy.
@@ -29,4 +33,10 @@ public interface ITopicConfiguration
     /// <param name="clientTimeout">The amount of time to wait before cancelling the request.</param>
     /// <returns>TopicConfiguration object with client timeout provided</returns>
     public ITopicConfiguration WithClientTimeout(TimeSpan clientTimeout);
+
+    /// TODO
+    public ITopicConfiguration WithMiddlewares(IList<ITopicMiddleware> middleware);
+
+    /// TODO
+    public ITopicConfiguration AddMiddleware(ITopicMiddleware middleware);
 }
