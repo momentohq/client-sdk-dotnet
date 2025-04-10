@@ -48,7 +48,7 @@ public class MomentoLocalMiddlewareArgs
     public int? StreamErrorMessageLimit { get; set; } = null;
 }
 
-public class MomentoLocalMiddleware : IMiddleware
+public class MomentoLocalMiddleware : IMiddleware, ITopicMiddleware
 {
     /// <inheritdoc cref="Microsoft.Extensions.Logging.ILogger" />
     private readonly ILogger _logger;
@@ -65,6 +65,9 @@ public class MomentoLocalMiddleware : IMiddleware
     /// ID to uniquely identify api calls in a test.
     /// </summary>
     public string RequestId { get; set; } = Utils.NewGuidString();
+
+    public int StreamEstablishedCounter { get; set; } = 0;
+    public int StreamDisconnectedCounter { get; set; } = 0;
 
     public MomentoLocalMiddleware(ILoggerFactory loggerFactory, MomentoLocalMiddlewareArgs? args)
     {
@@ -113,5 +116,55 @@ public class MomentoLocalMiddleware : IMiddleware
             GetStatus: nextState.GetStatus,
             GetTrailers: nextState.GetTrailers
         );
+    }
+
+    public IList<Tuple<string, string>> WithHeaders()
+    {
+        var headerMappings = new Dictionary<string, string?>
+        {
+            { "request-id", RequestId },
+            { "return-error", _args.ReturnError },
+            { "error-rpcs", ConvertToMetadataList(_args.ErrorRpcList) },
+            { "error-count", _args.ErrorCount?.ToString() },
+            { "delay-rpcs", ConvertToMetadataList(_args.DelayRpcList) },
+            { "delay-ms", _args.DelayMillis?.ToString() },
+            { "delay-count", _args.DelayCount?.ToString() },
+            { "stream-error-rpcs", ConvertToMetadataList(_args.StreamErrorRpcList) },
+            { "stream-error", _args.StreamError },
+            { "stream-error-message-limit", _args.StreamErrorMessageLimit?.ToString() }
+        };
+
+        var headers = new List<Tuple<string, string>>();
+        foreach (var pair in headerMappings)
+        {
+            string key = pair.Key;
+            string? value = pair.Value;
+            {
+                if (value != null)
+                {
+                    headers.Add(new Tuple<string, string>(key, value.ToString()));
+                }
+            }
+        }
+        return headers;
+    }
+
+    private string? ConvertToMetadataList(IList<string>? values)
+    {
+        if (values == null || values.Count == 0)
+        {
+            return null;
+        }
+        return string.Join(" ", values);
+    }
+
+    public void OnStreamDisconnected()
+    {
+        this.StreamDisconnectedCounter++;
+    }
+
+    public void onStreamEstablished()
+    {
+        this.StreamEstablishedCounter++;
     }
 }
