@@ -4,24 +4,24 @@ using System.Collections.Generic;
 namespace Momento.Sdk.Config.Middleware;
 
 /// <summary>
-/// TODO
+/// Interface for TopicClient middleware.
 /// </summary>
 public interface ITopicMiddleware
 {
     /// <summary>
-    /// TODO
+    /// Add arbitrary headers to each request.
     /// </summary>
     /// <returns></returns>
     public IList<Tuple<string, string>> WithHeaders();
 
     /// <summary>
-    /// TODO
+    /// Take action when a subscription stream is disconnected.
     /// </summary>
     /// <returns></returns>
     public void OnStreamDisconnected();
 
     /// <summary>
-    /// TODO
+    /// Take action when a subscription stream is (re)established.
     /// </summary>
     /// <returns></returns>
     public void onStreamEstablished();
