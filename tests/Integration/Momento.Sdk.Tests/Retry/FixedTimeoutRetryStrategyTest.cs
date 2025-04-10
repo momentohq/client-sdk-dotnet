@@ -3,6 +3,7 @@ using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Retry;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk.Tests.Integration.Retry;
 
@@ -211,5 +212,31 @@ public class FixedTimeoutRetryStrategyTests
 
         Assert.Equal(1, testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get));
         Assert.InRange(testProps.TestMetricsCollector.GetAverageTimeBetweenRetries(testProps.CacheName, MomentoRpcMethod.Get), 0, clientTimeoutMillis);
+    }
+
+    [Fact]
+    public async Task FixedTimeoutRetryStrategy_RetryDeadlineNotSetOnInitialRequest()
+    {
+        var retryTimeoutMillis = 100; // really short
+        var responseDelayMillis = 500;
+        var middlewareArgs = new MomentoLocalMiddlewareArgs
+        {
+            DelayMillis = responseDelayMillis,
+            DelayRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
+        };
+        var testProps = new MomentoLocalCacheAndCacheClient(
+            _authProvider,
+            _loggerFactory,
+            _cacheConfig,
+            middlewareArgs,
+            new FixedTimeoutRetryStrategy(
+                _loggerFactory,
+                retryDelayInterval: RETRY_DELAY,
+                responseDataReceivedTimeout: TimeSpan.FromMilliseconds(retryTimeoutMillis)
+            )
+        );
+        var resp = await testProps.CacheClient.GetAsync(testProps.CacheName, "key");
+        Assert.True(resp is CacheGetResponse.Miss);
+        Assert.Equal(0, testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Get));
     }
 }
