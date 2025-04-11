@@ -109,10 +109,10 @@ public class TopicClientRetryTests
         {
             builder.AddSimpleConsole(options =>
             {
-                  options.IncludeScopes = true;
-                  options.SingleLine = true;
-                  options.TimestampFormat = "hh:mm:ss ";
-              });
+                options.IncludeScopes = true;
+                options.SingleLine = true;
+                options.TimestampFormat = "hh:mm:ss ";
+            });
             builder.AddFilter("Grpc.Net.Client", LogLevel.Error);
             builder.SetMinimumLevel(LogLevel.Information);
         });
