@@ -4,9 +4,14 @@ using System;
 namespace Momento.Sdk.Config.Retry;
 
 /// <summary>
+/// Base interface for all retry strategies.
+/// </summary>
+public interface IRetryStrategy { }
+
+/// <summary>
 /// Defines a contract for how and when to retry a request
 /// </summary>
-public interface IRetryStrategy
+public interface IBasicRetryStrategy : IRetryStrategy
 {
     /// <summary>
     /// Calculates whether or not to retry a request based on the type of request and number of attempts.
