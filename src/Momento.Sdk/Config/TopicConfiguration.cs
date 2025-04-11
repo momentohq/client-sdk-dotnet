@@ -1,6 +1,9 @@
 using Microsoft.Extensions.Logging;
+using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Transport;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Momento.Sdk.Config;
 
@@ -13,21 +16,26 @@ public class TopicConfiguration : ITopicConfiguration
     /// <inheritdoc />
     public ITopicTransportStrategy TransportStrategy { get; }
 
+    /// <inheritdoc />
+    public IList<ITopicMiddleware> Middlewares { get; }
+
     /// <summary>
     /// Create a new instance of a Topic Configuration object with provided arguments: <see cref="Momento.Sdk.Config.ITopicConfiguration.TransportStrategy"/>, and <see cref="Momento.Sdk.Config.ITopicConfiguration.LoggerFactory"/>
     /// </summary>
     /// <param name="transportStrategy">This is responsible for configuring network tunables.</param>
     /// <param name="loggerFactory">This is responsible for configuring logging.</param>
-    public TopicConfiguration(ILoggerFactory loggerFactory, ITopicTransportStrategy transportStrategy)
+    /// <param name="middlewares">This is responsible for configuring middleware for the topic client.</param>
+    public TopicConfiguration(ILoggerFactory loggerFactory, ITopicTransportStrategy transportStrategy, IList<ITopicMiddleware>? middlewares = null)
     {
         LoggerFactory = loggerFactory;
         TransportStrategy = transportStrategy;
+        Middlewares = middlewares ?? new List<ITopicMiddleware>();
     }
 
     /// <inheritdoc />
     public ITopicConfiguration WithTransportStrategy(ITopicTransportStrategy transportStrategy)
     {
-        return new TopicConfiguration(LoggerFactory, transportStrategy);
+        return new TopicConfiguration(LoggerFactory, transportStrategy, Middlewares);
     }
 
     /// <inheritdoc/>
@@ -35,7 +43,39 @@ public class TopicConfiguration : ITopicConfiguration
     {
         return new TopicConfiguration(
             loggerFactory: LoggerFactory,
-            transportStrategy: TransportStrategy.WithClientTimeout(clientTimeout)
+            transportStrategy: TransportStrategy.WithClientTimeout(clientTimeout),
+            middlewares: Middlewares
+        );
+    }
+
+    /// <summary>
+    /// Replace the middlewares on an existing instance of TopicConfiguration object with
+    /// the provided middlewares.
+    /// </summary>
+    /// <param name="middlewares"></param>
+    /// <returns></returns>
+    public ITopicConfiguration WithMiddlewares(IEnumerable<ITopicMiddleware> middlewares)
+    {
+        return new TopicConfiguration(
+            loggerFactory: LoggerFactory,
+            transportStrategy: TransportStrategy,
+            middlewares: middlewares.ToList()
+        );
+    }
+
+    /// <summary>
+    /// Add the specified middleware to an existing instance of TopicConfiguration object.
+    /// </summary>
+    /// <param name="middleware"></param>
+    /// <returns></returns>
+    public ITopicConfiguration AddMiddleware(ITopicMiddleware middleware)
+    {
+        var newMiddlewares = new List<ITopicMiddleware>(Middlewares);
+        newMiddlewares.Add(middleware);
+        return new TopicConfiguration(
+            loggerFactory: LoggerFactory,
+            transportStrategy: TransportStrategy,
+            middlewares: newMiddlewares
         );
     }
 

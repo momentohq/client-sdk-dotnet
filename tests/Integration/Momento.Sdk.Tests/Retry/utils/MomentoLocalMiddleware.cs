@@ -48,7 +48,7 @@ public class MomentoLocalMiddlewareArgs
     public int? StreamErrorMessageLimit { get; set; } = null;
 }
 
-public class MomentoLocalMiddleware : IMiddleware
+public class MomentoLocalMiddleware : IMiddleware, ITopicMiddleware
 {
     /// <inheritdoc cref="Microsoft.Extensions.Logging.ILogger" />
     private readonly ILogger _logger;
@@ -66,10 +66,16 @@ public class MomentoLocalMiddleware : IMiddleware
     /// </summary>
     public string RequestId { get; set; } = Utils.NewGuidString();
 
+    public int StreamEstablishedCounter { get; set; } = 0;
+    public int StreamDisconnectedCounter { get; set; } = 0;
+
+    public IEnumerable<KeyValuePair<string, string>> Headers { get; } = new List<KeyValuePair<string, string>>();
+
     public MomentoLocalMiddleware(ILoggerFactory loggerFactory, MomentoLocalMiddlewareArgs? args)
     {
         _logger = loggerFactory.CreateLogger<MomentoLocalMiddleware>();
         _args = args ?? new MomentoLocalMiddlewareArgs();
+        Headers = CreateHeaders();
     }
 
     public async Task<MiddlewareResponseState<TResponse>> WrapRequest<TRequest, TResponse>(
@@ -113,5 +119,55 @@ public class MomentoLocalMiddleware : IMiddleware
             GetStatus: nextState.GetStatus,
             GetTrailers: nextState.GetTrailers
         );
+    }
+
+    private IList<KeyValuePair<string, string>> CreateHeaders()
+    {
+        var headerMappings = new Dictionary<string, string?>
+        {
+            { "request-id", RequestId },
+            { "return-error", _args.ReturnError },
+            { "error-rpcs", ConvertToMetadataList(_args.ErrorRpcList) },
+            { "error-count", _args.ErrorCount?.ToString() },
+            { "delay-rpcs", ConvertToMetadataList(_args.DelayRpcList) },
+            { "delay-ms", _args.DelayMillis?.ToString() },
+            { "delay-count", _args.DelayCount?.ToString() },
+            { "stream-error-rpcs", ConvertToMetadataList(_args.StreamErrorRpcList) },
+            { "stream-error", _args.StreamError },
+            { "stream-error-message-limit", _args.StreamErrorMessageLimit?.ToString() }
+        };
+
+        var headers = new List<KeyValuePair<string, string>>();
+        foreach (var pair in headerMappings)
+        {
+            string key = pair.Key;
+            string? value = pair.Value;
+            {
+                if (value != null)
+                {
+                    headers.Add(new KeyValuePair<string, string>(key, value.ToString()));
+                }
+            }
+        }
+        return headers;
+    }
+
+    private string? ConvertToMetadataList(IList<string>? values)
+    {
+        if (values == null || values.Count == 0)
+        {
+            return null;
+        }
+        return string.Join(" ", values);
+    }
+
+    public void OnStreamDisconnected()
+    {
+        this.StreamDisconnectedCounter++;
+    }
+
+    public void onStreamEstablished()
+    {
+        this.StreamEstablishedCounter++;
     }
 }

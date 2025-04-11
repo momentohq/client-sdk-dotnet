@@ -23,3 +23,23 @@ public class MomentoLocalCacheAndCacheClient
         CacheClient.CreateCacheAsync(CacheName).Wait();
     }
 }
+
+public class MomentoLocalCacheAndTopicClient
+{
+    public ICacheClient CacheClient { get; }
+    public ITopicClient TopicClient { get; }
+    public string CacheName { get; }
+    public TestRetryMetricsCollector TestMetricsCollector { get; }
+    public MomentoLocalMiddleware Middleware { get; }
+
+    public MomentoLocalCacheAndTopicClient(ICredentialProvider authProvider, ILoggerFactory loggerFactory, IConfiguration cacheConfig, ITopicConfiguration topicConfig, MomentoLocalMiddlewareArgs? args)
+    {
+        Middleware = new MomentoLocalMiddleware(loggerFactory, args);
+        TestMetricsCollector = Middleware.TestMetricsCollector;
+        CacheClient = new CacheClient(cacheConfig, authProvider, TimeSpan.FromSeconds(60));
+        CacheName = Utils.NewGuidString();
+        CacheClient.CreateCacheAsync(CacheName).Wait();
+        var tConfig = topicConfig.AddMiddleware(Middleware);
+        TopicClient = new TopicClient(tConfig, authProvider);
+    }
+}

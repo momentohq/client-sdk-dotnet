@@ -5,10 +5,12 @@ using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient.Pubsub;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
+using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Responses;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +25,7 @@ public class ScsTopicClientBase : IDisposable
     private bool hasSentOnetimeHeaders = false;
 
     protected readonly CacheExceptionMapper _exceptionMapper;
+    protected readonly IList<ITopicMiddleware> _middlewares;
 
     public ScsTopicClientBase(ITopicConfiguration config, ICredentialProvider authProvider)
     {
@@ -30,6 +33,7 @@ public class ScsTopicClientBase : IDisposable
         this._logger = config.LoggerFactory.CreateLogger<ScsTopicClient>();
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
         this.topicClientOperationTimeout = config.TransportStrategy.GrpcConfig.Deadline;
+        this._middlewares = config.Middlewares;
     }
 
     private Metadata MetadataWithCache(string cacheName)
@@ -119,7 +123,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         {
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, cacheName, topicName);
             subscriptionWrapper = new SubscriptionWrapper(grpcManager, cacheName, topicName,
-                resumeAtTopicSequenceNumber, resumeAtTopicSequencePage, _exceptionMapper, _logger);
+                resumeAtTopicSequenceNumber, resumeAtTopicSequencePage, _exceptionMapper, _logger, _middlewares);
             await subscriptionWrapper.Subscribe();
         }
         catch (Exception e)
@@ -147,10 +151,11 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         private ulong _lastSequenceNumber;
         private ulong _lastSequencePage;
         private bool _subscribed;
+        private readonly IList<ITopicMiddleware> _middlewares;
 
         public SubscriptionWrapper(TopicGrpcManager grpcManager, string cacheName,
             string topicName, ulong? resumeAtTopicSequenceNumber, ulong? resumeAtTopicSequencePage,
-            CacheExceptionMapper exceptionMapper, ILogger logger)
+            CacheExceptionMapper exceptionMapper, ILogger logger, IList<ITopicMiddleware> middlewares)
         {
             _grpcManager = grpcManager;
             _cacheName = cacheName;
@@ -159,6 +164,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
             _lastSequencePage = resumeAtTopicSequencePage ?? 0;
             _exceptionMapper = exceptionMapper;
             _logger = logger;
+            _middlewares = middlewares;
         }
 
         public async Task Subscribe()
@@ -186,6 +192,23 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
 
             _subscription = subscription;
             _subscribed = true;
+            CallMiddlewaresOnStreamEstablished();
+        }
+
+        private void CallMiddlewaresOnStreamDisconnected()
+        {
+            foreach (var mw in this._middlewares)
+            {
+                mw.OnStreamDisconnected();
+            }
+        }
+
+        private void CallMiddlewaresOnStreamEstablished()
+        {
+            foreach (var mw in this._middlewares)
+            {
+                mw.onStreamEstablished();
+            }
         }
 
         public async ValueTask<ITopicEvent?> GetNextEventFromGrpcStreamAsync(
@@ -199,12 +222,14 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                     {
                         await Subscribe();
                         _subscribed = true;
+                        CallMiddlewaresOnStreamEstablished();
                     }
 
                     await _subscription!.ResponseStream.MoveNext(cancellationToken);
                 }
                 catch (OperationCanceledException)
                 {
+                    CallMiddlewaresOnStreamDisconnected();
                     break;
                 }
                 catch (Exception e)
@@ -212,6 +237,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                     var sdkException = _exceptionMapper.Convert(e);
                     if (sdkException.ErrorCode is MomentoErrorCode.CANCELLED_ERROR)
                     {
+                        CallMiddlewaresOnStreamDisconnected();
                         break;
                     }
 
@@ -220,6 +246,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                     // Certain errors can never be recovered
                     if (!IsErrorRecoverable(sdkException))
                     {
+                        CallMiddlewaresOnStreamDisconnected();
                         return new TopicMessage.Error(sdkException);
                     }
 
@@ -228,6 +255,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                     await Task.Delay(5_000, cancellationToken);
 
                     _subscribed = false;
+                    CallMiddlewaresOnStreamDisconnected();
                     continue;
                 }
 
@@ -250,6 +278,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                             case _TopicValue.KindOneofCase.None:
                             default:
                                 _logger.LogTraceTopicMessageReceived("unknown", _cacheName, _topicName);
+                                CallMiddlewaresOnStreamDisconnected();
                                 break;
                         }
 
@@ -270,6 +299,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                         break;
                     default:
                         _logger.LogTraceTopicMessageReceived("unknown", _cacheName, _topicName);
+                        CallMiddlewaresOnStreamDisconnected();
                         break;
                 }
             }

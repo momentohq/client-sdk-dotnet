@@ -133,7 +133,7 @@ jobs:
 
       - name: Start Momento Local
         run: |
-         docker run --rm -d -p 8080:8080 gomomento/momento-local
+         docker run --cap-add=NET_ADMIN -d --rm -p 8080:8080 -p 9090:9090 gomomento/momento-local --enable-test-admin
 
       - name: Run momento-local retry tests
         run: make test-retry
