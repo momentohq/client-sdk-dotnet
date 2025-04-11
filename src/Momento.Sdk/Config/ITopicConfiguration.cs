@@ -39,7 +39,7 @@ public interface ITopicConfiguration
     /// the provided middlewares.
     /// </summary>
     /// <param name="middlewares">The list of middlewares to be used.</param>
-    public ITopicConfiguration WithMiddlewares(IList<ITopicMiddleware> middlewares);
+    public ITopicConfiguration WithMiddlewares(IEnumerable<ITopicMiddleware> middlewares);
 
     /// <summary>
     /// Add the specified middleware to an existing instance of TopicConfiguration object as an addition to

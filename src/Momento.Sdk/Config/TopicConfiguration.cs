@@ -3,6 +3,7 @@ using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Transport;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Momento.Sdk.Config;
 
@@ -53,12 +54,12 @@ public class TopicConfiguration : ITopicConfiguration
     /// </summary>
     /// <param name="middlewares"></param>
     /// <returns></returns>
-    public ITopicConfiguration WithMiddlewares(IList<ITopicMiddleware> middlewares)
+    public ITopicConfiguration WithMiddlewares(IEnumerable<ITopicMiddleware> middlewares)
     {
         return new TopicConfiguration(
             loggerFactory: LoggerFactory,
             transportStrategy: TransportStrategy,
-            middlewares: middlewares
+            middlewares: middlewares.ToList()
         );
     }
 
@@ -69,11 +70,12 @@ public class TopicConfiguration : ITopicConfiguration
     /// <returns></returns>
     public ITopicConfiguration AddMiddleware(ITopicMiddleware middleware)
     {
-        Middlewares.Add(middleware);
+        var newMiddlewares = new List<ITopicMiddleware>(Middlewares);
+        newMiddlewares.Add(middleware);
         return new TopicConfiguration(
             loggerFactory: LoggerFactory,
             transportStrategy: TransportStrategy,
-            middlewares: Middlewares
+            middlewares: newMiddlewares
         );
     }
 
