@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Grpc.Core;
+﻿using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.ControlClient;
 using Momento.Sdk.Auth;
@@ -8,6 +6,8 @@ using Momento.Sdk.Config;
 using Momento.Sdk.Config.Transport;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Responses;
+using System;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk.Internal;
 
@@ -31,7 +31,7 @@ internal sealed class ScsControlClient : IDisposable
             keepAlivePermitWithoutCalls: false
         );
         var controlConfig = config.WithTransportStrategy(config.TransportStrategy.WithSocketsHttpHandlerOptions(overrideKeepalive));
-        
+
         this.grpcManager = new ControlGrpcManager(controlConfig, authProvider);
         this.authToken = authProvider.AuthToken;
         this._logger = config.LoggerFactory.CreateLogger<ScsControlClient>();

@@ -22,7 +22,7 @@ public class CacheClientFixture : IDisposable
     public CacheClientFixture()
     {
         AuthProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY");
-        
+
         // Enable consistent reads if the CONSISTENT_READS env var is set to anything
         var consistentReads = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("CONSISTENT_READS"));
 
@@ -38,7 +38,7 @@ public class CacheClientFixture : IDisposable
             builder.SetMinimumLevel(LogLevel.Information);
         }));
         var configWithConsistentReads = config.WithReadConcern(ReadConcern.Consistent);
-        
+
         ClientWithBalancedReads = new CacheClient(config, AuthProvider, defaultTtl: DefaultTtl);
         ClientWithConsistentReads = new CacheClient(configWithConsistentReads, AuthProvider, defaultTtl: DefaultTtl);
         Client = consistentReads ? ClientWithConsistentReads : ClientWithBalancedReads;

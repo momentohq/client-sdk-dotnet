@@ -76,9 +76,9 @@ internal sealed class ControlGrpcManager : GrpcManager
 {
     public IControlClient Client { get; }
 
-    public ControlGrpcManager(IConfiguration config, ICredentialProvider authProvider): base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authProvider, authProvider.ControlEndpoint, "ControlGrpcManager")
+    public ControlGrpcManager(IConfiguration config, ICredentialProvider authProvider) : base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authProvider, authProvider.ControlEndpoint, "ControlGrpcManager")
     {
-        var middlewares = new List<IMiddleware> 
+        var middlewares = new List<IMiddleware>
         {
             new HeaderMiddleware(config.LoggerFactory, this.headers)
         };

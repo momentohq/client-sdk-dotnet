@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Momento.Sdk.Internal.ExtensionMethods;
+using Momento.Sdk.Requests;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Momento.Sdk.Internal.ExtensionMethods;
-using Momento.Sdk.Requests;
 using Xunit.Abstractions;
 
 namespace Momento.Sdk.Tests.Integration.Cache;
@@ -929,7 +929,7 @@ public class DictionaryTest : TestBase
         // Test field caching behavior
         Assert.Same(hitResponse.ValueDictionaryByteArrayByteArray, hitResponse.ValueDictionaryByteArrayByteArray);
     }
-    
+
     [Fact]
     public async Task DictionaryDeleteAsync_DictionaryDoesNotExist_Noop()
     {
@@ -1166,7 +1166,7 @@ public class DictionaryTest : TestBase
         var hitResponse = (CacheDictionaryLengthResponse.Hit)lengthResponse;
         Assert.Equal(1, hitResponse.Length);
     }
-    
+
     private string DictionaryToString(IDictionary<byte[], byte[]> dictionary)
     {
         return string.Join("; ", dictionary.Select(kvp =>

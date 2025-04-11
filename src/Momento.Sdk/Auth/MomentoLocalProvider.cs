@@ -1,12 +1,12 @@
 namespace Momento.Sdk.Auth;
 
-using System;
 using Momento.Sdk.Exceptions;
+using System;
 
 /// <summary>
 /// Sets the endpoint and port for connecting to momento-local.
 /// </summary>
-public class MomentoLocalProvider : ICredentialProvider 
+public class MomentoLocalProvider : ICredentialProvider
 {
     /// <summary>
     /// The port for connecting to momento-local.
@@ -49,7 +49,7 @@ public class MomentoLocalProvider : ICredentialProvider
         ControlEndpoint = endpoint;
         CacheEndpoint = endpoint;
         TokenEndpoint = endpoint;
-        
+
     }
 
     /// <summary>

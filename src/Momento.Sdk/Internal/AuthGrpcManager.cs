@@ -50,7 +50,7 @@ public class AuthGrpcManager : GrpcManager
 {
     public IAuthClient Client { get; }
 
-    public AuthGrpcManager(IAuthConfiguration config, ICredentialProvider authProvider): base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authProvider, authProvider.TokenEndpoint, "AuthGrpcManager")
+    public AuthGrpcManager(IAuthConfiguration config, ICredentialProvider authProvider) : base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authProvider, authProvider.TokenEndpoint, "AuthGrpcManager")
     {
         var middlewares = new List<IMiddleware> {
             new HeaderMiddleware(config.LoggerFactory, this.headers)

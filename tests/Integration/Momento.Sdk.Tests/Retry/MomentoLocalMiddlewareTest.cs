@@ -1,12 +1,12 @@
+using Grpc.Core;
+using Microsoft.Extensions.Logging;
+using Momento.Protos.CacheClient;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
-using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config.Middleware;
-using System.Threading.Tasks;
-using Momento.Protos.CacheClient;
 using Momento.Sdk.Internal.ExtensionMethods;
-using Grpc.Core;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk.Tests.Integration.Retry;
 
@@ -47,7 +47,8 @@ public class MomentoLocalMiddlewareTests
     }
 
     [Fact]
-    public void MomentoLocalMiddleware_OneCache_OneRequest() {
+    public void MomentoLocalMiddleware_OneCache_OneRequest()
+    {
         var middleware = CreateMiddleware(null);
         var testMetricsCollector = middleware.TestMetricsCollector;
         var cacheClient = CreateClientWithMiddleware(middleware);
@@ -66,7 +67,8 @@ public class MomentoLocalMiddlewareTests
     }
 
     [Fact]
-    public void MomentoLocalMiddleware_OneCache_MultipleRequests() {
+    public void MomentoLocalMiddleware_OneCache_MultipleRequests()
+    {
         var middleware = CreateMiddleware(null);
         var testMetricsCollector = middleware.TestMetricsCollector;
         var cacheClient = CreateClientWithMiddleware(middleware);
@@ -89,7 +91,8 @@ public class MomentoLocalMiddlewareTests
     }
 
     [Fact]
-    public void MomentoLocalMiddleware_MultipleCaches_MultipleRequests() {
+    public void MomentoLocalMiddleware_MultipleCaches_MultipleRequests()
+    {
         var middleware = CreateMiddleware(null);
         var testMetricsCollector = middleware.TestMetricsCollector;
         var cacheClient = CreateClientWithMiddleware(middleware);
@@ -123,8 +126,10 @@ public class MomentoLocalMiddlewareTests
     }
 
     [Fact]
-    public async Task MomentoLocalMiddleware_SetsCorrectMomentoLocalMetadata() {
-        var args = new MomentoLocalMiddlewareArgs {
+    public async Task MomentoLocalMiddleware_SetsCorrectMomentoLocalMetadata()
+    {
+        var args = new MomentoLocalMiddlewareArgs
+        {
             ReturnError = MomentoErrorCode.INTERNAL_SERVER_ERROR.ToStringValue(),
             ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
             ErrorCount = 1,
@@ -141,7 +146,8 @@ public class MomentoLocalMiddlewareTests
         _GetRequest request = new _GetRequest() { CacheKey = "key".ToByteString() };
         var callOptions = new CallOptions().WithHeaders(new Metadata());
         callOptions.Headers!.Add("cache", "cache");
-        var wrapped = await middleware.WrapRequest(request, callOptions, async (req, opts) => {
+        var wrapped = await middleware.WrapRequest(request, callOptions, async (req, opts) =>
+        {
             await Task.Delay(100);
             return new MiddlewareResponseState<_GetResponse>(
                 ResponseAsync: Task.FromResult(new _GetResponse()),
@@ -165,7 +171,8 @@ public class MomentoLocalMiddlewareTests
     }
 
     [Fact]
-    public void MomentoLocalMiddleware_EnumConversions() {
+    public void MomentoLocalMiddleware_EnumConversions()
+    {
         var getEnum = MomentoRpcMethod.Get;
         Assert.Equal("Get", getEnum.ToString());
         Assert.Equal("MomentoRpcMethod", getEnum.GetType().Name);

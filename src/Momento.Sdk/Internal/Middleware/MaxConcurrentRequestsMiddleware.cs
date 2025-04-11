@@ -1,12 +1,12 @@
-﻿using System;
-using System.Drawing;
-using System.IO;
-using System.Threading.Tasks;
-using Google.Protobuf.WellKnownTypes;
+﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Middleware;
+using System;
+using System.Drawing;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk.Internal.Middleware
 {
@@ -60,7 +60,7 @@ namespace Momento.Sdk.Internal.Middleware
             }
 
             await _semaphore.WaitOne();
-            
+
             try
             {
                 var result = await continuation(request, callOptions);

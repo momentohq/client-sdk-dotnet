@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Transport;
@@ -11,6 +7,10 @@ using Momento.Sdk.Internal;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Requests;
 using Momento.Sdk.Responses;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk;
 

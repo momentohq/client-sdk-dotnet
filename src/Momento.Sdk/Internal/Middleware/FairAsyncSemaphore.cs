@@ -14,7 +14,7 @@ namespace Momento.Sdk.Internal.Middleware
     {
         private readonly Channel<bool> _ticketChannel;
         private int _currentTicketCount;
-        
+
         internal FairAsyncSemaphore(int numTickets)
         {
             _ticketChannel = Channel.CreateBounded<bool>(numTickets);
@@ -27,7 +27,7 @@ namespace Momento.Sdk.Internal.Middleware
                     throw new ApplicationException("Unable to initialize async channel");
                 }
             }
-            
+
             _currentTicketCount = numTickets;
         }
 
@@ -46,7 +46,7 @@ namespace Momento.Sdk.Internal.Middleware
             }
             Interlocked.Increment(ref _currentTicketCount);
         }
-        
+
         public int GetCurrentTicketCount()
         {
             return Interlocked.CompareExchange(ref _currentTicketCount, 0, 0);

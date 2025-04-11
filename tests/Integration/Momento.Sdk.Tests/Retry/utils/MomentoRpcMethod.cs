@@ -2,7 +2,8 @@
 
 namespace Momento.Sdk.Tests.Integration.Retry;
 
-public enum MomentoRpcMethod {
+public enum MomentoRpcMethod
+{
     Get,
     Set,
     Delete,

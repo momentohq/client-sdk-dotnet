@@ -1,9 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using Grpc.Core;
+﻿using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Internal;
+using System;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk.Config.Retry
 {
@@ -29,7 +29,7 @@ namespace Momento.Sdk.Config.Retry
             // The first time we enter WrapRequest, we capture the overall deadline for the request
             // in case we're using the FixedTimeoutRetryStrategy
             DateTime _overallDeadline = callOptions.Deadline ?? Utils.CalculateDeadline(_clientTimeout);
-            
+
             MiddlewareResponseState<TResponse> nextState;
             int attemptNumber = 0;
             int? retryAfterMillis = 0;

@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk.Config.Middleware
 {
@@ -39,7 +39,7 @@ namespace Momento.Sdk.Config.Middleware
         public override Task EmitMetrics(ExperimentalRequestMetrics metrics)
         {
             var json = "{" +
-                        "\"momento\": {" + 
+                        "\"momento\": {" +
                             $"\"numActiveRequestsAtStart\": {metrics.NumActiveRequestsAtStart}, " +
                             $"\"numActiveRequestsAtFinish\": {metrics.NumActiveRequestsAtFinish}, " +
                             $"\"requestType\": \"{metrics.RequestType}\", " +

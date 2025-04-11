@@ -9,7 +9,8 @@ namespace Momento.Sdk.Tests.Unit;
 public class MomentoLocalProviderTests
 {
     [Fact]
-    public void MomentoLocalProvider_DefaultConstructor() {
+    public void MomentoLocalProvider_DefaultConstructor()
+    {
         var provider = new MomentoLocalProvider();
         Assert.Equal("", provider.AuthToken);
         Assert.Equal(8080, provider.Port);
@@ -19,7 +20,8 @@ public class MomentoLocalProviderTests
     }
 
     [Fact]
-    public void MomentoLocalProvider_ConstructorWithHostnameAndPort() {
+    public void MomentoLocalProvider_ConstructorWithHostnameAndPort()
+    {
         var provider = new MomentoLocalProvider("localhost", 9090);
         Assert.Equal("", provider.AuthToken);
         Assert.Equal(9090, provider.Port);
@@ -29,7 +31,8 @@ public class MomentoLocalProviderTests
     }
 
     [Fact]
-    public void MomentoLocalProvider_ConstructorWithHostname() {
+    public void MomentoLocalProvider_ConstructorWithHostname()
+    {
         var provider = new MomentoLocalProvider("localhost");
         Assert.Equal("", provider.AuthToken);
         Assert.Equal(8080, provider.Port);

@@ -1,9 +1,4 @@
 ﻿#pragma warning disable 1591
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using Google.Protobuf;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
@@ -15,6 +10,11 @@ using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Requests;
 using Momento.Sdk.Responses;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk.Internal;
 

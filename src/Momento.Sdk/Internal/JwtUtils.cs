@@ -1,8 +1,8 @@
-﻿using System;
-using JWT;
+﻿using JWT;
 using JWT.Serializers;
 using Momento.Sdk.Exceptions;
 using Newtonsoft.Json;
+using System;
 
 namespace Momento.Sdk.Internal;
 

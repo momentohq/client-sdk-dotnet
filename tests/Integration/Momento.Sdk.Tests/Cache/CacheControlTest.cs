@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Momento.Sdk.Auth;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Momento.Sdk.Auth;
 
 namespace Momento.Sdk.Tests.Integration.Cache;
 

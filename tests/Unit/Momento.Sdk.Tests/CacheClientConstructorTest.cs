@@ -1,7 +1,7 @@
-﻿using System;
-using Momento.Sdk;
+﻿using Momento.Sdk;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
+using System;
 using Xunit;
 
 namespace Momento.Sdk.Tests.Unit;

@@ -1,11 +1,11 @@
-using System;
-using System.Threading.Tasks;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Auth.AccessControl;
 using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal;
 using Momento.Sdk.Responses;
+using System;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk;
 
@@ -24,7 +24,7 @@ public class AuthClient : IAuthClient
     {
         scsTokenClient = new ScsTokenClient(config, authProvider);
     }
-    
+
     /// <inheritdoc />
     public async Task<GenerateDisposableTokenResponse> GenerateDisposableTokenAsync(DisposableTokenScope scope, ExpiresIn expiresIn, string? tokenId = null)
     {

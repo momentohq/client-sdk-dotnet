@@ -1,12 +1,12 @@
 ﻿#pragma warning disable 1591
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient;
 using Momento.Protos.CacheClient.Pubsub;
 using Momento.Sdk.Config.Retry;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Momento.Sdk.Internal.Retry
 {

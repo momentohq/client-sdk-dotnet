@@ -1,10 +1,10 @@
-using System.Collections.Generic;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Retry;
+using System.Collections.Generic;
 
 namespace Momento.Sdk.Tests.Integration.Retry;
 
@@ -34,7 +34,7 @@ public class ExponentialBackoffRetryStrategyTests
     }
 
     [Fact]
-    public void ExponentialBackoffRetryStrategy_IneligibleRpc() 
+    public void ExponentialBackoffRetryStrategy_IneligibleRpc()
     {
         var retryStrategy = new ExponentialBackoffRetryStrategy(_loggerFactory);
         var testProps = new MomentoLocalCacheAndCacheClient(_authProvider, _loggerFactory, _cacheConfig, null, retryStrategy);
@@ -46,8 +46,8 @@ public class ExponentialBackoffRetryStrategyTests
     public void ExponentialBackoffRetryStrategy_FirstAttemptReturnsInitialDelayWithJitter()
     {
         var retryStrategy = new ExponentialBackoffRetryStrategy(
-            _loggerFactory, 
-            initialDelay: TimeSpan.FromMilliseconds(100), 
+            _loggerFactory,
+            initialDelay: TimeSpan.FromMilliseconds(100),
             maxBackoff: TimeSpan.FromMilliseconds(1000)
         );
         for (int i = 0; i < 100; i++)
@@ -56,7 +56,9 @@ public class ExponentialBackoffRetryStrategyTests
             if (retryDelay == null)
             {
                 Assert.Fail("Retry delay should not be null");
-            } else {
+            }
+            else
+            {
                 Assert.InRange(retryDelay.Value, 100, 300);
             }
         }
@@ -66,8 +68,8 @@ public class ExponentialBackoffRetryStrategyTests
     public void ExponentialBackoffRetryStrategy_SecondAttemptShouldDoubleBaseDelayWithJitter()
     {
         var retryStrategy = new ExponentialBackoffRetryStrategy(
-            _loggerFactory, 
-            initialDelay: TimeSpan.FromMilliseconds(100), 
+            _loggerFactory,
+            initialDelay: TimeSpan.FromMilliseconds(100),
             maxBackoff: TimeSpan.FromMilliseconds(1000)
         );
         for (int i = 0; i < 100; i++)
@@ -76,7 +78,9 @@ public class ExponentialBackoffRetryStrategyTests
             if (retryDelay == null)
             {
                 Assert.Fail("Retry delay should not be null");
-            } else {
+            }
+            else
+            {
                 Assert.InRange(retryDelay.Value, 200, 600);
             }
         }
@@ -86,15 +90,17 @@ public class ExponentialBackoffRetryStrategyTests
     public void ExponentialBackoffRetryStrategy_ShouldNotExceedLimitWhenMaxBackoffReached()
     {
         var retryStrategy = new ExponentialBackoffRetryStrategy(
-            _loggerFactory, 
-            initialDelay: TimeSpan.FromMilliseconds(100), 
+            _loggerFactory,
+            initialDelay: TimeSpan.FromMilliseconds(100),
             maxBackoff: TimeSpan.FromMilliseconds(500)
         );
         var retryDelay = retryStrategy.DetermineWhenToRetryRequest(new Status(StatusCode.Unavailable, "unavailable"), new _GetRequest(), 100);
         if (retryDelay == null)
         {
             Assert.Fail("Retry delay should not be null");
-        } else {
+        }
+        else
+        {
             Assert.InRange(retryDelay.Value, 500, 1500);
         }
     }
@@ -103,11 +109,12 @@ public class ExponentialBackoffRetryStrategyTests
     public void ExponentialBackoffRetryStrategy_FullOutage_ShouldRetryMultipleTimesUntilClientTimeout()
     {
         var retryStrategy = new ExponentialBackoffRetryStrategy(
-            _loggerFactory, 
-            initialDelay: TimeSpan.FromMilliseconds(100), 
+            _loggerFactory,
+            initialDelay: TimeSpan.FromMilliseconds(100),
             maxBackoff: TimeSpan.FromMilliseconds(2000)
         );
-        var middlewareArgs = new MomentoLocalMiddlewareArgs {
+        var middlewareArgs = new MomentoLocalMiddlewareArgs
+        {
             ReturnError = MomentoErrorCode.SERVER_UNAVAILABLE.ToStringValue(),
             ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
         };
@@ -123,11 +130,12 @@ public class ExponentialBackoffRetryStrategyTests
     public void ExponentialBackoffRetryStrategy_TemporaryOutage()
     {
         var retryStrategy = new ExponentialBackoffRetryStrategy(
-            _loggerFactory, 
-            initialDelay: TimeSpan.FromMilliseconds(100), 
+            _loggerFactory,
+            initialDelay: TimeSpan.FromMilliseconds(100),
             maxBackoff: TimeSpan.FromMilliseconds(2000)
         );
-        var middlewareArgs = new MomentoLocalMiddlewareArgs {
+        var middlewareArgs = new MomentoLocalMiddlewareArgs
+        {
             ReturnError = MomentoErrorCode.SERVER_UNAVAILABLE.ToStringValue(),
             ErrorRpcList = new List<string> { MomentoRpcMethod.Get.ToMomentoLocalMetadataString() },
             ErrorCount = 2,

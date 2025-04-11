@@ -1,10 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Internal.ExtensionMethods;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk.Tests.Integration.Retry;
 
