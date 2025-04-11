@@ -50,7 +50,7 @@ public class FixedTimeoutRetryStrategy : IRetryStrategy
         // If a retry attempt's timeout has passed but the client's overall timeout has not yet passed,
         // we should reset the deadline and retry.
         // Note: dotnet appears to return Cancelled instead of DeadlineExceeded when the deadline passes.
-        if (attemptNumber > 1 && overallDeadline != null && overallDeadline > DateTime.UtcNow 
+        if (attemptNumber > 1 && overallDeadline != null && overallDeadline > DateTime.UtcNow
         && (grpcStatus.StatusCode == StatusCode.DeadlineExceeded || grpcStatus.StatusCode == StatusCode.Cancelled))
         {
             return AddJitter((int)_retryDelayInterval.TotalMilliseconds);

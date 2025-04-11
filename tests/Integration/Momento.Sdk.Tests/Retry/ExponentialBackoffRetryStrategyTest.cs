@@ -96,7 +96,7 @@ public class ExponentialBackoffRetryStrategyTests
             initialDelay: TimeSpan.FromMilliseconds(100),
             maxBackoff: TimeSpan.FromMilliseconds(500)
         );
-        var overallDeadline = DateTime.UtcNow.AddMilliseconds(CLIENT_TIMEOUT.TotalMilliseconds);    
+        var overallDeadline = DateTime.UtcNow.AddMilliseconds(CLIENT_TIMEOUT.TotalMilliseconds);
         var retryDelay = retryStrategy.DetermineWhenToRetryRequest(new Status(StatusCode.Unavailable, "unavailable"), new _GetRequest(), 100, overallDeadline);
         if (retryDelay == null)
         {

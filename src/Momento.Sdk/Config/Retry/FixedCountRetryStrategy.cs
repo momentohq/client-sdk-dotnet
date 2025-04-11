@@ -1,7 +1,7 @@
-using System;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Internal.Retry;
+using System;
 
 namespace Momento.Sdk.Config.Retry;
 
