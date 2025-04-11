@@ -11,7 +11,7 @@ namespace Momento.Sdk.Config.Retry;
 /// Retry attempts time out after responseDataReceivedTimeoutMillis to be able to 
 /// allow multiple retries before the client's timeout is reached.
 /// </summary>
-public class FixedTimeoutRetryStrategy : IRetryStrategy
+public class FixedTimeoutRetryStrategy : IDeadlineAwareRetryStrategy
 {
     /// <summary>
     /// The default retry delay interval. Schedules retry attempts to be 100ms later +/- jitter.
@@ -43,7 +43,7 @@ public class FixedTimeoutRetryStrategy : IRetryStrategy
     }
 
     /// <inheritdoc/>
-    public int? DetermineWhenToRetryRequest<TRequest>(Status grpcStatus, TRequest grpcRequest, int attemptNumber, DateTime? overallDeadline = null) where TRequest : class
+    public int? DetermineWhenToRetryRequest<TRequest>(Status grpcStatus, TRequest grpcRequest, int attemptNumber, DateTime overallDeadline) where TRequest : class
     {
         _logger.LogDebug($"Determining whether request is eligible for retry; status code: {grpcStatus.StatusCode}, request type: {grpcRequest.GetType()}, attemptNumber: {attemptNumber}");
 
@@ -56,12 +56,7 @@ public class FixedTimeoutRetryStrategy : IRetryStrategy
             return AddJitter((int)_retryDelayInterval.TotalMilliseconds);
         }
 
-        if (!_eligibilityStrategy.IsEligibleForRetry(grpcStatus, grpcRequest))
-        {
-            return null;
-        }
-        _logger.LogDebug($"Request is eligible for retry (attempt {attemptNumber}), retrying after {_retryDelayInterval.TotalMilliseconds}ms +/- jitter.");
-        return AddJitter((int)_retryDelayInterval.TotalMilliseconds);
+        return DetermineWhenToRetryRequest(grpcStatus, grpcRequest, attemptNumber);
     }
 
     private int AddJitter(int whenToRetry)
@@ -106,5 +101,16 @@ public class FixedTimeoutRetryStrategy : IRetryStrategy
     public override int GetHashCode()
     {
         return base.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public int? DetermineWhenToRetryRequest<TRequest>(Status grpcStatus, TRequest grpcRequest, int attemptNumber) where TRequest : class
+    {
+        if (!_eligibilityStrategy.IsEligibleForRetry(grpcStatus, grpcRequest))
+        {
+            return null;
+        }
+        _logger.LogDebug($"Request is eligible for retry (attempt {attemptNumber}), retrying after {_retryDelayInterval.TotalMilliseconds}ms +/- jitter.");
+        return AddJitter((int)_retryDelayInterval.TotalMilliseconds);
     }
 }

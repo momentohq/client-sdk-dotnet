@@ -50,10 +50,9 @@ public class ExponentialBackoffRetryStrategyTests
             initialDelay: TimeSpan.FromMilliseconds(100),
             maxBackoff: TimeSpan.FromMilliseconds(1000)
         );
-        var overallDeadline = DateTime.UtcNow.AddMilliseconds(CLIENT_TIMEOUT.TotalMilliseconds);
         for (int i = 0; i < 100; i++)
         {
-            var retryDelay = retryStrategy.DetermineWhenToRetryRequest(new Status(StatusCode.Unavailable, "unavailable"), new _GetRequest(), 0, overallDeadline);
+            var retryDelay = retryStrategy.DetermineWhenToRetryRequest(new Status(StatusCode.Unavailable, "unavailable"), new _GetRequest(), 0);
             if (retryDelay == null)
             {
                 Assert.Fail("Retry delay should not be null");
@@ -73,10 +72,9 @@ public class ExponentialBackoffRetryStrategyTests
             initialDelay: TimeSpan.FromMilliseconds(100),
             maxBackoff: TimeSpan.FromMilliseconds(1000)
         );
-        var overallDeadline = DateTime.UtcNow.AddMilliseconds(CLIENT_TIMEOUT.TotalMilliseconds);
         for (int i = 0; i < 100; i++)
         {
-            var retryDelay = retryStrategy.DetermineWhenToRetryRequest(new Status(StatusCode.Unavailable, "unavailable"), new _GetRequest(), 1, overallDeadline);
+            var retryDelay = retryStrategy.DetermineWhenToRetryRequest(new Status(StatusCode.Unavailable, "unavailable"), new _GetRequest(), 1);
             if (retryDelay == null)
             {
                 Assert.Fail("Retry delay should not be null");
@@ -96,8 +94,7 @@ public class ExponentialBackoffRetryStrategyTests
             initialDelay: TimeSpan.FromMilliseconds(100),
             maxBackoff: TimeSpan.FromMilliseconds(500)
         );
-        var overallDeadline = DateTime.UtcNow.AddMilliseconds(CLIENT_TIMEOUT.TotalMilliseconds);
-        var retryDelay = retryStrategy.DetermineWhenToRetryRequest(new Status(StatusCode.Unavailable, "unavailable"), new _GetRequest(), 100, overallDeadline);
+        var retryDelay = retryStrategy.DetermineWhenToRetryRequest(new Status(StatusCode.Unavailable, "unavailable"), new _GetRequest(), 100);
         if (retryDelay == null)
         {
             Assert.Fail("Retry delay should not be null");

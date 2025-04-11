@@ -44,7 +44,7 @@ public class FixedCountRetryStrategy : IRetryStrategy
     }
 
     /// <inheritdoc/>
-    public int? DetermineWhenToRetryRequest<TRequest>(Status grpcStatus, TRequest grpcRequest, int attemptNumber, DateTime? overallDeadline = null) where TRequest : class
+    public int? DetermineWhenToRetryRequest<TRequest>(Status grpcStatus, TRequest grpcRequest, int attemptNumber) where TRequest : class
     {
         _logger.LogDebug($"Determining whether request is eligible for retry; status code: {grpcStatus.StatusCode}, request type: {grpcRequest.GetType()}, attemptNumber: {attemptNumber}, maxAttempts: {MaxAttempts}");
         if (!_eligibilityStrategy.IsEligibleForRetry(grpcStatus, grpcRequest))
@@ -58,13 +58,6 @@ public class FixedCountRetryStrategy : IRetryStrategy
         }
         _logger.LogDebug($"Request is eligible for retry (attempt {attemptNumber} of {MaxAttempts}, retrying immediately.");
         return 0;
-    }
-
-    /// <inheritdoc/>
-    public CallOptions CalculateRetryDeadline(CallOptions callOptions, DateTime overallDeadline)
-    {
-        // The deadline for the retry attempt is the same as the overall deadline
-        return callOptions.WithDeadline(overallDeadline);
     }
 
     /// <summary>
