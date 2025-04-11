@@ -56,7 +56,13 @@ public class FixedTimeoutRetryStrategy : IDeadlineAwareRetryStrategy
             return AddJitter((int)_retryDelayInterval.TotalMilliseconds);
         }
 
-        return DetermineWhenToRetryRequest(grpcStatus, grpcRequest, attemptNumber);
+        // Otherwise we do the usual elibility strategy check
+        if (!_eligibilityStrategy.IsEligibleForRetry(grpcStatus, grpcRequest))
+        {
+            return null;
+        }
+        _logger.LogDebug($"Request is eligible for retry (attempt {attemptNumber}), retrying after {_retryDelayInterval.TotalMilliseconds}ms +/- jitter.");
+        return AddJitter((int)_retryDelayInterval.TotalMilliseconds);
     }
 
     private int AddJitter(int whenToRetry)
@@ -103,14 +109,14 @@ public class FixedTimeoutRetryStrategy : IDeadlineAwareRetryStrategy
         return base.GetHashCode();
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// This method is not used in this strategy, but is required by the IRetryStrategy interface.
+    /// </summary>
+    /// <param name="grpcStatus"></param>
+    /// <param name="grpcRequest"></param>
+    /// <param name="attemptNumber"></param>
     public int? DetermineWhenToRetryRequest<TRequest>(Status grpcStatus, TRequest grpcRequest, int attemptNumber) where TRequest : class
     {
-        if (!_eligibilityStrategy.IsEligibleForRetry(grpcStatus, grpcRequest))
-        {
-            return null;
-        }
-        _logger.LogDebug($"Request is eligible for retry (attempt {attemptNumber}), retrying after {_retryDelayInterval.TotalMilliseconds}ms +/- jitter.");
-        return AddJitter((int)_retryDelayInterval.TotalMilliseconds);
+        return null;
     }
 }
