@@ -69,10 +69,13 @@ public class MomentoLocalMiddleware : IMiddleware, ITopicMiddleware
     public int StreamEstablishedCounter { get; set; } = 0;
     public int StreamDisconnectedCounter { get; set; } = 0;
 
+    public IEnumerable<KeyValuePair<string, string>> Headers { get; } = new List<KeyValuePair<string, string>>();
+
     public MomentoLocalMiddleware(ILoggerFactory loggerFactory, MomentoLocalMiddlewareArgs? args)
     {
         _logger = loggerFactory.CreateLogger<MomentoLocalMiddleware>();
         _args = args ?? new MomentoLocalMiddlewareArgs();
+        Headers = CreateHeaders();
     }
 
     public async Task<MiddlewareResponseState<TResponse>> WrapRequest<TRequest, TResponse>(
@@ -118,7 +121,7 @@ public class MomentoLocalMiddleware : IMiddleware, ITopicMiddleware
         );
     }
 
-    public IList<Tuple<string, string>> WithHeaders()
+    private IList<KeyValuePair<string, string>> CreateHeaders()
     {
         var headerMappings = new Dictionary<string, string?>
         {
@@ -134,7 +137,7 @@ public class MomentoLocalMiddleware : IMiddleware, ITopicMiddleware
             { "stream-error-message-limit", _args.StreamErrorMessageLimit?.ToString() }
         };
 
-        var headers = new List<Tuple<string, string>>();
+        var headers = new List<KeyValuePair<string, string>>();
         foreach (var pair in headerMappings)
         {
             string key = pair.Key;
@@ -142,7 +145,7 @@ public class MomentoLocalMiddleware : IMiddleware, ITopicMiddleware
             {
                 if (value != null)
                 {
-                    headers.Add(new Tuple<string, string>(key, value.ToString()));
+                    headers.Add(new KeyValuePair<string, string>(key, value.ToString()));
                 }
             }
         }

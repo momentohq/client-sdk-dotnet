@@ -32,10 +32,10 @@ public class PubsubClientWithMiddleware : IPubsubClient
 {
     private readonly Pubsub.PubsubClient _generatedClient;
     private readonly IList<IMiddleware> _unaryMiddlewares;
-    private readonly IList<Tuple<string, string>> _headers;
+    private readonly IList<KeyValuePair<string, string>> _headers;
 
     public PubsubClientWithMiddleware(Pubsub.PubsubClient generatedClient, IList<IMiddleware> middlewares,
-        IList<Tuple<string, string>> headers)
+        IList<KeyValuePair<string, string>> headers)
     {
         _generatedClient = generatedClient;
         _unaryMiddlewares = middlewares;
@@ -60,7 +60,7 @@ public class PubsubClientWithMiddleware : IPubsubClient
 
         foreach (var header in _headers)
         {
-            callHeaders.Add(header.Item1, header.Item2);
+            callHeaders.Add(header.Key, header.Value);
         }
 
         return _generatedClient.Subscribe(request, callOptions.WithHeaders(callHeaders));
@@ -74,11 +74,11 @@ public class TopicGrpcManager : GrpcManager
     internal TopicGrpcManager(ITopicConfiguration config, ICredentialProvider authProvider) : base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authProvider, authProvider.CacheEndpoint, "TopicGrpcManager")
     {
         // Extract headers from the middlewares in the topic config
-        var middlewareHeaders = config.Middlewares.OfType<ITopicMiddleware>().SelectMany(h => h.WithHeaders()).ToList();
+        var middlewareHeaders = config.Middlewares.SelectMany(h => h.Headers).ToList();
 
         // Publish requests can use a HeaderMiddleware to provide the usual sdk headers,
         // as well as any additional headers from the config middlewares.
-        var unaryHeaders = middlewareHeaders.Select(h => new Header(name: h.Item1, value: h.Item2)).Concat(this.headers).ToList();
+        var unaryHeaders = middlewareHeaders.Select(h => new Header(name: h.Key, value: h.Value)).Concat(this.headers).ToList();
         var unaryMiddlewares = new List<IMiddleware>
         {
             new HeaderMiddleware(config.LoggerFactory, unaryHeaders),

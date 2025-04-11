@@ -9,10 +9,10 @@ namespace Momento.Sdk.Config.Middleware;
 public interface ITopicMiddleware
 {
     /// <summary>
-    /// Add arbitrary headers to each request.
+    /// Arbitrary headers to each request.
     /// </summary>
     /// <returns></returns>
-    public IList<Tuple<string, string>> WithHeaders();
+    public IEnumerable<KeyValuePair<string, string>> Headers { get; }
 
     /// <summary>
     /// Take action when a subscription stream is disconnected.

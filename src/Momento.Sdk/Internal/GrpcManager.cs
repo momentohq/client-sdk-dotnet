@@ -39,7 +39,7 @@ public class GrpcManager : IDisposable
 
     internal List<Header> headers;
 
-    internal List<Tuple<string, string>> headerTuples;
+    internal List<KeyValuePair<string, string>> headerTuples;
 
     protected CallInvoker invoker;
 
@@ -55,13 +55,13 @@ public class GrpcManager : IDisposable
     {
         this._logger = loggerFactory.CreateLogger(loggerName);
 
-        this.headerTuples = new List<Tuple<string, string>>
+        this.headerTuples = new List<KeyValuePair<string, string>>
         {
             new(Header.AuthorizationKey, authProvider.AuthToken),
             new(Header.AgentKey, version),
             new(Header.RuntimeVersionKey, runtimeVersion)
         };
-        this.headers = headerTuples.Select(tuple => new Header(name: tuple.Item1, value: tuple.Item2)).ToList();
+        this.headers = headerTuples.Select(tuple => new Header(name: tuple.Key, value: tuple.Value)).ToList();
 
         // Set all channel opens and create the grpc connection
         var channelOptions = grpcConfig.GrpcChannelOptions;
