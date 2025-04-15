@@ -99,7 +99,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         try
         {
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicPublish, cacheName, topicName);
-            await grpcManager.Client.publish(request, new CallOptions(deadline: Utils.CalculateDeadline(topicClientOperationTimeout)));
+            await grpcManager.GetNextUnaryClient().publish(request, new CallOptions(deadline: Utils.CalculateDeadline(topicClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -173,7 +173,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
             request.SequencePage = _lastSequencePage;
 
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, _cacheName, _topicName);
-            var subscription = _grpcManager.Client.subscribe(request, new CallOptions());
+            var subscription = _grpcManager.GetNextStreamClient().subscribe(request, new CallOptions());
 
             await subscription.ResponseStream.MoveNext();
             var firstMessage = subscription.ResponseStream.Current;
