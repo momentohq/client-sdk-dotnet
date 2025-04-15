@@ -56,6 +56,10 @@ public class GrpcManager : IDisposable
     /// <param name="loggerName"></param>
     internal GrpcManager(IGrpcConfiguration grpcConfig, ILoggerFactory loggerFactory, ICredentialProvider authProvider, string endpoint, string loggerName)
     {
+#if USE_GRPC_WEB
+        // Note: all web SDK requests are routed to a `web.` subdomain to allow us flexibility on the server
+        endpoint = $"web.{endpoint}";
+#endif
         this.grpcConfig = grpcConfig;
         this.authProvider = authProvider;
         this.endpoint = endpoint;
@@ -109,8 +113,6 @@ public class GrpcManager : IDisposable
         }
 #elif USE_GRPC_WEB
         channelOptions.HttpHandler = new GrpcWebHandler(new HttpClientHandler());
-        // Note: all web SDK requests are routed to a `web.` subdomain to allow us flexibility on the server
-        endpoint = $"web.{endpoint}";
 #endif
         var uri = authProvider.SecureEndpoints ? $"https://{endpoint}" : $"http://{endpoint}";
         return GrpcChannel.ForAddress(uri, channelOptions);

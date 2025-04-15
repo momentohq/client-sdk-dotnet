@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -11,15 +10,12 @@ using Grpc.Net.Client;
 using System.Net.Http;
 using Grpc.Net.Client.Web;
 #endif
-using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient.Pubsub;
 using Momento.Protos.Common;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Middleware;
-using Momento.Sdk.Config.Retry;
 using Momento.Sdk.Internal.Middleware;
-using static System.Reflection.Assembly;
 
 namespace Momento.Sdk.Internal;
 
