@@ -15,18 +15,18 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
     private const int DEFAULT_STREAM_CHANNELS = 4;
     private const int DEFAULT_UNARY_CHANNELS = 4;
     private const int DEFAULT_MIN_CHANNELS = 1;
-    
+
     /// <inheritdoc/>
     public TimeSpan Deadline { get; }
     /// <inheritdoc/>
     public int MinNumGrpcChannels { get; }
-    
+
     /// <inheritdoc/>
-    public int NumStreamGrpcChannels { get;  }
-    
+    public int NumStreamGrpcChannels { get; }
+
     /// <inheritdoc/>
-    public int NumUnaryGrpcChannels { get;  }
-    
+    public int NumUnaryGrpcChannels { get; }
+
     /// <inheritdoc/>
     public GrpcChannelOptions GrpcChannelOptions { get; }
     /// <inheritdoc/>
@@ -48,7 +48,7 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
     public StaticGrpcConfiguration(
         TimeSpan deadline,
         GrpcChannelOptions? grpcChannelOptions = null,
-        int minNumGrpcChannels = DEFAULT_MIN_CHANNELS, 
+        int minNumGrpcChannels = DEFAULT_MIN_CHANNELS,
         int numStreamGrpcChannels = DEFAULT_STREAM_CHANNELS,
         int numUnaryGrpcChannels = DEFAULT_UNARY_CHANNELS,
         SocketsHttpHandlerOptions? socketsHttpHandlerOptions = null
@@ -80,7 +80,7 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
     /// <inheritdoc/>
     public IGrpcConfiguration WithDeadline(TimeSpan deadline)
     {
-        return new StaticGrpcConfiguration(deadline, GrpcChannelOptions, MinNumGrpcChannels, NumStreamGrpcChannels, MinNumGrpcChannels,  SocketsHttpHandlerOptions);
+        return new StaticGrpcConfiguration(deadline, GrpcChannelOptions, MinNumGrpcChannels, NumStreamGrpcChannels, MinNumGrpcChannels, SocketsHttpHandlerOptions);
     }
 
     /// <inheritdoc/>
@@ -88,13 +88,13 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
     {
         return new StaticGrpcConfiguration(Deadline, GrpcChannelOptions, minNumGrpcChannels, NumStreamGrpcChannels, NumUnaryGrpcChannels, SocketsHttpHandlerOptions);
     }
-    
+
     /// <inheritdoc/>
     public IGrpcConfiguration WithNumStreamGrpcChannels(int numStreamGrpcChannels)
     {
         return new StaticGrpcConfiguration(Deadline, GrpcChannelOptions, MinNumGrpcChannels, numStreamGrpcChannels, NumUnaryGrpcChannels, SocketsHttpHandlerOptions);
     }
-    
+
     /// <inheritdoc/>
     public IGrpcConfiguration WithNumUnaryGrpcChannels(int numUnaryGrpcChannels)
     {

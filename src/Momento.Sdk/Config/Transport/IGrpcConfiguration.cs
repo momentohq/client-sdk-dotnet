@@ -25,13 +25,13 @@ public interface IGrpcConfiguration
     /// help improve the load distribution (and thus performance).
     /// </summary>
     public int MinNumGrpcChannels { get; }
-    
+
     /// <summary>
     /// Configures the number of stream gRPC channels that the client will open to the
     /// server.  By default, the client will only open four channels at startup. 
     /// </summary>
     public int NumStreamGrpcChannels { get; }
-    
+
     /// <summary>
     /// Configures the number of unary gRPC channels that the client will open to the
     /// server.  By default, the client will only open four channels at startup. 
@@ -68,14 +68,14 @@ public interface IGrpcConfiguration
     /// <param name="minNumGrpcChannels"></param>
     /// <returns>A new IGrpcConfiguration with the specified minimum number of gRPC channels</returns>
     public IGrpcConfiguration WithMinNumGrpcChannels(int minNumGrpcChannels);
-    
+
     /// <summary>
     /// Copy constructor to override the number of stream gRPC channels
     /// </summary>
     /// <param name="numStreamGrpcChannels"></param>
     /// <returns>A new IGrpcConfiguration with the specified number of stream gRPC channels</returns>
     public IGrpcConfiguration WithNumStreamGrpcChannels(int numStreamGrpcChannels);
-    
+
     /// <summary>
     /// Copy constructor to override the number of unary gRPC channels
     /// </summary>
