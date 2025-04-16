@@ -249,7 +249,6 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
                     {
                         case TopicMessage.Binary:
                         case TopicMessage.Text:
-                            Console.WriteLine($"Received message {receivedSet.Count}: {message.GetType().Name}");
                             receivedSet.Add(message);
                             break;
                         default:
