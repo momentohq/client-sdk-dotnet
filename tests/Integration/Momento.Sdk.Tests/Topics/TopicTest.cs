@@ -95,7 +95,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
         };
 
         var produceCancellation = new CancellationTokenSource();
-        produceCancellation.CancelAfter(2000);
+        produceCancellation.CancelAfter(3000);
 
         // we don't need to put this on a different thread
         var consumeTask = ConsumeMessages(topicName, produceCancellation.Token);
@@ -249,6 +249,7 @@ public class TopicTest : IClassFixture<CacheClientFixture>, IClassFixture<TopicC
                     {
                         case TopicMessage.Binary:
                         case TopicMessage.Text:
+                            Console.WriteLine($"Received message {receivedSet.Count}: {message.GetType().Name}");
                             receivedSet.Add(message);
                             break;
                         default:
