@@ -7,7 +7,7 @@ namespace Momento.Sdk.Config.Retry;
 /// <summary>
 /// The most basic retry strategy; simply retries an eligible failed request the specified number of times.
 /// </summary>
-public class FixedCountRetryStrategy : IBasicRetryStrategy
+public class FixedCountRetryStrategy : IRetryStrategy
 {
     private ILoggerFactory _loggerFactory;
     private ILogger _logger;

@@ -13,7 +13,7 @@ namespace Momento.Sdk.Config.Retry;
 /// the current backoff and 3 times the previous backoff, with the 
 /// current backoff capped at `maxBackoffMillis`
 /// </summary>
-public class ExponentialBackoffRetryStrategy : IBasicRetryStrategy
+public class ExponentialBackoffRetryStrategy : IRetryStrategy
 {
     /// <summary>
     /// Default initial delay for the first retry (in milliseconds)

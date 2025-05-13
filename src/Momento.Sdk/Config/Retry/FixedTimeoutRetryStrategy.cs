@@ -42,21 +42,37 @@ public class FixedTimeoutRetryStrategy : IDeadlineAwareRetryStrategy
         _responseDataReceivedTimeout = responseDataReceivedTimeout ?? DEFAULT_RESPONSE_DATA_RECEIVED_TIMEOUT;
     }
 
+    // This is the IDeadlineAwareRetryStrategy version that accepts overallDeadline
     /// <inheritdoc/>
     public int? DetermineWhenToRetryRequest<TRequest>(Status grpcStatus, TRequest grpcRequest, int attemptNumber, DateTime overallDeadline) where TRequest : class
     {
         _logger.LogDebug($"Determining whether request is eligible for retry; status code: {grpcStatus.StatusCode}, request type: {grpcRequest.GetType()}, attemptNumber: {attemptNumber}");
 
-        // If a retry attempt's timeout has passed but the client's overall timeout has not yet passed,
-        // we should reset the deadline and retry.
-        // Note: dotnet appears to return Cancelled instead of DeadlineExceeded when the deadline passes.
-        if (attemptNumber > 1 && overallDeadline != null && overallDeadline > DateTime.UtcNow
-        && (grpcStatus.StatusCode == StatusCode.DeadlineExceeded || grpcStatus.StatusCode == StatusCode.Cancelled))
+        // If a retry attempt's timeout has passed but the client's overall timeout has not yet passed
+        // and retry delay interval will not push us past the overall timeout, we should reset the deadline and retry.
+        // Note: dotnet appears to return Cancelled instead of DeadlineExceeded when the deadline passes
+        // so we check if we have received either status to indicate a timeout.
+        if (attemptNumber > 1 && overallDeadline > DateTime.UtcNow
+        && (grpcStatus.StatusCode == StatusCode.DeadlineExceeded || grpcStatus.StatusCode == StatusCode.Cancelled)
+        && (overallDeadline - DateTime.UtcNow) > _retryDelayInterval)
         {
             return AddJitter((int)_retryDelayInterval.TotalMilliseconds);
         }
 
         // Otherwise we do the usual elibility strategy check
+        if (!_eligibilityStrategy.IsEligibleForRetry(grpcStatus, grpcRequest))
+        {
+            return null;
+        }
+        _logger.LogDebug($"Request is eligible for retry (attempt {attemptNumber}), retrying after {_retryDelayInterval.TotalMilliseconds}ms +/- jitter.");
+        return AddJitter((int)_retryDelayInterval.TotalMilliseconds);
+    }
+
+    // This is the IRetryStrategy version that does NOT accept overallDeadline
+    /// <inheritdoc/>
+    public int? DetermineWhenToRetryRequest<TRequest>(Status grpcStatus, TRequest grpcRequest, int attemptNumber) where TRequest : class
+    {
+        // Do only the usual elibility strategy check
         if (!_eligibilityStrategy.IsEligibleForRetry(grpcStatus, grpcRequest))
         {
             return null;

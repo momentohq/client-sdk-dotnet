@@ -70,13 +70,9 @@ namespace Momento.Sdk.Config.Retry
                         callOptions = strategy.CalculateRetryDeadline(callOptions, _overallDeadline);
                         _logger.LogDebug($"Retrying request with new deadline: {callOptions.Deadline}");
                     }
-                    else if (_retryStrategy is IBasicRetryStrategy basicStrategy)
-                    {
-                        retryAfterMillis = basicStrategy.DetermineWhenToRetryRequest(status, request, attemptNumber);
-                    }
                     else
                     {
-                        retryAfterMillis = null;
+                        retryAfterMillis = _retryStrategy.DetermineWhenToRetryRequest(status, request, attemptNumber);
                     }
                 }
             }
