@@ -18,7 +18,7 @@ namespace Momento.Sdk.Internal;
 public class ScsTopicClientBase : IDisposable
 {
     protected readonly TopicGrpcManager grpcManager;
-    protected readonly TimeSpan topicClientOperationTimeout = TimeSpan.FromSeconds(60);
+    protected readonly TimeSpan topicClientOperationTimeout = TimeSpan.FromSeconds(5);
     private readonly ILogger _logger;
     private bool hasSentOnetimeHeaders = false;
 
