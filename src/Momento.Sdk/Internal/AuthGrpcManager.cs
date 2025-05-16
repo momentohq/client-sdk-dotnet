@@ -29,9 +29,9 @@ internal class AuthClientWithMiddleware : IAuthClient
 {
     private readonly IList<IMiddleware> _middlewares;
     private readonly Token.TokenClient _generatedClient;
-    private readonly IList<Tuple<string, string>> _headers;
+    private readonly IList<KeyValuePair<string, string>> _headers;
 
-    public AuthClientWithMiddleware(Token.TokenClient generatedClient, IList<IMiddleware> middlewares, IList<Tuple<string, string>> headers)
+    public AuthClientWithMiddleware(Token.TokenClient generatedClient, IList<IMiddleware> middlewares, IList<KeyValuePair<string, string>> headers)
     {
         _generatedClient = generatedClient;
         _middlewares = middlewares;
