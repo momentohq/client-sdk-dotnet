@@ -27,18 +27,6 @@ public interface IGrpcConfiguration
     public int MinNumGrpcChannels { get; }
 
     /// <summary>
-    /// Configures the number of stream gRPC channels that the client will open to the
-    /// server.  By default, the client will only open four channels at startup. 
-    /// </summary>
-    public int NumStreamGrpcChannels { get; }
-
-    /// <summary>
-    /// Configures the number of unary gRPC channels that the client will open to the
-    /// server.  By default, the client will only open four channels at startup. 
-    /// </summary>
-    public int NumUnaryGrpcChannels { get; }
-
-    /// <summary>
     /// Override the default .NET GrpcChannelOptions.  (.NET only povides a strongly-typed
     /// interface for the channel options, which allows modifying specific values but does
     /// not allow the caller to use arbitrary strings to set the channel options.)
@@ -68,20 +56,6 @@ public interface IGrpcConfiguration
     /// <param name="minNumGrpcChannels"></param>
     /// <returns>A new IGrpcConfiguration with the specified minimum number of gRPC channels</returns>
     public IGrpcConfiguration WithMinNumGrpcChannels(int minNumGrpcChannels);
-
-    /// <summary>
-    /// Copy constructor to override the number of stream gRPC channels
-    /// </summary>
-    /// <param name="numStreamGrpcChannels"></param>
-    /// <returns>A new IGrpcConfiguration with the specified number of stream gRPC channels</returns>
-    public IGrpcConfiguration WithNumStreamGrpcChannels(int numStreamGrpcChannels);
-
-    /// <summary>
-    /// Copy constructor to override the number of unary gRPC channels
-    /// </summary>
-    /// <param name="numUnaryGrpcChannels"></param>
-    /// <returns>A new IGrpcConfiguration with the specified number of unary gRPC channels</returns>
-    public IGrpcConfiguration WithNumUnaryGrpcChannels(int numUnaryGrpcChannels);
 
     /// <summary>
     /// Copy constructor to override the channel options
