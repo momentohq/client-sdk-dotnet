@@ -77,7 +77,7 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
     /// <inheritdoc/>
     public IGrpcConfiguration WithGrpcChannelOptions(GrpcChannelOptions grpcChannelOptions)
     {
-        return new StaticGrpcConfiguration(Deadline, grpcChannelOptions, MinNumGrpcChannels);
+        return new StaticGrpcConfiguration(Deadline, grpcChannelOptions, MinNumGrpcChannels, SocketsHttpHandlerOptions);
     }
 
     /// <inheritdoc/>
