@@ -9,6 +9,7 @@ using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Responses;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,19 +18,36 @@ namespace Momento.Sdk.Internal;
 
 public class ScsTopicClientBase : IDisposable
 {
-    protected readonly TopicGrpcManager grpcManager;
+    // TODO: make number of channels configurable using WithMaxSubscriptions config option
+    private const int DEFAULT_STREAM_CHANNELS = 4;
+    private const int DEFAULT_UNARY_CHANNELS = 4;
+    private readonly List<TopicGrpcManager> unaryGrpcManagers;
+    private readonly List<TopicGrpcManager> streamGrpcManagers;
+    private int unaryClientIndex = 0;
+    private int streamClientIndex = 0;
+
     protected readonly TimeSpan topicClientOperationTimeout = TimeSpan.FromSeconds(60);
     private readonly ILogger _logger;
     private bool hasSentOnetimeHeaders = false;
-
     protected readonly CacheExceptionMapper _exceptionMapper;
 
     public ScsTopicClientBase(ITopicConfiguration config, ICredentialProvider authProvider)
     {
-        this.grpcManager = new TopicGrpcManager(config, authProvider);
         this._logger = config.LoggerFactory.CreateLogger<ScsTopicClient>();
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
         this.topicClientOperationTimeout = config.TransportStrategy.GrpcConfig.Deadline;
+
+        unaryGrpcManagers = new List<TopicGrpcManager>();
+        for (var i = 0; i < DEFAULT_UNARY_CHANNELS; i++)
+        {
+            unaryGrpcManagers.Add(new TopicGrpcManager(config, authProvider));
+        }
+
+        streamGrpcManagers = new List<TopicGrpcManager>();
+        for (var i = 0; i < DEFAULT_STREAM_CHANNELS; i++)
+        {
+            streamGrpcManagers.Add(new TopicGrpcManager(config, authProvider));
+        }
     }
 
     private Metadata MetadataWithCache(string cacheName)
@@ -44,9 +62,33 @@ public class ScsTopicClientBase : IDisposable
         return new Metadata() { { "cache", cacheName }, { "agent", $"dotnet:topic:{sdkVersion}" }, { "runtime-v]ersion", runtimeVer } };
     }
 
+    public TopicGrpcManager GetNextUnaryClient()
+    {
+        var index = Interlocked.Increment(ref unaryClientIndex);
+        return this.unaryGrpcManagers[index % this.unaryGrpcManagers.Count];
+    }
+
+    public TopicGrpcManager GetNextStreamClient()
+    {
+        // TODO: active subscriptions bookkeeping
+        var index = Interlocked.Increment(ref streamClientIndex);
+        return this.streamGrpcManagers[index % this.streamGrpcManagers.Count];
+    }
+
     public void Dispose()
     {
-        this.grpcManager.Dispose();
+        for (var i = 0; i < DEFAULT_UNARY_CHANNELS; i++)
+        {
+            this.unaryGrpcManagers[i].Dispose();
+        }
+        for (var i = 0; i < DEFAULT_STREAM_CHANNELS; i++)
+        {
+            this.streamGrpcManagers[i].Dispose();
+        }
+        this.unaryGrpcManagers.Clear();
+        this.streamGrpcManagers.Clear();
+        this.unaryClientIndex = 0;
+        this.streamClientIndex = 0;
     }
 }
 
@@ -99,7 +141,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         try
         {
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicPublish, cacheName, topicName);
-            await grpcManager.GetNextUnaryClient().publish(request, new CallOptions(deadline: Utils.CalculateDeadline(topicClientOperationTimeout)));
+            await this.GetNextUnaryClient().Client.publish(request, new CallOptions(deadline: Utils.CalculateDeadline(topicClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -117,6 +159,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         SubscriptionWrapper subscriptionWrapper;
         try
         {
+            var grpcManager = GetNextStreamClient();
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, cacheName, topicName);
             subscriptionWrapper = new SubscriptionWrapper(grpcManager, cacheName, topicName,
                 resumeAtTopicSequenceNumber, resumeAtTopicSequencePage, _exceptionMapper, _logger);
@@ -173,7 +216,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
             request.SequencePage = _lastSequencePage;
 
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, _cacheName, _topicName);
-            var subscription = _grpcManager.GetNextStreamClient().subscribe(request, new CallOptions());
+            var subscription = _grpcManager.Client.subscribe(request, new CallOptions());
 
             await subscription.ResponseStream.MoveNext();
             var firstMessage = subscription.ResponseStream.Current;

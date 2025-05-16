@@ -66,67 +66,22 @@ public class PubsubClientWithMiddleware : IPubsubClient
 
 public class TopicGrpcManager : GrpcManager
 {
-    public readonly List<IPubsubClient> StreamClients;
-    public readonly List<IPubsubClient> UnaryClients;
-
-    private readonly List<GrpcChannel> allChannels = new();
-    private int unaryClientIndex = 0;
-    private int streamClientIndex = 0;
+    public readonly IPubsubClient Client;
 
     internal TopicGrpcManager(ITopicConfiguration config, ICredentialProvider authProvider)
         : base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authProvider, authProvider.CacheEndpoint, "TopicGrpcManager")
     {
-        var grpcConfig = config.TransportStrategy.GrpcConfig;
         var middlewares = new List<IMiddleware>
         {
             new HeaderMiddleware(config.LoggerFactory, this.headers),
         };
 
-        StreamClients = new List<IPubsubClient>();
-        UnaryClients = new List<IPubsubClient>();
-
-        for (var i = 0; i < grpcConfig.NumStreamGrpcChannels; i++)
-        {
-            var streamChannel = CreateAndRegisterChannel();
-            var streamInvoker = streamChannel.CreateCallInvoker();
-            var streamClient = new Pubsub.PubsubClient(streamInvoker);
-            StreamClients.Add(new PubsubClientWithMiddleware(streamClient, middlewares, this.headerTuples));
-        }
-
-        for (var i = 0; i < grpcConfig.NumUnaryGrpcChannels; i++)
-        {
-            var unaryChannel = CreateAndRegisterChannel();
-            var unaryInvoker = unaryChannel.CreateCallInvoker();
-            var unaryClient = new Pubsub.PubsubClient(unaryInvoker);
-            UnaryClients.Add(new PubsubClientWithMiddleware(unaryClient, middlewares, this.headerTuples));
-        }
-    }
-
-    private GrpcChannel CreateAndRegisterChannel()
-    {
-        var channel = CreateNewGrpcChannel();
-        allChannels.Add(channel);
-        return channel;
-    }
-
-    public IPubsubClient GetNextUnaryClient()
-    {
-        var index = Interlocked.Increment(ref unaryClientIndex);
-        return UnaryClients[index % UnaryClients.Count];
-    }
-
-    public IPubsubClient GetNextStreamClient()
-    {
-        var index = Interlocked.Increment(ref streamClientIndex);
-        return StreamClients[index % StreamClients.Count];
+        var client = new Pubsub.PubsubClient(this.invoker);
+        Client = new PubsubClientWithMiddleware(client, middlewares, this.headerTuples);
     }
 
     public override void Dispose()
     {
-        foreach (var channel in allChannels)
-        {
-            channel.Dispose();
-        }
         base.Dispose();
     }
 }
