@@ -23,13 +23,28 @@ public class ScsTopicClientBase : IDisposable
     private bool hasSentOnetimeHeaders = false;
 
     protected readonly CacheExceptionMapper _exceptionMapper;
+    protected readonly ITopicSubscriptionConnectionStateCallbacks? _callbacks;
 
     public ScsTopicClientBase(ITopicConfiguration config, ICredentialProvider authProvider)
     {
-        this.grpcManager = new TopicGrpcManager(config, authProvider);
+
         this._logger = config.LoggerFactory.CreateLogger<ScsTopicClient>();
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
         this.topicClientOperationTimeout = config.TransportStrategy.GrpcConfig.Deadline;
+
+        if (config is ITopicSubscriptionConnectionStateCallbacks callbacks)
+        {
+            this._callbacks = callbacks;
+        }
+
+        if (config is ITopicConfigWithHeaders configWithHeaders)
+        {
+            this.grpcManager = new TopicGrpcManager(config, authProvider, configWithHeaders.Headers);
+        }
+        else
+        {
+            this.grpcManager = new TopicGrpcManager(config, authProvider);
+        }
     }
 
     private Metadata MetadataWithCache(string cacheName)
@@ -119,7 +134,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         {
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, cacheName, topicName);
             subscriptionWrapper = new SubscriptionWrapper(grpcManager, cacheName, topicName,
-                resumeAtTopicSequenceNumber, resumeAtTopicSequencePage, _exceptionMapper, _logger);
+                resumeAtTopicSequenceNumber, resumeAtTopicSequencePage, _exceptionMapper, _logger, _callbacks);
             await subscriptionWrapper.Subscribe();
         }
         catch (Exception e)
@@ -147,10 +162,11 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         private ulong _lastSequenceNumber;
         private ulong _lastSequencePage;
         private bool _subscribed;
+        private ITopicSubscriptionConnectionStateCallbacks? _callbacks;
 
         public SubscriptionWrapper(TopicGrpcManager grpcManager, string cacheName,
             string topicName, ulong? resumeAtTopicSequenceNumber, ulong? resumeAtTopicSequencePage,
-            CacheExceptionMapper exceptionMapper, ILogger logger)
+            CacheExceptionMapper exceptionMapper, ILogger logger, ITopicSubscriptionConnectionStateCallbacks? callbacks = null)
         {
             _grpcManager = grpcManager;
             _cacheName = cacheName;
@@ -159,6 +175,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
             _lastSequencePage = resumeAtTopicSequencePage ?? 0;
             _exceptionMapper = exceptionMapper;
             _logger = logger;
+            _callbacks = callbacks;
         }
 
         public async Task Subscribe()
@@ -186,6 +203,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
 
             _subscription = subscription;
             _subscribed = true;
+            _callbacks?.onStreamEstablished();
         }
 
         public async ValueTask<ITopicEvent?> GetNextEventFromGrpcStreamAsync(
@@ -199,12 +217,14 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                     {
                         await Subscribe();
                         _subscribed = true;
+                        _callbacks?.onStreamEstablished();
                     }
 
                     await _subscription!.ResponseStream.MoveNext(cancellationToken);
                 }
                 catch (OperationCanceledException)
                 {
+                    _callbacks?.OnStreamDisconnected();
                     break;
                 }
                 catch (Exception e)
@@ -212,6 +232,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                     var sdkException = _exceptionMapper.Convert(e);
                     if (sdkException.ErrorCode is MomentoErrorCode.CANCELLED_ERROR)
                     {
+                        _callbacks?.OnStreamDisconnected();
                         break;
                     }
 
@@ -220,6 +241,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                     // Certain errors can never be recovered
                     if (!IsErrorRecoverable(sdkException))
                     {
+                        _callbacks?.OnStreamDisconnected();
                         return new TopicMessage.Error(sdkException);
                     }
 
@@ -228,6 +250,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                     await Task.Delay(5_000, cancellationToken);
 
                     _subscribed = false;
+                    _callbacks?.OnStreamDisconnected();
                     continue;
                 }
 
@@ -249,6 +272,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                                 return new TopicMessage.Binary(message.Item.Value, _lastSequenceNumber, _lastSequencePage, message.Item.PublisherId == "" ? null : message.Item.PublisherId);
                             case _TopicValue.KindOneofCase.None:
                             default:
+                                _callbacks?.OnStreamDisconnected();
                                 _logger.LogTraceTopicMessageReceived("unknown", _cacheName, _topicName);
                                 break;
                         }
@@ -267,9 +291,11 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                         return new TopicSystemEvent.Heartbeat();
                     case _SubscriptionItem.KindOneofCase.None:
                         _logger.LogTraceTopicMessageReceived("none", _cacheName, _topicName);
+                        _callbacks?.OnStreamDisconnected();
                         break;
                     default:
                         _logger.LogTraceTopicMessageReceived("unknown", _cacheName, _topicName);
+                        _callbacks?.OnStreamDisconnected();
                         break;
                 }
             }
