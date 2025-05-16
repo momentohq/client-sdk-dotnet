@@ -23,8 +23,7 @@ namespace Momento.Sdk.Internal;
 public class GrpcManager : IDisposable
 {
     protected GrpcChannel channel;
-    protected CallInvoker invoker;
-    protected ILoggerFactory _loggerFactory;
+
     protected ILogger _logger;
 
 #if USE_GRPC_WEB
@@ -42,9 +41,7 @@ public class GrpcManager : IDisposable
 
     internal List<Tuple<string, string>> headerTuples;
 
-    private readonly IGrpcConfiguration grpcConfig;
-    private readonly ICredentialProvider authProvider;
-    private readonly string endpoint;
+    protected CallInvoker invoker;
 
     /// <summary>
     /// Constructor for GrpcManager, establishes the GRPC connection and creates the logger and invoker.
@@ -56,15 +53,6 @@ public class GrpcManager : IDisposable
     /// <param name="loggerName"></param>
     internal GrpcManager(IGrpcConfiguration grpcConfig, ILoggerFactory loggerFactory, ICredentialProvider authProvider, string endpoint, string loggerName)
     {
-#if USE_GRPC_WEB
-        // Note: all web SDK requests are routed to a `web.` subdomain to allow us flexibility on the server
-        endpoint = $"web.{endpoint}";
-#endif
-        this.grpcConfig = grpcConfig;
-        this.authProvider = authProvider;
-        this.endpoint = endpoint;
-
-        this._loggerFactory = loggerFactory;
         this._logger = loggerFactory.CreateLogger(loggerName);
 
         this.headerTuples = new List<Tuple<string, string>>
@@ -73,20 +61,12 @@ public class GrpcManager : IDisposable
             new(Header.AgentKey, version),
             new(Header.RuntimeVersionKey, runtimeVersion)
         };
-        this.headers = headerTuples.Select(tuple => new Header(tuple.Item1, tuple.Item2)).ToList();
+        this.headers = headerTuples.Select(tuple => new Header(name: tuple.Item1, value: tuple.Item2)).ToList();
 
-        this.channel = CreateNewGrpcChannel();
-        this.invoker = this.channel.CreateCallInvoker();
-    }
-
-    /// <summary>
-    /// Creates a new GrpcChannel using the current config and endpoint.
-    /// This can be used by subclasses like TopicGrpcManager to build pools.
-    /// </summary>
-    protected GrpcChannel CreateNewGrpcChannel()
-    {
+        // Set all channel opens and create the grpc connection
         var channelOptions = grpcConfig.GrpcChannelOptions;
-        channelOptions.LoggerFactory ??= _loggerFactory;
+        channelOptions.LoggerFactory ??= loggerFactory;
+        // Always disable gRPC service config 
         channelOptions.ServiceConfig = null;
 
         // If connecting to momento-local, must use http and Insecure channel credentials.
@@ -113,15 +93,23 @@ public class GrpcManager : IDisposable
         }
 #elif USE_GRPC_WEB
         channelOptions.HttpHandler = new GrpcWebHandler(new HttpClientHandler());
+        // Note: all web SDK requests are routed to a `web.` subdomain to allow us flexibility on the server
+        endpoint = $"web.{endpoint}";
 #endif
-        var uri = authProvider.SecureEndpoints ? $"https://{endpoint}" : $"http://{endpoint}";
-        return GrpcChannel.ForAddress(uri, channelOptions);
+        // If connecting to momento-local, must use http and Insecure channel credentials.
+        var uri = $"https://{endpoint}";
+        if (!authProvider.SecureEndpoints)
+        {
+            uri = $"http://{endpoint}";
+        }
+        this.channel = GrpcChannel.ForAddress(uri, channelOptions);
+        this.invoker = this.channel.CreateCallInvoker();
     }
 
     /// <summary>
     /// Implement IDisposable.
     /// </summary>
-    public virtual void Dispose()
+    public void Dispose()
     {
         this.channel.Dispose();
         GC.SuppressFinalize(this);

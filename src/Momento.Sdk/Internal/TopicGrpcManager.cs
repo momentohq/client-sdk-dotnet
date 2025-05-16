@@ -2,10 +2,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
-using Grpc.Net.Client;
 #if USE_GRPC_WEB
 using System.Net.Http;
 using Grpc.Net.Client.Web;
@@ -68,8 +66,7 @@ public class TopicGrpcManager : GrpcManager
 {
     public readonly IPubsubClient Client;
 
-    internal TopicGrpcManager(ITopicConfiguration config, ICredentialProvider authProvider)
-        : base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authProvider, authProvider.CacheEndpoint, "TopicGrpcManager")
+    internal TopicGrpcManager(ITopicConfiguration config, ICredentialProvider authProvider) : base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authProvider, authProvider.CacheEndpoint, "TopicGrpcManager")
     {
         var middlewares = new List<IMiddleware>
         {
@@ -78,10 +75,5 @@ public class TopicGrpcManager : GrpcManager
 
         var client = new Pubsub.PubsubClient(this.invoker);
         Client = new PubsubClientWithMiddleware(client, middlewares, this.headerTuples);
-    }
-
-    public override void Dispose()
-    {
-        base.Dispose();
     }
 }
