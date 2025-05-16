@@ -85,10 +85,4 @@ public class FixedCountRetryStrategy : IRetryStrategy
     {
         return base.GetHashCode();
     }
-
-    /// <inheritdoc/>
-    public double? GetResponseDataReceivedTimeoutMillis()
-    {
-        return null;
-    }
 }
