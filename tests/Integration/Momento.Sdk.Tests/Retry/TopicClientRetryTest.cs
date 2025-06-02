@@ -156,8 +156,6 @@ public class TopicClientRetryTests
                                 case TopicMessage.Error error:
                                     Assert.Fail("Received error message from topic: {error.ToString()}");
                                     break;
-                                default:
-                                    break;
                             }
                         }
                     }
@@ -334,5 +332,58 @@ public class TopicClientRetryTests
         var testProps = new MomentoLocalCacheAndTopicClient(_authProvider, _loggerFactory, _cacheConfig, _topicConfig, null);
         testProps.CacheClient.IncrementAsync(testProps.CacheName, "key").Wait();
         Assert.Equal(0, testProps.TestMetricsCollector.GetTotalRetryCount(testProps.CacheName, MomentoRpcMethod.Increment));
+    }
+
+    [Fact]
+    public async Task TopicSubscribe_ReturnsTimeoutError_IfFirstMessageNotReceivedBeforeDeadline()
+    {
+        var momentoLocalArgs = new MomentoLocalMiddlewareArgs
+        {
+            DelayRpcList = new List<string> { MomentoRpcMethod.TopicSubscribe.ToMomentoLocalMetadataString() },
+            DelayMillis = 1000
+        };
+        var testProps = new MomentoLocalCacheAndTopicClient(_authProvider, _loggerFactory, _cacheConfig, _topicConfig.WithClientTimeout(TimeSpan.FromMilliseconds(500)), momentoLocalArgs);
+
+        var cts = new CancellationTokenSource();
+        cts.CancelAfter(10_000);
+
+        var subscribeResponse = await testProps.TopicClient.SubscribeAsync(testProps.CacheName, "topic");
+        switch (subscribeResponse)
+        {
+            case TopicSubscribeResponse.Subscription subscription:
+                try
+                {
+                    var cancellableSubscription = subscription.WithCancellationForAllEvents(cts.Token);
+                    await foreach (var topicEvent in cancellableSubscription)
+                    {
+                        switch (topicEvent)
+                        {
+                            case TopicSystemEvent.Heartbeat:
+                                break;
+                            case TopicMessage.Error error:
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    // Expected when the test times out
+                }
+                finally
+                {
+                    subscription.Dispose();
+                }
+                break;
+            case TopicSubscribeResponse.Error error:
+                Assert.Equal(MomentoErrorCode.TIMEOUT_ERROR, error.ErrorCode);
+                break;
+            default:
+                Assert.Fail("Expected subscription response, got error: {subscribeResponse.ToString()}");
+                cts.Cancel();
+                break;
+        }
+
     }
 }
