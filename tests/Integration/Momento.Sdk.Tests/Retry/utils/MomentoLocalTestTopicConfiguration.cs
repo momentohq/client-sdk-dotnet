@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config;
+using Momento.Sdk.Config.Retry;
 using Momento.Sdk.Config.Transport;
 using Momento.Sdk.Internal;
 using System.Collections.Generic;
@@ -16,12 +17,15 @@ public class MomentoLocalTopicConfiguration : ITopicConfiguration, ITopicSubscri
     public ILoggerFactory LoggerFactory { get; }
     public ITopicTransportStrategy TransportStrategy { get; }
 
-    public MomentoLocalTopicConfiguration(ILoggerFactory loggerFactory, ITopicTransportStrategy transportStrategy, MomentoLocalMiddlewareArgs? args)
+    public ISubscriptionRetryStrategy SubscriptionRetryStrategy { get; }
+
+    public MomentoLocalTopicConfiguration(ILoggerFactory loggerFactory, ITopicTransportStrategy transportStrategy, ISubscriptionRetryStrategy subscriptionRetryStrategy, MomentoLocalMiddlewareArgs? args)
     {
         _args = args;
         Headers = this.CreateHeaders();
         LoggerFactory = loggerFactory;
         TransportStrategy = transportStrategy;
+        SubscriptionRetryStrategy = subscriptionRetryStrategy;
     }
 
     private IList<KeyValuePair<string, string>> CreateHeaders()
@@ -76,7 +80,7 @@ public class MomentoLocalTopicConfiguration : ITopicConfiguration, ITopicSubscri
 
     public ITopicConfiguration WithTransportStrategy(ITopicTransportStrategy transportStrategy)
     {
-        return new MomentoLocalTopicConfiguration(LoggerFactory, transportStrategy, _args);
+        return new MomentoLocalTopicConfiguration(LoggerFactory, transportStrategy, SubscriptionRetryStrategy, _args);
     }
 
     public ITopicConfiguration WithClientTimeout(TimeSpan clientTimeout)
@@ -84,7 +88,18 @@ public class MomentoLocalTopicConfiguration : ITopicConfiguration, ITopicSubscri
         return new MomentoLocalTopicConfiguration(
             loggerFactory: LoggerFactory,
             transportStrategy: TransportStrategy.WithClientTimeout(clientTimeout),
-            args: _args
+            args: _args,
+            subscriptionRetryStrategy: SubscriptionRetryStrategy
+        );
+    }
+
+    public ITopicConfiguration WithSubscriptionRetryStrategy(ISubscriptionRetryStrategy subscriptionRetryStrategy)
+    {
+        return new MomentoLocalTopicConfiguration(
+            loggerFactory: LoggerFactory,
+            transportStrategy: TransportStrategy,
+            args: _args,
+            subscriptionRetryStrategy: subscriptionRetryStrategy
         );
     }
 }
