@@ -34,7 +34,10 @@ public class MomentoLocalCacheAndTopicClient
 
     public MomentoLocalCacheAndTopicClient(ICredentialProvider authProvider, ILoggerFactory loggerFactory, IConfiguration cacheConfig, ITopicConfiguration topicConfig, MomentoLocalMiddlewareArgs? args)
     {
-        TestTopicConfig = new MomentoLocalTopicConfiguration(loggerFactory, topicConfig.TransportStrategy, args);
+        TestTopicConfig = new MomentoLocalTopicConfiguration(loggerFactory, topicConfig.TransportStrategy, topicConfig.SubscriptionRetryStrategy, args)
+        {
+            RequestId = Utils.NewGuidString()
+        };
         TestMetricsCollector = new TestRetryMetricsCollector();
         CacheClient = new CacheClient(cacheConfig, authProvider, TimeSpan.FromSeconds(60));
         CacheName = Utils.NewGuidString();

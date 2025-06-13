@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
+using Momento.Sdk.Config.Retry;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
@@ -135,7 +136,7 @@ public class TopicClientRetryTests
         var heartbeatTimeout = TimeSpan.FromSeconds(heartbeatTimeoutSeconds);
         var heartbeatCounter = new HeartbeatTimestampCollector(heartbeatTimeout);
         var cts = new CancellationTokenSource();
-        cts.CancelAfter(20_000);
+        cts.CancelAfter(15_000);
 
         var subscribeResponse = await testProps.TopicClient.SubscribeAsync(testProps.CacheName, "topic");
         var subscriptionTask = Task.Run(async () =>
@@ -196,6 +197,74 @@ public class TopicClientRetryTests
     }
 
     [Fact]
+    public async Task SubscriptionReconnectsAfterRecoverableErrorUsingConfiguredRetryDelay()
+    {
+        var momentoLocalArgs = new MomentoLocalMiddlewareArgs
+        {
+            StreamError = MomentoErrorCode.SERVER_UNAVAILABLE.ToStringValue(),
+            StreamErrorRpcList = new List<string> { MomentoRpcMethod.TopicSubscribe.ToMomentoLocalMetadataString() },
+            StreamErrorMessageLimit = 3 // Receive an error after every 2 heartbeats
+        };
+        // Previously used a default retry delay of 5000ms
+        var topicConfigWithOldRetryDelay = _topicConfig.WithSubscriptionRetryStrategy(new DefaultSubscriptionRetryStrategy(_loggerFactory.CreateLogger<DefaultSubscriptionRetryStrategy>(), retryDelayInterval: TimeSpan.FromMilliseconds(5000)));
+        var testProps = new MomentoLocalCacheAndTopicClient(_authProvider, _loggerFactory, _cacheConfig, topicConfigWithOldRetryDelay, momentoLocalArgs);
+
+        var heartbeatTimeout = TimeSpan.FromSeconds(3);
+        var heartbeatCounter = new HeartbeatTimestampCollector(heartbeatTimeout);
+
+        var cts = new CancellationTokenSource();
+        cts.CancelAfter(10_000);
+
+        var subscribeResponse = await testProps.TopicClient.SubscribeAsync(testProps.CacheName, "topic");
+        switch (subscribeResponse)
+        {
+            case TopicSubscribeResponse.Subscription subscription:
+                try
+                {
+                    var cancellableSubscription = subscription.WithCancellationForAllEvents(cts.Token);
+                    await foreach (var topicEvent in cancellableSubscription)
+                    {
+                        switch (topicEvent)
+                        {
+                            case TopicSystemEvent.Heartbeat:
+                                heartbeatCounter.AddTimestamp(DateTime.Now);
+                                break;
+                            case TopicMessage.Error error:
+                                Assert.Fail("Received error message from topic: {error.ToString()}");
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    // Expected when the test times out
+                }
+                finally
+                {
+                    subscription.Dispose();
+                }
+                break;
+            default:
+                Assert.Fail("Expected subscription response, got error: " + subscribeResponse.ToString());
+                cts.Cancel();
+                break;
+        }
+
+        // 1 timeout and 1 disconnect for the resubscribe period
+        Assert.Equal(1, heartbeatCounter.GetCountOfTimeouts());
+        Assert.Equal(1, testProps.TestTopicConfig.StreamDisconnectedCounter);
+
+        // Counts heartbeats before and after the resubscribe period
+        Assert.InRange(heartbeatCounter.GetCountOfTimestamps(), 2, 8);
+
+        // 1 for the initial connection, 1 for the resubscribe, others for attempted reconnects
+        Console.WriteLine($"StreamEstablishedCounter: {testProps.TestTopicConfig.StreamEstablishedCounter}");
+        Assert.True(testProps.TestTopicConfig.StreamEstablishedCounter >= 2);
+    }
+
+    [Fact]
     public async Task SubscriptionReconnectsAfterRecoverableError()
     {
         var momentoLocalArgs = new MomentoLocalMiddlewareArgs
@@ -206,11 +275,14 @@ public class TopicClientRetryTests
         };
         var testProps = new MomentoLocalCacheAndTopicClient(_authProvider, _loggerFactory, _cacheConfig, _topicConfig, momentoLocalArgs);
 
-        var heartbeatTimeout = TimeSpan.FromSeconds(3);
+        // Expecting 1 second between heartbeats usually, but a default 500ms retry delay should 
+        // cause the re-established subscription heartbeat to be delayed, for a total of 1500ms
+        // for the heartbeat timeout period.
+        var heartbeatTimeout = TimeSpan.FromMilliseconds(1500);
         var heartbeatCounter = new HeartbeatTimestampCollector(heartbeatTimeout);
 
         var cts = new CancellationTokenSource();
-        cts.CancelAfter(10_000);
+        cts.CancelAfter(5_000);
 
         var subscribeResponse = await testProps.TopicClient.SubscribeAsync(testProps.CacheName, "topic");
         switch (subscribeResponse)
