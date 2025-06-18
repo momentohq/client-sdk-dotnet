@@ -12,7 +12,7 @@ namespace Momento.Sdk.Config.Retry
     {
         private readonly ILogger _logger;
 
-        private readonly List<MomentoErrorCode> _nonRetryableExceptions = new List<MomentoErrorCode>
+        private readonly HashSet<MomentoErrorCode> _nonRetryableExceptions = new HashSet<MomentoErrorCode>
         {
             MomentoErrorCode.NOT_FOUND_ERROR,
             MomentoErrorCode.PERMISSION_ERROR,
