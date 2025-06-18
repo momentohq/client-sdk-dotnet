@@ -206,7 +206,7 @@ public class TopicClientRetryTests
             StreamErrorMessageLimit = 3 // Receive an error after every 2 heartbeats
         };
         // Previously used a default retry delay of 5000ms
-        var topicConfigWithOldRetryDelay = _topicConfig.WithSubscriptionRetryStrategy(new DefaultSubscriptionRetryStrategy(_loggerFactory.CreateLogger<DefaultSubscriptionRetryStrategy>(), retryDelayInterval: TimeSpan.FromMilliseconds(5000)));
+        var topicConfigWithOldRetryDelay = _topicConfig.WithSubscriptionRetryStrategy(new DefaultSubscriptionRetryStrategy(_loggerFactory, retryDelayInterval: TimeSpan.FromMilliseconds(5000)));
         var testProps = new MomentoLocalCacheAndTopicClient(_authProvider, _loggerFactory, _cacheConfig, topicConfigWithOldRetryDelay, momentoLocalArgs);
 
         var heartbeatTimeout = TimeSpan.FromSeconds(3);

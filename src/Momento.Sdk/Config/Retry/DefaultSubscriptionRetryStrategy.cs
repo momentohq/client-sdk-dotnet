@@ -19,6 +19,19 @@ namespace Momento.Sdk.Config.Retry
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultSubscriptionRetryStrategy"/> class.
         /// </summary>
+        /// <param name="loggerFactory">Logger factory for logging debug messages.</param>
+        /// <param name="subscriptionRetryEligibilityStrategy">Strategy to determine if the error is eligible for resubscription. Defaults to <see cref="DefaultSubscriptionRetryEligibilityStrategy"/>.</param>
+        /// <param name="retryDelayInterval">The interval after which resubscribing to a topic should be attempted. Defaults to 500 milliseconds.</param>
+        public DefaultSubscriptionRetryStrategy(ILoggerFactory loggerFactory, ISubscriptionRetryEligibilityStrategy? subscriptionRetryEligibilityStrategy = null, TimeSpan? retryDelayInterval = null)
+        {
+            _logger = loggerFactory.CreateLogger<DefaultSubscriptionRetryStrategy>();
+            SubscriptionRetryEligibilityStrategy = subscriptionRetryEligibilityStrategy ?? new DefaultSubscriptionRetryEligibilityStrategy(_logger);
+            RetryDelayInterval = retryDelayInterval ?? TimeSpan.FromMilliseconds(500);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultSubscriptionRetryStrategy"/> class.
+        /// </summary>
         /// <param name="logger">Logger for logging debug messages.</param>
         /// <param name="subscriptionRetryEligibilityStrategy">Strategy to determine if the error is eligible for resubscription. Defaults to <see cref="DefaultSubscriptionRetryEligibilityStrategy"/>.</param>
         /// <param name="retryDelayInterval">The interval after which resubscribing to a topic should be attempted. Defaults to 500 milliseconds.</param>

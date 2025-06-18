@@ -12,7 +12,7 @@ public class SubscriptionRetryStrategyTest
     public void DefaultSubscriptionRetryStrategy_ShouldReturn500MillisForDefaultStrategy()
     {
         var loggerFactory = new LoggerFactory();
-        var strategy = new DefaultSubscriptionRetryStrategy(loggerFactory.CreateLogger<DefaultSubscriptionRetryStrategy>());
+        var strategy = new DefaultSubscriptionRetryStrategy(loggerFactory);
 
         Assert.NotNull(strategy.SubscriptionRetryEligibilityStrategy);
         Assert.Equal(TimeSpan.FromMilliseconds(500), strategy.RetryDelayInterval);
@@ -25,7 +25,7 @@ public class SubscriptionRetryStrategyTest
     public void DefaultSubscriptionRetryStrategy_ShouldReturn1000MillisForConfiguredStrategy()
     {
         var loggerFactory = new LoggerFactory();
-        var strategy = new DefaultSubscriptionRetryStrategy(loggerFactory.CreateLogger<DefaultSubscriptionRetryStrategy>(), retryDelayInterval: TimeSpan.FromMilliseconds(1000));
+        var strategy = new DefaultSubscriptionRetryStrategy(loggerFactory, retryDelayInterval: TimeSpan.FromMilliseconds(1000));
 
         Assert.NotNull(strategy.SubscriptionRetryEligibilityStrategy);
         Assert.Equal(TimeSpan.FromMilliseconds(1000), strategy.RetryDelayInterval);
@@ -38,7 +38,7 @@ public class SubscriptionRetryStrategyTest
     public void DefaultSubscriptionRetryStrategy_ShouldReturn0MillisForConfiguredStrategy()
     {
         var loggerFactory = new LoggerFactory();
-        var strategy = new DefaultSubscriptionRetryStrategy(loggerFactory.CreateLogger<DefaultSubscriptionRetryStrategy>(), retryDelayInterval: TimeSpan.FromMilliseconds(0));
+        var strategy = new DefaultSubscriptionRetryStrategy(loggerFactory, retryDelayInterval: TimeSpan.FromMilliseconds(0));
 
         Assert.NotNull(strategy.SubscriptionRetryEligibilityStrategy);
         Assert.Equal(TimeSpan.FromMilliseconds(0), strategy.RetryDelayInterval);
@@ -51,7 +51,7 @@ public class SubscriptionRetryStrategyTest
     public void DetermineWhenToResubscribe_ShouldReturnNullForNonRetryableException()
     {
         var loggerFactory = new LoggerFactory();
-        var strategy = new DefaultSubscriptionRetryStrategy(loggerFactory.CreateLogger<DefaultSubscriptionRetryStrategy>());
+        var strategy = new DefaultSubscriptionRetryStrategy(loggerFactory);
 
         var transportDetails = new MomentoErrorTransportDetails(new MomentoGrpcErrorDetails(
             Grpc.Core.StatusCode.NotFound,

@@ -27,7 +27,7 @@ public class TopicConfiguration : ITopicConfiguration
     {
         LoggerFactory = loggerFactory;
         TransportStrategy = transportStrategy;
-        SubscriptionRetryStrategy = subscriptionRetryStrategy ?? new DefaultSubscriptionRetryStrategy(loggerFactory.CreateLogger<DefaultSubscriptionRetryStrategy>());
+        SubscriptionRetryStrategy = subscriptionRetryStrategy ?? new DefaultSubscriptionRetryStrategy(loggerFactory);
     }
 
     /// <inheritdoc />
