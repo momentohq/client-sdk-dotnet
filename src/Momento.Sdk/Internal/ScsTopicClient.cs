@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient.Pubsub;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
+using Momento.Sdk.Config.Retry;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Responses;
@@ -24,6 +25,7 @@ public class ScsTopicClientBase : IDisposable
 
     protected readonly CacheExceptionMapper _exceptionMapper;
     protected readonly ITopicSubscriptionConnectionStateCallbacks? _callbacks;
+    protected readonly ISubscriptionRetryStrategy _subscriptionRetryStrategy;
 
     public ScsTopicClientBase(ITopicConfiguration config, ICredentialProvider authProvider)
     {
@@ -31,6 +33,7 @@ public class ScsTopicClientBase : IDisposable
         this._logger = config.LoggerFactory.CreateLogger<ScsTopicClient>();
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
         this.topicClientOperationTimeout = config.TransportStrategy.GrpcConfig.Deadline;
+        this._subscriptionRetryStrategy = config.SubscriptionRetryStrategy;
 
         if (config is ITopicSubscriptionConnectionStateCallbacks callbacks)
         {
@@ -134,7 +137,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         {
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, cacheName, topicName);
             subscriptionWrapper = new SubscriptionWrapper(grpcManager, cacheName, topicName,
-                resumeAtTopicSequenceNumber, resumeAtTopicSequencePage, topicClientOperationTimeout, _exceptionMapper, _logger, _callbacks);
+                resumeAtTopicSequenceNumber, resumeAtTopicSequencePage, topicClientOperationTimeout, _exceptionMapper, _logger, _subscriptionRetryStrategy, _callbacks);
             await subscriptionWrapper.Subscribe();
         }
         catch (Exception e)
@@ -164,10 +167,11 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         private bool _subscribed;
         private ITopicSubscriptionConnectionStateCallbacks? _callbacks;
         private TimeSpan _topicClientOperationTimeout;
+        private readonly ISubscriptionRetryStrategy _subscriptionRetryStrategy;
 
         public SubscriptionWrapper(TopicGrpcManager grpcManager, string cacheName,
             string topicName, ulong? resumeAtTopicSequenceNumber, ulong? resumeAtTopicSequencePage, TimeSpan topicClientOperationTimeout,
-            CacheExceptionMapper exceptionMapper, ILogger logger, ITopicSubscriptionConnectionStateCallbacks? callbacks = null)
+            CacheExceptionMapper exceptionMapper, ILogger logger, ISubscriptionRetryStrategy subscriptionRetryStrategy, ITopicSubscriptionConnectionStateCallbacks? callbacks = null)
         {
             _grpcManager = grpcManager;
             _cacheName = cacheName;
@@ -178,6 +182,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
             _exceptionMapper = exceptionMapper;
             _logger = logger;
             _callbacks = callbacks;
+            _subscriptionRetryStrategy = subscriptionRetryStrategy;
         }
 
         public async Task Subscribe()
@@ -262,27 +267,22 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                 catch (Exception e)
                 {
                     var sdkException = _exceptionMapper.Convert(e);
-                    if (sdkException.ErrorCode is MomentoErrorCode.CANCELLED_ERROR)
+                    var retryDelayMillis = _subscriptionRetryStrategy.DetermineWhenToResubscribe(sdkException);
+                    if (retryDelayMillis is null)
                     {
-                        _callbacks?.OnStreamDisconnected();
-                        break;
-                    }
-
-                    _logger.LogTraceTopicSubscriptionError(_cacheName, _topicName, sdkException);
-
-                    // Certain errors can never be recovered
-                    if (!IsErrorRecoverable(sdkException))
-                    {
+                        _logger.LogTraceTopicSubscriptionError(_cacheName, _topicName, sdkException);
                         _callbacks?.OnStreamDisconnected();
                         return new TopicMessage.Error(sdkException);
                     }
+                    else
+                    {
+                        // If the error is recoverable, wait and attempt to resubscribe
+                        Dispose();
+                        await Task.Delay(retryDelayMillis.Value, cancellationToken);
 
-                    // If the error is recoverable, wait and attempt to resubscribe
-                    Dispose();
-                    await Task.Delay(5_000, cancellationToken);
-
-                    _subscribed = false;
-                    _callbacks?.OnStreamDisconnected();
+                        _subscribed = false;
+                        _callbacks?.OnStreamDisconnected();
+                    }
                     continue;
                 }
 
@@ -333,12 +333,6 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
             }
 
             return null;
-        }
-
-        private static bool IsErrorRecoverable(SdkException exception)
-        {
-            return exception.ErrorCode is not (MomentoErrorCode.PERMISSION_ERROR
-                or MomentoErrorCode.AUTHENTICATION_ERROR);
         }
 
         public void Dispose()
