@@ -16,7 +16,7 @@
 .PHONY: all build build-dotnet6 build-dotnet-framework clean clean-build precommit restore test \
 	test-dotnet6 test-dotnet6-integration test-dotnet6-cache-service test-dotnet6-topics-service test-dotnet6-auth-service \
 	test-dotnet-framework test-dotnet-framework-integration test-dotnet-framework-cache-service test-dotnet-framework-topics-service test-dotnet-framework-auth-service \
-	test-auth-service test-cache-service test-leaderboard-service test-storage-service test-topics-service  \
+	test-auth-service test-cache-service test-leaderboard-service test-topics-service test-http-service  \
 	run-examples help
 
 # Determine the operating system
@@ -47,14 +47,28 @@ endif
 CACHE_SERVICE_TESTS_FILTER := "FullyQualifiedName~Momento.Sdk.Tests.Integration.Cache"
 TOPICS_SERVICE_TESTS_FILTER := "FullyQualifiedName~Momento.Sdk.Tests.Integration.Topics"
 AUTH_SERVICE_TESTS_FILTER := "FullyQualifiedName~Momento.Sdk.Tests.Integration.Auth"
+RETRY_TESTS_FILTER := "FullyQualifiedName~Momento.Sdk.Tests.Integration.Retry"
+EXCLUDE_RETRY_TESTS_FILTER := "FullyQualifiedName!~Momento.Sdk.Tests.Integration.Retry"
 
 
-## Generate sync unit tests, format, lint, and test
+## Generate sync unit tests, format-check, and test
 all: precommit
 
 
 ## Build the project (conditioned by OS)
 build: ${BUILD_TARGETS}
+
+
+## Check but do not apply formatting to the project
+format-check:
+	@echo "Format-checking the project..."
+	@dotnet format --verify-no-changes
+
+
+## Apply formatting to the project
+format:
+	@echo "Applying formatting to the project..."
+	@dotnet format
 
 
 ## Build the project for .NET 6.0
@@ -79,7 +93,7 @@ clean-build: clean restore ${BUILD_TARGETS}
 
 
 ## Run clean-build and test as a step before committing.
-precommit: clean-build test
+precommit: clean-build test format-check
 
 
 ## Sync dependencies
@@ -105,7 +119,7 @@ endif
 ## Run unit and integration tests on the .NET 6.0 runtime
 test-dotnet6:
 	@echo "Running unit and integration tests on the .NET 6.0 runtime..."
-	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_VERSION}
+	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_VERSION} --filter ${EXCLUDE_RETRY_TESTS_FILTER}
 
 
 ## Run integration tests on the .NET 6.0 runtime against the cache service
@@ -129,7 +143,7 @@ test-dotnet6-auth-service:
 ## Run unit and integration tests on the .NET Framework runtime (Windows only)
 test-dotnet-framework:
 	@echo "Running unit and integration tests on the .NET Framework runtime..."
-	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_FRAMEWORK_VERSION}
+	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_FRAMEWORK_VERSION} --filter ${EXCLUDE_RETRY_TESTS_FILTER}
 
 
 ## Run integration tests on the .NET Framework runtime against the cache service (Windows only)
@@ -173,9 +187,10 @@ test-leaderboard-service:
 	@echo "Leaderboard client not implemented yet."
 
 
-## Run storage service tests
-test-storage-service:
-	@echo "Storage client not implemented yet."
+# Run momento-local retry tests
+test-retry:
+	@echo "Running retry tests..."
+	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_VERSION} --filter ${RETRY_TESTS_FILTER}
 
 
 ## Run topics service tests
@@ -185,6 +200,10 @@ ifeq (,$(findstring NT,$(OS)))
 else
 	@set CONSISTENT_READS=1 && $(MAKE) test-dotnet6-topics-service test-dotnet-framework-topics-service
 endif
+
+# Run http service tests
+test-http-service:
+	@echo "No tests for http service."
 
 
 ## Run example applications and snippets

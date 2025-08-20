@@ -1,12 +1,13 @@
-﻿using System;
-using System.Threading.Tasks;
-using Grpc.Core;
+﻿using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.ControlClient;
+using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Transport;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Responses;
+using System;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk.Internal;
 
@@ -19,7 +20,7 @@ internal sealed class ScsControlClient : IDisposable
     private readonly ILogger _logger;
     private readonly CacheExceptionMapper _exceptionMapper;
 
-    public ScsControlClient(IConfiguration config, string authToken, string endpoint)
+    public ScsControlClient(IConfiguration config, ICredentialProvider authProvider)
     {
         // Override the sockets http handler options to disable keepalive
         var overrideKeepalive = SocketsHttpHandlerOptions.Of(
@@ -30,9 +31,9 @@ internal sealed class ScsControlClient : IDisposable
             keepAlivePermitWithoutCalls: false
         );
         var controlConfig = config.WithTransportStrategy(config.TransportStrategy.WithSocketsHttpHandlerOptions(overrideKeepalive));
-        
-        this.grpcManager = new ControlGrpcManager(controlConfig, authToken, endpoint);
-        this.authToken = authToken;
+
+        this.grpcManager = new ControlGrpcManager(controlConfig, authProvider);
+        this.authToken = authProvider.AuthToken;
         this._logger = config.LoggerFactory.CreateLogger<ScsControlClient>();
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
     }
@@ -43,7 +44,7 @@ internal sealed class ScsControlClient : IDisposable
         {
             CheckValidCacheName(cacheName);
             _CreateCacheRequest request = new _CreateCacheRequest() { CacheName = cacheName };
-            await this.grpcManager.Client.CreateCacheAsync(request, new CallOptions(deadline: CalculateDeadline()));
+            await this.grpcManager.Client.CreateCacheAsync(request, new CallOptions(deadline: Utils.CalculateDeadline(deadline)));
             return new CreateCacheResponse.Success();
         }
         catch (Exception e)
@@ -62,7 +63,7 @@ internal sealed class ScsControlClient : IDisposable
         {
             CheckValidCacheName(cacheName);
             _DeleteCacheRequest request = new _DeleteCacheRequest() { CacheName = cacheName };
-            await this.grpcManager.Client.DeleteCacheAsync(request, new CallOptions(deadline: CalculateDeadline()));
+            await this.grpcManager.Client.DeleteCacheAsync(request, new CallOptions(deadline: Utils.CalculateDeadline(deadline)));
             return new DeleteCacheResponse.Success();
         }
         catch (Exception e)
@@ -77,7 +78,7 @@ internal sealed class ScsControlClient : IDisposable
         {
             CheckValidCacheName(cacheName);
             _FlushCacheRequest request = new() { CacheName = cacheName };
-            await this.grpcManager.Client.FlushCacheAsync(request, new CallOptions(deadline: CalculateDeadline()));
+            await this.grpcManager.Client.FlushCacheAsync(request, new CallOptions(deadline: Utils.CalculateDeadline(deadline)));
             return new FlushCacheResponse.Success();
         }
         catch (Exception e)
@@ -91,7 +92,7 @@ internal sealed class ScsControlClient : IDisposable
         _ListCachesRequest request = new _ListCachesRequest() { NextToken = nextPageToken == null ? "" : nextPageToken };
         try
         {
-            _ListCachesResponse result = await this.grpcManager.Client.ListCachesAsync(request, new CallOptions(deadline: CalculateDeadline()));
+            _ListCachesResponse result = await this.grpcManager.Client.ListCachesAsync(request, new CallOptions(deadline: Utils.CalculateDeadline(deadline)));
             return new ListCachesResponse.Success(result);
         }
         catch (Exception e)
@@ -107,11 +108,6 @@ internal sealed class ScsControlClient : IDisposable
             throw new InvalidArgumentException("Cache name must be nonempty");
         }
         return true;
-    }
-
-    private DateTime CalculateDeadline()
-    {
-        return DateTime.UtcNow.Add(deadline);
     }
 
     public void Dispose()

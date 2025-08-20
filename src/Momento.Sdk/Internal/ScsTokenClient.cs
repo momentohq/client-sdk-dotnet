@@ -1,18 +1,18 @@
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
-using System;
-using System.Reflection;
-using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-
+using Momento.Protos.PermissionMessages;
+using Momento.Protos.TokenClient;
+using Momento.Sdk.Auth;
 using Momento.Sdk.Auth.AccessControl;
 using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Responses;
-using Momento.Protos.TokenClient;
-using Momento.Protos.PermissionMessages;
+using System;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk.Internal;
 
@@ -24,10 +24,10 @@ internal sealed class ScsTokenClient : IDisposable
     private readonly ILogger _logger;
     private bool hasSentOnetimeHeaders = false;
     private readonly CacheExceptionMapper _exceptionMapper;
-    public ScsTokenClient(IAuthConfiguration config, string authToken, string endpoint)
+    public ScsTokenClient(IAuthConfiguration config, ICredentialProvider authProvider)
     {
-        this.grpcManager = new AuthGrpcManager(config, authToken, endpoint);
-        this.authToken = authToken;
+        this.grpcManager = new AuthGrpcManager(config, authProvider);
+        this.authToken = authProvider.AuthToken;
         this.authClientOperationTimeout = config.TransportStrategy.GrpcConfig.Deadline;
         this._logger = config.LoggerFactory.CreateLogger<ScsTokenClient>();
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
@@ -44,12 +44,6 @@ internal sealed class ScsTokenClient : IDisposable
         string runtimeVer = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
         return new Metadata() { { "agent", $"dotnet:auth:{sdkVersion}" }, { "runtime-version", runtimeVer } };
     }
-
-    private DateTime CalculateDeadline()
-    {
-        return DateTime.UtcNow.Add(authClientOperationTimeout);
-    }
-
     private const string RequestTypeAuthGenerateDisposableToken = "GENERATE_DISPOSABLE_TOKEN";
 
     public async Task<GenerateDisposableTokenResponse> GenerateDisposableToken(
@@ -82,7 +76,7 @@ internal sealed class ScsTokenClient : IDisposable
             var metadata = Metadata();
             _logger.LogTraceExecutingGenericRequest(RequestTypeAuthGenerateDisposableToken);
             var response = await grpcManager.Client.generateDisposableToken(
-                request, new CallOptions(headers: metadata, deadline: CalculateDeadline())
+                request, new CallOptions(headers: metadata, deadline: Utils.CalculateDeadline(authClientOperationTimeout))
             );
             return _logger.LogTraceGenericRequestSuccess(RequestTypeAuthGenerateDisposableToken,
                 new GenerateDisposableTokenResponse.Success(response));

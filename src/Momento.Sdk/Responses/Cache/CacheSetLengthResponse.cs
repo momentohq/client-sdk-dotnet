@@ -49,7 +49,8 @@ public abstract class CacheSetLengthResponse
         /// <param name="response">The cache response.</param>
         public Hit(_SetLengthResponse response)
         {
-            if(response.SetCase == _SetLengthResponse.SetOneofCase.Found) {
+            if (response.SetCase == _SetLengthResponse.SetOneofCase.Found)
+            {
                 Length = checked((int)response.Found.Length);
             }
         }

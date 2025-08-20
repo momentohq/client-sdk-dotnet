@@ -1,10 +1,10 @@
-using System;
-using System.Threading.Tasks;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Internal;
 using Momento.Sdk.Responses;
+using System;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk;
 
@@ -23,7 +23,7 @@ public class TopicClient : ITopicClient
     /// <param name="authProvider">Momento auth provider.</param>
     public TopicClient(ITopicConfiguration config, ICredentialProvider authProvider)
     {
-        scsTopicClient = new ScsTopicClient(config, authProvider.AuthToken, authProvider.CacheEndpoint);
+        scsTopicClient = new ScsTopicClient(config, authProvider);
     }
 
     /// <inheritdoc />

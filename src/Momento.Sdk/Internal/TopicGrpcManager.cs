@@ -13,6 +13,7 @@ using Grpc.Net.Client.Web;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient.Pubsub;
 using Momento.Protos.Common;
+using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
@@ -31,10 +32,10 @@ public class PubsubClientWithMiddleware : IPubsubClient
 {
     private readonly Pubsub.PubsubClient _generatedClient;
     private readonly IList<IMiddleware> _middlewares;
-    private readonly IList<Tuple<string, string>> _headers;
+    private readonly IList<KeyValuePair<string, string>> _headers;
 
     public PubsubClientWithMiddleware(Pubsub.PubsubClient generatedClient, IList<IMiddleware> middlewares,
-        IList<Tuple<string, string>> headers)
+        IList<KeyValuePair<string, string>> headers)
     {
         _generatedClient = generatedClient;
         _middlewares = middlewares;
@@ -59,7 +60,7 @@ public class PubsubClientWithMiddleware : IPubsubClient
 
         foreach (var header in _headers)
         {
-            callHeaders.Add(header.Item1, header.Item2);
+            callHeaders.Add(header.Key, header.Value);
         }
 
         return _generatedClient.Subscribe(request, callOptions.WithHeaders(callHeaders));
@@ -70,7 +71,7 @@ public class TopicGrpcManager : GrpcManager
 {
     public readonly IPubsubClient Client;
 
-    internal TopicGrpcManager(ITopicConfiguration config, string authToken, string endpoint) : base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authToken, endpoint, "TopicGrpcManager")
+    internal TopicGrpcManager(ITopicConfiguration config, ICredentialProvider authProvider) : base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authProvider, authProvider.CacheEndpoint, "TopicGrpcManager")
     {
         var middlewares = new List<IMiddleware>
         {
@@ -79,5 +80,17 @@ public class TopicGrpcManager : GrpcManager
 
         var client = new Pubsub.PubsubClient(this.invoker);
         Client = new PubsubClientWithMiddleware(client, middlewares, this.headerTuples);
+    }
+
+    internal TopicGrpcManager(ITopicConfiguration config, ICredentialProvider authProvider, IList<KeyValuePair<string, string>> momentoLocalHeaders) : base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authProvider, authProvider.CacheEndpoint, "TopicGrpcManager")
+    {
+        var middlewares = new List<IMiddleware>
+        {
+            new HeaderMiddleware(config.LoggerFactory, this.headers),
+        };
+
+        var allHeaders = this.headerTuples.ToList().Concat(momentoLocalHeaders).ToList();
+        var client = new Pubsub.PubsubClient(this.invoker);
+        Client = new PubsubClientWithMiddleware(client, middlewares, allHeaders);
     }
 }

@@ -1,6 +1,6 @@
-using System;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Transport;
+using System;
 using Xunit;
 
 namespace Momento.Sdk.Tests.Unit;

@@ -44,7 +44,8 @@ public abstract class CacheListRemoveValueResponse
         /// <param name="response">The cache response</param>
         public Success(_ListRemoveResponse response)
         {
-            if (response.ListCase == _ListRemoveResponse.ListOneofCase.Found) {
+            if (response.ListCase == _ListRemoveResponse.ListOneofCase.Found)
+            {
                 ListLength = checked((int)response.Found.ListLength);
             }
         }

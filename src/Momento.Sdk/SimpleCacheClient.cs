@@ -1,6 +1,6 @@
-﻿using System;
-using Momento.Sdk.Auth;
+﻿using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
+using System;
 
 namespace Momento.Sdk
 {

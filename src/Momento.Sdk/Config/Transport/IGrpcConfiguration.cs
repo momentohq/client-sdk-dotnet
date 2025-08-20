@@ -1,5 +1,5 @@
-using System;
 using Grpc.Net.Client;
+using System;
 
 namespace Momento.Sdk.Config.Transport;
 

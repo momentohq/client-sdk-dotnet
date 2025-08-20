@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Momento.Protos.ControlClient;
+﻿using Momento.Protos.ControlClient;
 using Momento.Sdk.Exceptions;
+using System;
+using System.Collections.Generic;
 
 namespace Momento.Sdk.Responses;
 

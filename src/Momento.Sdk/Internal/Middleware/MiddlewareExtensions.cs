@@ -1,10 +1,10 @@
 ﻿#pragma warning disable 1591
-using System;
 using Grpc.Core;
 using Momento.Sdk.Config.Middleware;
+using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk.Internal.Middleware
 {

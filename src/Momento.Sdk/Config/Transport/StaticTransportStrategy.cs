@@ -1,8 +1,8 @@
-using System;
-using System.Net.Http;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Internal;
+using System;
+using System.Net.Http;
 
 namespace Momento.Sdk.Config.Transport;
 
@@ -35,9 +35,9 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
     /// <param name="minNumGrpcChannels">minimum number of gRPC channels to open</param>
     /// <param name="socketsHttpHandlerOptions">Customizations to the SocketsHttpHandler</param>
     public StaticGrpcConfiguration(
-        TimeSpan deadline, 
-        GrpcChannelOptions? grpcChannelOptions = null, 
-        int minNumGrpcChannels = 1, 
+        TimeSpan deadline,
+        GrpcChannelOptions? grpcChannelOptions = null,
+        int minNumGrpcChannels = 1,
         SocketsHttpHandlerOptions? socketsHttpHandlerOptions = null
     )
     {
@@ -52,7 +52,8 @@ public class StaticGrpcConfiguration : IGrpcConfiguration
     /// The grpc default value for max_send_message_length is 4mb. This function returns default grpc options that increase max message size to 5mb in order to support cases where users have requested a limit increase up to our maximum item size of 5mb.
     /// </summary>
     /// <returns>GrpcChannelOptions</returns>
-    public static GrpcChannelOptions DefaultGrpcChannelOptions() {
+    public static GrpcChannelOptions DefaultGrpcChannelOptions()
+    {
         const int DEFAULT_MAX_MESSAGE_SIZE = 5_243_000;
         return new GrpcChannelOptions
         {

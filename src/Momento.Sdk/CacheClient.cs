@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Transport;
@@ -11,6 +7,10 @@ using Momento.Sdk.Internal;
 using Momento.Sdk.Internal.ExtensionMethods;
 using Momento.Sdk.Requests;
 using Momento.Sdk.Responses;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Momento.Sdk;
 
@@ -76,7 +76,7 @@ public class CacheClient : ICacheClient
         this.config = config;
         this._logger = config.LoggerFactory.CreateLogger<CacheClient>();
         Utils.ArgumentStrictlyPositive(defaultTtl, "defaultTtl");
-        this.controlClient = new(config, authProvider.AuthToken, authProvider.ControlEndpoint);
+        this.controlClient = new(config, authProvider);
         this.dataClients = new List<ScsDataClient>();
         int minNumGrpcChannels = this.config.TransportStrategy.GrpcConfig.MinNumGrpcChannels;
         int currentMaxConcurrentRequests = this.config.TransportStrategy.MaxConcurrentRequests;
@@ -119,7 +119,7 @@ public class CacheClient : ICacheClient
         }
         for (var i = 1; i <= minNumGrpcChannels; i++)
         {
-            this.dataClients.Add(new(config, authProvider.AuthToken, authProvider.CacheEndpoint, defaultTtl));
+            this.dataClients.Add(new(config, authProvider, defaultTtl));
         }
     }
 

@@ -11,7 +11,7 @@ public class AuthConfiguration : IAuthConfiguration
     /// <inheritdoc />
     public IAuthTransportStrategy TransportStrategy { get; }
 
-    
+
     /// <summary>
     /// Create a new instance of an Auth Configuration object with provided arguments: <see cref="Momento.Sdk.Config.IAuthConfiguration.TransportStrategy"/>, and <see cref="Momento.Sdk.Config.IAuthConfiguration.LoggerFactory"/>
     /// </summary>

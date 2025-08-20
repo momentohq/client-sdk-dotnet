@@ -1,9 +1,9 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
 using Momento.Sdk.Config.Transport;
+using System;
+using System.Collections.Generic;
 
 namespace Momento.Sdk.Config;
 
@@ -39,6 +39,13 @@ public interface IConfiguration
     public IConfiguration WithMiddlewares(IList<IMiddleware> middlewares);
 
     /// <summary>
+    /// Add the specified middlewares to an existing instance of Configuration object in addition to already specified middlewares.
+    /// </summary>
+    /// <param name="additionalMiddlewares">The Middleware interface allows the Configuration to provide a higher-order function that wraps all requests.</param>
+    /// <returns>Configuration object with custom middlewares provided</returns>
+    public Configuration WithAdditionalMiddlewares(IList<IMiddleware> additionalMiddlewares);
+
+    /// <summary>
     /// Creates a new instance of the Configuration object, updated to use the specified transport strategy.
     /// </summary>
     /// <param name="transportStrategy">This is responsible for configuring network tunables.</param>
@@ -51,7 +58,7 @@ public interface IConfiguration
     /// <param name="clientTimeout">The amount of time to wait before cancelling the request.</param>
     /// <returns>Configuration object with custom client timeout provided</returns>
     public IConfiguration WithClientTimeout(TimeSpan clientTimeout);
-    
+
     /// <summary>
     /// Creates a new instance of the Configuration object, updated to use the specified read concern.
     /// </summary>

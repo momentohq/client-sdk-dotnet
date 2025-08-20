@@ -1,7 +1,7 @@
 #pragma warning disable 1591
+using Momento.Sdk.Internal;
 using System;
 using System.Net.Http;
-using Momento.Sdk.Internal;
 namespace Momento.Sdk.Config.Transport;
 
 public class SocketsHttpHandlerOptions
@@ -51,7 +51,7 @@ public class SocketsHttpHandlerOptions
         EnableMultipleHttp2Connections = enableMultipleHttp2Connections;
     }
     public SocketsHttpHandlerOptions(
-        TimeSpan pooledConnectionIdleTimeout, 
+        TimeSpan pooledConnectionIdleTimeout,
         bool enableMultipleHttp2Connections,
         TimeSpan keepAlivePingTimeout,
         TimeSpan keepAlivePingDelay,
@@ -92,7 +92,7 @@ public class SocketsHttpHandlerOptions
     }
 
     public static SocketsHttpHandlerOptions Of(
-        TimeSpan pooledConnectionIdleTimeout, 
+        TimeSpan pooledConnectionIdleTimeout,
         bool enableMultipleHttp2Connections,
         TimeSpan keepAlivePingTimeout,
         TimeSpan keepAlivePingDelay,
@@ -100,7 +100,7 @@ public class SocketsHttpHandlerOptions
     )
     {
         return new SocketsHttpHandlerOptions(
-            pooledConnectionIdleTimeout, 
+            pooledConnectionIdleTimeout,
             enableMultipleHttp2Connections,
             keepAlivePingTimeout,
             keepAlivePingDelay,

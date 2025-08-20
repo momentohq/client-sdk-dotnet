@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Momento.Sdk.Internal.Middleware;
 using Momento.Sdk.Config.Transport;
+using Momento.Sdk.Auth;
 using Grpc.Core;
 using Grpc.Net.Client;
 #if USE_GRPC_WEB
@@ -38,7 +39,7 @@ public class GrpcManager : IDisposable
 
     internal List<Header> headers;
 
-    internal List<Tuple<string, string>> headerTuples;
+    internal List<KeyValuePair<string, string>> headerTuples;
 
     protected CallInvoker invoker;
 
@@ -47,25 +48,37 @@ public class GrpcManager : IDisposable
     /// </summary>
     /// <param name="grpcConfig"></param>
     /// <param name="loggerFactory"></param>
-    /// <param name="authToken"></param>
+    /// <param name="authProvider"></param>
     /// <param name="endpoint"></param>
     /// <param name="loggerName"></param>
-    internal GrpcManager(IGrpcConfiguration grpcConfig, ILoggerFactory loggerFactory, string authToken, string endpoint, string loggerName)
+    internal GrpcManager(IGrpcConfiguration grpcConfig, ILoggerFactory loggerFactory, ICredentialProvider authProvider, string endpoint, string loggerName)
     {
         this._logger = loggerFactory.CreateLogger(loggerName);
 
-        this.headerTuples = new List<Tuple<string, string>>
+        this.headerTuples = new List<KeyValuePair<string, string>>
         {
-            new(Header.AuthorizationKey, authToken),
+            new(Header.AuthorizationKey, authProvider.AuthToken),
             new(Header.AgentKey, version),
             new(Header.RuntimeVersionKey, runtimeVersion)
         };
-        this.headers = headerTuples.Select(tuple => new Header(name: tuple.Item1, value: tuple.Item2)).ToList();
+        this.headers = headerTuples.Select(tuple => new Header(name: tuple.Key, value: tuple.Value)).ToList();
 
         // Set all channel opens and create the grpc connection
         var channelOptions = grpcConfig.GrpcChannelOptions;
-        channelOptions.Credentials = ChannelCredentials.SecureSsl;
         channelOptions.LoggerFactory ??= loggerFactory;
+        // Always disable gRPC service config 
+        channelOptions.ServiceConfig = null;
+
+        // If connecting to momento-local, must use http and Insecure channel credentials.
+        if (authProvider.SecureEndpoints)
+        {
+            channelOptions.Credentials = ChannelCredentials.SecureSsl;
+        }
+        else
+        {
+            channelOptions.Credentials = ChannelCredentials.Insecure;
+        }
+
 #if NET5_0_OR_GREATER
         if (SocketsHttpHandler.IsSupported) // see: https://github.com/grpc/grpc-dotnet/blob/098dca892a3949ade411c3f2f66003f7b330dfd2/src/Shared/HttpHandlerFactory.cs#L28-L30
         {
@@ -83,7 +96,12 @@ public class GrpcManager : IDisposable
         // Note: all web SDK requests are routed to a `web.` subdomain to allow us flexibility on the server
         endpoint = $"web.{endpoint}";
 #endif
+        // If connecting to momento-local, must use http and Insecure channel credentials.
         var uri = $"https://{endpoint}";
+        if (!authProvider.SecureEndpoints)
+        {
+            uri = $"http://{endpoint}";
+        }
         this.channel = GrpcChannel.ForAddress(uri, channelOptions);
         this.invoker = this.channel.CreateCallInvoker();
     }

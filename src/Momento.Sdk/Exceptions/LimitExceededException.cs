@@ -8,10 +8,11 @@ using Grpc.Core;
 public class LimitExceededException : SdkException
 {
     /// <include file="../docs.xml" path='docs/class[@name="SdkException"]/constructor/*' />
-    public LimitExceededException(string messageWrapper, string message, MomentoErrorTransportDetails transportDetails, RpcException? e = null) : base(MomentoErrorCode.LIMIT_EXCEEDED_ERROR, message, transportDetails, e) {
+    public LimitExceededException(string messageWrapper, string message, MomentoErrorTransportDetails transportDetails, RpcException? e = null) : base(MomentoErrorCode.LIMIT_EXCEEDED_ERROR, message, transportDetails, e)
+    {
         this.MessageWrapper = messageWrapper;
     }
-    
+
     /// <summary>
     /// Creates a LimitExceededException with a message wrapper that specifies the limit that was exceeded.
     /// </summary>
@@ -23,7 +24,8 @@ public class LimitExceededException : SdkException
     {
         var messageWrapper = LimitExceededMessageWrapper.UnknownLimitExceeded;
         var errMetadata = e?.Trailers.Get("err")?.Value;
-        if (errMetadata != null) {
+        if (errMetadata != null)
+        {
             messageWrapper = errMetadata switch
             {
                 "topic_subscriptions_limit_exceeded" => LimitExceededMessageWrapper.TopicSubscriptionsLimitExceeded,
@@ -34,21 +36,36 @@ public class LimitExceededException : SdkException
                 "element_size_limit_exceeded" => LimitExceededMessageWrapper.ElementSizeLimitExceeded,
                 _ => LimitExceededMessageWrapper.UnknownLimitExceeded,
             };
-        } else {
+        }
+        else
+        {
             var lowerCasedMessage = message.ToLower();
-            if (lowerCasedMessage.Contains("subscribers")) {
+            if (lowerCasedMessage.Contains("subscribers"))
+            {
                 messageWrapper = LimitExceededMessageWrapper.TopicSubscriptionsLimitExceeded;
-            } else if (lowerCasedMessage.Contains("operations")) {
+            }
+            else if (lowerCasedMessage.Contains("operations"))
+            {
                 messageWrapper = LimitExceededMessageWrapper.OperationsRateLimitExceeded;
-            } else if (lowerCasedMessage.Contains("throughput")) {
+            }
+            else if (lowerCasedMessage.Contains("throughput"))
+            {
                 messageWrapper = LimitExceededMessageWrapper.ThroughputRateLimitExceeded;
-            } else if (lowerCasedMessage.Contains("request limit")) {
+            }
+            else if (lowerCasedMessage.Contains("request limit"))
+            {
                 messageWrapper = LimitExceededMessageWrapper.RequestSizeLimitExceeded;
-            } else if (lowerCasedMessage.Contains("item size")) {
+            }
+            else if (lowerCasedMessage.Contains("item size"))
+            {
                 messageWrapper = LimitExceededMessageWrapper.ItemSizeLimitExceeded;
-            } else if (lowerCasedMessage.Contains("element size")) {
+            }
+            else if (lowerCasedMessage.Contains("element size"))
+            {
                 messageWrapper = LimitExceededMessageWrapper.ElementSizeLimitExceeded;
-            } else {
+            }
+            else
+            {
                 messageWrapper = LimitExceededMessageWrapper.UnknownLimitExceeded;
             }
         }

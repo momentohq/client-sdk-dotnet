@@ -10,6 +10,7 @@ using Grpc.Net.Client.Web;
 #endif
 using Microsoft.Extensions.Logging;
 using Momento.Protos.ControlClient;
+using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Internal.Middleware;
@@ -75,9 +76,9 @@ internal sealed class ControlGrpcManager : GrpcManager
 {
     public IControlClient Client { get; }
 
-    public ControlGrpcManager(IConfiguration config, string authToken, string endpoint): base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authToken, endpoint, "ControlGrpcManager")
+    public ControlGrpcManager(IConfiguration config, ICredentialProvider authProvider) : base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authProvider, authProvider.ControlEndpoint, "ControlGrpcManager")
     {
-        var middlewares = new List<IMiddleware> 
+        var middlewares = new List<IMiddleware>
         {
             new HeaderMiddleware(config.LoggerFactory, this.headers)
         };

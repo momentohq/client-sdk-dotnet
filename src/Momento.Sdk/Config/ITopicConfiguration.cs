@@ -1,6 +1,7 @@
-using System;
 using Microsoft.Extensions.Logging;
+using Momento.Sdk.Config.Retry;
 using Momento.Sdk.Config.Transport;
+using System;
 
 namespace Momento.Sdk.Config;
 
@@ -14,6 +15,8 @@ public interface ITopicConfiguration
     public ILoggerFactory LoggerFactory { get; }
     /// <inheritdoc cref="Momento.Sdk.Config.Transport.ITransportStrategy" />
     public ITopicTransportStrategy TransportStrategy { get; }
+    /// <inheritdoc cref="Momento.Sdk.Config.Retry.ISubscriptionRetryStrategy" />
+    public ISubscriptionRetryStrategy SubscriptionRetryStrategy { get; }
 
     /// <summary>
     /// Creates a new instance of the Configuration object, updated to use the specified transport strategy.
@@ -29,4 +32,10 @@ public interface ITopicConfiguration
     /// <param name="clientTimeout">The amount of time to wait before cancelling the request.</param>
     /// <returns>TopicConfiguration object with client timeout provided</returns>
     public ITopicConfiguration WithClientTimeout(TimeSpan clientTimeout);
+
+    /// <summary>
+    /// Creates a new instance of the Configuration object, updated to use the specified subscription retry strategy.
+    /// </summary>
+    /// <param name="subscriptionRetryStrategy">Configures whether and when to resubscribe to a topic after an error occurs.</param>
+    public ITopicConfiguration WithSubscriptionRetryStrategy(ISubscriptionRetryStrategy subscriptionRetryStrategy);
 }

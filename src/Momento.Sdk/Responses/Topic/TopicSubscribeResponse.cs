@@ -1,9 +1,9 @@
+using Momento.Sdk.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Momento.Sdk.Exceptions;
 
 namespace Momento.Sdk.Responses;
 

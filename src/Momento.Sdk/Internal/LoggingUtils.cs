@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Google.Protobuf;
+﻿using Google.Protobuf;
 using Microsoft.Extensions.Logging;
 using Momento.Protos.CacheClient;
 using Momento.Sdk.Requests;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Momento.Sdk.Internal
 {

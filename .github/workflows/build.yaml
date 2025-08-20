@@ -5,6 +5,15 @@ on:
     branches: [main]
 
 jobs:
+  format-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "6.0.x"
+      - run: make format-check
+
   build_csharp:
     strategy:
       matrix:
@@ -101,3 +110,30 @@ jobs:
       - name: Flag Job Failure
         if: ${{ steps.test-example-failure.outputs.failure == 'true' }}
         run: exit 1
+
+  test_momento_local:
+    strategy:
+      matrix:
+        # TODO: Add windows-latest back in once we have a momento-local image for windows/amd64 as per the error:
+        # "docker: no matching manifest for windows/amd64 10.0.20348 in the manifest list entries.""
+        # os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
+        grpc-web: [false, true]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: Build
+        run: make GRPC_WEB=${{ matrix.grpc-web }} build
+
+      - name: Start Momento Local
+        run: |
+         docker run --cap-add=NET_ADMIN -d --rm -p 8080:8080 -p 9090:9090 gomomento/momento-local --enable-test-admin
+
+      - name: Run momento-local retry tests
+        run: make test-retry

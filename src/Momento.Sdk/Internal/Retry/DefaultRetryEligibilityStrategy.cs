@@ -1,11 +1,12 @@
 ﻿#pragma warning disable 1591
-using System;
-using System.Collections.Generic;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Momento.Protos.CacheClient;
+using Momento.Protos.CacheClient.Pubsub;
 using Momento.Sdk.Config.Retry;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Momento.Sdk.Internal.Retry
 {
@@ -16,7 +17,7 @@ namespace Momento.Sdk.Internal.Retry
     /// </summary>
     public class DefaultRetryEligibilityStrategy : IRetryEligibilityStrategy
     {
-        private readonly HashSet<StatusCode> _retryableStatusCodes = new HashSet<StatusCode>
+        private readonly HashSet<StatusCode> _retryableStatusCodes = new()
         {
             //StatusCode.OK,
             //StatusCode.Cancelled,
@@ -37,35 +38,59 @@ namespace Momento.Sdk.Internal.Retry
             //StatusCode.DataLoss,
         };
 
-        private readonly HashSet<Type> _retryableRequestTypes = new HashSet<Type>
+        private readonly HashSet<Type> _retryableRequestTypes = new()
         {
-            typeof(_SetRequest),
             typeof(_GetRequest),
+            typeof(_GetBatchRequest),
+            typeof(_SetRequest),
+            typeof(_SetBatchRequest),
+            // Not retryable: typeof(_SetIfRequest),
+            // SetIfNotExists is deprecated
+            // Not retryable: typeof(_SetIfNotExistsRequest),
             typeof(_DeleteRequest),
-            typeof(_DictionarySetRequest),
-            // not idempotent: typeof(_DictionaryIncrementRequest),
+            typeof(_KeysExistRequest),
+            // Not retryable: typeof(_IncrementRequest),
+            // Not retryable: typeof(_UpdateTtlRequest),
+            typeof(_ItemGetTtlRequest),
+            typeof(_ItemGetTypeRequest),
+
             typeof(_DictionaryGetRequest),
             typeof(_DictionaryFetchRequest),
+            typeof(_DictionarySetRequest),
+            // Not retryable: typeof(_DictionaryIncrementRequest),
             typeof(_DictionaryDeleteRequest),
             typeof(_DictionaryLengthRequest),
+
+            typeof(_SetFetchRequest),
+            typeof(_SetSampleRequest),
             typeof(_SetUnionRequest),
             typeof(_SetDifferenceRequest),
-            typeof(_SetFetchRequest),
-            // not idempotent: typeof(_ListPushFrontRequest),
-            // not idempotent: typeof(_ListPushBackRequest),
-            // not idempotent: typeof(_ListPopFrontRequest),
-            // not idempotent: typeof(_ListPopBackRequest),
-            typeof(_ListFetchRequest),
-            /*
-             *  Warning: in the future, this may not be idempotent
-             *  Currently it supports removing all occurrences of a value.
-             *  In the future, we may also add "the first/last N occurrences of a value".
-             *  In the latter case it is not idempotent.
-             */
+            typeof(_SetContainsRequest),
+            typeof(_SetLengthRequest),
+            // Not retryable: typeof(_SetPopRequest),
+
+            // Not retryable: typeof(_ListPushFrontRequest),
+            // Not retryable: typeof(_ListPushBackRequest),
+            // Not retryable: typeof(_ListPopFrontRequest),
+            // Not retryable: typeof(_ListPopBackRequest),
+            // Not used: typeof(_ListEraseRequest),
             typeof(_ListRemoveRequest),
+            typeof(_ListFetchRequest),
             typeof(_ListLengthRequest),
-            // not idempotent: typeof(_ListConcatenateFrontRequest),
-            // not idempotent: typeof(_ListConcatenateBackRequest)
+            // Not retryable: typeof(_ListConcatenateFrontRequest),
+            // Not retryable: typeof(_ListConcatenateBackRequest),
+            // Not retryable: typeof(_ListRetainRequest),
+
+            typeof(_SortedSetPutRequest),
+            typeof(_SortedSetFetchRequest),
+            typeof(_SortedSetGetScoreRequest),
+            typeof(_SortedSetRemoveRequest),
+            // Not retryable: typeof(_SortedSetIncrementRequest),
+            typeof(_SortedSetGetRankRequest),
+            typeof(_SortedSetLengthRequest),
+            typeof(_SortedSetLengthByScoreRequest),
+
+            typeof(_SubscriptionRequest)
         };
 
         private readonly ILogger _logger;
@@ -100,20 +125,26 @@ namespace Momento.Sdk.Internal.Retry
 
         public override bool Equals(object obj)
         {
-            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            if (obj is null || obj.GetType() != GetType())
             {
                 return false;
             }
 
             var other = (DefaultRetryEligibilityStrategy)obj;
             return _retryableRequestTypes.SetEquals(other._retryableRequestTypes) &&
-                _retryableStatusCodes.SetEquals(other._retryableStatusCodes);
+                   _retryableStatusCodes.SetEquals(other._retryableStatusCodes);
         }
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            unchecked
+            {
+                var hash = _retryableRequestTypes.Aggregate(17,
+                    (current, type) => current * 31 + (type?.GetHashCode() ?? 0));
+                return _retryableStatusCodes.Aggregate(hash,
+                    (current, code) => current * 31 + code.GetHashCode());
+            }
         }
     }
 }
-

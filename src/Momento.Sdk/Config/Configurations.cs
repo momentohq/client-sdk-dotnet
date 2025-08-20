@@ -1,10 +1,10 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Config.Retry;
 using Momento.Sdk.Config.Transport;
+using System;
+using System.Collections.Generic;
 
 namespace Momento.Sdk.Config;
 

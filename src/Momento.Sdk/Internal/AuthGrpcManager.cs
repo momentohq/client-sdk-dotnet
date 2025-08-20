@@ -12,6 +12,7 @@ using Grpc.Net.Client.Web;
 #endif
 using Microsoft.Extensions.Logging;
 using Momento.Protos.TokenClient;
+using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Config.Middleware;
 using Momento.Sdk.Internal.Middleware;
@@ -28,9 +29,9 @@ internal class AuthClientWithMiddleware : IAuthClient
 {
     private readonly IList<IMiddleware> _middlewares;
     private readonly Token.TokenClient _generatedClient;
-    private readonly IList<Tuple<string, string>> _headers;
+    private readonly IList<KeyValuePair<string, string>> _headers;
 
-    public AuthClientWithMiddleware(Token.TokenClient generatedClient, IList<IMiddleware> middlewares, IList<Tuple<string, string>> headers)
+    public AuthClientWithMiddleware(Token.TokenClient generatedClient, IList<IMiddleware> middlewares, IList<KeyValuePair<string, string>> headers)
     {
         _generatedClient = generatedClient;
         _middlewares = middlewares;
@@ -49,7 +50,7 @@ public class AuthGrpcManager : GrpcManager
 {
     public IAuthClient Client { get; }
 
-    public AuthGrpcManager(IAuthConfiguration config, string authToken, string endpoint): base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authToken, endpoint, "AuthGrpcManager")
+    public AuthGrpcManager(IAuthConfiguration config, ICredentialProvider authProvider) : base(config.TransportStrategy.GrpcConfig, config.LoggerFactory, authProvider, authProvider.TokenEndpoint, "AuthGrpcManager")
     {
         var middlewares = new List<IMiddleware> {
             new HeaderMiddleware(config.LoggerFactory, this.headers)

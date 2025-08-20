@@ -1,34 +1,53 @@
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
+using Grpc.Core;
+using Microsoft.Extensions.Logging;
+using Momento.Protos.CacheClient.Pubsub;
+using Momento.Sdk.Auth;
+using Momento.Sdk.Config;
+using Momento.Sdk.Config.Retry;
+using Momento.Sdk.Exceptions;
+using Momento.Sdk.Internal.ExtensionMethods;
+using Momento.Sdk.Responses;
 using System;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Grpc.Core;
-using Microsoft.Extensions.Logging;
-using Momento.Protos.CacheClient.Pubsub;
-using Momento.Sdk.Config;
-using Momento.Sdk.Exceptions;
-using Momento.Sdk.Internal.ExtensionMethods;
-using Momento.Sdk.Responses;
 
 namespace Momento.Sdk.Internal;
 
 public class ScsTopicClientBase : IDisposable
 {
     protected readonly TopicGrpcManager grpcManager;
-    private readonly TimeSpan dataClientOperationTimeout;
+    protected readonly TimeSpan topicClientOperationTimeout = TimeSpan.FromSeconds(5);
     private readonly ILogger _logger;
     private bool hasSentOnetimeHeaders = false;
 
     protected readonly CacheExceptionMapper _exceptionMapper;
+    protected readonly ITopicSubscriptionConnectionStateCallbacks? _callbacks;
+    protected readonly ISubscriptionRetryStrategy _subscriptionRetryStrategy;
 
-    public ScsTopicClientBase(ITopicConfiguration config, string authToken, string endpoint)
+    public ScsTopicClientBase(ITopicConfiguration config, ICredentialProvider authProvider)
     {
-        this.grpcManager = new TopicGrpcManager(config, authToken, endpoint);
-        this.dataClientOperationTimeout = config.TransportStrategy.GrpcConfig.Deadline;
-        this._logger = config.LoggerFactory.CreateLogger<ScsDataClient>();
+
+        this._logger = config.LoggerFactory.CreateLogger<ScsTopicClient>();
         this._exceptionMapper = new CacheExceptionMapper(config.LoggerFactory);
+        this.topicClientOperationTimeout = config.TransportStrategy.GrpcConfig.Deadline;
+        this._subscriptionRetryStrategy = config.SubscriptionRetryStrategy;
+
+        if (config is ITopicSubscriptionConnectionStateCallbacks callbacks)
+        {
+            this._callbacks = callbacks;
+        }
+
+        if (config is ITopicConfigWithHeaders configWithHeaders)
+        {
+            this.grpcManager = new TopicGrpcManager(config, authProvider, configWithHeaders.Headers);
+        }
+        else
+        {
+            this.grpcManager = new TopicGrpcManager(config, authProvider);
+        }
     }
 
     private Metadata MetadataWithCache(string cacheName)
@@ -43,11 +62,6 @@ public class ScsTopicClientBase : IDisposable
         return new Metadata() { { "cache", cacheName }, { "agent", $"dotnet:topic:{sdkVersion}" }, { "runtime-v]ersion", runtimeVer } };
     }
 
-    protected DateTime CalculateDeadline()
-    {
-        return DateTime.UtcNow.Add(dataClientOperationTimeout);
-    }
-
     public void Dispose()
     {
         this.grpcManager.Dispose();
@@ -58,8 +72,8 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
 {
     private readonly ILogger _logger;
 
-    public ScsTopicClient(ITopicConfiguration config, string authToken, string endpoint)
-        : base(config, authToken, endpoint)
+    public ScsTopicClient(ITopicConfiguration config, ICredentialProvider authProvider)
+        : base(config, authProvider)
     {
         this._logger = config.LoggerFactory.CreateLogger<ScsTopicClient>();
     }
@@ -103,7 +117,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         try
         {
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicPublish, cacheName, topicName);
-            await grpcManager.Client.publish(request, new CallOptions(deadline: CalculateDeadline()));
+            await grpcManager.Client.publish(request, new CallOptions(deadline: Utils.CalculateDeadline(topicClientOperationTimeout)));
         }
         catch (Exception e)
         {
@@ -123,7 +137,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         {
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, cacheName, topicName);
             subscriptionWrapper = new SubscriptionWrapper(grpcManager, cacheName, topicName,
-                resumeAtTopicSequenceNumber, resumeAtTopicSequencePage, _exceptionMapper, _logger);
+                resumeAtTopicSequenceNumber, resumeAtTopicSequencePage, topicClientOperationTimeout, _exceptionMapper, _logger, _subscriptionRetryStrategy, _callbacks);
             await subscriptionWrapper.Subscribe();
         }
         catch (Exception e)
@@ -151,18 +165,24 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
         private ulong _lastSequenceNumber;
         private ulong _lastSequencePage;
         private bool _subscribed;
+        private ITopicSubscriptionConnectionStateCallbacks? _callbacks;
+        private TimeSpan _topicClientOperationTimeout;
+        private readonly ISubscriptionRetryStrategy _subscriptionRetryStrategy;
 
         public SubscriptionWrapper(TopicGrpcManager grpcManager, string cacheName,
-            string topicName, ulong? resumeAtTopicSequenceNumber, ulong? resumeAtTopicSequencePage,
-            CacheExceptionMapper exceptionMapper, ILogger logger)
+            string topicName, ulong? resumeAtTopicSequenceNumber, ulong? resumeAtTopicSequencePage, TimeSpan topicClientOperationTimeout,
+            CacheExceptionMapper exceptionMapper, ILogger logger, ISubscriptionRetryStrategy subscriptionRetryStrategy, ITopicSubscriptionConnectionStateCallbacks? callbacks = null)
         {
             _grpcManager = grpcManager;
             _cacheName = cacheName;
             _topicName = topicName;
             _lastSequenceNumber = resumeAtTopicSequenceNumber ?? 0;
             _lastSequencePage = resumeAtTopicSequencePage ?? 0;
+            _topicClientOperationTimeout = topicClientOperationTimeout;
             _exceptionMapper = exceptionMapper;
             _logger = logger;
+            _callbacks = callbacks;
+            _subscriptionRetryStrategy = subscriptionRetryStrategy;
         }
 
         public async Task Subscribe()
@@ -177,9 +197,39 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
             request.SequencePage = _lastSequencePage;
 
             _logger.LogTraceExecutingTopicRequest(RequestTypeTopicSubscribe, _cacheName, _topicName);
-            var subscription = _grpcManager.Client.subscribe(request, new CallOptions());
 
-            await subscription.ResponseStream.MoveNext();
+            // Create a linked token source to support cancellation
+            using var cts = new CancellationTokenSource();
+            var subscription = _grpcManager.Client.subscribe(request, new CallOptions(cancellationToken: cts.Token));
+
+            var moveNextTask = subscription.ResponseStream.MoveNext();
+            var timeoutTask = Task.Delay(_topicClientOperationTimeout, cts.Token);
+            var completedTask = await Task.WhenAny(moveNextTask, timeoutTask);
+
+            if (completedTask == timeoutTask)
+            {
+                // cancel the stream
+                _logger.LogWarning("Timed out waiting for first message (heartbeat) for topic {Topic} on cache {Cache}", _topicName, _cacheName);
+                cts.Cancel();
+                subscription.Dispose();
+
+                throw new Exceptions.TimeoutException(
+                    $"Timed out after {_topicClientOperationTimeout.TotalSeconds} seconds waiting for first message (heartbeat) for topic {_topicName} on cache {_cacheName}",
+                    new MomentoErrorTransportDetails(
+                        new MomentoGrpcErrorDetails(
+                            StatusCode.DeadlineExceeded,
+                            "Timed out waiting for first message (heartbeat)"
+                        )
+                    )
+                );
+            }
+
+            if (!await moveNextTask)
+            {
+                throw new InternalServerException($"Subscription stream closed unexpectedly for topic {_topicName} on cache {_cacheName}");
+            }
+
+
             var firstMessage = subscription.ResponseStream.Current;
             // The first message to a new subscription will always be a heartbeat.
             if (firstMessage.KindCase is not _SubscriptionItem.KindOneofCase.Heartbeat)
@@ -190,6 +240,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
 
             _subscription = subscription;
             _subscribed = true;
+            _callbacks?.onStreamEstablished();
         }
 
         public async ValueTask<ITopicEvent?> GetNextEventFromGrpcStreamAsync(
@@ -203,35 +254,35 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                     {
                         await Subscribe();
                         _subscribed = true;
+                        _callbacks?.onStreamEstablished();
                     }
 
                     await _subscription!.ResponseStream.MoveNext(cancellationToken);
                 }
                 catch (OperationCanceledException)
                 {
+                    _callbacks?.OnStreamDisconnected();
                     break;
                 }
                 catch (Exception e)
                 {
                     var sdkException = _exceptionMapper.Convert(e);
-                    if (sdkException.ErrorCode is MomentoErrorCode.CANCELLED_ERROR)
+                    var retryDelayMillis = _subscriptionRetryStrategy.DetermineWhenToResubscribe(sdkException);
+                    if (retryDelayMillis is null)
                     {
-                        break;
-                    }
-
-                    _logger.LogTraceTopicSubscriptionError(_cacheName, _topicName, sdkException);
-
-                    // Certain errors can never be recovered
-                    if (!IsErrorRecoverable(sdkException))
-                    {
+                        _logger.LogTraceTopicSubscriptionError(_cacheName, _topicName, sdkException);
+                        _callbacks?.OnStreamDisconnected();
                         return new TopicMessage.Error(sdkException);
                     }
+                    else
+                    {
+                        // If the error is recoverable, wait and attempt to resubscribe
+                        Dispose();
+                        await Task.Delay(retryDelayMillis.Value, cancellationToken);
 
-                    // If the error is recoverable, wait and attempt to resubscribe
-                    Dispose();
-                    await Task.Delay(5_000, cancellationToken);
-
-                    _subscribed = false;
+                        _subscribed = false;
+                        _callbacks?.OnStreamDisconnected();
+                    }
                     continue;
                 }
 
@@ -253,6 +304,7 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                                 return new TopicMessage.Binary(message.Item.Value, _lastSequenceNumber, _lastSequencePage, message.Item.PublisherId == "" ? null : message.Item.PublisherId);
                             case _TopicValue.KindOneofCase.None:
                             default:
+                                _callbacks?.OnStreamDisconnected();
                                 _logger.LogTraceTopicMessageReceived("unknown", _cacheName, _topicName);
                                 break;
                         }
@@ -271,20 +323,16 @@ internal sealed class ScsTopicClient : ScsTopicClientBase
                         return new TopicSystemEvent.Heartbeat();
                     case _SubscriptionItem.KindOneofCase.None:
                         _logger.LogTraceTopicMessageReceived("none", _cacheName, _topicName);
+                        _callbacks?.OnStreamDisconnected();
                         break;
                     default:
                         _logger.LogTraceTopicMessageReceived("unknown", _cacheName, _topicName);
+                        _callbacks?.OnStreamDisconnected();
                         break;
                 }
             }
 
             return null;
-        }
-
-        private static bool IsErrorRecoverable(SdkException exception)
-        {
-            return exception.ErrorCode is not (MomentoErrorCode.PERMISSION_ERROR
-                or MomentoErrorCode.AUTHENTICATION_ERROR);
         }
 
         public void Dispose()
