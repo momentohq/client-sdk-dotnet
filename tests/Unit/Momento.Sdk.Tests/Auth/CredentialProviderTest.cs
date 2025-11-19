@@ -15,6 +15,9 @@ public class CredentialProviderTests
     const string MALFORMED_TOKEN = "asdf";
     const string TEST_V1_MISSING_ENDPOINT = "eyJhcGlfa2V5IjogImV5SmxibVJ3YjJsdWRDSTZJbU5sYkd3dE5DMTFjeTEzWlhOMExUSXRNUzV3Y205a0xtRXViVzl0Wlc1MGIyaHhMbU52YlNJc0ltRndhVjlyWlhraU9pSmxlVXBvWWtkamFVOXBTa2xWZWtreFRtbEtPUzVsZVVwNlpGZEphVTlwU25kYVdGSnNURzFrYUdSWVVuQmFXRXBCV2pJeGFHRlhkM1ZaTWpsMFNXbDNhV1J0Vm5sSmFtOTRabEV1VW5OMk9GazVkRE5KVEMwd1RHRjZiQzE0ZDNaSVZESmZZalJRZEhGTlVVMDVRV3hhVlVsVGFrbENieUo5In0=";
     const string TEST_V1_MISSING_API_KEY = "eyJlbmRwb2ludCI6ICJhLmIuY29tIn0=";
+    const string TEST_GLOBAL_API_KEY = "global_api_key";
+    const string TEST_ENDPOINT = "testEndpoint";
+    const string TEST_ENV_VAR_NAME = "MOMENTO_TEST_GLOBAL_API_KEY";
 
     [Fact]
     public void StringMomentoTokenProvider_EmptyOrNull_ThrowsException()
@@ -168,5 +171,68 @@ public class CredentialProviderTests
         Environment.SetEnvironmentVariable(envVar, TEST_V1_MISSING_API_KEY);
         Assert.Throws<InvalidArgumentException>(() => new EnvMomentoTokenProvider(envVar));
         Environment.SetEnvironmentVariable(envVar, "");
+    }
+
+    [Fact]
+    public void GlobalKeyStringMomentoTokenProvider_HappyPath()
+    {
+        var cp = new GlobalKeyStringMomentoTokenProvider(TEST_GLOBAL_API_KEY, TEST_ENDPOINT);
+        Assert.Equal(TEST_GLOBAL_API_KEY, cp.AuthToken);
+        Assert.Equal("control." + TEST_ENDPOINT, cp.ControlEndpoint);
+        Assert.Equal("cache." + TEST_ENDPOINT, cp.CacheEndpoint);
+        Assert.Equal("token." + TEST_ENDPOINT, cp.TokenEndpoint);
+    }
+
+    [Fact]
+    public void GlobalKeyStringMomentoTokenProvider_MissingApiKey()
+    {
+        Assert.Throws<InvalidArgumentException>(
+            () => new GlobalKeyStringMomentoTokenProvider("", TEST_ENDPOINT)
+        );
+    }
+
+    [Fact]
+    public void GlobalKeyStringMomentoTokenProvider_MissingEndpoint()
+    {
+        Assert.Throws<InvalidArgumentException>(
+            () => new GlobalKeyStringMomentoTokenProvider(TEST_GLOBAL_API_KEY, "")
+        );
+    }
+
+    [Fact]
+    public void GlobalKeyEnvMomentoTokenProvider_HappyPath()
+    {
+        Environment.SetEnvironmentVariable(TEST_ENV_VAR_NAME, TEST_GLOBAL_API_KEY);
+        var cp = new GlobalKeyEnvMomentoTokenProvider(TEST_ENV_VAR_NAME, TEST_ENDPOINT);
+        Assert.Equal(TEST_GLOBAL_API_KEY, cp.AuthToken);
+        Assert.Equal("control." + TEST_ENDPOINT, cp.ControlEndpoint);
+        Assert.Equal("cache." + TEST_ENDPOINT, cp.CacheEndpoint);
+        Assert.Equal("token." + TEST_ENDPOINT, cp.TokenEndpoint);
+        Environment.SetEnvironmentVariable(TEST_ENV_VAR_NAME, "");
+    }
+
+    [Fact]
+    public void GlobalKeyEnvMomentoTokenProvider_MissingApiKey()
+    {
+        Environment.SetEnvironmentVariable(TEST_ENV_VAR_NAME, "");
+        Assert.Throws<InvalidArgumentException>(
+            () => new GlobalKeyEnvMomentoTokenProvider(TEST_ENV_VAR_NAME, TEST_ENDPOINT)
+        );
+    }
+
+    [Fact]
+    public void GlobalKeyEnvMomentoTokenProvider_MissingEnvVar()
+    {
+        Assert.Throws<InvalidArgumentException>(
+            () => new GlobalKeyEnvMomentoTokenProvider("", TEST_ENDPOINT)
+        );
+    }
+
+    [Fact]
+    public void GlobalKeyEnvMomentoTokenProvider_MissingEndpoint()
+    {
+        Assert.Throws<InvalidArgumentException>(
+            () => new GlobalKeyEnvMomentoTokenProvider(TEST_ENV_VAR_NAME, "")
+        );
     }
 }
