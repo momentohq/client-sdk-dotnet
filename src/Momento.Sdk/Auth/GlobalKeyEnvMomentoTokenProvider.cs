@@ -32,6 +32,12 @@ public class GlobalKeyEnvMomentoTokenProvider : ICredentialProvider
     /// <param name="endpoint">The Momento service endpoint.</param>
     public GlobalKeyEnvMomentoTokenProvider(string name, string endpoint)
     {
+        if (String.IsNullOrEmpty(endpoint))
+        {
+            throw new InvalidArgumentException($"Endpoint is empty or null.");
+        }
+        this.origEndpoint = endpoint;
+
         this.envVarName = name;
         if (String.IsNullOrEmpty(name))
         {
@@ -43,12 +49,14 @@ public class GlobalKeyEnvMomentoTokenProvider : ICredentialProvider
         {
             throw new InvalidArgumentException($"Environment variable '{name}' is empty or null.");
         }
-
-        if (String.IsNullOrEmpty(endpoint))
+        if (AuthUtils.IsBase64String(AuthToken))
         {
-            throw new InvalidArgumentException($"Endpoint is empty or null.");
+            throw new InvalidArgumentException("Did not expect global API key to be base64 encoded. Are you using the correct key? Or did you mean to use `StringMomentoTokenProvider()` instead?");
         }
-        this.origEndpoint = endpoint;
+        if (!AuthUtils.IsGlobalApiKey(AuthToken))
+        {
+            throw new InvalidArgumentException("Provided API key is not a global API key. Are you using the correct key? Or did you mean to use `StringMomentoTokenProvider()` instead?");
+        }
 
         ControlEndpoint = "control." + endpoint;
         CacheEndpoint = "cache." + endpoint;

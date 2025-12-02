@@ -65,6 +65,10 @@ internal static class AuthUtils
             else
             {
                 var claims = JwtUtils.DecodeJwt(authToken);
+                if (claims.Type != null && claims.Type == "g")
+                {
+                    throw new InvalidArgumentException("Provided API key is a global API key. Are you using the correct key? Or did you mean to use `GlobalKeyStringMomentoTokenProvider()` or `GlobalKeyEnvMomentoTokenProvider()` instead?");
+                }
                 return new TokenAndEndpoints(
                     authToken,
                     claims.ControlEndpoint,
@@ -77,5 +81,11 @@ internal static class AuthUtils
         {
             throw new InvalidArgumentException("The supplied Momento authToken is not valid.");
         }
+    }
+
+    public static bool IsGlobalApiKey(string authToken)
+    {
+        var claims = JwtUtils.DecodeJwt(authToken);
+        return claims.Type != null && claims.Type == "g";
     }
 }

@@ -15,7 +15,7 @@ public class CredentialProviderTests
     const string MALFORMED_TOKEN = "asdf";
     const string TEST_V1_MISSING_ENDPOINT = "eyJhcGlfa2V5IjogImV5SmxibVJ3YjJsdWRDSTZJbU5sYkd3dE5DMTFjeTEzWlhOMExUSXRNUzV3Y205a0xtRXViVzl0Wlc1MGIyaHhMbU52YlNJc0ltRndhVjlyWlhraU9pSmxlVXBvWWtkamFVOXBTa2xWZWtreFRtbEtPUzVsZVVwNlpGZEphVTlwU25kYVdGSnNURzFrYUdSWVVuQmFXRXBCV2pJeGFHRlhkM1ZaTWpsMFNXbDNhV1J0Vm5sSmFtOTRabEV1VW5OMk9GazVkRE5KVEMwd1RHRjZiQzE0ZDNaSVZESmZZalJRZEhGTlVVMDVRV3hhVlVsVGFrbENieUo5In0=";
     const string TEST_V1_MISSING_API_KEY = "eyJlbmRwb2ludCI6ICJhLmIuY29tIn0=";
-    const string TEST_GLOBAL_API_KEY = "global_api_key";
+    const string TEST_GLOBAL_API_KEY = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0IjoiZyIsImNwIjoiY29udHJvbC50ZXN0LmNvbSIsImMiOiJjYWNoZS50ZXN0LmNvbSJ9.T3ylW7iWLobcCsYQx92oImV2KgyBWmtFO-37uzw3qspSb18itIEH9zN49QFEm6joeIer_kXJ5R28ruF_JbUniA";
     const string TEST_ENDPOINT = "testEndpoint";
     const string TEST_ENV_VAR_NAME = "MOMENTO_TEST_GLOBAL_API_KEY";
 
@@ -233,6 +233,57 @@ public class CredentialProviderTests
     {
         Assert.Throws<InvalidArgumentException>(
             () => new GlobalKeyEnvMomentoTokenProvider(TEST_ENV_VAR_NAME, "")
+        );
+    }
+
+    [Fact]
+    public void StringMomentoTokenProvider_GlobalApiKey_ThrowsException()
+    {
+        Assert.Throws<InvalidArgumentException>(
+            () => new StringMomentoTokenProvider(TEST_GLOBAL_API_KEY)
+        );
+    }
+
+    [Fact]
+    public void EnvMomentoTokenProvider_GlobalApiKey_ThrowsException()
+    {
+        Environment.SetEnvironmentVariable(TEST_ENV_VAR_NAME, TEST_GLOBAL_API_KEY);
+        Assert.Throws<InvalidArgumentException>(
+            () => new EnvMomentoTokenProvider(TEST_ENV_VAR_NAME)
+        );
+    }
+
+    [Fact]
+    public void GlobalKeyStringMomentoTokenProvider_V1ApiKey_ThrowsException()
+    {
+        Assert.Throws<InvalidArgumentException>(
+            () => new GlobalKeyStringMomentoTokenProvider(TEST_V1_API_KEY, TEST_ENDPOINT)
+        );
+    }
+
+    [Fact]
+    public void GlobalKeyEnvMomentoTokenProvider_V1ApiKey_ThrowsException()
+    {
+        Environment.SetEnvironmentVariable(TEST_ENV_VAR_NAME, TEST_V1_API_KEY);
+        Assert.Throws<InvalidArgumentException>(
+            () => new GlobalKeyEnvMomentoTokenProvider(TEST_ENV_VAR_NAME, TEST_ENDPOINT)
+        );
+    }
+
+    [Fact]
+    public void GlobalKeyStringMomentoTokenProvider_PreV1ApiKey_ThrowsException()
+    {
+        Assert.Throws<InvalidArgumentException>(
+            () => new GlobalKeyStringMomentoTokenProvider(TEST_INVALID_LEGACY_AUTH_TOKEN, TEST_ENDPOINT)
+        );
+    }
+
+    [Fact]
+    public void GlobalKeyEnvMomentoTokenProvider_PreV1ApiKey_ThrowsException()
+    {
+        Environment.SetEnvironmentVariable(TEST_ENV_VAR_NAME, TEST_INVALID_LEGACY_AUTH_TOKEN);
+        Assert.Throws<InvalidArgumentException>(
+            () => new GlobalKeyEnvMomentoTokenProvider(TEST_ENV_VAR_NAME, TEST_ENDPOINT)
         );
     }
 }

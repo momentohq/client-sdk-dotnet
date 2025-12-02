@@ -55,6 +55,12 @@ public class Claims
     public string CacheEndpoint { get; private set; }
 
     /// <summary>
+    /// Type of api key.
+    /// </summary>
+    [JsonProperty(PropertyName = "t", Required = Required.Default)]
+    public string? Type { get; private set; }
+
+    /// <summary>
     /// Encapsulates claims embedded in a JWT token that specify host endpoints
     /// for the control plane and the data plane.
     /// </summary>

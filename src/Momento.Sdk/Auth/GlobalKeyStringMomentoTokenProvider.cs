@@ -29,13 +29,21 @@ public class GlobalKeyStringMomentoTokenProvider : ICredentialProvider
     /// <param name="endpoint">The Momento service endpoint.</param>
     public GlobalKeyStringMomentoTokenProvider(string token, string endpoint)
     {
+        if (String.IsNullOrEmpty(endpoint))
+        {
+            throw new InvalidArgumentException($"Endpoint is empty or null.");
+        }
         if (String.IsNullOrEmpty(token))
         {
             throw new InvalidArgumentException($"Auth token is empty or null.");
         }
-        if (String.IsNullOrEmpty(endpoint))
+        if (AuthUtils.IsBase64String(token))
         {
-            throw new InvalidArgumentException($"Endpoint is empty or null.");
+            throw new InvalidArgumentException("Did not expect global API key to be base64 encoded. Are you using the correct key? Or did you mean to use `StringMomentoTokenProvider()` instead?");
+        }
+        if (!AuthUtils.IsGlobalApiKey(token))
+        {
+            throw new InvalidArgumentException("Provided API key is not a global API key. Are you using the correct key? Or did you mean to use `StringMomentoTokenProvider()` instead?");
         }
 
         AuthToken = token;
