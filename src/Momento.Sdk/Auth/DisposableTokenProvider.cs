@@ -6,8 +6,7 @@ using System;
 /// <summary>
 /// Reads and parses a JWT token stored as a string.
 /// </summary>
-[Obsolete("StringMomentoTokenProvider is deprecated, please use ApiKeyV2TokenProvider or DisposableTokenProvider instead.")]
-public class StringMomentoTokenProvider : ICredentialProvider
+public class DisposableTokenProvider : ICredentialProvider
 {
     // For V1 tokens, the original token is necessary to reconstruct
     // the provider in WithCacheEndpoint.
@@ -27,8 +26,7 @@ public class StringMomentoTokenProvider : ICredentialProvider
     /// Reads and parses a JWT token from a string.
     /// </summary>
     /// <param name="token">The JWT token.</param>
-    [Obsolete("StringMomentoTokenProvider is deprecated, please use ApiKeyV2TokenProvider or DisposableTokenProvider instead.")]
-    public StringMomentoTokenProvider(string token)
+    public DisposableTokenProvider(string token)
     {
         origAuthToken = token;
         AuthToken = token;
@@ -47,7 +45,7 @@ public class StringMomentoTokenProvider : ICredentialProvider
     /// <inheritdoc />
     public ICredentialProvider WithCacheEndpoint(string cacheEndpoint)
     {
-        var updated = new StringMomentoTokenProvider(this.origAuthToken);
+        var updated = new DisposableTokenProvider(this.origAuthToken);
         updated.CacheEndpoint = cacheEndpoint;
         return updated;
     }

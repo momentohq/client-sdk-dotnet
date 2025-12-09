@@ -15,9 +15,10 @@ public class CredentialProviderTests
     const string MALFORMED_TOKEN = "asdf";
     const string TEST_V1_MISSING_ENDPOINT = "eyJhcGlfa2V5IjogImV5SmxibVJ3YjJsdWRDSTZJbU5sYkd3dE5DMTFjeTEzWlhOMExUSXRNUzV3Y205a0xtRXViVzl0Wlc1MGIyaHhMbU52YlNJc0ltRndhVjlyWlhraU9pSmxlVXBvWWtkamFVOXBTa2xWZWtreFRtbEtPUzVsZVVwNlpGZEphVTlwU25kYVdGSnNURzFrYUdSWVVuQmFXRXBCV2pJeGFHRlhkM1ZaTWpsMFNXbDNhV1J0Vm5sSmFtOTRabEV1VW5OMk9GazVkRE5KVEMwd1RHRjZiQzE0ZDNaSVZESmZZalJRZEhGTlVVMDVRV3hhVlVsVGFrbENieUo5In0=";
     const string TEST_V1_MISSING_API_KEY = "eyJlbmRwb2ludCI6ICJhLmIuY29tIn0=";
-    const string TEST_GLOBAL_API_KEY = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0IjoiZyIsImNwIjoiY29udHJvbC50ZXN0LmNvbSIsImMiOiJjYWNoZS50ZXN0LmNvbSJ9.T3ylW7iWLobcCsYQx92oImV2KgyBWmtFO-37uzw3qspSb18itIEH9zN49QFEm6joeIer_kXJ5R28ruF_JbUniA";
+    const string TEST_V2_API_KEY = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0IjoiZyIsImlkIjoic29tZS1pZCJ9.WRhKpdh7cFCXO7lAaVojtQAxK6mxMdBrvXTJL1xu94S0d6V1YSstOObRlAIMA7i_yIxO1mWEF3rlF5UNc77VXQ";
     const string TEST_ENDPOINT = "testEndpoint";
-    const string TEST_ENV_VAR_NAME = "MOMENTO_TEST_GLOBAL_API_KEY";
+    const string KEY_ENV_VAR_NAME = "MOMENTO_TEST_V2_API_KEY";
+    const string ENDPOINT_ENV_VAR_NAME = "MOMENTO_TEST_ENDPOINT";
 
     [Fact]
     public void StringMomentoTokenProvider_EmptyOrNull_ThrowsException()
@@ -174,116 +175,149 @@ public class CredentialProviderTests
     }
 
     [Fact]
-    public void GlobalKeyStringMomentoTokenProvider_HappyPath()
+    public void ApiKeyV2TokenProvider_HappyPath()
     {
-        var cp = new GlobalKeyStringMomentoTokenProvider(TEST_GLOBAL_API_KEY, TEST_ENDPOINT);
-        Assert.Equal(TEST_GLOBAL_API_KEY, cp.AuthToken);
+        var cp = new ApiKeyV2TokenProvider(TEST_V2_API_KEY, TEST_ENDPOINT);
+        Assert.Equal(TEST_V2_API_KEY, cp.AuthToken);
         Assert.Equal("control." + TEST_ENDPOINT, cp.ControlEndpoint);
         Assert.Equal("cache." + TEST_ENDPOINT, cp.CacheEndpoint);
         Assert.Equal("token." + TEST_ENDPOINT, cp.TokenEndpoint);
     }
 
     [Fact]
-    public void GlobalKeyStringMomentoTokenProvider_MissingApiKey()
+    public void ApiKeyV2TokenProvider_MissingApiKey()
     {
         Assert.Throws<InvalidArgumentException>(
-            () => new GlobalKeyStringMomentoTokenProvider("", TEST_ENDPOINT)
+            () => new ApiKeyV2TokenProvider("", TEST_ENDPOINT)
         );
     }
 
     [Fact]
-    public void GlobalKeyStringMomentoTokenProvider_MissingEndpoint()
+    public void ApiKeyV2TokenProvider_MissingEndpoint()
     {
         Assert.Throws<InvalidArgumentException>(
-            () => new GlobalKeyStringMomentoTokenProvider(TEST_GLOBAL_API_KEY, "")
+            () => new ApiKeyV2TokenProvider(TEST_V2_API_KEY, "")
         );
     }
 
     [Fact]
-    public void GlobalKeyEnvMomentoTokenProvider_HappyPath()
+    public void EnvVarV2TokenProvider_HappyPath()
     {
-        Environment.SetEnvironmentVariable(TEST_ENV_VAR_NAME, TEST_GLOBAL_API_KEY);
-        var cp = new GlobalKeyEnvMomentoTokenProvider(TEST_ENV_VAR_NAME, TEST_ENDPOINT);
-        Assert.Equal(TEST_GLOBAL_API_KEY, cp.AuthToken);
+        Environment.SetEnvironmentVariable(KEY_ENV_VAR_NAME, TEST_V2_API_KEY);
+        Environment.SetEnvironmentVariable(ENDPOINT_ENV_VAR_NAME, TEST_ENDPOINT);
+        var cp = new EnvVarV2TokenProvider(KEY_ENV_VAR_NAME, ENDPOINT_ENV_VAR_NAME);
+        Assert.Equal(TEST_V2_API_KEY, cp.AuthToken);
         Assert.Equal("control." + TEST_ENDPOINT, cp.ControlEndpoint);
         Assert.Equal("cache." + TEST_ENDPOINT, cp.CacheEndpoint);
         Assert.Equal("token." + TEST_ENDPOINT, cp.TokenEndpoint);
-        Environment.SetEnvironmentVariable(TEST_ENV_VAR_NAME, "");
+        Environment.SetEnvironmentVariable(KEY_ENV_VAR_NAME, "");
     }
 
     [Fact]
-    public void GlobalKeyEnvMomentoTokenProvider_MissingApiKey()
+    public void EnvVarV2TokenProvider_MissingApiKey()
     {
-        Environment.SetEnvironmentVariable(TEST_ENV_VAR_NAME, "");
+        Environment.SetEnvironmentVariable(KEY_ENV_VAR_NAME, "");
+        Environment.SetEnvironmentVariable(ENDPOINT_ENV_VAR_NAME, TEST_ENDPOINT);
         Assert.Throws<InvalidArgumentException>(
-            () => new GlobalKeyEnvMomentoTokenProvider(TEST_ENV_VAR_NAME, TEST_ENDPOINT)
+            () => new EnvVarV2TokenProvider(KEY_ENV_VAR_NAME, ENDPOINT_ENV_VAR_NAME)
         );
     }
 
     [Fact]
-    public void GlobalKeyEnvMomentoTokenProvider_MissingEnvVar()
+    public void EnvVarV2TokenProvider_MissingKeyEnvVar()
     {
+        Environment.SetEnvironmentVariable(ENDPOINT_ENV_VAR_NAME, TEST_ENDPOINT);
         Assert.Throws<InvalidArgumentException>(
-            () => new GlobalKeyEnvMomentoTokenProvider("", TEST_ENDPOINT)
+            () => new EnvVarV2TokenProvider("", ENDPOINT_ENV_VAR_NAME)
         );
     }
 
     [Fact]
-    public void GlobalKeyEnvMomentoTokenProvider_MissingEndpoint()
+    public void EnvVarV2TokenProvider_MissingEndpoint()
     {
+        Environment.SetEnvironmentVariable(KEY_ENV_VAR_NAME, TEST_V2_API_KEY);
+        Environment.SetEnvironmentVariable(ENDPOINT_ENV_VAR_NAME, "");
         Assert.Throws<InvalidArgumentException>(
-            () => new GlobalKeyEnvMomentoTokenProvider(TEST_ENV_VAR_NAME, "")
+            () => new EnvVarV2TokenProvider(KEY_ENV_VAR_NAME, ENDPOINT_ENV_VAR_NAME)
         );
     }
 
     [Fact]
-    public void StringMomentoTokenProvider_GlobalApiKey_ThrowsException()
+    public void EnvVarV2TokenProvider_MissingEndpointEnvVar()
     {
+        Environment.SetEnvironmentVariable(KEY_ENV_VAR_NAME, TEST_V2_API_KEY);
         Assert.Throws<InvalidArgumentException>(
-            () => new StringMomentoTokenProvider(TEST_GLOBAL_API_KEY)
+            () => new EnvVarV2TokenProvider(KEY_ENV_VAR_NAME, "")
         );
     }
 
     [Fact]
-    public void EnvMomentoTokenProvider_GlobalApiKey_ThrowsException()
+    public void StringMomentoTokenProvider_V2ApiKey_ThrowsException()
     {
-        Environment.SetEnvironmentVariable(TEST_ENV_VAR_NAME, TEST_GLOBAL_API_KEY);
         Assert.Throws<InvalidArgumentException>(
-            () => new EnvMomentoTokenProvider(TEST_ENV_VAR_NAME)
+            () => new StringMomentoTokenProvider(TEST_V2_API_KEY)
         );
     }
 
     [Fact]
-    public void GlobalKeyStringMomentoTokenProvider_V1ApiKey_ThrowsException()
+    public void EnvMomentoTokenProvider_V2ApiKey_ThrowsException()
     {
+        Environment.SetEnvironmentVariable(KEY_ENV_VAR_NAME, TEST_V2_API_KEY);
         Assert.Throws<InvalidArgumentException>(
-            () => new GlobalKeyStringMomentoTokenProvider(TEST_V1_API_KEY, TEST_ENDPOINT)
+            () => new EnvMomentoTokenProvider(KEY_ENV_VAR_NAME)
         );
     }
 
     [Fact]
-    public void GlobalKeyEnvMomentoTokenProvider_V1ApiKey_ThrowsException()
+    public void DisposableTokenProvider_V2ApiKey_ThrowsException()
     {
-        Environment.SetEnvironmentVariable(TEST_ENV_VAR_NAME, TEST_V1_API_KEY);
         Assert.Throws<InvalidArgumentException>(
-            () => new GlobalKeyEnvMomentoTokenProvider(TEST_ENV_VAR_NAME, TEST_ENDPOINT)
+            () => new DisposableTokenProvider(TEST_V2_API_KEY)
         );
     }
 
     [Fact]
-    public void GlobalKeyStringMomentoTokenProvider_PreV1ApiKey_ThrowsException()
+    public void DisposableTokenProvider_V1AuthToken_HappyPath()
+    {
+        var cp = new DisposableTokenProvider(TEST_V1_API_TOKEN);
+        Assert.Equal(TEST_V1_API_KEY, cp.AuthToken);
+        Assert.Equal("control.test.momentohq.com", cp.ControlEndpoint);
+        Assert.Equal("cache.test.momentohq.com", cp.CacheEndpoint);
+    }
+
+    [Fact]
+    public void ApiKeyV2TokenProvider_V1ApiKey_ThrowsException()
     {
         Assert.Throws<InvalidArgumentException>(
-            () => new GlobalKeyStringMomentoTokenProvider(TEST_INVALID_LEGACY_AUTH_TOKEN, TEST_ENDPOINT)
+            () => new ApiKeyV2TokenProvider(TEST_V1_API_KEY, TEST_ENDPOINT)
         );
     }
 
     [Fact]
-    public void GlobalKeyEnvMomentoTokenProvider_PreV1ApiKey_ThrowsException()
+    public void EnvVarV2TokenProvider_V1ApiKey_ThrowsException()
     {
-        Environment.SetEnvironmentVariable(TEST_ENV_VAR_NAME, TEST_INVALID_LEGACY_AUTH_TOKEN);
+        Environment.SetEnvironmentVariable(KEY_ENV_VAR_NAME, TEST_V1_API_KEY);
+        Environment.SetEnvironmentVariable(ENDPOINT_ENV_VAR_NAME, TEST_ENDPOINT);
         Assert.Throws<InvalidArgumentException>(
-            () => new GlobalKeyEnvMomentoTokenProvider(TEST_ENV_VAR_NAME, TEST_ENDPOINT)
+            () => new EnvVarV2TokenProvider(KEY_ENV_VAR_NAME, ENDPOINT_ENV_VAR_NAME)
+        );
+    }
+
+    [Fact]
+    public void ApiKeyV2TokenProvider_PreV1ApiKey_ThrowsException()
+    {
+        Assert.Throws<InvalidArgumentException>(
+            () => new ApiKeyV2TokenProvider(TEST_INVALID_LEGACY_AUTH_TOKEN, TEST_ENDPOINT)
+        );
+    }
+
+    [Fact]
+    public void EnvVarV2TokenProvider_PreV1ApiKey_ThrowsException()
+    {
+        Environment.SetEnvironmentVariable(KEY_ENV_VAR_NAME, TEST_INVALID_LEGACY_AUTH_TOKEN);
+        Environment.SetEnvironmentVariable(ENDPOINT_ENV_VAR_NAME, TEST_ENDPOINT);
+        Assert.Throws<InvalidArgumentException>(
+            () => new EnvVarV2TokenProvider(KEY_ENV_VAR_NAME, ENDPOINT_ENV_VAR_NAME)
         );
     }
 }

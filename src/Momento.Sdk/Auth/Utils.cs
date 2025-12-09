@@ -64,11 +64,11 @@ internal static class AuthUtils
             }
             else
             {
-                var claims = JwtUtils.DecodeJwt(authToken);
-                if (claims.Type != null && claims.Type == "g")
+                if (IsV2ApiKey(authToken))
                 {
-                    throw new InvalidArgumentException("Provided API key is a global API key. Are you using the correct key? Or did you mean to use `GlobalKeyStringMomentoTokenProvider()` or `GlobalKeyEnvMomentoTokenProvider()` instead?");
+                    throw new InvalidArgumentException("Received a v2 API key. Are you using the correct key? Or did you mean to use `ApiKeyV2TokenProvider()` or `EnvVarV2TokenProvider()` instead?");
                 }
+                var claims = JwtUtils.DecodeLegacyJwt(authToken);
                 return new TokenAndEndpoints(
                     authToken,
                     claims.ControlEndpoint,
@@ -83,9 +83,21 @@ internal static class AuthUtils
         }
     }
 
-    public static bool IsGlobalApiKey(string authToken)
+    public static bool IsV2ApiKey(string authToken)
     {
-        var claims = JwtUtils.DecodeJwt(authToken);
-        return claims.Type != null && claims.Type == "g";
+        if (AuthUtils.IsBase64String(authToken))
+        {
+            return false;
+        }
+        try
+        {
+            var claims = JwtUtils.DecodeV2Jwt(authToken);
+            return claims.Type != null && claims.Type == "g";
+        }
+        catch
+        {
+            return false;
+        }
+
     }
 }

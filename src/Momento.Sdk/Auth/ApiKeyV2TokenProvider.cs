@@ -4,11 +4,11 @@ using Momento.Sdk.Exceptions;
 using System;
 
 /// <summary>
-/// Reads and parses a global api key stored as a string.
+/// Reads a v2 api key and Momento service endpoint stored as strings.
 /// </summary>
-public class GlobalKeyStringMomentoTokenProvider : ICredentialProvider
+public class ApiKeyV2TokenProvider : ICredentialProvider
 {
-    // For global api keys, the original endpoint is necessary to reconstruct
+    // For v2 api keys, the original endpoint is necessary to reconstruct
     // the provider in WithCacheEndpoint.
     private readonly string origEndpoint;
     /// <inheritdoc />
@@ -23,11 +23,11 @@ public class GlobalKeyStringMomentoTokenProvider : ICredentialProvider
     public bool SecureEndpoints { get; private set; } = true;
 
     /// <summary>
-    /// Constructs a GlobalKeyStringMomentoTokenProvider from a global api key and endpoint.
+    /// Constructs a ApiKeyV2TokenProvider from a v2 api key and endpoint.
     /// </summary>
-    /// <param name="token">The global api key.</param>
+    /// <param name="token">The v2 api key.</param>
     /// <param name="endpoint">The Momento service endpoint.</param>
-    public GlobalKeyStringMomentoTokenProvider(string token, string endpoint)
+    public ApiKeyV2TokenProvider(string token, string endpoint)
     {
         if (String.IsNullOrEmpty(endpoint))
         {
@@ -37,13 +37,9 @@ public class GlobalKeyStringMomentoTokenProvider : ICredentialProvider
         {
             throw new InvalidArgumentException($"Auth token is empty or null.");
         }
-        if (AuthUtils.IsBase64String(token))
+        if (!AuthUtils.IsV2ApiKey(token))
         {
-            throw new InvalidArgumentException("Did not expect global API key to be base64 encoded. Are you using the correct key? Or did you mean to use `StringMomentoTokenProvider()` instead?");
-        }
-        if (!AuthUtils.IsGlobalApiKey(token))
-        {
-            throw new InvalidArgumentException("Provided API key is not a global API key. Are you using the correct key? Or did you mean to use `StringMomentoTokenProvider()` instead?");
+            throw new InvalidArgumentException("Received an invalid v2 API key. Are you using the correct key? Or did you mean to use `StringMomentoTokenProvider()` with a legacy key instead?");
         }
 
         AuthToken = token;
@@ -56,7 +52,7 @@ public class GlobalKeyStringMomentoTokenProvider : ICredentialProvider
     /// <inheritdoc />
     public ICredentialProvider WithCacheEndpoint(string cacheEndpoint)
     {
-        var updated = new GlobalKeyStringMomentoTokenProvider(this.AuthToken, this.origEndpoint);
+        var updated = new ApiKeyV2TokenProvider(this.AuthToken, this.origEndpoint);
         updated.CacheEndpoint = cacheEndpoint;
         return updated;
     }
