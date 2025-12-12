@@ -17,8 +17,8 @@ public class CredentialProviderTests
     const string TEST_V1_MISSING_API_KEY = "eyJlbmRwb2ludCI6ICJhLmIuY29tIn0=";
     const string TEST_V2_API_KEY = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0IjoiZyIsImp0aSI6InNvbWUtaWQifQ.GMr9nA6HE0ttB6llXct_2Sg5-fOKGFbJCdACZFgNbN1fhT6OPg_hVc8ThGzBrWC_RlsBpLA1nzqK3SOJDXYxAw";
     const string TEST_ENDPOINT = "testEndpoint";
-    const string KEY_ENV_VAR_NAME = "MOMENTO_TEST_V2_API_KEY";
-    const string ENDPOINT_ENV_VAR_NAME = "MOMENTO_TEST_ENDPOINT";
+    const string KEY_ENV_VAR_NAME = "MOMENTO_API_KEY";
+    const string ENDPOINT_ENV_VAR_NAME = "MOMENTO_ENDPOINT";
 
     [Fact]
     public void StringMomentoTokenProvider_EmptyOrNull_ThrowsException()
@@ -205,12 +205,25 @@ public class CredentialProviderTests
     {
         Environment.SetEnvironmentVariable(KEY_ENV_VAR_NAME, TEST_V2_API_KEY);
         Environment.SetEnvironmentVariable(ENDPOINT_ENV_VAR_NAME, TEST_ENDPOINT);
-        var cp = new EnvMomentoV2TokenProvider(KEY_ENV_VAR_NAME, ENDPOINT_ENV_VAR_NAME);
+        var cp = new EnvMomentoV2TokenProvider();
         Assert.Equal(TEST_V2_API_KEY, cp.AuthToken);
         Assert.Equal("control." + TEST_ENDPOINT, cp.ControlEndpoint);
         Assert.Equal("cache." + TEST_ENDPOINT, cp.CacheEndpoint);
         Assert.Equal("token." + TEST_ENDPOINT, cp.TokenEndpoint);
-        Environment.SetEnvironmentVariable(KEY_ENV_VAR_NAME, "");
+    }
+
+    [Fact]
+    public void EnvMomentoV2TokenProvider_HappyPath_AlternateNames()
+    {
+        const string ALTERNATE_KEY_NAME = "ALTERNATE_MOMENTO_API_KEY";
+        const string ALTERNATE_ENDPOINT_NAME = "ALTERNATE_MOMENTO_ENDPOINT";
+        Environment.SetEnvironmentVariable(ALTERNATE_KEY_NAME, TEST_V2_API_KEY);
+        Environment.SetEnvironmentVariable(ALTERNATE_ENDPOINT_NAME, TEST_ENDPOINT);
+        var cp = new EnvMomentoV2TokenProvider(ALTERNATE_KEY_NAME, ALTERNATE_ENDPOINT_NAME);
+        Assert.Equal(TEST_V2_API_KEY, cp.AuthToken);
+        Assert.Equal("control." + TEST_ENDPOINT, cp.ControlEndpoint);
+        Assert.Equal("cache." + TEST_ENDPOINT, cp.CacheEndpoint);
+        Assert.Equal("token." + TEST_ENDPOINT, cp.TokenEndpoint);
     }
 
     [Fact]
@@ -219,7 +232,7 @@ public class CredentialProviderTests
         Environment.SetEnvironmentVariable(KEY_ENV_VAR_NAME, "");
         Environment.SetEnvironmentVariable(ENDPOINT_ENV_VAR_NAME, TEST_ENDPOINT);
         Assert.Throws<InvalidArgumentException>(
-            () => new EnvMomentoV2TokenProvider(KEY_ENV_VAR_NAME, ENDPOINT_ENV_VAR_NAME)
+            () => new EnvMomentoV2TokenProvider()
         );
     }
 
@@ -238,7 +251,7 @@ public class CredentialProviderTests
         Environment.SetEnvironmentVariable(KEY_ENV_VAR_NAME, TEST_V2_API_KEY);
         Environment.SetEnvironmentVariable(ENDPOINT_ENV_VAR_NAME, "");
         Assert.Throws<InvalidArgumentException>(
-            () => new EnvMomentoV2TokenProvider(KEY_ENV_VAR_NAME, ENDPOINT_ENV_VAR_NAME)
+            () => new EnvMomentoV2TokenProvider()
         );
     }
 
@@ -299,7 +312,7 @@ public class CredentialProviderTests
         Environment.SetEnvironmentVariable(KEY_ENV_VAR_NAME, TEST_V1_API_KEY);
         Environment.SetEnvironmentVariable(ENDPOINT_ENV_VAR_NAME, TEST_ENDPOINT);
         Assert.Throws<InvalidArgumentException>(
-            () => new EnvMomentoV2TokenProvider(KEY_ENV_VAR_NAME, ENDPOINT_ENV_VAR_NAME)
+            () => new EnvMomentoV2TokenProvider()
         );
     }
 
@@ -317,7 +330,7 @@ public class CredentialProviderTests
         Environment.SetEnvironmentVariable(KEY_ENV_VAR_NAME, TEST_INVALID_LEGACY_AUTH_TOKEN);
         Environment.SetEnvironmentVariable(ENDPOINT_ENV_VAR_NAME, TEST_ENDPOINT);
         Assert.Throws<InvalidArgumentException>(
-            () => new EnvMomentoV2TokenProvider(KEY_ENV_VAR_NAME, ENDPOINT_ENV_VAR_NAME)
+            () => new EnvMomentoV2TokenProvider()
         );
     }
 }
