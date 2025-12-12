@@ -91,8 +91,7 @@ public class LegacyClaims
 }
 
 /// <summary>
-/// Encapsulates claims embedded in a v2 JWT token that specify type of key,
-/// key ID, and optional expiration.
+/// Encapsulates claims embedded in a v2 JWT token.
 /// </summary>
 public class V2Claims
 {
@@ -104,28 +103,12 @@ public class V2Claims
     public string Type { get; private set; }
 
     /// <summary>
-    /// Key ID.
-    /// </summary>
-    [JsonProperty(PropertyName = "id", Required = Required.Always)]
-    public string Id { get; private set; }
-
-    /// <summary>
-    /// Optional expiration time for this key
-    /// </summary>
-    [JsonProperty(PropertyName = "exp", Required = Required.Default)]
-    public ulong? Exp { get; private set; }
-
-    /// <summary>
     /// Encapsulates claims embedded in a v2 JWT token that specify type of key,
     /// key ID, and optional expiration.
     /// </summary>
     /// <param name="type">Type of api key</param>
-    /// <param name="id">Key ID</param>
-    /// <param name="exp">Optional expiration time as Unix timestamp in seconds</param>
-    public V2Claims(string type, string id, ulong? exp = null)
+    public V2Claims(string type)
     {
         this.Type = type;
-        this.Id = id;
-        this.Exp = exp;
     }
 }
