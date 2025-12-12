@@ -66,7 +66,7 @@ internal static class AuthUtils
             {
                 if (IsV2ApiKey(authToken))
                 {
-                    throw new InvalidArgumentException("Received a v2 API key. Are you using the correct key? Or did you mean to use `ApiKeyV2TokenProvider()` or `EnvVarV2TokenProvider()` instead?");
+                    throw new InvalidArgumentException("Received a v2 API key. Are you using the correct key? Or did you mean to use `ApiKeyV2TokenProvider()` or `EnvMomentoV2TokenProvider()` instead?");
                 }
                 var claims = JwtUtils.DecodeLegacyJwt(authToken);
                 return new TokenAndEndpoints(

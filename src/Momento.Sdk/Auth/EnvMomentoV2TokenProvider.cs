@@ -7,7 +7,7 @@ using System;
 /// <summary>
 /// Reads v2 api key and Momento service endpoint stored as environment variables.
 /// </summary>
-public class EnvVarV2TokenProvider : ICredentialProvider
+public class EnvMomentoV2TokenProvider : ICredentialProvider
 {
     // The original environment variable names are required to reconstruct
     // the provider when using WithCacheEndpoint.
@@ -26,11 +26,11 @@ public class EnvVarV2TokenProvider : ICredentialProvider
     public bool SecureEndpoints { get; private set; } = true;
 
     /// <summary>
-    /// Constructs a EnvVarV2TokenProvider from a Momento service endpoint and a v2 api key stored as environment variables.
+    /// Constructs a EnvMomentoV2TokenProvider from a Momento service endpoint and a v2 api key stored as environment variables.
     /// </summary>
     /// <param name="apiKeyEnvVar">Name of the environment variable that contains the v2 api key.</param>
     /// <param name="endpointEnvVar">Name of the environment variable that contains the Momento service endpoint.</param>
-    public EnvVarV2TokenProvider(string apiKeyEnvVar, string endpointEnvVar)
+    public EnvMomentoV2TokenProvider(string apiKeyEnvVar, string endpointEnvVar)
     {
         if (String.IsNullOrEmpty(endpointEnvVar))
         {
@@ -68,7 +68,7 @@ public class EnvVarV2TokenProvider : ICredentialProvider
     /// <inheritdoc />
     public ICredentialProvider WithCacheEndpoint(string cacheEndpoint)
     {
-        var updated = new EnvVarV2TokenProvider(this.apiKeyEnvVarName, this.endpointEnvVarName);
+        var updated = new EnvMomentoV2TokenProvider(this.apiKeyEnvVarName, this.endpointEnvVarName);
         updated.CacheEndpoint = cacheEndpoint;
         return updated;
     }
