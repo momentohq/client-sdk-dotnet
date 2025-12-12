@@ -30,7 +30,7 @@ public class EnvMomentoV2TokenProvider : ICredentialProvider
     /// </summary>
     /// <param name="apiKeyEnvVar">Name of the environment variable that contains the v2 api key.</param>
     /// <param name="endpointEnvVar">Name of the environment variable that contains the Momento service endpoint.</param>
-    public EnvMomentoV2TokenProvider(string apiKeyEnvVar, string endpointEnvVar)
+    public EnvMomentoV2TokenProvider(string apiKeyEnvVar = "MOMENTO_API_KEY", string endpointEnvVar = "MOMENTO_ENDPOINT")
     {
         if (String.IsNullOrEmpty(endpointEnvVar))
         {
