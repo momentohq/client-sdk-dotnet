@@ -1,17 +1,16 @@
 namespace Momento.Sdk.Auth;
 
 using Momento.Sdk.Exceptions;
-using Momento.Sdk.Internal;
 using System;
 
 /// <summary>
-/// Reads and parses a JWT token stored as an environment variable.
+/// Reads and parses a JWT token stored as a string.
 /// </summary>
-[Obsolete("EnvMomentoTokenProvider is deprecated, please use EnvMomentoV2TokenProvider instead.")]
-public class EnvMomentoTokenProvider : ICredentialProvider
+public class DisposableTokenProvider : ICredentialProvider
 {
-    private readonly string envVarName;
-
+    // For V1 tokens, the original token is necessary to reconstruct
+    // the provider in WithCacheEndpoint.
+    private readonly string origAuthToken;
     /// <inheritdoc />
     public string AuthToken { get; private set; }
     /// <inheritdoc />
@@ -24,22 +23,16 @@ public class EnvMomentoTokenProvider : ICredentialProvider
     public bool SecureEndpoints { get; private set; } = true;
 
     /// <summary>
-    /// Reads and parses a JWT token stored as an environment variable.
+    /// Reads and parses a JWT token from a string.
     /// </summary>
-    /// <param name="name">Name of the environment variable that contains the JWT token.</param>
-    [Obsolete("EnvMomentoTokenProvider is deprecated, please use EnvMomentoV2TokenProvider instead.")]
-    public EnvMomentoTokenProvider(string name)
+    /// <param name="token">The JWT token.</param>
+    public DisposableTokenProvider(string token)
     {
-        this.envVarName = name;
-        if (String.IsNullOrEmpty(name))
-        {
-            throw new InvalidArgumentException($"Environment variable '{name}' is empty or null.");
-        }
-
-        AuthToken = Environment.GetEnvironmentVariable(name);
+        origAuthToken = token;
+        AuthToken = token;
         if (String.IsNullOrEmpty(AuthToken))
         {
-            throw new InvalidArgumentException($"Environment variable '{name}' is empty or null.");
+            throw new InvalidArgumentException($"String '{token}' is empty or null.");
         }
 
         var tokenData = AuthUtils.TryDecodeAuthToken(AuthToken);
@@ -52,7 +45,7 @@ public class EnvMomentoTokenProvider : ICredentialProvider
     /// <inheritdoc />
     public ICredentialProvider WithCacheEndpoint(string cacheEndpoint)
     {
-        var updated = new EnvMomentoTokenProvider(this.envVarName);
+        var updated = new DisposableTokenProvider(this.origAuthToken);
         updated.CacheEndpoint = cacheEndpoint;
         return updated;
     }

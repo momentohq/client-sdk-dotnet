@@ -64,7 +64,11 @@ internal static class AuthUtils
             }
             else
             {
-                var claims = JwtUtils.DecodeJwt(authToken);
+                if (IsV2ApiKey(authToken))
+                {
+                    throw new InvalidArgumentException("Received a v2 API key. Are you using the correct key? Or did you mean to use `ApiKeyV2TokenProvider()` or `EnvMomentoV2TokenProvider()` instead?");
+                }
+                var claims = JwtUtils.DecodeLegacyJwt(authToken);
                 return new TokenAndEndpoints(
                     authToken,
                     claims.ControlEndpoint,
@@ -77,5 +81,23 @@ internal static class AuthUtils
         {
             throw new InvalidArgumentException("The supplied Momento authToken is not valid.");
         }
+    }
+
+    public static bool IsV2ApiKey(string authToken)
+    {
+        if (AuthUtils.IsBase64String(authToken))
+        {
+            return false;
+        }
+        try
+        {
+            var claims = JwtUtils.DecodeV2Jwt(authToken);
+            return claims.Type != null && claims.Type == "g";
+        }
+        catch
+        {
+            return false;
+        }
+
     }
 }

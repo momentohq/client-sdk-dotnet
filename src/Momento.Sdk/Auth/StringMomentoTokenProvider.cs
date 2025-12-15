@@ -6,6 +6,7 @@ using System;
 /// <summary>
 /// Reads and parses a JWT token stored as a string.
 /// </summary>
+[Obsolete("StringMomentoTokenProvider is deprecated, please use ApiKeyV2TokenProvider or DisposableTokenProvider instead.")]
 public class StringMomentoTokenProvider : ICredentialProvider
 {
     // For V1 tokens, the original token is necessary to reconstruct
@@ -26,6 +27,7 @@ public class StringMomentoTokenProvider : ICredentialProvider
     /// Reads and parses a JWT token from a string.
     /// </summary>
     /// <param name="token">The JWT token.</param>
+    [Obsolete("StringMomentoTokenProvider is deprecated, please use ApiKeyV2TokenProvider or DisposableTokenProvider instead.")]
     public StringMomentoTokenProvider(string token)
     {
         origAuthToken = token;
