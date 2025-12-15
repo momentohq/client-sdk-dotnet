@@ -205,6 +205,11 @@ endif
 test-http-service:
 	@echo "No tests for http service."
 
+# Run unit tests
+test-unit:
+	@echo "Running unit tests..."
+	@dotnet test ${TEST_LOGGER_OPTIONS} -f ${DOTNET_VERSION} --filter "FullyQualifiedName~Momento.Sdk.Tests.Unit"
+
 
 ## Run example applications and snippets
 run-examples:
