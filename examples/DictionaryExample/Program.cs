@@ -8,7 +8,6 @@ using Momento.Sdk.Responses;
 
 public class Driver
 {
-    private static readonly string AUTH_TOKEN_ENV_VAR = "MOMENTO_API_KEY";
     private static readonly string CACHE_NAME_ENV_VAR = "MOMENTO_CACHE_NAME";
     private static readonly ILogger _logger;
     private static readonly ILoggerFactory _loggerFactory;
@@ -21,11 +20,12 @@ public class Driver
 
     public async static Task Main()
     {
-        var authToken = ReadAuthToken();
+        // Looks for the environment variables MOMENTO_API_KEY and MOMENTO_ENDPOINT by default
+        var creds = new EnvMomentoV2TokenProvider();
         var cacheName = ReadCacheName();
 
         // Set up the client
-        using ICacheClient client = new CacheClient(Configurations.Laptop.V1(), authToken, TimeSpan.FromSeconds(60));
+        using ICacheClient client = new CacheClient(Configurations.Laptop.V1(), creds, TimeSpan.FromSeconds(60));
         await EnsureCacheExistsAsync(client, cacheName);
 
         // Set a value
@@ -166,33 +166,6 @@ public class Driver
             });
             builder.SetMinimumLevel(LogLevel.Information);
         });
-    }
-
-    private static ICredentialProvider ReadAuthToken()
-    {
-        try
-        {
-            return new EnvMomentoTokenProvider(AUTH_TOKEN_ENV_VAR);
-        }
-        catch (InvalidArgumentException)
-        {
-        }
-
-        Console.Write($"Auth token not detected in environment variable {AUTH_TOKEN_ENV_VAR}. Enter auth token here: ");
-        var authToken = Console.ReadLine()!.Trim();
-
-        StringMomentoTokenProvider? authProvider = null;
-        try
-        {
-            authProvider = new StringMomentoTokenProvider(authToken);
-        }
-        catch (InvalidArgumentException e)
-        {
-            _logger.LogInformation("{}", e);
-            _loggerFactory.Dispose();
-            Environment.Exit(1);
-        }
-        return authProvider!;
     }
 
     private static string ReadCacheName()

@@ -4,7 +4,7 @@ using Momento.Sdk.Auth;
 using Momento.Sdk.Config;
 using Momento.Sdk.Responses;
 
-ICredentialProvider authProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY");
+ICredentialProvider authProvider = new EnvMomentoV2TokenProvider();
 const string CACHE_NAME = "cache";
 const string KEY = "MyKey";
 const string VALUE = "MyData";
