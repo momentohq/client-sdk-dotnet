@@ -11,15 +11,15 @@ public class Program
     {
         var config = Configurations.Laptop.V1();
         var client = new CacheClient(config,
-            new EnvMomentoTokenProvider("MOMENTO_API_KEY"),
+            new EnvMomentoV2TokenProvider(),
             TimeSpan.FromSeconds(10));
         IAuthClient authClient = new AuthClient(
             AuthConfigurations.Default.Latest(),
-            new EnvMomentoTokenProvider("MOMENTO_API_KEY")
+            new EnvMomentoTokenProvider("V1_API_KEY")
         );
         ITopicClient topicClient = new TopicClient(
             TopicConfigurations.Laptop.latest(),
-            new EnvMomentoTokenProvider("MOMENTO_API_KEY")
+            new EnvMomentoV2TokenProvider()
         );
 
         await Example_API_CreateCache(client);
@@ -39,6 +39,41 @@ public class Program
         await Example_API_InstantiateTopicClient();
         await Example_API_TopicSubscribe(topicClient);
         await Example_API_TopicPublish(topicClient);
+    }
+
+    private static string RetrieveApiKeyFromYourSecretsManager()
+    {
+        // this is not a valid API key but conforms to the syntax requirements.
+        return "eyJhcGlfa2V5IjogImV5SjBlWEFpT2lKS1YxUWlMQ0poYkdjaU9pSklVekkxTmlKOS5leUpwYzNNaU9pSlBibXhwYm1VZ1NsZFVJRUoxYVd4a1pYSWlMQ0pwWVhRaU9qRTJOemd6TURVNE1USXNJbVY0Y0NJNk5EZzJOVFV4TlRReE1pd2lZWFZrSWpvaUlpd2ljM1ZpSWpvaWFuSnZZMnRsZEVCbGVHRnRjR3hsTG1OdmJTSjkuOEl5OHE4NExzci1EM1lDb19IUDRkLXhqSGRUOFVDSXV2QVljeGhGTXl6OCIsICJlbmRwb2ludCI6ICJ0ZXN0Lm1vbWVudG9ocS5jb20ifQo=";
+    }
+
+    private static string RetrieveApiKeyV2FromYourSecretsManager()
+    {
+        // this is not a valid API key but conforms to the syntax requirements.
+        return "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0IjoiZyIsImp0aSI6InNvbWUtaWQifQ.GMr9nA6HE0ttB6llXct_2Sg5-fOKGFbJCdACZFgNbN1fhT6OPg_hVc8ThGzBrWC_RlsBpLA1nzqK3SOJDXYxAw";
+    }
+
+    public static async Task Example_API_CredentialProviderFromEnvVarV2()
+    {
+        // Looks for the environment variables MOMENTO_API_KEY and MOMENTO_ENDPOINT by default
+        new EnvMomentoV2TokenProvider();
+
+        // To provide custom env var names:
+        new EnvMomentoV2TokenProvider("ALT_MOMENTO_API_KEY", "ALT_MOMENTO_ENDPOINT");
+    }
+
+    public static async Task Example_API_CredentialProviderFromApiKeyV2()
+    {
+        // using the us-west-2 region's endpoint for this example
+        var endpoint = "cache.cell-4-us-west-2-1.prod.a.momentohq.com";
+        var apiKey = RetrieveApiKeyFromYourSecretsManager();
+        new ApiKeyV2TokenProvider(apiKey, endpoint);
+    }
+
+    public static async Task Example_API_CredentialProviderFromDisposableToken()
+    {
+        var authToken = RetrieveApiKeyFromYourSecretsManager();
+        new DisposableTokenProvider(authToken);
     }
 
     public static async Task Example_API_CreateCache(CacheClient cacheClient)
@@ -240,7 +275,7 @@ public class Program
     {
         new TopicClient(
             TopicConfigurations.Laptop.latest(),
-            new EnvMomentoTokenProvider("MOMENTO_API_KEY")
+            new EnvMomentoV2TokenProvider()
         );
     }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously

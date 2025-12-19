@@ -90,7 +90,7 @@ namespace MomentoLoadGen
 
         public async Task Run()
         {
-            var authProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY");
+            var authProvider = new EnvMomentoV2TokenProvider();
 
             using (ICacheClient momento = new CacheClient(
                 _momentoClientConfig,
@@ -166,10 +166,12 @@ namespace MomentoLoadGen
 
             while (!token.IsCancellationRequested)
             {
-                try {
+                try
+                {
                     await Task.Delay(showStatsInterval, token);
                 }
-                finally {
+                finally
+                {
                     PrintStats(setsAccumulatingHistogram, getsAccumulatingHistogram, context);
                 }
             }
