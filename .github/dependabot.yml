@@ -13,4 +13,4 @@ updates:
       - dependency-name: "Momento.Sdk"
     commit-message:
       # Prefix all commit messages with "chore: "
-      - prefix: "chore"
+      prefix: "chore"
