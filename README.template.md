@@ -20,7 +20,6 @@ Here is a quickstart you can use in your own project:
 {% include "./examples/MomentoUsage/Program.cs" %}
 ```
 
-
 ## Getting Started and Documentation
 
 Documentation is available on the [Momento Docs website](https://docs.momentohq.com).
