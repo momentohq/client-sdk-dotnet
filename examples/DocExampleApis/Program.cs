@@ -40,10 +40,10 @@ public class Program
         await Example_API_TopicSubscribe(topicClient);
         await Example_API_TopicPublish(topicClient);
 
-        Example_API_CredentialProviderFromEnvVarV2Default();
-        Example_API_CredentialProviderFromEnvVarV2();
-        Example_API_CredentialProviderFromApiKeyV2();
-        Example_API_CredentialProviderFromDisposableToken();
+        await Example_API_CredentialProviderFromEnvVarV2Default();
+        await Example_API_CredentialProviderFromEnvVarV2();
+        await Example_API_CredentialProviderFromApiKeyV2();
+        await Example_API_CredentialProviderFromDisposableToken();
     }
 
     private static string RetrieveApiKeyFromYourSecretsManager()
@@ -58,27 +58,24 @@ public class Program
         return "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0IjoiZyIsImp0aSI6InNvbWUtaWQifQ.GMr9nA6HE0ttB6llXct_2Sg5-fOKGFbJCdACZFgNbN1fhT6OPg_hVc8ThGzBrWC_RlsBpLA1nzqK3SOJDXYxAw";
     }
 
-    public static void Example_API_CredentialProviderFromEnvVarV2()
+    public static async Task Example_API_CredentialProviderFromEnvVarV2()
     {
-        // Optionally specify the environment variable names
         new EnvMomentoV2TokenProvider("MOMENTO_API_KEY", "MOMENTO_ENDPOINT");
     }
 
-    public static void Example_API_CredentialProviderFromEnvVarV2Default()
+    public static async Task Example_API_CredentialProviderFromEnvVarV2Default()
     {
-        // Looks for the environment variables MOMENTO_API_KEY and MOMENTO_ENDPOINT by default
         new EnvMomentoV2TokenProvider();
     }
 
-    public static void Example_API_CredentialProviderFromApiKeyV2()
+    public static async Task Example_API_CredentialProviderFromApiKeyV2()
     {
-        // using the us-west-2 region's endpoint for this example
         var endpoint = "cell-4-us-west-2-1.prod.a.momentohq.com";
         var apiKey = RetrieveApiKeyV2FromYourSecretsManager();
         new ApiKeyV2TokenProvider(apiKey, endpoint);
     }
 
-    public static void Example_API_CredentialProviderFromDisposableToken()
+    public static async Task Example_API_CredentialProviderFromDisposableToken()
     {
         var authToken = RetrieveApiKeyFromYourSecretsManager();
         new DisposableTokenProvider(authToken);
