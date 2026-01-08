@@ -4,6 +4,8 @@ using Momento.Sdk.Auth.AccessControl;
 using Momento.Sdk.Config;
 using Momento.Sdk.Responses;
 
+// We disable this warning because the docs site expects to parse async methods even if they don't use await.
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 public class Program
 {
@@ -275,7 +277,6 @@ public class Program
 
     }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     public static async Task Example_API_InstantiateTopicClient()
     {
         new TopicClient(
@@ -283,7 +284,6 @@ public class Program
             new EnvMomentoV2TokenProvider()
         );
     }
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
     public static async Task Example_API_TopicPublish(ITopicClient topicClient)
     {
