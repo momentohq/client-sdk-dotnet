@@ -39,6 +39,10 @@ public class Program
         await Example_API_InstantiateTopicClient();
         await Example_API_TopicSubscribe(topicClient);
         await Example_API_TopicPublish(topicClient);
+
+        await Example_API_CredentialProviderFromEnvVarV2();
+        await Example_API_CredentialProviderFromApiKeyV2();
+        await Example_API_CredentialProviderFromDisposableToken();
     }
 
     private static string RetrieveApiKeyFromYourSecretsManager()
@@ -58,15 +62,15 @@ public class Program
         // Looks for the environment variables MOMENTO_API_KEY and MOMENTO_ENDPOINT by default
         new EnvMomentoV2TokenProvider();
 
-        // To provide custom env var names:
-        new EnvMomentoV2TokenProvider("ALT_MOMENTO_API_KEY", "ALT_MOMENTO_ENDPOINT");
+        // To provide custom environment variable names:
+        // new EnvMomentoV2TokenProvider("ALT_MOMENTO_API_KEY", "ALT_MOMENTO_ENDPOINT");
     }
 
     public static async Task Example_API_CredentialProviderFromApiKeyV2()
     {
         // using the us-west-2 region's endpoint for this example
         var endpoint = "cache.cell-4-us-west-2-1.prod.a.momentohq.com";
-        var apiKey = RetrieveApiKeyFromYourSecretsManager();
+        var apiKey = RetrieveApiKeyV2FromYourSecretsManager();
         new ApiKeyV2TokenProvider(apiKey, endpoint);
     }
 
