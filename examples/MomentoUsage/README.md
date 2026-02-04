@@ -10,19 +10,20 @@ the client's full capabilities, take a look at the more advanced  [MomentoApplic
 
 * [`dotnet`](https://dotnet.microsoft.com/en-us/download) 6.0 or higher is required
 * A Momento API key is required.  You can generate one using the [Momento Console](https://console.gomomento.com/api-keys).
+* A Momento service endpoint is required. Choose the one for the [region](https://docs.momentohq.com/platform/regions) you'll be using, e.g. `cell-1-ap-southeast-1-1.prod.a.momentohq.com` for ap-southeast-1.
 
 ## Running the application example
 
 Run the following from within the `examples` directory:
 
 ```bash
-MOMENTO_API_KEY=<YOUR API KEY> dotnet run --project MomentoUsage
+MOMENTO_API_KEY=<YOUR API KEY> MOMENTO_ENDPOINT=<YOUR_ENDPOINT> dotnet run --project MomentoUsage
 ```
 
 Within the `MomentoUsage` directory you can run:
 
 ```bash
-MOMENTO_API_KEY=<YOUR API KEY> dotnet run
+MOMENTO_API_KEY=<YOUR API KEY> MOMENTO_ENDPOINT=<YOUR_ENDPOINT> dotnet run
 ```
 
 ## Error Handling

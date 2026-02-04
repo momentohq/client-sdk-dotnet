@@ -11,10 +11,10 @@ static class Program
 
     private static readonly ICredentialProvider authProvider;
     private static readonly IAuthClient client;
- 
+
     static Program()
     {
-        authProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY");
+        authProvider = new EnvMomentoTokenProvider("V1_API_KEY");
         client = new AuthClient(AuthConfigurations.Default.Latest(), authProvider);
     }
 
@@ -71,9 +71,9 @@ static class Program
     private static void PrintTokenInfo(GenerateDisposableTokenResponse.Success token)
     {
         Console.WriteLine(
-            "The generated disposable token (truncated): " 
-            + token.AuthToken.Substring(0, 10) 
-            + "..." 
+            "The generated disposable token (truncated): "
+            + token.AuthToken.Substring(0, 10)
+            + "..."
             + token.AuthToken.Substring((token.AuthToken.Length - 10), 10)
         );
         Console.WriteLine("The token expires at (epoch timestamp): " + token.ExpiresAt.Epoch() + "\n");

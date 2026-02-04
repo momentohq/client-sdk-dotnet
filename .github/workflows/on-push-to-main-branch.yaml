@@ -12,7 +12,9 @@ jobs:
         grpc-web: [false, true]
     runs-on: ${{ matrix.os }}
     env:
-      MOMENTO_API_KEY: ${{ secrets.ALPHA_TEST_AUTH_TOKEN }}
+      V1_API_KEY: ${{ secrets.ALPHA_TEST_AUTH_TOKEN }}
+      MOMENTO_API_KEY: ${{ secrets.ALPHA_API_KEY_V2 }}
+      MOMENTO_ENDPOINT: "cell-alpha-dev.preprod.a.momentohq.com"
 
     steps:
       - name: Get current time

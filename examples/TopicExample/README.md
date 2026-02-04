@@ -2,23 +2,19 @@
 
 This example program demonstrates usage of Momento Topics.
 
-# Usage
+## Prerequisites
 
-The program assumes the auth token and cache names are available in environment variables. The auth token is assumed to be in the variable `MOMENTO_API_KEY` and the cache name in `MOMENTO_CACHE_NAME`. If either of these is missing, you will be prompted to enter the values on the terminal.
+* [`dotnet`](https://dotnet.microsoft.com/en-us/download) 6.0 or higher is required
+* A Momento API key is required.  You can generate one using the [Momento Console](https://console.gomomento.com/api-keys).
+* A Momento service endpoint is required. Choose the one for the [region](https://docs.momentohq.com/platform/regions) you'll be using, e.g. `cell-1-ap-southeast-1-1.prod.a.momentohq.com` for ap-southeast-1.
+
+# Usage
 
 To run the program, run either:
 
 ```bash
-MOMENTO_API_KEY=<YOUR_API_KEY_HERE> MOMENTO_CACHE_NAME=<YOUR_CACHE_NAME_HERE> dotnet run
+MOMENTO_API_KEY=<YOUR_API_KEY_HERE> MOMENTO_ENDPOINT=<YOUR_ENDPOINT> MOMENTO_CACHE_NAME=<YOUR_CACHE_NAME_HERE> dotnet run
 ```
-
-or
-
-```bash
-dotnet run
-```
-
-and you will be prompted to enter the auth token and cache name.
 
 If the cache name entered does not exist, the program will create it.
 

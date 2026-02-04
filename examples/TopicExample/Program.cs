@@ -9,7 +9,6 @@ namespace TopicExample;
 
 public class Driver
 {
-    private const string AuthTokenEnvVar = "MOMENTO_API_KEY";
     private const string CacheNameEnvVar = "MOMENTO_CACHE_NAME";
     private const string TopicName = "example-topic";
     private static readonly ILogger Logger;
@@ -23,7 +22,7 @@ public class Driver
 
     public static async Task Main()
     {
-        var authToken = ReadAuthToken();
+        var authToken = new EnvMomentoV2TokenProvider();
         var cacheName = ReadCacheName();
 
         // Set up the client
@@ -122,34 +121,6 @@ public class Driver
             });
             builder.SetMinimumLevel(LogLevel.Information);
         });
-    }
-
-    private static ICredentialProvider ReadAuthToken()
-    {
-        try
-        {
-            return new EnvMomentoTokenProvider(AuthTokenEnvVar);
-        }
-        catch (InvalidArgumentException)
-        {
-        }
-
-        Console.Write($"Auth token not detected in environment variable {AuthTokenEnvVar}. Enter auth token here: ");
-        var authToken = Console.ReadLine()!.Trim();
-
-        StringMomentoTokenProvider? authProvider = null;
-        try
-        {
-            authProvider = new StringMomentoTokenProvider(authToken);
-        }
-        catch (InvalidArgumentException e)
-        {
-            Logger.LogInformation("{}", e);
-            LoggerFactory.Dispose();
-            Environment.Exit(1);
-        }
-
-        return authProvider;
     }
 
     private static string ReadCacheName()

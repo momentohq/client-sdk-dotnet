@@ -4,7 +4,7 @@ using Momento.Sdk.Config;
 using Momento.Sdk.Exceptions;
 using Momento.Sdk.Responses;
 
-var authProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY");
+var authProvider = new EnvMomentoV2TokenProvider();
 
 var defaultTtl = TimeSpan.FromSeconds(60);
 
@@ -20,7 +20,8 @@ using (ICacheClient client = new CacheClient(Configurations.Laptop.V1(), authPro
 }
 
 
-public class AdvancedExamples {
+public class AdvancedExamples
+{
     private const string CacheName = "momento-example";
     private const string Key = "MyKey";
     private const string Value = "MyData";
@@ -51,7 +52,8 @@ public class AdvancedExamples {
         }
     }
 
-    public static async Task ListCachesExample(ICacheClient client) {
+    public static async Task ListCachesExample(ICacheClient client)
+    {
         Console.WriteLine("\nListing caches:");
         ListCachesResponse listCachesResponse = await client.ListCachesAsync();
         if (listCachesResponse is ListCachesResponse.Success listCachesSuccess)
@@ -68,7 +70,8 @@ public class AdvancedExamples {
         }
     }
 
-    public static async Task SetGetDeleteExample(ICacheClient client) {
+    public static async Task SetGetDeleteExample(ICacheClient client)
+    {
         Console.WriteLine($"\nSetting key: {Key} with value: {Value}");
         var setResponse = await client.SetAsync(CacheName, Key, Value);
         if (setResponse is CacheSetResponse.Error setError)
@@ -104,7 +107,8 @@ public class AdvancedExamples {
         }
     }
 
-    public static async Task DeleteCacheExample(ICacheClient client) {
+    public static async Task DeleteCacheExample(ICacheClient client)
+    {
 
         Console.WriteLine($"\nDeleting cache {CacheName}");
         var deleteCacheResponse = await client.DeleteCacheAsync(CacheName);
@@ -115,7 +119,7 @@ public class AdvancedExamples {
             Environment.Exit(1);
         }
     }
-    
+
     /// <summary>
     /// By default, cache clients will connect lazily when the first request is
     /// issued.  This example shows how to configure a client to connect eagerly
@@ -124,11 +128,11 @@ public class AdvancedExamples {
     /// </summary>
     public static async Task EagerConnectionExample()
     {
-        var authProvider = new EnvMomentoTokenProvider("MOMENTO_API_KEY");
+        var authProvider = new EnvMomentoV2TokenProvider();
         var defaultTtl = TimeSpan.FromSeconds(60);
         var config = Configurations.Laptop.V1();
         var eagerConnectionTimeout = TimeSpan.FromSeconds(10);
-        
+
         Console.WriteLine("Creating a momento client with eager connection");
         using (var client = await CacheClient.CreateAsync(config, authProvider, defaultTtl, eagerConnectionTimeout))
         {
