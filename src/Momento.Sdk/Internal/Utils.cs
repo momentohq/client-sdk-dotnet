@@ -141,10 +141,6 @@ public static class Utils
         {
             throw new InvalidArgumentException("Disposable token expiry must be positive");
         }
-        else if (expiresIn.Seconds() > 60 * 60)
-        {
-            throw new InvalidArgumentException("Disposable token must expire within 1 hour");
-        }
     }
 
     /// <summary>
