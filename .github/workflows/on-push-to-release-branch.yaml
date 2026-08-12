@@ -30,6 +30,8 @@ jobs:
         run: echo "::set-output name=release::${{ steps.semrel.outputs.version }}"
 
   publish:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     needs: release
 
@@ -81,7 +83,7 @@ jobs:
             zip -jr MomentoSdkUnity.zip bin/Release/netstandard2.0/MomentoSdkUnity/
             ZIP_FILE=./MomentoSdkUnity.zip
             ARCHIVE_FILE_NAME=MomentoSdkUnity-${VERSION}.zip
-            AUTH="Authorization: token ${{ secrets.MOMENTO_MACHINE_USER_GITHUB_TOKEN }}"
+            AUTH="Authorization: token ${{ secrets.GITHUB_TOKEN }}"
             LATEST_RELEASE=$(curl -sH "$AUTH" https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/v${VERSION})
             RELEASE_ID=$(echo $LATEST_RELEASE | jq -r .id)
             GH_ASSET="https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets?name=${ARCHIVE_FILE_NAME}"
