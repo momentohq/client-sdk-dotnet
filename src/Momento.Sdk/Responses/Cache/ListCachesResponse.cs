@@ -48,7 +48,7 @@ public abstract class ListCachesResponse
             Caches = new List<CacheInfo>();
             foreach (_Cache c in result.Cache)
             {
-                Caches.Add(new CacheInfo(c.CacheName));
+                Caches.Add(new CacheInfo(c.CacheName, c.CacheId));
             }
         }
 

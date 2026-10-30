@@ -3,7 +3,7 @@
 namespace Momento.Sdk.Responses;
 
 /// <summary>
-/// Contains a Momento cache's name.
+/// Contains a Momento cache's name and id.
 /// </summary>
 public class CacheInfo : IEquatable<CacheInfo>
 {
@@ -13,10 +13,26 @@ public class CacheInfo : IEquatable<CacheInfo>
     public string Name { get; }
 
     /// <summary>
+    /// Holds the id of the cache. Empty if the server does not report one.
+    /// </summary>
+    public string Id { get; }
+
+    /// <summary>
     /// Contains a Momento cache's name.
     /// </summary>
     /// <param name="cacheName">The name of the cache.</param>
-    public CacheInfo(string cacheName) => Name = cacheName;
+    public CacheInfo(string cacheName) : this(cacheName, "") { }
+
+    /// <summary>
+    /// Contains a Momento cache's name and id.
+    /// </summary>
+    /// <param name="cacheName">The name of the cache.</param>
+    /// <param name="cacheId">The id of the cache.</param>
+    public CacheInfo(string cacheName, string cacheId)
+    {
+        Name = cacheName;
+        Id = cacheId;
+    }
 
     /// <inheritdoc />
     public bool Equals(CacheInfo? other)
